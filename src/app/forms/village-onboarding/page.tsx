@@ -11,7 +11,7 @@ import 'primereact/resources/primereact.css';
 //theme
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import '@/styles/customPrimeReact.css';
-import { formatISO, parseISO } from 'date-fns';
+import { formatISO } from 'date-fns';
 
 export default function page() {
   const [selectedState, setSelectedState] = useState<{
@@ -127,11 +127,11 @@ export default function page() {
         village_id: selectedVillage?.value,
         onboarding_date: isoDate,
       });
-      const res = await axiosClient.post(`/forms/onboard_village`, {
+      const res = await axiosClient.post('/forms/onboard_village', {
         village_id: selectedVillage?.value,
         onboarding_date: isoDate,
       });
-      toast.success(`Database updated.`, {
+      toast.success('Database updated.', {
         id: loadingToastId,
         duration: 5000,
       });
@@ -140,7 +140,6 @@ export default function page() {
         id: loadingToastId,
         duration: 8000,
       });
-    } finally {
     }
   };
 
@@ -153,13 +152,13 @@ export default function page() {
       const status: boolean = res?.data?.data;
       if (status) {
         setReplacementDictFlag(true);
-        toast.success(`In replacement dictionary available.`, {
+        toast.success('In replacement dictionary available.', {
           id: checkReplacementToast,
           duration: 5000,
         });
       } else {
         setReplacementDictFlag(false);
-        toast.error(`In replacement dictionary not available.`, {
+        toast.error('In replacement dictionary not available.', {
           id: checkReplacementToast,
           duration: 5000,
         });

@@ -1,0 +1,46 @@
+.p-tabview,
+.p-tabview.p-component,
+.p-datatable,
+.p-datatable.p-component,
+.p-paginator,
+.p-paginator.p-component,
+.p-link {
+  font: inherit !important;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus {
+  box-shadow: none !important;
+}
+
+.p-tabview-nav-content > ul {
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .p-tabview-nav-content > ul {
+    align-items: center;
+    justify-content: flex-start;
+  }
+}
+
+.p-tabview .p-tabview-nav .p-tabviewitem.p-highlight .p-menuitem-link {
+  border-bottom-width: 3px;
+}
+
+.p-tabview-nav-link {
+  gap: 6px;
+}
+
+tr.p-row-odd {
+  background-color: hsl(0, 0%, 98%) !important;
+}
+
+.p-datepicker table td,
+.p-datepicker .p-datepicker-header {
+  padding: 0 !important;
+}
+
+.p-inputtext {
+  font-family: inherit !important;
+}

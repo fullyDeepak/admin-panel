@@ -126,7 +126,7 @@ export default function page() {
         raw_villages: cleanCsvData,
         village_id: selectedVillage?.value,
       };
-      const res = axiosClient.post(`/forms/replace-villages`, data);
+      const res = axiosClient.post('/forms/replace-villages', data);
       toast.success(`${(await res).data.data} village added to database.`, {
         id: loadingToastId,
         duration: 5000,
@@ -276,7 +276,7 @@ export default function page() {
             <div></div>
             <button
               className={`btn mt-5 text-white ${
-                Boolean(cleanCsvFlag && selectedVillage?.value)
+                !!cleanCsvFlag && selectedVillage?.value
                   ? 'btn-success'
                   : 'btn-disabled'
               }`}
