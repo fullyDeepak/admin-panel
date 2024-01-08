@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import pgSqlClient from '@/utils/db';
 import { NextResponse, NextRequest } from 'next/server';
 
