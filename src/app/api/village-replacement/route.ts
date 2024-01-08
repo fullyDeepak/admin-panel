@@ -1,7 +1,7 @@
 import pgSqlClient from '@/utils/db';
 import { NextResponse, NextRequest } from 'next/server';
 
-export async function GET(req: Response) {
+export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const village_id = searchParams.get('village_id');
   try {
