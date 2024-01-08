@@ -1,12 +1,14 @@
 'use client';
 import React, { Suspense, useEffect, useState } from 'react';
-import Select, { components } from 'react-select';
+import Select, { SingleValue } from 'react-select';
 import CSVReader from 'react-csv-reader';
 import { useQuery } from '@tanstack/react-query';
 import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
 import axiosClient from '@/utils/AxiosClient';
 import Sheet from '@/components/tables/Sheet';
 import toast, { Toaster } from 'react-hot-toast';
+import axios from 'axios';
+import TanstackReactTable from '@/components/tables/TanstackReactTable';
 
 export default function page() {
   const [rawCsvData, setRawCSVData] = useState<string[][]>();
@@ -31,7 +33,7 @@ export default function page() {
     value: number;
   } | null>();
 
-  //   state dropdown
+  // populate state dropdown
   const {
     isPending: loadingStates,
     error: stateError,
@@ -50,7 +52,7 @@ export default function page() {
     }
   }, [stateOptions]);
 
-  //   district dropdown
+  // populate district dropdown
   const {
     isPending: loadingDistricts,
     error: distError,
@@ -67,7 +69,7 @@ export default function page() {
     staleTime: Infinity,
   });
 
-  // mandal dropdown
+  // populate mandal dropdown
   const {
     isPending: loadingMandals,
     error: mandalError,
@@ -88,7 +90,7 @@ export default function page() {
     staleTime: Infinity,
   });
 
-  // village dropdown
+  // populate village dropdown
   const {
     isPending: loadingVillages,
     error: villageError,
@@ -104,6 +106,34 @@ export default function page() {
     },
     staleTime: Infinity,
   });
+
+  const {
+    isPending: loadingRawVillages,
+    error: rawVillageError,
+    status: rawVillageStatus,
+    data: rawVillageList,
+  } = useQuery({
+    queryKey: ['rawVillage', selectedVillage],
+    queryFn: async () => {
+      if (selectedVillage !== undefined && selectedVillage !== null) {
+        console.log('fetching raw villages', selectedVillage);
+        const response = await axios.get('/api/village-replacement', {
+          params: { village_id: selectedVillage.value },
+        });
+        const rawVillages = response.data.data;
+        const cols = Object.keys(rawVillages[0]).map((item) => ({
+          header: item.toUpperCase(),
+          accessorKey: item,
+        }));
+        return { rawVillages, cols };
+      }
+    },
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    console.log(villageOptions);
+  }, [villageOptions]);
 
   useEffect(() => {
     setSelectedVillage(null);
@@ -170,7 +200,12 @@ export default function page() {
             isLoading={loadingStates}
             value={selectedState}
             controlShouldRenderValue
-            onChange={(e) => {
+            onChange={(
+              e: SingleValue<{
+                label: string;
+                value: number;
+              }>
+            ) => {
               setSelectedState(e);
               setSelectedDistrict(null);
             }}
@@ -185,7 +220,12 @@ export default function page() {
             options={districtOptions || undefined}
             isLoading={loadingDistricts}
             value={selectedDistrict}
-            onChange={(e) => {
+            onChange={(
+              e: SingleValue<{
+                label: string;
+                value: number;
+              }>
+            ) => {
               setSelectedDistrict(e);
               setSelectedMandal(null);
             }}
@@ -200,7 +240,12 @@ export default function page() {
             options={mandalOptions || undefined}
             isLoading={loadingMandals}
             value={selectedMandal}
-            onChange={(e) => {
+            onChange={(
+              e: SingleValue<{
+                label: string;
+                value: number;
+              }>
+            ) => {
               setSelectedMandal(e);
               setSelectedVillage(null);
             }}
@@ -215,7 +260,12 @@ export default function page() {
             options={villageOptions || undefined}
             isLoading={loadingVillages}
             value={selectedMandal ? selectedVillage : null}
-            onChange={(e) => setSelectedVillage(e)}
+            onChange={(
+              e: SingleValue<{
+                label: string;
+                value: number;
+              }>
+            ) => setSelectedVillage(e)}
             isDisabled={Boolean(!selectedMandal)}
           />
         </label>
@@ -287,6 +337,14 @@ export default function page() {
           </>
         )}
       </form>
+      <div>
+        {rawVillageList && (
+          <TanstackReactTable
+            data={rawVillageList.rawVillages}
+            columns={rawVillageList.cols}
+          />
+        )}
+      </div>
     </div>
   );
 }

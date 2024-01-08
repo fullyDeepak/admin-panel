@@ -9,8 +9,8 @@
   "rules": {
     "indent": ["warn", 2],
     "linebreak-style": ["warn", "unix"],
-    "quotes": ["error", "single"],
-    "semi": ["error", "always"],
+    "quotes": ["off", "single"],
+    "semi": ["off", "always"],
     "prettier/prettier": 1,
     "react-hooks/rules-of-hooks": 0,
     "react-hooks/exhaustive-deps": 0,
