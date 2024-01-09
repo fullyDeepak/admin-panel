@@ -7,7 +7,6 @@ import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
 import axiosClient from '@/utils/AxiosClient';
 import Sheet from '@/components/tables/Sheet';
 import toast, { Toaster } from 'react-hot-toast';
-import axios from 'axios';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
 
 export default function page() {
@@ -107,28 +106,33 @@ export default function page() {
     staleTime: Infinity,
   });
 
+  async function fetchRawVillages() {
+    if (selectedVillage !== undefined && selectedVillage !== null) {
+      console.log('fetching raw villages', selectedVillage);
+      const response = await axiosClient.get(
+        '/forms/get_raw_villagereplacements',
+        {
+          params: { village_id: selectedVillage.value },
+        }
+      );
+      const rawVillages = response.data.data;
+      const cols = Object.keys(rawVillages[0]).map((item) => ({
+        header: item.toUpperCase(),
+        accessorKey: item,
+      }));
+      return { rawVillages, cols };
+    }
+  }
+
   const {
     isPending: loadingRawVillages,
     error: rawVillageError,
     status: rawVillageStatus,
-    data: rawVillageList,
+    data: rawVillageData,
+    refetch: refetchRawVillage,
   } = useQuery({
     queryKey: ['rawVillage', selectedVillage],
-    queryFn: async () => {
-      if (selectedVillage !== undefined && selectedVillage !== null) {
-        console.log('fetching raw villages', selectedVillage);
-        const response = await axios.get('/api/village-replacement', {
-          params: { village_id: selectedVillage.value },
-        });
-        const rawVillages = response.data.data;
-        const cols = Object.keys(rawVillages[0]).map((item) => ({
-          header: item.toUpperCase(),
-          accessorKey: item,
-        }));
-        return { rawVillages, cols };
-      }
-    },
-    staleTime: Infinity,
+    queryFn: async () => fetchRawVillages(),
   });
 
   useEffect(() => {
@@ -172,6 +176,7 @@ export default function page() {
       setCleanCSVFlag(false);
       setRawCSVData(undefined);
       setPreviewCSV(false);
+      refetchRawVillage();
     }
   };
 
@@ -338,10 +343,10 @@ export default function page() {
         )}
       </form>
       <div>
-        {rawVillageList && (
+        {rawVillageData && (
           <TanstackReactTable
-            data={rawVillageList.rawVillages}
-            columns={rawVillageList.cols}
+            data={rawVillageData.rawVillages}
+            columns={rawVillageData.cols}
           />
         )}
       </div>
