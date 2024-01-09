@@ -38,6 +38,24 @@ const NavBar = () => {
     // document.body.style.position = isOpen ? 'static' : 'fixed';
   };
 
+  const menus: {
+    label: string;
+    href: string;
+  }[] = [
+    {
+      label: 'Home',
+      href: '/',
+    },
+    {
+      label: 'Forms',
+      href: '/forms',
+    },
+    {
+      label: 'SQL Editor',
+      href: '/sql-editor',
+    },
+  ];
+
   return (
     <div className='z-10 flex items-center justify-between bg-rose-300 px-5 py-5 md:px-10'>
       <div className='text-xl font-bold text-rose-700'>
@@ -62,21 +80,16 @@ const NavBar = () => {
           }`}
         >
           <div className='ml-auto flex h-full w-3/4 flex-col items-center gap-5 bg-rose-200 p-10 md:w-full md:flex-row md:bg-inherit md:p-0'>
-            <Link
-              className={`${deskIconCss} btn w-full bg-rose-800 text-base text-white md:btn-link hover:bg-rose-500 md:w-min md:text-gray-700 md:no-underline md:hover:bg-transparent md:hover:text-black md:hover:no-underline `}
-              href='/'
-              onClick={() => setIsOpen(false)}
-            >
-              Home
-            </Link>
-
-            <Link
-              className={`${deskIconCss} btn w-full bg-rose-800 text-base text-white md:btn-link hover:bg-rose-500 md:w-min md:text-gray-700 md:no-underline md:hover:bg-transparent md:hover:text-black md:hover:no-underline `}
-              href='/forms'
-              onClick={() => setIsOpen(false)}
-            >
-              Forms
-            </Link>
+            {menus.map((item) => (
+              <Link
+                key={item.label}
+                className={`${deskIconCss} btn w-full text-nowrap bg-rose-800 text-base text-white md:btn-link hover:bg-rose-500 md:w-min md:text-gray-700 md:no-underline md:hover:bg-transparent md:hover:text-black md:hover:no-underline `}
+                href={item.href}
+                onClick={() => setIsOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
