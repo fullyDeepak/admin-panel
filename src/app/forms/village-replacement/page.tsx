@@ -189,41 +189,48 @@ export default function page() {
 
   async function fetchRawVillages() {
     setIsRawVillageDataAvailable('Not Loaded');
-    if (selectedVillage !== undefined && selectedVillage !== null) {
-      console.log('fetching raw villages', selectedVillage);
-      const response = await axiosClient.get('/forms/raw_villagereplacements', {
-        params: { village_id: selectedVillage.value },
-      });
-      if (response.status === 204) {
-        setIsRawVillageDataAvailable('Not Available');
-      } else if (response.status === 200) {
-        const rawVillages = response.data.data;
-        const cols: {
-          header: string;
-          accessorKey: string;
-          cell?: any;
-          enableSorting?: boolean;
-        }[] = Object.keys(rawVillages[0]).map((item) => ({
-          header: item.toUpperCase(),
-          accessorKey: item,
-        }));
-        cols.push({
-          header: 'Action',
-          accessorKey: 'action',
-          enableSorting: false,
-          cell: (tableProps: any) => (
-            <button
-              type='button'
-              className='btn btn-error btn-sm rounded-full text-white'
-              onClick={() => mutate(tableProps?.row.original)}
-            >
-              Delete
-            </button>
-          ),
-        });
-        setIsRawVillageDataAvailable('Available');
-        return { rawVillages, cols };
+    try {
+      if (selectedVillage !== undefined && selectedVillage !== null) {
+        console.log('fetching raw villages', selectedVillage);
+        const response = await axiosClient.get(
+          '/forms/raw_villagereplacements',
+          {
+            params: { village_id: selectedVillage.value },
+          }
+        );
+        if (response.status === 204) {
+          setIsRawVillageDataAvailable('Not Available');
+        } else if (response.status === 200) {
+          const rawVillages = response.data.data;
+          const cols: {
+            header: string;
+            accessorKey: string;
+            cell?: any;
+            enableSorting?: boolean;
+          }[] = Object.keys(rawVillages[0]).map((item) => ({
+            header: item.toUpperCase(),
+            accessorKey: item,
+          }));
+          cols.push({
+            header: 'Action',
+            accessorKey: 'action',
+            enableSorting: false,
+            cell: (tableProps: any) => (
+              <button
+                type='button'
+                className='btn btn-error btn-sm rounded-full text-white'
+                onClick={() => mutate(tableProps?.row.original)}
+              >
+                Delete
+              </button>
+            ),
+          });
+          setIsRawVillageDataAvailable('Available');
+          return { rawVillages, cols };
+        }
       }
+    } catch (error) {
+      setIsRawVillageDataAvailable('Not Available');
     }
     return { rawVillages: [], cols: [] };
   }
