@@ -14,6 +14,12 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import { GoArrowDown, GoArrowUp, GoArrowSwitch } from 'react-icons/go';
+import {
+  MdOutlineFirstPage,
+  MdOutlineLastPage,
+  MdOutlineNavigateBefore,
+  MdOutlineNavigateNext,
+} from 'react-icons/md';
 
 interface TableProps {
   data: object[];
@@ -46,7 +52,31 @@ export default function TanstackReactTable({
     onGlobalFilterChange: setFiltering,
   });
   return (
-    <div className='mx-auto my-5 flex max-w-[80%] flex-col'>
+    <div className='mx-auto my-5 flex max-w-[80%] flex-col py-1.5'>
+      {/* <div>
+        Item per page{' '}
+        <select
+          value={table.getState().pagination.pageSize}
+          onChange={(e) => {
+            table.setPageSize(Number(e.target.value));
+          }}
+        >
+          {[10, 25, 50, 100].map((pageSize) => (
+            <option key={pageSize} value={pageSize}>
+              {pageSize}
+            </option>
+          ))}
+        </select>{' '}
+        {table.getState().pagination.pageIndex *
+          table.getRowModel().rows.length +
+          1}
+        -
+        {table.getState().pagination.pageIndex *
+          table.getRowModel().rows.length +
+          table.getRowModel().rows.length}{' '}
+        of {table.getFilteredRowModel().rows.length} items
+      </div> */}
+
       {enableSearch && (
         <div className='relative max-w-xs self-end'>
           <input
@@ -74,59 +104,61 @@ export default function TanstackReactTable({
           </div>
         </div>
       )}
-      <table className='table'>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  onClick={header.column.getToggleSortingHandler()}
-                  className=''
-                >
-                  <span className='flex cursor-pointer select-none items-center gap-1 text-base text-black/70'>
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {
+      <div className='custom-scrollbar m-5 overflow-x-auto'>
+        <table className='table'>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
+                    className=''
+                  >
+                    <span className='flex cursor-pointer select-none items-center gap-1 text-base text-black/70'>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                       {
-                        asc: <GoArrowUp />,
-                        desc: <GoArrowDown />,
-                        false: (
-                          <GoArrowSwitch
-                            style={{ transform: 'rotate(90deg)' }}
-                          />
-                        ),
-                      }[(header.column.getIsSorted() as string) ?? null]
-                    }
-                  </span>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                        {
+                          asc: <GoArrowUp />,
+                          desc: <GoArrowDown />,
+                          false: (
+                            <GoArrowSwitch
+                              style={{ transform: 'rotate(90deg)' }}
+                            />
+                          ),
+                        }[(header.column.getIsSorted() as string) ?? null]
+                      }
+                    </span>
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className='hover:bg-gray-100'>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {showPagination && (
-        <div className='flex w-full items-center justify-between'>
-          <p className=''>{`Showing ${
-            table.getState().pagination.pageIndex + 1
-          } to ${table.getState().pagination.pageSize} of ${
+        <div className='mt-3 flex w-full items-center justify-between'>
+          <p className=''>{`Total ${
             table.getFilteredRowModel().rows.length
           } Entries`}</p>
+          {/* <div>{table.getRowModel().rows.length} Rows</div> */}
           <select
             value={table.getState().pagination.pageSize}
+            className='hidden md:inline-block'
             onChange={(e) => {
               table.setPageSize(Number(e.target.value));
             }}
@@ -137,32 +169,34 @@ export default function TanstackReactTable({
               </option>
             ))}
           </select>
-          <div className='join self-end'>
+          <div className='join self-end text-sm'>
             <button
               onClick={() => table.setPageIndex(0)}
-              className='btn btn-outline join-item max-h-10 min-h-0 border-rose-600 hover:border-rose-600 hover:bg-rose-600'
+              className='btn btn-outline join-item max-h-8 min-h-0 border-rose-600 px-2 hover:border-rose-600 hover:bg-rose-600'
             >
-              First Page
+              <MdOutlineFirstPage size={20} />
             </button>
             <button
               disabled={!table.getCanPreviousPage()}
               onClick={() => table.previousPage()}
-              className='btn btn-outline join-item max-h-10 min-h-0 border-rose-600 hover:border-rose-600 hover:bg-rose-600'
+              className='btn btn-outline join-item max-h-8 min-h-0 gap-0 border-rose-600 px-2 hover:border-rose-600 hover:bg-rose-600'
             >
-              Prev Page
+              <MdOutlineNavigateBefore size={20} />
+              Prev
             </button>
             <button
               disabled={!table.getCanNextPage()}
               onClick={() => table.nextPage()}
-              className='btn btn-outline join-item max-h-10 min-h-0 border-rose-600 hover:border-rose-600 hover:bg-rose-600'
+              className='btn btn-outline join-item max-h-8 min-h-0 gap-0 border-rose-600 px-2  hover:border-rose-600 hover:bg-rose-600'
             >
-              Next Page
+              Next
+              <MdOutlineNavigateNext size={20} />
             </button>
             <button
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              className='btn btn-outline join-item max-h-10 min-h-0 border-rose-600 hover:border-rose-600 hover:bg-rose-600'
+              className='btn btn-outline join-item max-h-8 min-h-0 border-rose-600 px-2 hover:border-rose-600 hover:bg-rose-600'
             >
-              Last Page
+              <MdOutlineLastPage size={20} />
             </button>
           </div>
         </div>

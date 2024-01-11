@@ -1,10 +1,10 @@
 {
-  "name": "nextjs-starter",
+  "name": "rezy-admin-dashboard",
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@8.12.1",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -16,6 +16,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.17.9",
     "@tanstack/react-table": "^8.11.3",
+    "ace-builds": "^1.32.3",
     "axios": "^1.6.2",
     "date-fns": "^3.1.0",
     "leaflet": "^1.9.4",

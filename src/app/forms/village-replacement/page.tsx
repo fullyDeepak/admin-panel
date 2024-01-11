@@ -2,12 +2,32 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import Select, { SingleValue } from 'react-select';
 import CSVReader from 'react-csv-reader';
-import { useQuery } from '@tanstack/react-query';
+import {
+  QueryKey,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
 import axiosClient from '@/utils/AxiosClient';
 import Sheet from '@/components/tables/Sheet';
 import toast, { Toaster } from 'react-hot-toast';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
+
+interface DeleteVillageParams {
+  village_id: string;
+  raw_village_name: string;
+}
+
+interface RawVillageData {
+  rawVillages: DeleteVillageParams[];
+  cols: {
+    header: string;
+    accessorKey: string;
+    cell?: any;
+    enableSorting?: boolean;
+  }[];
+}
 
 export default function page() {
   const [rawCsvData, setRawCSVData] = useState<string[][]>();
@@ -15,6 +35,9 @@ export default function page() {
   const [cleanCsvFlag, setCleanCSVFlag] = useState<boolean>(false);
   const [previewCSV, setPreviewCSV] = useState<boolean>(false);
   const [validCSV, setValidCSV] = useState<boolean>(false);
+  const [isRawVillageDataAvailable, setIsRawVillageDataAvailable] = useState<
+    'Not Loaded' | 'Not Available' | 'Available'
+  >('Not Loaded');
   const [selectedState, setSelectedState] = useState<{
     label: string;
     value: number;
@@ -31,6 +54,9 @@ export default function page() {
     label: string;
     value: number;
   } | null>();
+
+  let loadingToastId: string;
+  const queryClient = useQueryClient();
 
   // populate state dropdown
   const {
@@ -64,6 +90,7 @@ export default function page() {
         console.log('fetching districts', selectedState);
         return fetchDropdownOption('districts', 'state', selectedState?.value);
       }
+      return [];
     },
     staleTime: Infinity,
   });
@@ -85,6 +112,7 @@ export default function page() {
           selectedDistrict?.value
         );
       }
+      return [];
     },
     staleTime: Infinity,
   });
@@ -102,26 +130,102 @@ export default function page() {
         console.log('fetching villages', selectedMandal);
         return fetchDropdownOption('villages', 'mandal', selectedMandal?.value);
       }
+      return [];
     },
     staleTime: Infinity,
   });
+  //   UseMutationResult<
+  //     unknown,
+  //     Error,
+  //     { village_id: string; raw_village_name: string }
+  //   >
 
-  async function fetchRawVillages() {
-    if (selectedVillage !== undefined && selectedVillage !== null) {
-      console.log('fetching raw villages', selectedVillage);
-      const response = await axiosClient.get(
-        '/forms/get_raw_villagereplacements',
+  async function deleteVillage(params: DeleteVillageParams) {
+    toast.loading(
+      `Deleting village ${params.raw_village_name} from database.`,
+      {
+        id: loadingToastId,
+      }
+    );
+    try {
+      const response = await axiosClient.delete(
+        '/forms/raw_villagereplacements',
         {
-          params: { village_id: selectedVillage.value },
+          params: {
+            village_id: params.village_id,
+            raw_village_name: params.raw_village_name,
+          },
         }
       );
-      const rawVillages = response.data.data;
-      const cols = Object.keys(rawVillages[0]).map((item) => ({
-        header: item.toUpperCase(),
-        accessorKey: item,
-      }));
-      return { rawVillages, cols };
+      if (response.status === 200) {
+        toast.dismiss(loadingToastId);
+        toast.success(`Deleted "${params.raw_village_name}" from database.`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
+        const prevRawVillages = queryClient.getQueryData<RawVillageData>([
+          'rawVillage',
+          selectedVillage,
+        ]);
+        const updatedRawVillages = prevRawVillages!.rawVillages.filter(
+          (village) => village !== params
+        );
+        queryClient.setQueryData<RawVillageData>(
+          ['rawVillage', selectedVillage],
+          {
+            ...prevRawVillages!,
+            rawVillages: updatedRawVillages,
+          }
+        );
+      } else if (response.status === 204) {
+        console.log('not found');
+      }
+    } catch (error) {
+      console.log(error);
     }
+  }
+
+  const { mutate } = useMutation({ mutationFn: deleteVillage });
+
+  async function fetchRawVillages() {
+    setIsRawVillageDataAvailable('Not Loaded');
+    if (selectedVillage !== undefined && selectedVillage !== null) {
+      console.log('fetching raw villages', selectedVillage);
+      const response = await axiosClient.get('/forms/raw_villagereplacements', {
+        params: { village_id: selectedVillage.value },
+      });
+      if (response.status === 204) {
+        setIsRawVillageDataAvailable('Not Available');
+      } else if (response.status === 200) {
+        const rawVillages = response.data.data;
+        const cols: {
+          header: string;
+          accessorKey: string;
+          cell?: any;
+          enableSorting?: boolean;
+        }[] = Object.keys(rawVillages[0]).map((item) => ({
+          header: item.toUpperCase(),
+          accessorKey: item,
+        }));
+        cols.push({
+          header: 'Action',
+          accessorKey: 'action',
+          enableSorting: false,
+          cell: (tableProps: any) => (
+            <button
+              type='button'
+              className='btn btn-error btn-sm rounded-full text-white'
+              onClick={() => mutate(tableProps?.row.original)}
+            >
+              Delete
+            </button>
+          ),
+        });
+        setIsRawVillageDataAvailable('Available');
+        return { rawVillages, cols };
+      }
+    }
+    return { rawVillages: [], cols: [] };
   }
 
   const {
@@ -133,6 +237,7 @@ export default function page() {
   } = useQuery({
     queryKey: ['rawVillage', selectedVillage],
     queryFn: async () => fetchRawVillages(),
+    staleTime: Infinity,
   });
 
   useEffect(() => {
@@ -141,6 +246,7 @@ export default function page() {
 
   useEffect(() => {
     setSelectedVillage(null);
+    setIsRawVillageDataAvailable('Not Loaded');
   }, [selectedMandal]);
 
   useEffect(() => {
@@ -154,7 +260,7 @@ export default function page() {
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const loadingToastId = toast.loading('Saving...');
+    loadingToastId = toast.loading('Saving...');
     try {
       const data = {
         raw_villages: cleanCsvData,
@@ -343,11 +449,25 @@ export default function page() {
         )}
       </form>
       <div>
-        {rawVillageData && (
-          <TanstackReactTable
-            data={rawVillageData.rawVillages}
-            columns={rawVillageData.cols}
-          />
+        {isRawVillageDataAvailable === 'Not Loaded' && (
+          <div className='mx-auto mt-5 text-center text-lg'>
+            Select village to preview available data
+          </div>
+        )}
+        {isRawVillageDataAvailable === 'Not Available' && (
+          <div className='mx-auto mt-5 text-center text-lg'>
+            No data available for selected village: {selectedVillage?.label}
+          </div>
+        )}
+        {isRawVillageDataAvailable === 'Available' && (
+          <div>
+            {rawVillageData !== undefined && (
+              <TanstackReactTable
+                data={rawVillageData.rawVillages}
+                columns={rawVillageData.cols}
+              />
+            )}
+          </div>
         )}
       </div>
     </div>
