@@ -303,14 +303,16 @@ export default function page() {
 
   return (
     <div className='mx-auto mt-10 flex w-[80%] flex-col'>
-      <h1 className='self-center text-3xl'>Form: Village Replacement</h1>
+      <h1 className='self-center text-2xl md:text-3xl'>
+        Form: Village Replacement
+      </h1>
       <Toaster />
       <form
-        className='mt-5 flex max-w-[80%] flex-col gap-3 self-center rounded p-10 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
+        className='mt-5 flex w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
         onSubmit={submitForm}
       >
         <label className='flex items-center justify-between gap-5 '>
-          <span className='flex-[2] text-xl'>State:</span>
+          <span className='flex-[2] text-base md:text-xl'>State:</span>
           <Select
             className='w-full flex-[5]'
             key={'state'}
@@ -331,7 +333,7 @@ export default function page() {
           />
         </label>
         <label className='flex items-center justify-between gap-5 '>
-          <span className='flex-[2] text-xl'>District:</span>
+          <span className='flex-[2] text-base md:text-xl'>District:</span>
           <Select
             className='w-full flex-[5]'
             key={'district'}
@@ -351,7 +353,7 @@ export default function page() {
           />
         </label>
         <label className='flex items-center justify-between gap-5 '>
-          <span className='flex-[2] text-xl'>Mandal:</span>
+          <span className='flex-[2] text-base md:text-xl'>Mandal:</span>
           <Select
             className='w-full flex-[5]'
             key={'mandal'}
@@ -371,7 +373,7 @@ export default function page() {
           />
         </label>
         <label className='flex items-center justify-between gap-5 '>
-          <span className='flex-[2] text-xl'>Village:</span>
+          <span className='flex-[2] text-base md:text-xl'>Village:</span>
           <Select
             className='w-full flex-[5]'
             key={'village'}
@@ -388,11 +390,11 @@ export default function page() {
           />
         </label>
         <label className='flex items-center justify-between gap-5 '>
-          <span className='flex-[2] text-xl'>Raw Village:</span>
+          <span className='flex-[2] text-base md:text-xl'>Raw Village:</span>
           <CSVReader
-            onFileLoaded={(data, fileInfo, originalFile) => {
-              // in csv files last rows in empty
-              setRawCSVData(data.slice(0, -1));
+            onFileLoaded={(data: string[][], fileInfo, originalFile) => {
+              const newData = data.filter((item) => item[0].trim() !== '');
+              setRawCSVData(newData);
               setPreviewCSV(true);
             }}
             cssInputClass='file-input file-input-bordered w-full'
@@ -455,7 +457,7 @@ export default function page() {
           </>
         )}
       </form>
-      <div>
+      <div className='my-10'>
         {isRawVillageDataAvailable === 'Not Loaded' && (
           <div className='mx-auto mt-5 text-center text-lg'>
             Select village to preview available data
