@@ -19,6 +19,7 @@
     "ace-builds": "^1.32.3",
     "axios": "^1.6.2",
     "date-fns": "^3.1.0",
+    "fast-xml-parser": "^4.3.3",
     "leaflet": "^1.9.4",
     "next": "14.0.4",
     "pg": "^8.11.3",

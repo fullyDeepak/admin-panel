@@ -4,7 +4,8 @@ import axiosClient from '@/utils/AxiosClient';
 import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { FormEvent, useEffect, useState } from 'react';
+import { XMLParser } from 'fast-xml-parser';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Select, { SingleValue } from 'react-select';
 const inputBoxClass =
@@ -41,6 +42,8 @@ export default function page() {
   const [responseData, setResponseData] = useState<object | undefined>(
     undefined
   );
+  const [xmlData, setXmlData] = useState<string | undefined>();
+  const [coordinates, setCoordinates] = useState<string | undefined>();
   let loadingToastId: string;
 
   // populate state dropdown
@@ -119,13 +122,55 @@ export default function page() {
     staleTime: Infinity,
   });
 
+  const extractKMLCoordinates = async (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const reader = new FileReader();
+    if (e.target && e.target.files && e.target.files[0]) {
+      reader.onload = async (e) => {
+        if (e.target) {
+          const text = e.target.result as string;
+          setXmlData(text);
+        }
+      };
+      reader.readAsText(e.target.files[0]);
+    }
+  };
+
+  function findValueByKey(
+    obj: { [key: string]: any },
+    targetKey: string
+  ): string | undefined {
+    for (const key in obj) {
+      if (key === targetKey) {
+        return obj[key];
+      }
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        const result = findValueByKey(obj[key], targetKey);
+        if (result !== undefined) {
+          return result;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  useEffect(() => {
+    if (xmlData) {
+      const parser = new XMLParser();
+      const xmlObj = parser.parse(xmlData);
+      const cord = findValueByKey(xmlObj, 'coordinates');
+      const newCoord = cord?.replaceAll(',0 ', ',').replaceAll(',0', '');
+      setCoordinates(newCoord);
+    }
+  }, [xmlData]);
+
   const submitForm = async (e: FormEvent<HTMLFormElement>) => {
-    // toast.dismiss(loadingToastId);
     toast.loading(`Saving to database.`, {
       id: loadingToastId,
     });
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    formData.delete('kmlFile');
     const data: { [key: string]: any } = {};
     try {
       for (const [key, value] of formData.entries()) {
@@ -139,10 +184,10 @@ export default function page() {
           data[key] = value;
         }
       }
+      console.log(data);
       if (!data.village_id) {
         throw new Error('Village_id missing');
       }
-      console.log(data);
       const response = await axiosClient.post(
         '/forms/projecttowertagging',
         data
@@ -350,9 +395,9 @@ export default function page() {
           <Select
             className='w-full flex-[5]'
             options={[
-              { label: 'Operational', value: '1' },
-              { label: 'Under Construction', value: 2 },
-              { label: 'Planned', value: 3 },
+              { label: 'Operational', value: 'operational' },
+              { label: 'Under Construction', value: 'under_construction' },
+              { label: 'Planned', value: 'planned' },
             ]}
             name='status'
           />
@@ -542,11 +587,23 @@ export default function page() {
           <input type='text' className={inputBoxClass} name='towers' />
         </label>
         <label className='flex flex-wrap items-center justify-between gap-5 '>
+          <span className='flex-[2] '>Upload KML File:</span>
+          <input
+            type='file'
+            name='kmlFile'
+            accept='.kml'
+            className='file-input input-bordered w-full flex-[5]'
+            onChange={(e) => extractKMLCoordinates(e)}
+          />
+        </label>
+        <label className='flex flex-wrap items-center justify-between gap-5 '>
           <span className='flex-[2] '>Towers Coordinates:</span>
           <input
             type='text'
             className={inputBoxClass}
             name='towerCoordinates'
+            value={coordinates}
+            onChange={(e) => setCoordinates(e.target.value)}
           />
         </label>
         <p className='text-xl font-semibold'>Tower Configuration:</p>
