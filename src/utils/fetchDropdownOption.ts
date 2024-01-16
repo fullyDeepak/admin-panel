@@ -1,6 +1,6 @@
 import axiosClient from './AxiosClient';
 
-type DropdownOptions = { label: string; value: number };
+export type DropdownOptions = { label: string; value: number };
 
 /**
  * Fetches dropdown options for forms based on the specified administrative level.
