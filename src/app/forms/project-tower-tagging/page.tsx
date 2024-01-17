@@ -8,6 +8,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Select, { SingleValue } from 'react-select';
+import YearPicker from '@/components/ui/YearPicker';
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
 
@@ -44,6 +45,8 @@ export default function page() {
   );
   const [xmlData, setXmlData] = useState<string | undefined>();
   const [coordinates, setCoordinates] = useState<string | undefined>();
+  const [year, setYear] = useState<number | undefined>(undefined);
+  const [yearArray, setYearArray] = useState(1950);
   let loadingToastId: string;
 
   // populate state dropdown
@@ -175,7 +178,7 @@ export default function page() {
     try {
       for (const [key, value] of formData.entries()) {
         if (key === 'yearCompleted' && value) {
-          data[key] = (value as string).split('-')[0];
+          data[key] = year || 0;
         } else if (
           key !== 'state_id' &&
           key !== 'district_id' &&
@@ -304,6 +307,16 @@ export default function page() {
               }>
             ) => setSelectedVillage(e)}
             isDisabled={Boolean(!selectedMandal)}
+          />
+        </label>
+        <label className='flex flex-wrap items-center justify-between gap-5 '>
+          <span className='flex-[2] '>Project Phase:</span>
+          <input
+            className={inputBoxClass}
+            name='projectPhase'
+            type='number'
+            defaultValue={1}
+            min={1}
           />
         </label>
         <label className='flex flex-wrap items-center justify-between gap-5 '>
@@ -498,14 +511,17 @@ export default function page() {
             name='floorPlan'
           />
         </label> */}
-        <label className='flex flex-wrap items-center justify-between gap-5 '>
+        <div className='flex flex-wrap items-center justify-between gap-5 '>
           <span className='flex-[2] '>Year Completed:</span>
-          <input
-            type='month'
-            className='file-input file-input-bordered file-input-md w-full flex-[5]'
-            name='yearCompleted'
+          <YearPicker
+            classNames={inputBoxClass}
+            year={year}
+            setYear={setYear}
+            yearArray={yearArray}
+            setYearArray={setYearArray}
+            inputName='yearCompleted'
           />
-        </label>
+        </div>
         <label className='flex flex-wrap items-center justify-between gap-5 '>
           <span className='flex-[2] '>Micromarket:</span>
           <input className={inputBoxClass} name='micromarket' />

@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@szhsin/react-menu':
+    specifier: ^4.1.0
+    version: 4.1.0(react-dom@18.2.0)(react@18.2.0)
   '@tanstack/react-query':
     specifier: ^5.17.9
     version: 5.17.9(react@18.2.0)
@@ -703,6 +706,18 @@ packages:
     resolution: {integrity: sha512-E4KcWTpoLHqwPHLxidpOqQbcrZVgi0rsmmZXUle1jXmJfuIf/UWpczUJ7MZZ5tlxytgJXyp0w4PGkkeLiuIdZw==}
     dependencies:
       tslib: 2.6.2
+    dev: false
+
+  /@szhsin/react-menu@4.1.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-lYYGUxqJxM2b/jD2Cn5a9RVOvHl9VBMX8qOnHZuX1w08cO2jslykpz5P75D7WnqudLnXsJ4k4+tI+q2U8XIFYw==}
+    peerDependencies:
+      react: '>=16.14.0'
+      react-dom: '>=16.14.0'
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-transition-state: 2.1.1(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
   /@tanstack/query-core@5.17.9:
@@ -3187,6 +3202,16 @@ packages:
       dom-helpers: 5.2.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /react-transition-state@2.1.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-kQx5g1FVu9knoz1T1WkapjUgFz08qQ/g1OmuWGi3/AoEFfS0kStxrPlZx81urjCXdz2d+1DqLpU6TyLW/Ro04Q==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
