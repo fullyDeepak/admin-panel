@@ -23,7 +23,7 @@ export default function TowerForm() {
     <div className='tower-card-container relative flex flex-col transition-all duration-1000'>
       {towerFormData.map((tower) => (
         <div
-          className=' tower-card relative mb-14 flex flex-col gap-3 rounded-2xl p-10 shadow-[0_0px_8px_rgb(255,113,133,0.6)]'
+          className='moveTransition tower-card relative mb-14 flex flex-col gap-3 rounded-2xl p-10 shadow-[0_0px_8px_rgb(255,113,133,0.6)]'
           key={tower.id}
         >
           <span className='text-center font-semibold'>Card id: {tower.id}</span>
@@ -127,14 +127,16 @@ export default function TowerForm() {
             className='btn btn-outline btn-sm border-none  bg-rose-500 text-white hover:border-none hover:bg-rose-600'
             onClick={() =>
               (
-                document.getElementById('config-dialog') as HTMLDialogElement
+                document.getElementById(
+                  `config-dialog-${tower.id}`
+                ) as HTMLDialogElement
               ).showModal()
             }
             type='button'
           >
             Add ETL Unit tag configurations
           </button>
-          <dialog id='config-dialog' className='modal'>
+          <dialog id={`config-dialog-${tower.id}`} className='modal'>
             <div className='modal-box max-w-[60%]'>
               <button
                 className='btn btn-circle btn-ghost btn-sm absolute right-2 top-2'
@@ -142,7 +144,7 @@ export default function TowerForm() {
                 onClick={() =>
                   (
                     document.getElementById(
-                      'config-dialog'
+                      `config-dialog-${tower.id}`
                     ) as HTMLDialogElement
                   ).close()
                 }
@@ -200,13 +202,13 @@ export default function TowerForm() {
                     }
                     addEtlUnitConfig(
                       tower.id,
-                      configName,
+                      configName.toUpperCase(),
                       configMin,
                       configMax
                     );
                     (
                       document.getElementById(
-                        'config-dialog'
+                        `config-dialog-${tower.id}`
                       ) as HTMLDialogElement
                     ).close();
                     setConfigName('');
@@ -222,9 +224,25 @@ export default function TowerForm() {
               </button>
             </div>
           </dialog>
+          <div className='absolute -bottom-6 -left-5 z-10 w-full '>
+            <button
+              type='button'
+              className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400 '
+              onClick={() => {
+                const newData = {
+                  ...tower,
+                  id: Math.max(...towerFormData.map((data) => data.id)) + 1,
+                  towerName: '',
+                };
+                addNewTowerData(newData);
+              }}
+            >
+              <BiPlus size={30} /> <span>Duplicate</span>
+            </button>
+          </div>
         </div>
       ))}
-      <div className='absolute bottom-7 z-10 w-full '>
+      {/* <div className='absolute bottom-7 z-10 w-full '>
         <button
           type='button'
           className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400 '
@@ -233,13 +251,14 @@ export default function TowerForm() {
             const newData = {
               ...towerFormData[towerFormData.length - 1],
               id: Math.max(...towerFormData.map((data) => data.id)) + 1,
+              towerName: '',
             };
             addNewTowerData(newData);
           }}
         >
           <BiPlus size={30} /> <span>Duplicate</span>
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

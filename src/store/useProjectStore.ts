@@ -8,7 +8,6 @@ export interface ProjectTaggingType {
   }>;
   projectName: string;
   layoutName: string;
-  reraId: string;
   developer: string;
   developerGroup: string;
   projectType: SingleValue<{
@@ -21,10 +20,6 @@ export interface ProjectTaggingType {
         value: string;
       }[]
     | undefined;
-  towerType: SingleValue<{
-    label: string;
-    value: string;
-  }>;
   projectSubTypeOptions:
     | {
         label: string;
@@ -35,18 +30,11 @@ export interface ProjectTaggingType {
     label: string;
     value: string;
   }>;
-  status: SingleValue<{
-    label: string;
-    value: string;
-  }>;
-  preRera: string;
-  projectBrief: string;
+  projectDesc: string;
   numberOfUnits: number;
   projectSize_builtUp: number;
   avgFloorplate: number;
   avgFloorHeight: number;
-  yearCompleted: number;
-  micromarket: string;
   landArea: number;
   amenitiesTags: string[];
   surveyEqual: string;
@@ -71,7 +59,6 @@ export const useProjectStore = create<FormState>((set) => ({
     },
     projectName: '',
     layoutName: '',
-    reraId: '',
     developer: '',
     developerGroup: '',
     projectType: {
@@ -80,26 +67,15 @@ export const useProjectStore = create<FormState>((set) => ({
     },
     towerTypeOptions: undefined,
     projectSubTypeOptions: undefined,
-    towerType: {
-      label: '',
-      value: '',
-    },
     projectSubType: {
       label: '',
       value: '',
     },
-    status: {
-      label: '',
-      value: '',
-    },
-    preRera: '',
-    projectBrief: '',
+    projectDesc: '',
     numberOfUnits: 0,
     projectSize_builtUp: 0,
     avgFloorplate: 0,
     avgFloorHeight: 0,
-    yearCompleted: 0,
-    micromarket: '',
     landArea: 0,
     amenitiesTags: [],
     surveyEqual: '',

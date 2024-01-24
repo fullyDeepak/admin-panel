@@ -1,10 +1,8 @@
-import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
 import { useQuery } from '@tanstack/react-query';
 import { XMLParser } from 'fast-xml-parser';
 import Select, { SingleValue } from 'react-select';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useProjectStore } from '@/store/useProjectStore';
-import YearPicker from '@/components/ui/YearPicker';
 import ChipInput from './Chip';
 import ETLTagData from './ETLTagData';
 import axiosClient from '@/utils/AxiosClient';
@@ -105,7 +103,7 @@ export default function ProjectForm() {
     <>
       <h3 className='my-4 text-2xl font-semibold'>Section: Project Details</h3>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Village:</span>
+        <span className='flex-[2] '>DMV:</span>
         <Select
           className='w-full flex-[5]'
           name='village_id'
@@ -288,8 +286,14 @@ export default function ProjectForm() {
         />
       </div> */}
       <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Project Brief:</span>
-        <input type='text' className={inputBoxClass} name='projectBrief' />
+        <span className='flex-[2] '>Project Description:</span>
+        <input
+          type='text'
+          className={inputBoxClass}
+          name='projectDesc'
+          defaultValue={projectFormData.projectDesc}
+          onChange={handleChange}
+        />
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         {/* should be input chips */}

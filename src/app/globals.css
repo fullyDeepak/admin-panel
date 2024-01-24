@@ -43,3 +43,19 @@ input[type='number'] {
 .szh-menu__item {
   padding: 0 !important;
 }
+
+.moveTransition {
+  animation: fade 1s ease forwards;
+  /* animation: fadein 2s; */
+}
+
+@keyframes fade {
+  from {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}

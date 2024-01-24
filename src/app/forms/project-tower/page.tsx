@@ -92,10 +92,10 @@ export default function page() {
           </li>
         </ul>
         {formsStep[formCount]}
-        <div className='flex w-full items-center justify-center gap-40 '>
+        <div className='mx-auto flex w-full items-center justify-center gap-10 md:w-[80%] md:gap-40 '>
           <button
             type='button'
-            className='btn btn-info w-40 text-white'
+            className='btn btn-info btn-sm w-32 text-white md:btn-md'
             disabled={formCount === 0}
             onClick={() => setFormCount((prev) => prev - 1)}
           >
@@ -104,7 +104,7 @@ export default function page() {
           {formsStep.length - 1 !== formCount && (
             <button
               type='button'
-              className='btn btn-info w-40 text-white'
+              className='btn btn-info btn-sm w-32 text-white md:btn-md'
               onClick={() => setFormCount((prev) => prev + 1)}
             >
               Next
@@ -113,7 +113,7 @@ export default function page() {
           {formsStep.length - 1 === formCount && (
             <button
               type='button'
-              className='btn w-40 border-none bg-rose-500 text-white hover:bg-red-600'
+              className='btn btn-sm w-32 border-none bg-rose-500 text-white md:btn-md hover:bg-red-600'
               onClick={() => alert('From Submitted.')}
             >
               Submit
