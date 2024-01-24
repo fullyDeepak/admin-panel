@@ -26,9 +26,15 @@ export default function page() {
         </Link>
         <Link
           href={'/forms/project-tower-tagging'}
-          className='link-hover btn link flex items-center active:btn-success hover:text-black'
+          className='link-hover btn link flex items-center line-through decoration-2 active:btn-success hover:text-black'
         >
           Project Tower Tagging
+        </Link>
+        <Link
+          href={'/forms/project-tower'}
+          className='link-hover btn link flex items-center active:btn-success hover:text-black'
+        >
+          Project Tower Tagging New
         </Link>
       </div>
     </div>
