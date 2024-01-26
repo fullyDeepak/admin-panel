@@ -10,7 +10,6 @@ export default function PreviewProjectTower() {
   delete newProjectFormData.projectSubTypeOptions;
   newProjectFormData.village_id = newProjectFormData.village_id?.value;
   newProjectFormData.projectType = newProjectFormData.projectType?.value;
-  newProjectFormData.projectType = newProjectFormData.projectType?.value;
   newProjectFormData.projectSubType = newProjectFormData.projectSubType?.value;
 
   let newTowerFormData: any;
