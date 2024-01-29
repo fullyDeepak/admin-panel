@@ -84,7 +84,9 @@ export default function ProjectForm() {
       const parser = new XMLParser();
       const xmlObj = parser.parse(xmlData);
       const cord = findValueByKey(xmlObj, 'coordinates');
-      const newCoord = cord?.replaceAll(',0 ', ',').replaceAll(',0', '');
+      const newCoord = cord
+        ?.split(',0 ')
+        .map((ele) => ele.replace(',', ' ').replace(',0', ''));
       updateProjectFormData({ projectCoordinates: newCoord });
     }
   }, [xmlData]);
@@ -268,7 +270,7 @@ export default function ProjectForm() {
           name='projectCoordinates'
           value={projectFormData.projectCoordinates}
           onChange={(e) =>
-            updateProjectFormData({ projectCoordinates: e.target.value })
+            updateProjectFormData({ projectCoordinates: [e.target.value] })
           }
         />
       </label>

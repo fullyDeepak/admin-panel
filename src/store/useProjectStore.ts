@@ -42,7 +42,7 @@ export interface ProjectTaggingType {
   plotEqual: string[];
   apartmentContains: string;
   counterpartyContains: string;
-  projectCoordinates: string;
+  projectCoordinates: string[];
 }
 
 interface FormState {
@@ -83,7 +83,7 @@ export const useProjectStore = create<FormState>((set) => ({
     plotEqual: [],
     apartmentContains: '',
     counterpartyContains: '',
-    projectCoordinates: '',
+    projectCoordinates: [],
   },
 
   // Update functions
