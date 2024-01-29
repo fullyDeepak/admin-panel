@@ -37,12 +37,12 @@ export interface ProjectTaggingType {
   avgFloorHeight: number;
   landArea: number;
   amenitiesTags: string[];
-  surveyEqual: string;
-  surveyContains: string;
-  plotEqual: string;
+  surveyEqual: string[];
+  surveyContains: string[];
+  plotEqual: string[];
   apartmentContains: string;
   counterpartyContains: string;
-  towerCoordinates: string;
+  projectCoordinates: string;
 }
 
 interface FormState {
@@ -78,12 +78,12 @@ export const useProjectStore = create<FormState>((set) => ({
     avgFloorHeight: 0,
     landArea: 0,
     amenitiesTags: [],
-    surveyEqual: '',
-    surveyContains: '',
-    plotEqual: '',
+    surveyEqual: [],
+    surveyContains: [],
+    plotEqual: [],
     apartmentContains: '',
     counterpartyContains: '',
-    towerCoordinates: '',
+    projectCoordinates: '',
   },
 
   // Update functions

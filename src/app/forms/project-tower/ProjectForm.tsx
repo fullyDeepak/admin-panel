@@ -16,13 +16,8 @@ export default function ProjectForm() {
     label: string;
     value: number;
   } | null>();
-  const [selectedProjectType, setSelectedProjectType] = useState<{
-    label: string;
-    value: string;
-  } | null>();
 
   const [xmlData, setXmlData] = useState<string | undefined>();
-  const [yearArray, setYearArray] = useState(1950);
 
   // populate village dropdown
   const { isPending: loadingVillages, data: villageOptions } = useQuery({
@@ -90,7 +85,7 @@ export default function ProjectForm() {
       const xmlObj = parser.parse(xmlData);
       const cord = findValueByKey(xmlObj, 'coordinates');
       const newCoord = cord?.replaceAll(',0 ', ',').replaceAll(',0', '');
-      updateProjectFormData({ towerCoordinates: newCoord });
+      updateProjectFormData({ projectCoordinates: newCoord });
     }
   }, [xmlData]);
 
@@ -177,7 +172,7 @@ export default function ProjectForm() {
               value: string;
             }>
           ) => {
-            setSelectedProjectType(e);
+            updateProjectFormData({ projectType: e });
             if (e?.value === 'residential') {
               updateProjectFormData({
                 towerTypeOptions: [
@@ -217,25 +212,11 @@ export default function ProjectForm() {
                 towerTypeOptions: undefined,
               });
             }
-            updateProjectFormData({
-              projectType: e,
-            });
+            updateProjectFormData({ projectType: e });
           }}
           name='projectType'
         />
       </label>
-      {/* <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Project Sub-Type 1:</span>
-        <Select
-          className='w-full flex-[5]'
-          name='projectSubType1'
-          options={projectFormData.projectSubType1_Options}
-          defaultValue={projectFormData.projectSubType1}
-          onChange={(e: SingleValue<{ label: string; value: string }>) =>
-            updateProjectFormData({ projectSubType1: e })
-          }
-        />
-      </label> */}
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Project Sub-Type:</span>
         <Select
@@ -251,40 +232,6 @@ export default function ProjectForm() {
           ) => updateProjectFormData({ projectSubType: e })}
         />
       </label>
-      {/* show only on edit */}
-      {/* <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Overall Status:</span>
-        <Select
-          className='w-full flex-[5]'
-          defaultValue={projectFormData.status}
-          options={[
-            { label: 'Operational', value: 'operational' },
-            { label: 'Under Construction', value: 'under_construction' },
-            { label: 'Planned', value: 'planned' },
-          ]}
-          onChange={(
-            e: SingleValue<{
-              label: string;
-              value: string;
-            }>
-          ) => {
-            updateProjectFormData({ status: e });
-          }}
-          name='status'
-        />
-      </label> */}
-      {/* only on edit, [overall status===compl] */}
-      {/* <div className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Year Completed:</span>
-        <YearPicker
-          classNames={inputBoxClass}
-          year={projectFormData.yearCompleted}
-          setYear={updateProjectFormData}
-          yearArray={yearArray}
-          setYearArray={setYearArray}
-          inputName='yearCompleted'
-        />
-      </div> */}
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Project Description:</span>
         <input
@@ -296,9 +243,7 @@ export default function ProjectForm() {
         />
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
-        {/* should be input chips */}
         <span className='flex-[2] '>Amenities Tags:</span>
-
         <ChipInput
           chips={projectFormData.amenitiesTags}
           updateFormData={updateProjectFormData}
@@ -316,93 +261,18 @@ export default function ProjectForm() {
         />
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Towers Coordinates:</span>
+        <span className='flex-[2] '>Project Coordinates:</span>
         <input
           type='text'
           className={inputBoxClass}
-          name='towerCoordinates'
-          value={projectFormData.towerCoordinates}
+          name='projectCoordinates'
+          value={projectFormData.projectCoordinates}
           onChange={(e) =>
-            updateProjectFormData({ towerCoordinates: e.target.value })
+            updateProjectFormData({ projectCoordinates: e.target.value })
           }
         />
       </label>
       <ETLTagData />
-      {/* only on edit */}
-      {/* <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Number of Units:</span>
-        <input
-          type='number'
-          min='0'
-          step='any'
-          defaultValue={projectFormData.numberOfUnits}
-          autoComplete='off'
-          className={inputBoxClass}
-          name='numberOfUnits'
-          onChange={handleChange}
-        />
-      </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Project Size(Built-up):</span>
-        <input
-          type='number'
-          min='0'
-          step='any'
-          defaultValue={projectFormData.projectSize_builtUp}
-          autoComplete='off'
-          className={inputBoxClass}
-          name='projectSize_builtUp'
-          onChange={handleChange}
-        />
-      </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Avg. Floorplate(In sqft.):</span>
-        <input
-          type='number'
-          min='0'
-          step='any'
-          defaultValue={projectFormData.avgFloorplate}
-          autoComplete='off'
-          className={inputBoxClass}
-          name='avgFloorplate'
-          onChange={handleChange}
-        />
-      </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Avg. Floor Height:</span>
-        <input
-          type='number'
-          min='0'
-          step='any'
-          defaultValue={projectFormData.avgFloorHeight}
-          autoComplete='off'
-          className={inputBoxClass}
-          name='avgFloorHeight'
-          onChange={handleChange}
-        />
-      </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Micromarket:</span>
-        <input
-          className={inputBoxClass}
-          name='micromarket'
-          defaultValue={projectFormData.micromarket}
-          onChange={handleChange}
-        />
-      </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Land Area(In acres):</span>
-        <input
-          type='number'
-          min='0'
-          step='any'
-          defaultValue={projectFormData.landArea}
-          autoComplete='off'
-          className={inputBoxClass}
-          name='landArea'
-          onChange={handleChange}
-        />
-      </label> */}
     </>
   );
 }

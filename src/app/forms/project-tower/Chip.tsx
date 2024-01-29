@@ -10,14 +10,15 @@ const ChipInput = ({ chips, updateFormData, updateKey }: ChipInputProps) => {
   const [inputValue, setInputValue] = useState('');
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
+    setInputValue(e.target.value.replace(',', ''));
   };
 
   const handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (
-      e.key === 'Enter' &&
-      inputValue.trim() !== '' &&
-      !chips.includes(inputValue.trim())
+      e.key === 'Enter' ||
+      (e.key === ',' &&
+        inputValue.trim() !== '' &&
+        !chips.includes(inputValue.trim()))
     ) {
       updateFormData({
         [updateKey]: [...chips, inputValue.trim()],
@@ -51,7 +52,7 @@ const ChipInput = ({ chips, updateFormData, updateKey }: ChipInputProps) => {
         value={inputValue}
         onChange={handleInputChange}
         onKeyDown={handleInputKeyDown}
-        placeholder={'Enter tags and hit Enter'}
+        placeholder={'Hit Enter or Comma for chip'}
       />
     </div>
   );

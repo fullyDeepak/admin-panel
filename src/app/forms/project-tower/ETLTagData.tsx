@@ -1,6 +1,7 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { useProjectStore } from '@/store/useProjectStore';
 import React from 'react';
+import ChipInput from './Chip';
 
 export default function ETLTagData() {
   const { projectFormData, updateProjectFormData } = useProjectStore();
@@ -13,32 +14,26 @@ export default function ETLTagData() {
       <h3 className='my-4 text-2xl font-semibold'>Section: ETL Tag Data</h3>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Survey Equals:</span>
-        <input
-          type='text'
-          className={inputBoxClass}
-          name='surveyEqual'
-          defaultValue={projectFormData.surveyEqual}
-          onChange={handleChange}
+        <ChipInput
+          chips={projectFormData.surveyEqual}
+          updateFormData={updateProjectFormData}
+          updateKey='surveyEqual'
         />
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Survey Contains:</span>
-        <input
-          type='text'
-          className={inputBoxClass}
-          name='surveyContains'
-          defaultValue={projectFormData.surveyContains}
-          onChange={handleChange}
+        <ChipInput
+          chips={projectFormData.surveyContains}
+          updateFormData={updateProjectFormData}
+          updateKey='surveyContains'
         />
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Plot Equals:</span>
-        <input
-          type='text'
-          className={inputBoxClass}
-          name='plotEqual'
-          defaultValue={projectFormData.plotEqual}
-          onChange={handleChange}
+        <ChipInput
+          chips={projectFormData.plotEqual}
+          updateFormData={updateProjectFormData}
+          updateKey='plotEqual'
         />
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
