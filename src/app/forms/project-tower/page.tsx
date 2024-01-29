@@ -7,13 +7,16 @@ import toast, { Toaster } from 'react-hot-toast';
 import ProjectForm from './ProjectForm';
 import TowerForm from './TowerForm';
 import PreviewProjectTower from './PreviewProjectTower';
+import { useProjectStore } from '@/store/useProjectStore';
+import { useTowerStore } from '@/store/useTowerStore';
 
 export default function page() {
   const [responseData, setResponseData] = useState<object | undefined>(
     undefined
   );
-  const [year, setYear] = useState<number | undefined>(undefined);
   const [formCount, setFormCount] = useState<number>(0);
+  const { projectFormData } = useProjectStore();
+  const { towerFormData } = useTowerStore();
   let loadingToastId: string;
   const formsStep: ReactElement[] = [
     <ProjectForm key={1} />,
@@ -26,45 +29,72 @@ export default function page() {
       id: loadingToastId,
     });
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    formData.delete('kmlFile');
-    const data: { [key: string]: any } = {};
+    let newProjectFormData: any;
+    newProjectFormData = { ...projectFormData };
+    delete newProjectFormData.towerTypeOptions;
+    delete newProjectFormData.projectSubTypeOptions;
+    newProjectFormData.village_id = newProjectFormData.village_id?.value;
+    newProjectFormData.projectType = newProjectFormData.projectType?.value;
+    newProjectFormData.projectSubType =
+      newProjectFormData.projectSubType?.value;
+    let newTowerFormData: any;
+    newTowerFormData = towerFormData.map((item) => ({
+      ...item,
+      towerType: item.towerType?.value,
+    }));
     try {
-      for (const [key, value] of formData.entries()) {
-        if (key === 'yearCompleted' && value) {
-          data[key] = year || 0;
-        } else if (
-          key !== 'state_id' &&
-          key !== 'district_id' &&
-          key !== 'mandal_id'
-        ) {
-          data[key] = value;
-        }
+      if (!newProjectFormData.projectName) {
+        toast.dismiss(loadingToastId);
+        toast.error(`Project name is missing.`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
+        return null;
       }
-      console.log(data);
-      if (!data.village_id) {
-        throw new Error('Village_id missing');
-      }
-      const response = await axiosClient.post(
-        '/forms/projecttowertagging',
-        data
+      const projectRes = await axiosClient.post(
+        '/forms/projectTag',
+        newProjectFormData
       );
-      toast.dismiss(loadingToastId);
-      toast.success(`Data Saved to database.`, {
-        id: loadingToastId,
-        duration: 3000,
-      });
-      setResponseData(response.data);
-    } catch (error) {
-      toast.dismiss(loadingToastId);
-      toast.error(`Something went wrong!!!`, {
-        id: loadingToastId,
-        duration: 3000,
-      });
-      if (axios.isAxiosError(error)) {
-        setResponseData(error.response?.data as {});
+      if (projectRes.status !== 200) {
+        toast.dismiss(loadingToastId);
+        toast.error(`Couldn't get the Project ID.`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
+        return null;
       } else {
-        setResponseData(error as {});
+        toast.dismiss(loadingToastId);
+        toast.success(`Project added to database.`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
+      }
+      const projectID = projectRes.data.data[0].id;
+      const towerData = {
+        projectId: projectID,
+        towerData: newTowerFormData,
+      };
+      const towerRes = await axiosClient.post('/forms/towerTag', towerData);
+      if (towerRes.status === 200) {
+        toast.dismiss(loadingToastId);
+        toast.success(`Towers details added to database.`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      if (
+        axios.isAxiosError(error) &&
+        error.response?.status &&
+        error.response?.status >= 400
+      ) {
+        toast.error(
+          `Error: ${error?.response?.data?.message ? error?.response?.data?.message : error?.response?.data?.error}`,
+          {
+            id: loadingToastId,
+            duration: 3000,
+          }
+        );
       }
     }
   };
@@ -111,11 +141,7 @@ export default function page() {
             </button>
           )}
           {formsStep.length - 1 === formCount && (
-            <button
-              type='button'
-              className='btn btn-sm w-32 border-none bg-rose-500 text-white md:btn-md hover:bg-red-600'
-              onClick={() => alert('From Submitted.')}
-            >
+            <button className='btn btn-sm w-32 border-none bg-rose-500 text-white md:btn-md hover:bg-red-600'>
               Submit
             </button>
           )}

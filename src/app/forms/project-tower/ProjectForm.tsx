@@ -269,9 +269,7 @@ export default function ProjectForm() {
           className={inputBoxClass}
           name='projectCoordinates'
           value={projectFormData.projectCoordinates}
-          onChange={(e) =>
-            updateProjectFormData({ projectCoordinates: [e.target.value] })
-          }
+          onChange={(e) => {}}
         />
       </label>
       <ETLTagData />
