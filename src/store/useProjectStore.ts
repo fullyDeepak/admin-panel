@@ -31,11 +31,6 @@ export interface ProjectTaggingType {
     value: string;
   }>;
   projectDesc: string;
-  numberOfUnits: number;
-  projectSize_builtUp: number;
-  avgFloorplate: number;
-  avgFloorHeight: number;
-  landArea: number;
   amenitiesTags: string[];
   surveyEqual: string[];
   surveyContains: string[];
@@ -72,11 +67,6 @@ export const useProjectStore = create<FormState>((set) => ({
       value: '',
     },
     projectDesc: '',
-    numberOfUnits: 0,
-    projectSize_builtUp: 0,
-    avgFloorplate: 0,
-    avgFloorHeight: 0,
-    landArea: 0,
     amenitiesTags: [],
     surveyEqual: [],
     surveyContains: [],

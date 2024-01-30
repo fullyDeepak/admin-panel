@@ -1,35 +1,140 @@
-import { useProjectStore } from '@/store/useProjectStore';
-import { useTowerStore } from '@/store/useTowerStore';
+import TanstackReactTable from '@/components/tables/TanstackReactTable';
 
-export default function PreviewProjectTower() {
-  const { projectFormData } = useProjectStore();
-  const { towerFormData } = useTowerStore();
-  let newProjectFormData: any;
-  newProjectFormData = { ...projectFormData };
-  delete newProjectFormData.towerTypeOptions;
-  delete newProjectFormData.projectSubTypeOptions;
-  newProjectFormData.village_id = newProjectFormData.village_id?.value;
-  newProjectFormData.projectType = newProjectFormData.projectType?.value;
-  newProjectFormData.projectSubType = newProjectFormData.projectSubType?.value;
+type PreviewProjectTowerProps = {
+  projectFormData: {
+    village_id: number;
+    projectName: string;
+    layoutName: string;
+    developer: string;
+    developerGroup: string;
+    projectType: string;
+    projectSubType: string;
+    projectDesc: string;
+    numberOfUnits: number;
+    projectSize_builtUp: number;
+    avgFloorplate: number;
+    avgFloorHeight: number;
+    landArea: number;
+    amenitiesTags: string[];
+    surveyEqual: string[];
+    surveyContains: string[];
+    plotEqual: string[];
+    apartmentContains: string;
+    counterpartyContains: string;
+    projectCoordinates: string[];
+  };
+  towerFormData: {
+    id: number;
+    projectPhase: number;
+    reraId: string;
+    towerType: string;
+    towerName: string;
+    etlUnitConfigs: { configName: string; minArea: number; maxArea: number }[];
+  }[];
+};
 
-  let newTowerFormData: any;
-  newTowerFormData = towerFormData.map((item) => ({
-    ...item,
-    towerType: item.towerType?.value,
-  }));
+const camelToFlat = (c: string) => (
+  (c = c.replace(/[A-Z]/g, ' $&')), c[0].toUpperCase() + c.slice(1)
+);
+
+export default function PreviewProjectTower({
+  projectFormData,
+  towerFormData,
+}: PreviewProjectTowerProps) {
+  const towerColumns = [
+    {
+      header: 'Id',
+      accessorKey: 'id',
+    },
+    {
+      header: 'Project Phase',
+      accessorKey: 'projectPhase',
+    },
+    {
+      header: 'Rera Id',
+      accessorKey: 'reraId',
+    },
+    {
+      header: 'Tower Type',
+      accessorKey: 'towerType',
+    },
+    {
+      header: 'Tower Name',
+      accessorKey: 'towerName',
+    },
+  ];
+  const etlColumns = [
+    {
+      header: 'Id',
+      accessorKey: 'id',
+    },
+    {
+      header: 'Config Name',
+      accessorKey: 'configName',
+    },
+    {
+      header: 'Min Area',
+      accessorKey: 'minArea',
+    },
+    {
+      header: 'Max Area',
+      accessorKey: 'maxArea',
+    },
+  ];
+  let etlUnitConfigs: {
+    id: number;
+    configName: string;
+    minArea: number;
+    maxArea: number;
+  }[] = [];
+  towerFormData.map((item) =>
+    item.etlUnitConfigs.map((etl) =>
+      etlUnitConfigs.push({ ...etl, id: item.id })
+    )
+  );
+  console.log(etlUnitConfigs);
   return (
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-5'>
         <p className='text-center text-3xl font-semibold'>Project Data</p>
-        <textarea className='h-80 w-full bg-slate-100 p-5 font-mono'>
-          {JSON.stringify(newProjectFormData)}
-        </textarea>
+
+        <div className='flex flex-col rounded-lg border-4 p-3 '>
+          <div className='mb-3 flex items-center justify-between gap-5 border-b-2 bg-slate-100'>
+            <span className='flex-[4] p-2 font-semibold'>Field Name</span>
+            <span className='flex-[5] font-semibold '>Value</span>
+          </div>
+          {Object.entries(projectFormData).map(([key, value]) => (
+            <div
+              className='flex justify-end gap-5 border-b-2 p-3  hover:bg-slate-50'
+              key={key}
+            >
+              <span className='flex-[1] self-center border-r-2 font-semibold'>
+                {camelToFlat(key)}
+              </span>
+              <span className='flex-[1] '>{value}</span>
+            </div>
+          ))}
+        </div>
       </div>
       <div className='flex flex-col gap-5'>
         <p className='text-center text-3xl font-semibold'>Tower Data</p>
-        <textarea className='h-80 w-full bg-slate-100 p-5 font-mono'>
-          {JSON.stringify(newTowerFormData)}
-        </textarea>
+        <TanstackReactTable
+          columns={towerColumns}
+          data={towerFormData}
+          enableSearch={false}
+          showPagination={false}
+        />
+      </div>
+      <div className='flex flex-col gap-5'>
+        <p className='text-center text-3xl font-semibold'>
+          ETL Unit Config Data
+        </p>
+        <TanstackReactTable
+          columns={etlColumns}
+          data={etlUnitConfigs}
+          enableSearch={false}
+          showPagination={false}
+        />
       </div>
     </div>
   );

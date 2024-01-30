@@ -170,7 +170,7 @@ export default function TowerForm() {
                     type='number'
                     className={inputBoxClass}
                     name='configMin'
-                    value={configMin}
+                    value={configMin ? configMin : ''}
                     onChange={(e) => setConfigMin(+e.target.value)}
                   />
                 </label>
@@ -180,7 +180,7 @@ export default function TowerForm() {
                     min={0}
                     type='number'
                     className={inputBoxClass}
-                    value={configMax}
+                    value={configMax ? configMax : ''}
                     name='configMax'
                     onChange={(e) => setConfigMax(+e.target.value)}
                   />
@@ -214,7 +214,6 @@ export default function TowerForm() {
                     setConfigName('');
                     setConfigMin(0);
                     setConfigMax(0);
-                    console.log(towerFormData);
                   } else {
                     alert('Please enter all details.');
                   }

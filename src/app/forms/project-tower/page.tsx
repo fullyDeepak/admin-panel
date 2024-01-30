@@ -18,10 +18,30 @@ export default function page() {
   const { projectFormData } = useProjectStore();
   const { towerFormData } = useTowerStore();
   let loadingToastId: string;
+
+  let newProjectFormData: any;
+  newProjectFormData = { ...projectFormData };
+  delete newProjectFormData.towerTypeOptions;
+  delete newProjectFormData.projectSubTypeOptions;
+  newProjectFormData.village_id = newProjectFormData.village_id?.value;
+  newProjectFormData.projectType = newProjectFormData.projectType?.value;
+  newProjectFormData.projectSubType = newProjectFormData.projectSubType?.value;
+  let newTowerFormData: any;
+  newTowerFormData = towerFormData.map((item) => ({
+    ...item,
+    towerType: item.towerType?.value,
+    etlUnitConfigs: item.etlUnitConfigs.filter(
+      (item) => item.configName !== ''
+    ),
+  }));
   const formsStep: ReactElement[] = [
     <ProjectForm key={1} />,
     <TowerForm key={2} />,
-    <PreviewProjectTower key={3} />,
+    <PreviewProjectTower
+      key={3}
+      projectFormData={newProjectFormData}
+      towerFormData={newTowerFormData}
+    />,
   ];
 
   const submitForm = async (e: FormEvent<HTMLFormElement>) => {
@@ -29,19 +49,7 @@ export default function page() {
       id: loadingToastId,
     });
     e.preventDefault();
-    let newProjectFormData: any;
-    newProjectFormData = { ...projectFormData };
-    delete newProjectFormData.towerTypeOptions;
-    delete newProjectFormData.projectSubTypeOptions;
-    newProjectFormData.village_id = newProjectFormData.village_id?.value;
-    newProjectFormData.projectType = newProjectFormData.projectType?.value;
-    newProjectFormData.projectSubType =
-      newProjectFormData.projectSubType?.value;
-    let newTowerFormData: any;
-    newTowerFormData = towerFormData.map((item) => ({
-      ...item,
-      towerType: item.towerType?.value,
-    }));
+
     try {
       if (!newProjectFormData.projectName) {
         toast.dismiss(loadingToastId);
@@ -61,6 +69,7 @@ export default function page() {
           id: loadingToastId,
           duration: 3000,
         });
+        setResponseData(projectRes.data);
         return null;
       } else {
         toast.dismiss(loadingToastId);
@@ -68,6 +77,7 @@ export default function page() {
           id: loadingToastId,
           duration: 3000,
         });
+        setResponseData(projectRes.data);
       }
       const projectID = projectRes.data.data[0].id;
       const towerData = {
@@ -76,7 +86,9 @@ export default function page() {
       };
       const towerRes = await axiosClient.post('/forms/towerTag', towerData);
       if (towerRes.status === 200) {
-        toast.dismiss(loadingToastId);
+        setResponseData(
+          (prev) => JSON.stringify(prev) + JSON.stringify(projectRes.data)
+        );
         toast.success(`Towers details added to database.`, {
           id: loadingToastId,
           duration: 3000,
@@ -88,13 +100,16 @@ export default function page() {
         error.response?.status &&
         error.response?.status >= 400
       ) {
-        toast.error(
-          `Error: ${error?.response?.data?.message ? error?.response?.data?.message : error?.response?.data?.error}`,
-          {
-            id: loadingToastId,
-            duration: 3000,
-          }
-        );
+        const errMsg =
+          error.response.data?.message || error.response.data?.error;
+        setResponseData((prev) => {
+          return JSON.stringify(prev) + JSON.stringify(errMsg);
+        });
+        toast.dismiss(loadingToastId);
+        toast.error(`Error: ${errMsg}`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
       }
     }
   };
@@ -103,7 +118,7 @@ export default function page() {
     <div className='mx-auto mt-10 flex w-full flex-col md:w-[80%]'>
       <Toaster />
       <h1 className='self-center text-2xl md:text-3xl'>
-        Form: Project Tower Tagging 2
+        Form: Project Tower Tagging
       </h1>
       <form
         className='mt-5 flex w-full max-w-full  flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
