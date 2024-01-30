@@ -10,11 +10,6 @@ type PreviewProjectTowerProps = {
     projectType: string;
     projectSubType: string;
     projectDesc: string;
-    numberOfUnits: number;
-    projectSize_builtUp: number;
-    avgFloorplate: number;
-    avgFloorHeight: number;
-    landArea: number;
     amenitiesTags: string[];
     surveyEqual: string[];
     surveyContains: string[];
@@ -65,7 +60,7 @@ export default function PreviewProjectTower({
   ];
   const etlColumns = [
     {
-      header: 'Id',
+      header: 'Card Id',
       accessorKey: 'id',
     },
     {

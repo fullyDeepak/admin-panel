@@ -43,42 +43,49 @@ export interface ProjectTaggingType {
 interface FormState {
   projectFormData: ProjectTaggingType;
   updateProjectFormData: (newDetails: Partial<ProjectTaggingType>) => void;
+  resetProjectFormData: () => void;
 }
+
+const initialState: ProjectTaggingType = {
+  village_id: {
+    label: '',
+    value: 0,
+  },
+  projectName: '',
+  layoutName: '',
+  developer: '',
+  developerGroup: '',
+  projectType: {
+    label: '',
+    value: '',
+  },
+  towerTypeOptions: undefined,
+  projectSubTypeOptions: undefined,
+  projectSubType: {
+    label: '',
+    value: '',
+  },
+  projectDesc: '',
+  amenitiesTags: [],
+  surveyEqual: [],
+  surveyContains: [],
+  plotEqual: [],
+  apartmentContains: '',
+  counterpartyContains: '',
+  projectCoordinates: [],
+};
 
 export const useProjectStore = create<FormState>((set) => ({
   // Initial state
-  projectFormData: {
-    village_id: {
-      label: '',
-      value: 0,
-    },
-    projectName: '',
-    layoutName: '',
-    developer: '',
-    developerGroup: '',
-    projectType: {
-      label: '',
-      value: '',
-    },
-    towerTypeOptions: undefined,
-    projectSubTypeOptions: undefined,
-    projectSubType: {
-      label: '',
-      value: '',
-    },
-    projectDesc: '',
-    amenitiesTags: [],
-    surveyEqual: [],
-    surveyContains: [],
-    plotEqual: [],
-    apartmentContains: '',
-    counterpartyContains: '',
-    projectCoordinates: [],
-  },
+  projectFormData: initialState,
 
   // Update functions
   updateProjectFormData: (newDetails) =>
     set((state) => ({
       projectFormData: { ...state.projectFormData, ...newDetails },
     })),
+
+  resetProjectFormData: () => {
+    set({ projectFormData: initialState });
+  },
 }));

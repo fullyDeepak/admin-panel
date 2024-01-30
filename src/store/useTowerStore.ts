@@ -31,23 +31,26 @@ interface FormState {
     maxArea: number
   ) => void;
   deleteEtlUnitConfig: (towerId: number, configName: string) => void;
+  resetTowerFormData: () => void;
 }
+
+const initialState: towerDetail[] = [
+  {
+    id: 1,
+    projectPhase: 1,
+    reraId: '',
+    towerType: {
+      label: '',
+      value: '',
+    },
+    towerName: '',
+    etlUnitConfigs: [{ configName: '', minArea: 0, maxArea: 0 }],
+  },
+];
 
 export const useTowerStore = create<FormState>((set) => ({
   // Initial state
-  towerFormData: [
-    {
-      id: 1,
-      projectPhase: 1,
-      reraId: '',
-      towerType: {
-        label: '',
-        value: '',
-      },
-      towerName: '',
-      etlUnitConfigs: [{ configName: '', minArea: 0, maxArea: 0 }],
-    },
-  ],
+  towerFormData: initialState,
 
   // Update functions
   updateTowerFormData: (id, key, value) => {
@@ -98,5 +101,8 @@ export const useTowerStore = create<FormState>((set) => ({
           : data
       ),
     }));
+  },
+  resetTowerFormData: () => {
+    set({ towerFormData: initialState });
   },
 }));

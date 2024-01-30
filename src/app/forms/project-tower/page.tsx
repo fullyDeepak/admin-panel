@@ -15,8 +15,8 @@ export default function page() {
     undefined
   );
   const [formCount, setFormCount] = useState<number>(0);
-  const { projectFormData } = useProjectStore();
-  const { towerFormData } = useTowerStore();
+  const { projectFormData, resetProjectFormData } = useProjectStore();
+  const { towerFormData, resetTowerFormData } = useTowerStore();
   let loadingToastId: string;
 
   let newProjectFormData: any;
@@ -93,6 +93,8 @@ export default function page() {
           id: loadingToastId,
           duration: 3000,
         });
+        resetProjectFormData();
+        resetTowerFormData();
       }
     } catch (error) {
       if (
@@ -156,16 +158,26 @@ export default function page() {
             </button>
           )}
           {formsStep.length - 1 === formCount && (
-            <button className='btn btn-sm w-32 border-none bg-rose-500 text-white md:btn-md hover:bg-red-600'>
+            <button
+              className='btn btn-sm w-32 border-none bg-rose-500 text-white md:btn-md hover:bg-red-600'
+              disabled={
+                projectFormData.village_id && projectFormData.projectName
+                  ? false
+                  : true
+              }
+            >
               Submit
             </button>
           )}
         </div>
       </form>
       {responseData && (
-        <p className='my-10 text-center text-xl'>
+        <textarea
+          rows={8}
+          className='my-10 max-w-[80%] text-wrap text-center text-xl'
+        >
           {JSON.stringify(responseData)}
-        </p>
+        </textarea>
       )}
       <div className='mt-40'></div>
     </div>
