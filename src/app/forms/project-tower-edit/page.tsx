@@ -66,6 +66,7 @@ export default function page() {
         towerData: newTowerFormData,
       });
       return null;
+      // eslint-disable-next-line no-unreachable
       const projectRes = await axiosClient.post(
         '/forms/projectTag',
         newProjectFormData
