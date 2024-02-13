@@ -2,11 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { XMLParser } from 'fast-xml-parser';
 import Select, { SingleValue } from 'react-select';
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import ChipInput from './Chip';
 import ETLTagData from './ETLTagData';
 import axiosClient from '@/utils/AxiosClient';
 import { useEditProjectStore } from '@/store/useEditProjectStore';
 import { useEditTowerStore } from '@/store/useEditTowerStore';
+import ChipInput from '../project-tower/Chip';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';

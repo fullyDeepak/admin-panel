@@ -1,8 +1,8 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { useProjectStore } from '@/store/useProjectStore';
 import React from 'react';
-import ChipInput from './Chip';
 import { useEditProjectStore } from '@/store/useEditProjectStore';
+import ChipInput from '../project-tower/Chip';
 
 export default function ETLTagData() {
   const { editProjectFormData, updateEditProjectFormData } =
