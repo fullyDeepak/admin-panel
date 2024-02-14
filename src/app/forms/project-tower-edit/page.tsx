@@ -22,12 +22,10 @@ export default function page() {
 
   let newProjectFormData: any;
   newProjectFormData = { ...editProjectFormData };
-  newProjectFormData.village_id = newProjectFormData.village_id?.value;
-  newProjectFormData.surveyEqual = newProjectFormData.surveyEqual.join(',');
-  newProjectFormData.plotEqual = newProjectFormData.plotEqual.join(',');
-  newProjectFormData.surveyContains =
-    newProjectFormData.surveyContains.join(',');
-  console.log(newProjectFormData.surveyEqual);
+  delete newProjectFormData.selectedProjectOption;
+  delete newProjectFormData.projectSubTypeOptions;
+  delete newProjectFormData.towerTypeOptions;
+  //   newProjectFormData.village_id = newProjectFormData.village_id?.value;
   let newTowerFormData: any;
   newTowerFormData = editTowerFormData.map((item) => ({
     ...item,
@@ -61,17 +59,21 @@ export default function page() {
         });
         return null;
       }
-      setResponseData({
+      const data = {
         projectData: newProjectFormData,
         towerData: newTowerFormData,
-      });
-      return null;
-      // eslint-disable-next-line no-unreachable
-      const projectRes = await axiosClient.post(
-        '/forms/projectTag',
-        newProjectFormData
-      );
-      if (projectRes.status !== 200) {
+      };
+      const projectRes = await axiosClient.post('/projects', data);
+      if (projectRes.status === 200) {
+        toast.dismiss(loadingToastId);
+        toast.success(`Project update saved to database.`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
+        setResponseData(projectRes.data);
+        resetEditProjectFormData();
+        resetEditTowerFormData();
+      } else {
         toast.dismiss(loadingToastId);
         toast.error(`Couldn't get the Project ID.`, {
           id: loadingToastId,
@@ -79,30 +81,6 @@ export default function page() {
         });
         setResponseData(projectRes.data);
         return null;
-      } else {
-        toast.dismiss(loadingToastId);
-        toast.success(`Project added to database.`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
-        setResponseData(projectRes.data);
-      }
-      const projectID = projectRes.data.data[0].id;
-      const towerData = {
-        projectId: projectID,
-        towerData: newTowerFormData,
-      };
-      const towerRes = await axiosClient.post('/forms/towerTag', towerData);
-      if (towerRes.status === 200) {
-        setResponseData(
-          (prev) => JSON.stringify(prev) + JSON.stringify(projectRes.data)
-        );
-        toast.success(`Towers details added to database.`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
-        resetEditProjectFormData();
-        resetEditTowerFormData();
       }
     } catch (error) {
       if (

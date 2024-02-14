@@ -3,7 +3,8 @@ import { useEditProjectStore } from '@/store/useEditProjectStore';
 import { useEditTowerStore } from '@/store/useEditTowerStore';
 import { useState } from 'react';
 import { BiInfoCircle, BiPlus } from 'react-icons/bi';
-import Select, { SingleValue } from 'react-select';
+import Select, { Option } from 'rc-select';
+import 'rc-select/assets/index.css';
 
 export default function TowerForm() {
   const {
@@ -69,7 +70,16 @@ export default function TowerForm() {
           <label className='flex flex-wrap items-center justify-between gap-5 '>
             <span className='flex-[2] '>Tower Type:</span>
             <span className='w-full flex-[5] pl-2 font-semibold'>
-              {editProjectFormData.projectSubType}
+              <Select
+                onChange={(e) =>
+                  updateEditTowerFormData(tower.id, 'towerType', e)
+                }
+                value={tower.towerType}
+              >
+                {editProjectFormData.towerTypeOptions?.map((option, index) => (
+                  <Option key={index}>{option.value}</Option>
+                ))}
+              </Select>
             </span>
           </label>
           <label className='flex flex-wrap items-center justify-between gap-5 '>

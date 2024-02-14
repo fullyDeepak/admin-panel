@@ -1,19 +1,23 @@
 import { useQuery } from '@tanstack/react-query';
-import { XMLParser } from 'fast-xml-parser';
-import Select, { SingleValue } from 'react-select';
+import ReactSelect, { SingleValue } from 'react-select';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import ETLTagData from './ETLTagData';
 import axiosClient from '@/utils/AxiosClient';
 import { useEditProjectStore } from '@/store/useEditProjectStore';
 import { useEditTowerStore } from '@/store/useEditTowerStore';
 import ChipInput from '../project-tower/Chip';
+import Select, { Option } from 'rc-select';
+import 'rc-select/assets/index.css';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
 
 export default function ProjectForm() {
-  const { editProjectFormData, updateEditProjectFormData } =
-    useEditProjectStore();
+  const {
+    editProjectFormData,
+    updateEditProjectFormData,
+    resetEditProjectFormData,
+  } = useEditProjectStore();
   const { setNewTowerEditData } = useEditTowerStore();
   const [selectedProject, setSelectedProject] = useState<{
     label: string;
@@ -32,6 +36,7 @@ export default function ProjectForm() {
             label: `${item.id}:${item.project_name}`,
           })
         );
+        updateEditProjectFormData({ selectedProjectOption: options });
         return options;
       } catch (error) {
         console.log(error);
@@ -41,12 +46,12 @@ export default function ProjectForm() {
 
   // populate form fields
   useQuery({
-    queryKey: ['project', selectedProject?.value],
+    queryKey: ['project', editProjectFormData.selectedProject],
     queryFn: async () => {
       try {
-        if (selectedProject) {
+        if (editProjectFormData.selectedProject) {
           const res = await axiosClient.get(
-            `/projects/${selectedProject?.value}`
+            `/projects/${editProjectFormData.selectedProject}`
           );
           const projectData = res.data.data[0];
           console.log(projectData);
@@ -122,6 +127,7 @@ export default function ProjectForm() {
             }
           );
           updateEditProjectFormData({
+            village_id: projectData.village_id,
             projectName: projectData.project_name,
             developerGroup: projectData.developer_group_name,
             developer: projectData.developer_name,
@@ -138,6 +144,7 @@ export default function ProjectForm() {
         console.log(error);
       }
     },
+    staleTime: Infinity,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,28 +152,75 @@ export default function ProjectForm() {
     updateEditProjectFormData({ [name]: value });
   };
 
+  useEffect(() => {
+    if (editProjectFormData.projectType === 'residential') {
+      updateEditProjectFormData({
+        towerTypeOptions: [
+          { label: 'Apartment', value: 'apartment' },
+          { label: 'Villa', value: 'villa' },
+          { label: 'Mixed', value: 'mixed' },
+        ],
+      });
+      updateEditProjectFormData({
+        projectSubTypeOptions: [
+          { label: 'Gated', value: 'gated' },
+          { label: 'Standalone', value: 'standalone' },
+        ],
+      });
+    } else if (editProjectFormData.projectType === 'commercial') {
+      updateEditProjectFormData({
+        towerTypeOptions: [
+          { label: 'Office', value: 'Office' },
+          { label: 'Mall', value: 'Mall' },
+          { label: 'Hotel', value: 'Hotel' },
+          { label: 'Other', value: 'Other' },
+        ],
+      });
+      updateEditProjectFormData({
+        projectSubTypeOptions: [
+          { label: 'SEZ Layout', value: 'SEZ Layout' },
+          { label: 'Regular Layout', value: 'Regular Layout' },
+          { label: 'SEZ Standalone', value: 'SEZ Standalone' },
+          {
+            label: 'Regular Standalone',
+            value: 'Regular Standalone',
+          },
+        ],
+      });
+    } else if (editProjectFormData.projectType === 'mixed') {
+      updateEditProjectFormData({
+        projectSubTypeOptions: undefined,
+      });
+      updateEditProjectFormData({
+        towerTypeOptions: undefined,
+      });
+    }
+  }, [editProjectFormData.projectType]);
+
   return (
     <>
       <h3 className='my-4 text-2xl font-semibold'>Section: Project Details</h3>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Select Project to Edit:</span>
-        <Select
-          className='w-full flex-[5]'
-          name='village_id'
-          key={'village'}
-          options={projectOptions}
-          isLoading={loadingProjects}
-          required={true}
-          value={selectedProject}
-          onChange={(
-            e: SingleValue<{
-              label: string;
-              value: number;
-            }>
-          ) => {
-            setSelectedProject(e);
-          }}
-        />
+        <span className='w-full flex-[5]'>
+          <Select
+            showSearch
+            value={editProjectFormData.selectedProject}
+            onChange={(e) => updateEditProjectFormData({ selectedProject: e })}
+          >
+            {editProjectFormData.selectedProjectOption?.map((option, index) => (
+              <Option key={index} value={option.value}>
+                {option.label}
+              </Option>
+            ))}
+          </Select>
+        </span>
+      </label>
+      <label className='flex flex-wrap items-center justify-between gap-5 '>
+        <span className='flex-[2] '>Village ID:</span>
+        <span className='w-full flex-[5] pl-2 font-semibold'>
+          {editProjectFormData.village_id}
+        </span>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Project Name:</span>
@@ -208,13 +262,80 @@ export default function ProjectForm() {
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Project Type:</span>
         <span className='w-full flex-[5] pl-2 font-semibold'>
-          {editProjectFormData.projectType}
+          <Select
+            value={editProjectFormData.projectType}
+            onChange={(e) => {
+              updateEditProjectFormData({ projectType: e });
+              if (e === 'residential') {
+                updateEditProjectFormData({
+                  towerTypeOptions: [
+                    { label: 'Apartment', value: 'apartment' },
+                    { label: 'Villa', value: 'villa' },
+                    { label: 'Mixed', value: 'mixed' },
+                  ],
+                });
+                updateEditProjectFormData({
+                  projectSubTypeOptions: [
+                    { label: 'Gated', value: 'gated' },
+                    { label: 'Standalone', value: 'standalone' },
+                  ],
+                });
+              } else if (e === 'commercial') {
+                updateEditProjectFormData({
+                  towerTypeOptions: [
+                    { label: 'Office', value: 'Office' },
+                    { label: 'Mall', value: 'Mall' },
+                    { label: 'Hotel', value: 'Hotel' },
+                    { label: 'Other', value: 'Other' },
+                  ],
+                });
+                updateEditProjectFormData({
+                  projectSubTypeOptions: [
+                    { label: 'SEZ Layout', value: 'SEZ Layout' },
+                    { label: 'Regular Layout', value: 'Regular Layout' },
+                    { label: 'SEZ Standalone', value: 'SEZ Standalone' },
+                    {
+                      label: 'Regular Standalone',
+                      value: 'Regular Standalone',
+                    },
+                  ],
+                });
+              } else if (e === 'mixed') {
+                updateEditProjectFormData({
+                  projectSubTypeOptions: undefined,
+                });
+                updateEditProjectFormData({
+                  towerTypeOptions: undefined,
+                });
+              }
+            }}
+          >
+            {[
+              { label: 'Residential', value: 'residential' },
+              { label: 'Commercial', value: 'commercial' },
+              { label: 'Mixed', value: 'mixed' },
+            ].map((option, index) => (
+              <Option key={index} value={option.value}>
+                {option.value}
+              </Option>
+            ))}
+          </Select>
         </span>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Project Sub Type:</span>
         <span className='w-full flex-[5] pl-2 font-semibold'>
-          {editProjectFormData.projectSubType}
+          <Select
+            onChange={(e) => updateEditProjectFormData({ projectSubType: e })}
+            value={editProjectFormData.projectSubType}
+            className='w-full'
+          >
+            {editProjectFormData.projectSubTypeOptions.map((option, index) => (
+              <Option key={index} value={option.value}>
+                {option.value}
+              </Option>
+            ))}
+          </Select>
         </span>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>

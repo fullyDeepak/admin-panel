@@ -87,7 +87,7 @@ export default function PreviewProjectTower({
       etlUnitConfigs.push({ ...etl, id: item.id })
     )
   );
-  console.log(etlUnitConfigs);
+  console.log(projectFormData);
   return (
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-5'>

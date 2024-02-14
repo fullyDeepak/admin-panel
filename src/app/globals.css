@@ -59,3 +59,19 @@ input[type='number'] {
     opacity: 1;
   }
 }
+
+.btn {
+  @apply min-h-[36px];
+}
+
+.input {
+  @apply border-[2px] focus:border-sky-600 focus:shadow focus:outline-none;
+}
+
+.btn-info {
+  @apply text-white;
+}
+
+.rc-select {
+  width: 100% !important;
+}
