@@ -72,6 +72,7 @@ export default function ProjectForm() {
           }[] = projectData.towers;
           const towerData = towerDataRes.map((item, index) => ({
             id: index + 1,
+            towerId: item.tower_id,
             projectPhase: +item.phase,
             reraId: item.rera_id,
             towerType: item.type,
@@ -131,6 +132,7 @@ export default function ProjectForm() {
             projectName: projectData.project_name,
             developerGroup: projectData.developer_group_name,
             developer: projectData.developer_name,
+            layoutName: projectData.project_layout,
             projectDesc: projectData.project_description,
             projectType: projectData.project_category,
             projectSubType: projectData.project_subtype,
@@ -205,15 +207,12 @@ export default function ProjectForm() {
         <span className='w-full flex-[5]'>
           <Select
             showSearch
+            optionFilterProp='label'
             value={editProjectFormData.selectedProject}
             onChange={(e) => updateEditProjectFormData({ selectedProject: e })}
-          >
-            {editProjectFormData.selectedProjectOption?.map((option, index) => (
-              <Option key={index} value={option.value}>
-                {option.label}
-              </Option>
-            ))}
-          </Select>
+            options={editProjectFormData.selectedProjectOption}
+            placeholder='Select Project Id and Name'
+          />
         </span>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
@@ -266,48 +265,6 @@ export default function ProjectForm() {
             value={editProjectFormData.projectType}
             onChange={(e) => {
               updateEditProjectFormData({ projectType: e });
-              if (e === 'residential') {
-                updateEditProjectFormData({
-                  towerTypeOptions: [
-                    { label: 'Apartment', value: 'apartment' },
-                    { label: 'Villa', value: 'villa' },
-                    { label: 'Mixed', value: 'mixed' },
-                  ],
-                });
-                updateEditProjectFormData({
-                  projectSubTypeOptions: [
-                    { label: 'Gated', value: 'gated' },
-                    { label: 'Standalone', value: 'standalone' },
-                  ],
-                });
-              } else if (e === 'commercial') {
-                updateEditProjectFormData({
-                  towerTypeOptions: [
-                    { label: 'Office', value: 'Office' },
-                    { label: 'Mall', value: 'Mall' },
-                    { label: 'Hotel', value: 'Hotel' },
-                    { label: 'Other', value: 'Other' },
-                  ],
-                });
-                updateEditProjectFormData({
-                  projectSubTypeOptions: [
-                    { label: 'SEZ Layout', value: 'SEZ Layout' },
-                    { label: 'Regular Layout', value: 'Regular Layout' },
-                    { label: 'SEZ Standalone', value: 'SEZ Standalone' },
-                    {
-                      label: 'Regular Standalone',
-                      value: 'Regular Standalone',
-                    },
-                  ],
-                });
-              } else if (e === 'mixed') {
-                updateEditProjectFormData({
-                  projectSubTypeOptions: undefined,
-                });
-                updateEditProjectFormData({
-                  towerTypeOptions: undefined,
-                });
-              }
             }}
           >
             {[

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 
 export interface ProjectTaggingType {
-  selectedProject: 0;
+  selectedProject: null | number;
   selectedProjectOption:
     | {
         label: string;
@@ -45,7 +45,7 @@ interface FormState {
 }
 
 const initialState: ProjectTaggingType = {
-  selectedProject: 0,
+  selectedProject: null,
   selectedProjectOption: undefined,
   village_id: 0,
   projectName: '',

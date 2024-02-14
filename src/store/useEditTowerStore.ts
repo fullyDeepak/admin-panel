@@ -8,6 +8,7 @@ interface etlUnitConfig {
 
 interface editTowerDetail {
   id: number;
+  towerId: number;
   projectPhase: number;
   reraId: string;
   towerType: string;
@@ -38,6 +39,7 @@ interface FormState {
 const initialState: editTowerDetail[] = [
   {
     id: 1,
+    towerId:-1,
     projectPhase: 1,
     reraId: '',
     towerType: '',

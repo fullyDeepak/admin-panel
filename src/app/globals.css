@@ -74,4 +74,10 @@ input[type='number'] {
 
 .rc-select {
   width: 100% !important;
+  font-size: 18px !important;
+}
+
+.rc-select-selection-search input {
+  background: none !important;
+  font-size: 18px;
 }
