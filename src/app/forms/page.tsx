@@ -33,19 +33,19 @@ export default function page() {
             href={'/forms/project-tower'}
             className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
           >
-            Onboard New Project Tower
+            Add New Project Tower
           </Link>
           <Link
             href={'/forms/project-tower-edit'}
             className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
           >
-            Update Project Tower Data
+            Update Project Tower
           </Link>
           <Link
             href={'/forms/project-tower-add-survey'}
             className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
           >
-            Add Survey to Existing Project
+            Clone Project
           </Link>
         </div>
       </div>
