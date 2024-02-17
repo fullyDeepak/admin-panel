@@ -60,7 +60,7 @@ export default function page() {
         return null;
       }
       const projectRes = await axiosClient.post(
-        '/forms/projectTag',
+        '/projects',
         newProjectFormData
       );
       if (projectRes.status !== 200) {
@@ -79,12 +79,12 @@ export default function page() {
         });
         setResponseData(projectRes.data);
       }
-      const projectID = projectRes.data.data[0].id;
+      const projectID = projectRes.data.data.id;
       const towerData = {
         projectId: projectID,
         towerData: newTowerFormData,
       };
-      const towerRes = await axiosClient.post('/forms/towerTag', towerData);
+      const towerRes = await axiosClient.post('/projects/tower', towerData);
       if (towerRes.status === 200) {
         setResponseData(
           (prev) => JSON.stringify(prev) + JSON.stringify(projectRes.data)

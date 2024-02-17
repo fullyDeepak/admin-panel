@@ -8,6 +8,10 @@ import { useEditTowerStore } from '@/store/useEditTowerStore';
 import ChipInput from '../project-tower/Chip';
 import Select, { Option } from 'rc-select';
 import 'rc-select/assets/index.css';
+import {
+  MultiSelect,
+  Option as MultiSelectOptionType,
+} from 'react-multi-select-component';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
@@ -19,10 +23,7 @@ export default function ProjectForm() {
     resetEditProjectFormData,
   } = useEditProjectStore();
   const { setNewTowerEditData } = useEditTowerStore();
-  const [selectedProject, setSelectedProject] = useState<{
-    label: string;
-    value: number;
-  } | null>();
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
 
   // populate project dropdown
   const { isPending: loadingProjects, data: projectOptions } = useQuery({
@@ -44,6 +45,19 @@ export default function ProjectForm() {
     },
   });
 
+  const { data: amenitiesOptions, isLoading: loadingAmenities } = useQuery({
+    queryKey: ['amenitiesOptions'],
+    queryFn: async () => {
+      const data = await axiosClient.get('/forms/amenities');
+      const amenities: { id: number; amenity: string }[] = data.data?.data;
+      const amenitiesOptions = amenities.map((item) => ({
+        label: item.amenity,
+        value: item.id,
+      }));
+      return amenitiesOptions;
+    },
+  });
+
   // populate form fields
   useQuery({
     queryKey: ['project', editProjectFormData.selectedProject],
@@ -53,7 +67,7 @@ export default function ProjectForm() {
           const res = await axiosClient.get(
             `/projects/${editProjectFormData.selectedProject}`
           );
-          const projectData = res.data.data[0];
+          const projectData = res.data.data;
           console.log(projectData);
           const towerDataRes: {
             name: string;
@@ -127,6 +141,12 @@ export default function ProjectForm() {
               }
             }
           );
+          const amenities = projectData.amenities.map(
+            (item: { id: number; amenity: string }) => ({
+              label: item.amenity,
+              value: item.id,
+            })
+          );
           updateEditProjectFormData({
             village_id: projectData.village_id,
             projectName: projectData.project_name,
@@ -139,6 +159,7 @@ export default function ProjectForm() {
             surveyContains: surveyContains,
             surveyEqual: surveyEqual,
             plotEqual: plotEqual,
+            amenitiesTags: amenities,
           });
         }
         return true;
@@ -207,6 +228,7 @@ export default function ProjectForm() {
         <span className='w-full flex-[5]'>
           <Select
             showSearch
+            animation='slide-up'
             optionFilterProp='label'
             value={editProjectFormData.selectedProject}
             onChange={(e) => updateEditProjectFormData({ selectedProject: e })}
@@ -305,14 +327,32 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
+      <div className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Amenities Tags:</span>
-        <ChipInput
-          chips={editProjectFormData.amenitiesTags}
-          updateFormData={updateEditProjectFormData}
-          updateKey='amenitiesTags'
-        />
-      </label>
+        {amenitiesOptions && amenitiesOptions.length > 0 && (
+          <MultiSelect
+            className='w-full flex-[2]'
+            options={amenitiesOptions}
+            isLoading={loadingAmenities}
+            value={editProjectFormData.amenitiesTags}
+            onChange={(
+              e: {
+                label: string;
+                value: string;
+                __isNew__?: boolean | undefined;
+              }[]
+            ) => {
+              updateEditProjectFormData({
+                amenitiesTags: e,
+              });
+              console.log(e);
+            }}
+            labelledBy={'amenitiesTags'}
+            isCreatable={true}
+            hasSelectAll={false}
+          />
+        )}
+      </div>
       <ETLTagData />
     </>
   );

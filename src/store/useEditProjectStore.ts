@@ -2,13 +2,13 @@ import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 
 export interface ProjectTaggingType {
-  selectedProject: null | number;
+  selectedProject: number | undefined;
   selectedProjectOption:
     | {
         label: string;
         value: string;
       }[]
-    | undefined;
+    | [];
   village_id: number;
   projectName: string;
   layoutName: string;
@@ -29,7 +29,7 @@ export interface ProjectTaggingType {
     | [];
   projectSubType: string;
   projectDesc: string;
-  amenitiesTags: string[];
+  amenitiesTags: { label: string; value: string; __isNew__?: boolean }[];
   surveyEqual: string[];
   surveyContains: string[];
   plotEqual: string[];
@@ -45,8 +45,8 @@ interface FormState {
 }
 
 const initialState: ProjectTaggingType = {
-  selectedProject: null,
-  selectedProjectOption: undefined,
+  selectedProject: undefined,
+  selectedProjectOption: [],
   village_id: 0,
   projectName: '',
   layoutName: '',

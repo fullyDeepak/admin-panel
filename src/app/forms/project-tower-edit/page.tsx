@@ -25,6 +25,8 @@ export default function page() {
   delete newProjectFormData.selectedProjectOption;
   delete newProjectFormData.projectSubTypeOptions;
   delete newProjectFormData.towerTypeOptions;
+  //   newProjectFormData = JSON.stringify(newProjectFormData.amenitiesTags);
+  //   delete newProjectFormData.amenitiesTags;
   //   newProjectFormData.village_id = newProjectFormData.village_id?.value;
   let newTowerFormData: any;
   newTowerFormData = editTowerFormData.map((item) => ({
@@ -63,7 +65,9 @@ export default function page() {
         projectData: newProjectFormData,
         towerData: newTowerFormData,
       };
-      const projectRes = await axiosClient.post('/projects', data);
+      console.log(data);
+      setResponseData(data);
+      const projectRes = await axiosClient.put('/projects', data);
       if (projectRes.status === 200) {
         toast.dismiss(loadingToastId);
         toast.success(`Project update saved to database.`, {
@@ -106,7 +110,7 @@ export default function page() {
     <div className='mx-auto mt-10 flex w-full flex-col md:w-[80%]'>
       <Toaster />
       <h1 className='self-center text-2xl md:text-3xl'>
-        Form: Project Tower Tagging
+        Form: Update Project Tower Tagging Data
       </h1>
       <form
         className='mt-5 flex w-full max-w-full  flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
