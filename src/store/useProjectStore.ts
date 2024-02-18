@@ -31,7 +31,7 @@ export interface ProjectTaggingType {
     value: string;
   }>;
   projectDesc: string;
-  amenitiesTags: string[];
+  amenitiesTags: { label: string; value: string; __isNew__?: boolean }[];
   surveyEqual: string[];
   surveyContains: string[];
   plotEqual: string[];
