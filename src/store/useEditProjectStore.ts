@@ -33,8 +33,8 @@ export interface ProjectTaggingType {
   surveyEqual: string[];
   surveyContains: string[];
   plotEqual: string[];
-  apartmentContains: string;
-  counterpartyContains: string;
+  apartmentContains: string[];
+  counterpartyContains: string[];
 }
 
 interface FormState {
@@ -61,8 +61,8 @@ const initialState: ProjectTaggingType = {
   surveyEqual: [],
   surveyContains: [],
   plotEqual: [],
-  apartmentContains: '',
-  counterpartyContains: '',
+  apartmentContains: [],
+  counterpartyContains: [],
 };
 
 export const useEditProjectStore = create<FormState>((set) => ({
