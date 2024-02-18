@@ -10,7 +10,7 @@ type PreviewProjectTowerProps = {
     projectType: string;
     projectSubType: string;
     projectDesc: string;
-    amenitiesTags: string[];
+    amenitiesTags: { label: string; value: number }[];
     surveyEqual: string[];
     surveyContains: string[];
     plotEqual: string[];
@@ -87,7 +87,10 @@ export default function PreviewProjectTower({
       etlUnitConfigs.push({ ...etl, id: item.id })
     )
   );
-  console.log(etlUnitConfigs);
+  projectFormData.amenitiesTags.map((item) => item.label);
+  const amenitiesLabels: string[] = [];
+  projectFormData.amenitiesTags.map((item) => amenitiesLabels.push(item.label));
+  console.log(projectFormData);
   return (
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-5'>
@@ -106,7 +109,22 @@ export default function PreviewProjectTower({
               <span className='flex-[1] self-center border-r-2 font-semibold'>
                 {camelToFlat(key)}
               </span>
-              <span className='flex-[1] '>{value}</span>
+              {value &&
+              Array.isArray(value) &&
+              value.length > 0 &&
+              value[0].constructor === Object ? (
+                <span className='flex-[1] '>
+                  {value
+                    .map((item) => {
+                      if (typeof item !== 'string') {
+                        return item.label;
+                      }
+                    })
+                    .join(', ')}
+                </span>
+              ) : (
+                <span className='flex-[1] '>{value as string}</span>
+              )}
             </div>
           ))}
         </div>

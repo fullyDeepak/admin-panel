@@ -3,9 +3,12 @@ import { XMLParser } from 'fast-xml-parser';
 import Select, { SingleValue } from 'react-select';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useProjectStore } from '@/store/useProjectStore';
-import ChipInput from './Chip';
 import ETLTagData from './ETLTagData';
 import axiosClient from '@/utils/AxiosClient';
+import {
+  MultiSelect,
+  Option as MultiSelectOptionType,
+} from 'react-multi-select-component';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
@@ -78,6 +81,19 @@ export default function ProjectForm() {
     }
     return undefined;
   }
+
+  const { data: amenitiesOptions, isLoading: loadingAmenities } = useQuery({
+    queryKey: ['amenitiesOptions'],
+    queryFn: async () => {
+      const data = await axiosClient.get('/forms/amenities');
+      const amenities: { id: number; amenity: string }[] = data.data?.data;
+      const amenitiesOptions = amenities.map((item) => ({
+        label: item.amenity,
+        value: item.id,
+      }));
+      return amenitiesOptions;
+    },
+  });
 
   useEffect(() => {
     if (xmlData) {
@@ -246,11 +262,29 @@ export default function ProjectForm() {
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Amenities Tags:</span>
-        <ChipInput
-          chips={projectFormData.amenitiesTags}
-          updateFormData={updateProjectFormData}
-          updateKey='amenitiesTags'
-        />
+        {amenitiesOptions && amenitiesOptions.length > 0 && (
+          <MultiSelect
+            className='w-full flex-[2]'
+            options={amenitiesOptions}
+            isLoading={loadingAmenities}
+            value={projectFormData.amenitiesTags}
+            onChange={(
+              e: {
+                label: string;
+                value: string;
+                __isNew__?: boolean | undefined;
+              }[]
+            ) => {
+              updateProjectFormData({
+                amenitiesTags: e,
+              });
+              console.log(e);
+            }}
+            labelledBy={'amenitiesTags'}
+            isCreatable={true}
+            hasSelectAll={false}
+          />
+        )}
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Upload KML File:</span>
