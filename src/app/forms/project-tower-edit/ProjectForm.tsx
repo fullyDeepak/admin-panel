@@ -1,17 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import ReactSelect, { SingleValue } from 'react-select';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import ETLTagData from './ETLTagData';
 import axiosClient from '@/utils/AxiosClient';
 import { useEditProjectStore } from '@/store/useEditProjectStore';
 import { useEditTowerStore } from '@/store/useEditTowerStore';
-import ChipInput from '../project-tower/Chip';
 import Select, { Option } from 'rc-select';
 import 'rc-select/assets/index.css';
-import {
-  MultiSelect,
-  Option as MultiSelectOptionType,
-} from 'react-multi-select-component';
+import { MultiSelect } from 'react-multi-select-component';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
@@ -23,7 +18,6 @@ export default function ProjectForm() {
     resetEditProjectFormData,
   } = useEditProjectStore();
   const { setNewTowerEditData } = useEditTowerStore();
-  const [selectedAmenities, setSelectedAmenities] = useState([]);
 
   // populate project dropdown
   const { isPending: loadingProjects, data: projectOptions } = useQuery({

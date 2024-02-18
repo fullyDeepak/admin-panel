@@ -241,23 +241,6 @@ export default function TowerForm() {
           </div>
         </div>
       ))}
-      {/* <div className='absolute bottom-7 z-10 w-full '>
-        <button
-          type='button'
-          className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400 '
-          onClick={() => {
-            // const lastData = towerFormData[towerFormData.length - 1];
-            const newData = {
-              ...towerFormData[towerFormData.length - 1],
-              id: Math.max(...towerFormData.map((data) => data.id)) + 1,
-              towerName: '',
-            };
-            addNewTowerData(newData);
-          }}
-        >
-          <BiPlus size={30} /> <span>Duplicate</span>
-        </button>
-      </div> */}
     </div>
   );
 }
