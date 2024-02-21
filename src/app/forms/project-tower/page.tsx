@@ -59,42 +59,28 @@ export default function page() {
         });
         return null;
       }
-      const projectRes = await axiosClient.post(
-        '/projects',
-        newProjectFormData
-      );
-      if (projectRes.status !== 200) {
+      const data = {
+        projectData: newProjectFormData,
+        towerData: newTowerFormData,
+      };
+      const projectRes = await axiosClient.post('/projects', data);
+      if (projectRes.status === 200) {
         toast.dismiss(loadingToastId);
-        toast.error(`Couldn't get the Project ID.`, {
+        toast.success(`Project and Tower data added to database.`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
+        setResponseData(projectRes.data);
+        resetProjectFormData();
+        resetTowerFormData();
+      } else {
+        toast.dismiss(loadingToastId);
+        toast.error(`Something went wrong.`, {
           id: loadingToastId,
           duration: 3000,
         });
         setResponseData(projectRes.data);
         return null;
-      } else {
-        toast.dismiss(loadingToastId);
-        toast.success(`Project added to database.`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
-        setResponseData(projectRes.data);
-      }
-      const projectID = projectRes.data.data.id;
-      const towerData = {
-        projectId: projectID,
-        towerData: newTowerFormData,
-      };
-      const towerRes = await axiosClient.post('/projects/tower', towerData);
-      if (towerRes.status === 200) {
-        setResponseData(
-          (prev) => JSON.stringify(prev) + JSON.stringify(projectRes.data)
-        );
-        toast.success(`Towers details added to database.`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
-        resetProjectFormData();
-        resetTowerFormData();
       }
     } catch (error) {
       if (
