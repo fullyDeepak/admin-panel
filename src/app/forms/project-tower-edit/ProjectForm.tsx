@@ -154,8 +154,8 @@ export default function ProjectForm() {
             surveyEqual: surveyEqual,
             plotEqual: plotEqual,
             amenitiesTags: amenities,
-            apartmentContains: projectData.apartmentContains,
-            counterpartyContains: projectData.counterpartyContains,
+            apartmentContains: projectData.apartmentContains || [],
+            counterpartyContains: projectData.counterpartyContains || [],
           });
         }
         return true;
