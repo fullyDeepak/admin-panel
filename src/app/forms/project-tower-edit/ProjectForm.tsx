@@ -51,6 +51,33 @@ export default function ProjectForm() {
       return amenitiesOptions;
     },
   });
+  // populate village option
+  const { isPending: loadingVillages, data: villageOptions } = useQuery({
+    queryKey: ['village'],
+    queryFn: async () => {
+      try {
+        const response = await axiosClient.get('/forms/getOnboardedDMV');
+        const data = response.data.data;
+        const newData = [];
+        for (const district of data) {
+          for (const subDistrict of district.districts.districts) {
+            for (const mandal of subDistrict.mandals) {
+              for (const village of mandal.villages) {
+                newData.push({
+                  value: village.village_id,
+                  label: `${(subDistrict.district_name as string).charAt(0).toUpperCase() + (subDistrict.district_name as string).slice(1).toLowerCase()}-${(mandal.mandal_name as string).charAt(0).toUpperCase() + (mandal.mandal_name as string).slice(1).toLowerCase()}-${(village.village_name as string).charAt(0).toUpperCase() + (village.village_name as string).slice(1).toLowerCase()}`,
+                });
+              }
+            }
+          }
+        }
+        return newData;
+      } catch (error) {
+        return [];
+      }
+    },
+    staleTime: Infinity,
+  });
 
   // populate form fields
   useQuery({
@@ -235,8 +262,16 @@ export default function ProjectForm() {
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Village ID:</span>
-        <span className='w-full flex-[5] pl-2 font-semibold'>
-          {editProjectFormData.village_id}
+        <span className='w-full flex-[5]'>
+          <Select
+            showSearch
+            animation='slide-up'
+            optionFilterProp='label'
+            value={editProjectFormData.village_id || undefined}
+            onChange={(e) => updateEditProjectFormData({ village_id: e })}
+            options={villageOptions}
+            placeholder='Select Village'
+          />
         </span>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
