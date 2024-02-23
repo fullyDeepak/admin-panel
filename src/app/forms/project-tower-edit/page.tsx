@@ -2,13 +2,20 @@
 
 import axiosClient from '@/utils/AxiosClient';
 import axios from 'axios';
-import { FormEvent, ReactElement, useState } from 'react';
+import {
+  FormEvent,
+  ReactElement,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import ProjectForm from './ProjectForm';
 import TowerForm from './TowerForm';
 import PreviewProjectTower from './PreviewProjectTower';
 import { useEditProjectStore } from '@/store/useEditProjectStore';
 import { useEditTowerStore } from '@/store/useEditTowerStore';
+import { usePathname } from 'next/navigation';
 
 export default function page() {
   const [responseData, setResponseData] = useState<object | undefined>(
@@ -18,8 +25,15 @@ export default function page() {
   const { editProjectFormData, resetEditProjectFormData } =
     useEditProjectStore();
   const { editTowerFormData, resetEditTowerFormData } = useEditTowerStore();
-  let loadingToastId: string;
+  useEffect(() => {
+    resetEditProjectFormData();
+    resetEditTowerFormData();
+    (
+      document.getElementById('projectTowerEditForm') as HTMLFormElement
+    ).reset();
+  }, [usePathname]);
 
+  let loadingToastId: string;
   let newProjectFormData: any;
   newProjectFormData = { ...editProjectFormData };
   delete newProjectFormData.selectedProjectOption;
@@ -114,7 +128,7 @@ export default function page() {
       </h1>
       <form
         className='mt-5 flex w-full max-w-full  flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
-        id='projectTowerForm'
+        id='projectTowerEditForm'
         onSubmit={submitForm}
       >
         <ul className='steps mb-5'>

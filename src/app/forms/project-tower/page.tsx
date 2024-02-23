@@ -2,13 +2,14 @@
 
 import axiosClient from '@/utils/AxiosClient';
 import axios from 'axios';
-import { FormEvent, ReactElement, useState } from 'react';
+import { FormEvent, ReactElement, useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import ProjectForm from './ProjectForm';
 import TowerForm from './TowerForm';
 import PreviewProjectTower from './PreviewProjectTower';
 import { useProjectStore } from '@/store/useProjectStore';
 import { useTowerStore } from '@/store/useTowerStore';
+import { usePathname } from 'next/navigation';
 
 export default function page() {
   const [responseData, setResponseData] = useState<object | undefined>(
@@ -17,6 +18,13 @@ export default function page() {
   const [formCount, setFormCount] = useState<number>(0);
   const { projectFormData, resetProjectFormData } = useProjectStore();
   const { towerFormData, resetTowerFormData } = useTowerStore();
+
+  useEffect(() => {
+    resetProjectFormData();
+    resetTowerFormData();
+    (document.getElementById('projectTowerForm') as HTMLFormElement).reset();
+  }, [usePathname]);
+
   let loadingToastId: string;
 
   let newProjectFormData: any;

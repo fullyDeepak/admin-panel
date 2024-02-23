@@ -261,7 +261,7 @@ export default function ProjectForm() {
         </span>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Village ID:</span>
+        <span className='flex-[2] '>Select Village:</span>
         <span className='w-full flex-[5]'>
           <Select
             showSearch
