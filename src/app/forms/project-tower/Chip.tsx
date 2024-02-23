@@ -35,7 +35,10 @@ const ChipInput = ({ chips, updateFormData, updateKey }: ChipInputProps) => {
   return (
     <div className='ml-[6px] flex w-full flex-[5] flex-wrap items-center gap-3 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus-within:ring-2 focus-within:ring-inset focus-within:ring-rose-600 '>
       {chips?.map((chip, index) => (
-        <div key={index} className='badge border-rose-300 bg-rose-100'>
+        <div
+          key={index}
+          className='badge h-auto max-h-60 border-rose-300 bg-rose-100'
+        >
           {chip}
           <span
             className='cursor-pointer pl-1'
