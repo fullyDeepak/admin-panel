@@ -42,7 +42,7 @@ export default function page() {
             Update Project Tower
           </Link>
           <Link
-            href={'/forms/project-tower-add-survey'}
+            href={'/forms/project-clone'}
             className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
           >
             Clone Project

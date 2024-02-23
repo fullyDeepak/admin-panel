@@ -15,10 +15,9 @@ const ChipInput = ({ chips, updateFormData, updateKey }: ChipInputProps) => {
 
   const handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (
-      e.key === 'Enter' ||
-      (e.key === ',' &&
-        inputValue.trim() !== '' &&
-        !chips.includes(inputValue.trim()))
+      (e.key === 'Enter' || e.key === ',') &&
+      inputValue.trim() !== '' &&
+      !chips.includes(inputValue.trim())
     ) {
       updateFormData({
         [updateKey]: [...chips, inputValue.trim()],

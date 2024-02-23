@@ -9,6 +9,7 @@ import ReactSelect, { SingleValue } from 'react-select';
 import Select from 'rc-select';
 import 'rc-select/assets/index.css';
 import ChipInput from '../project-tower/Chip';
+import { usePathname } from 'next/navigation';
 
 export default function page() {
   const [responseData, setResponseData] = useState<object | undefined>(
@@ -20,7 +21,7 @@ export default function page() {
       value: number;
     }>
   >();
-  const [plotEqual, setplotEqual] = useState<{
+  const [plotEqual, setPlotEqual] = useState<{
     plotEqual: string[];
   }>({
     plotEqual: [],
@@ -127,8 +128,7 @@ export default function page() {
     staleTime: Infinity,
   });
 
-  const submitForm = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const submitForm = async () => {
     toast.loading(`Saving to database.`, {
       id: loadingToastId,
     });
@@ -210,10 +210,9 @@ export default function page() {
       <h1 className='self-center text-2xl md:text-3xl'>
         Form: Add Additional ETL Tag Data
       </h1>
-      <form
+      <div
         className='mt-5 flex w-full max-w-full  flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
         id='projectTowerForm'
-        onSubmit={submitForm}
       >
         <h3 className='my-4 text-2xl font-semibold'>
           Section: Project Details
@@ -302,16 +301,16 @@ export default function page() {
               <span className='flex-[2] '>Plot Equals:</span>
               <ChipInput
                 chips={plotEqual.plotEqual}
-                updateFormData={setplotEqual as (newDetails: object) => void}
+                updateFormData={setPlotEqual as (newDetails: object) => void}
                 updateKey='plotEqual'
               />
             </label>
-            <button type='submit' className='btn btn-info'>
+            <button className='btn btn-info' onClick={submitForm}>
               Submit
             </button>
           </>
         )}
-      </form>
+      </div>
       {responseData && (
         <div className=' flex w-full justify-center'>
           <textarea
