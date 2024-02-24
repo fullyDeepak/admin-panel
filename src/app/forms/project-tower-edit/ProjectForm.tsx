@@ -20,7 +20,7 @@ export default function ProjectForm() {
   const { setNewTowerEditData } = useEditTowerStore();
 
   // populate project dropdown
-  const { isPending: loadingProjects, data: projectOptions } = useQuery({
+  useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
       try {
@@ -248,7 +248,7 @@ export default function ProjectForm() {
       <h3 className='my-4 text-2xl font-semibold'>Section: Project Details</h3>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Select Project to Edit:</span>
-        <span className='w-full flex-[5]'>
+        <span className='flex w-full flex-[5] items-center gap-5'>
           <Select
             showSearch
             animation='slide-up'
@@ -257,7 +257,23 @@ export default function ProjectForm() {
             onChange={(e) => updateEditProjectFormData({ selectedProject: e })}
             options={editProjectFormData.selectedProjectOption}
             placeholder='Select Project Id and Name'
+            className='rounded-full'
           />
+          {editProjectFormData.projectName && (
+            <button
+              type='button'
+              className='btn btn-error  btn-xs rounded-full text-white'
+              onClick={() =>
+                (
+                  document.getElementById(
+                    'project-delete-modal'
+                  ) as HTMLDialogElement
+                ).showModal()
+              }
+            >
+              Delete
+            </button>
+          )}
         </span>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>

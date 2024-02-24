@@ -16,6 +16,7 @@ import PreviewProjectTower from './PreviewProjectTower';
 import { useEditProjectStore } from '@/store/useEditProjectStore';
 import { useEditTowerStore } from '@/store/useEditTowerStore';
 import { usePathname } from 'next/navigation';
+import { CgInfo } from 'react-icons/cg';
 
 export default function page() {
   const [responseData, setResponseData] = useState<object | undefined>(
@@ -120,12 +121,88 @@ export default function page() {
     }
   };
 
+  async function projectDelete() {
+    toast.loading(`Deleting...`, {
+      id: loadingToastId,
+    });
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const projectId = editProjectFormData.selectedProject;
+    const res = await axiosClient.delete(`/projects/${projectId}`);
+    if (res.status === 200) {
+      toast.dismiss(loadingToastId);
+      toast.success('Successfully deleted!', {
+        id: loadingToastId,
+        duration: 3000,
+      });
+      resetEditProjectFormData();
+      resetEditTowerFormData();
+      (
+        document.getElementById('projectTowerEditForm') as HTMLFormElement
+      ).reset();
+      (
+        document.getElementById('project-delete-modal') as HTMLDialogElement
+      ).close();
+    } else {
+      toast.dismiss(loadingToastId);
+      toast.error('Something went wrong!', {
+        id: loadingToastId,
+        duration: 3000,
+      });
+    }
+  }
+
   return (
     <div className='mx-auto mt-10 flex w-full flex-col md:w-[80%]'>
       <Toaster />
       <h1 className='self-center text-2xl md:text-3xl'>
         Form: Update Project Tower Tagging Data
       </h1>
+      <dialog id='project-delete-modal' className='modal backdrop-blur-sm'>
+        <Toaster />
+        <div className='modal-box h-[50%]'>
+          <div className='flex flex-col items-center  justify-center text-red-500'>
+            <CgInfo size={60} />
+            <h3 className='text-3xl font-bold '>Danger</h3>
+          </div>
+          <p className='py-4'>Do you want to delete selected project?</p>
+          <div className='flex flex-col gap-3'>
+            <div className='flex '>
+              <span className='flex-1 font-semibold'>Project ID</span>
+              <span className='flex-[2]'>
+                {editProjectFormData.selectedProject}
+              </span>
+            </div>
+            <div className='flex'>
+              <span className='flex-1 font-semibold'>Project Name</span>
+              <span className='flex-[2]'>
+                {editProjectFormData.projectName}
+              </span>
+            </div>
+          </div>
+          <div className='mt-10 flex justify-evenly'>
+            <button
+              type='button'
+              onClick={() =>
+                (
+                  document.getElementById(
+                    'project-delete-modal'
+                  ) as HTMLDialogElement
+                ).close()
+              }
+              className='btn btn-neutral btn-sm'
+            >
+              Cancel
+            </button>
+            <button
+              type='button'
+              onClick={projectDelete}
+              className='btn btn-error btn-sm text-white'
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </dialog>
       <form
         className='mt-5 flex w-full max-w-full  flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
         id='projectTowerEditForm'
