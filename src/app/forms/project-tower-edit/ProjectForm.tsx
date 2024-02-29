@@ -203,6 +203,7 @@ export default function ProjectForm() {
       updateEditProjectFormData({
         towerTypeOptions: [
           { label: 'Apartment', value: 'apartment' },
+          { label: 'Apartment - Single', value: 'apartmentSingle' },
           { label: 'Villa', value: 'villa' },
           { label: 'Mixed', value: 'mixed' },
         ],
@@ -255,10 +256,15 @@ export default function ProjectForm() {
             optionFilterProp='label'
             value={editProjectFormData.selectedProject}
             onChange={(e) => updateEditProjectFormData({ selectedProject: e })}
-            options={editProjectFormData.selectedProjectOption}
             placeholder='Select Project Id and Name'
             className='rounded-full'
-          />
+          >
+            {editProjectFormData.selectedProjectOption.map((item, i) => (
+              <Select key={i} value={item.value} className='cursor-pointer'>
+                {item.label}
+              </Select>
+            ))}
+          </Select>
           {editProjectFormData.projectName && (
             <button
               type='button'
@@ -285,9 +291,14 @@ export default function ProjectForm() {
             optionFilterProp='label'
             value={editProjectFormData.village_id || undefined}
             onChange={(e) => updateEditProjectFormData({ village_id: e })}
-            options={villageOptions}
             placeholder='Select Village'
-          />
+          >
+            {villageOptions?.map((item, i) => (
+              <Option key={i} value={item.value} className='cursor-pointer'>
+                {item.label}
+              </Option>
+            ))}
+          </Select>
         </span>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
@@ -329,7 +340,7 @@ export default function ProjectForm() {
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Project Type:</span>
-        <span className='w-full flex-[5] pl-2 font-semibold'>
+        <span className='w-full flex-[5] pl-2'>
           <Select
             value={editProjectFormData.projectType}
             onChange={(e) => {
@@ -341,8 +352,12 @@ export default function ProjectForm() {
               { label: 'Commercial', value: 'commercial' },
               { label: 'Mixed', value: 'mixed' },
             ].map((option, index) => (
-              <Option key={index} value={option.value}>
-                {option.value}
+              <Option
+                key={index}
+                value={option.value}
+                className='cursor-pointer'
+              >
+                {option.label}
               </Option>
             ))}
           </Select>
@@ -350,15 +365,19 @@ export default function ProjectForm() {
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Project Sub Type:</span>
-        <span className='w-full flex-[5] pl-2 font-semibold'>
+        <span className='w-full flex-[5] pl-2'>
           <Select
             onChange={(e) => updateEditProjectFormData({ projectSubType: e })}
             value={editProjectFormData.projectSubType}
             className='w-full'
           >
             {editProjectFormData.projectSubTypeOptions.map((option, index) => (
-              <Option key={index} value={option.value}>
-                {option.value}
+              <Option
+                key={index}
+                value={option.value}
+                className='cursor-pointer'
+              >
+                {option.label}
               </Option>
             ))}
           </Select>

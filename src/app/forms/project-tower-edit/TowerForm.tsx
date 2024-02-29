@@ -1,7 +1,7 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { useEditProjectStore } from '@/store/useEditProjectStore';
 import { useEditTowerStore } from '@/store/useEditTowerStore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BiInfoCircle, BiPlus } from 'react-icons/bi';
 import Select, { Option } from 'rc-select';
 import 'rc-select/assets/index.css';
@@ -19,6 +19,22 @@ export default function TowerForm() {
   const [configName, setConfigName] = useState('');
   const [configMin, setConfigMin] = useState(0);
   const [configMax, setConfigMax] = useState(0);
+  const [isApartmentSingle, setIsApartmentSingle] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (editTowerFormData[0].towerType === 'apartmentSingle') {
+      setIsApartmentSingle(true);
+      const cardCount = editTowerFormData.map((item) => item.id);
+      while (cardCount.length !== 1) {
+        const pop = cardCount.pop();
+        if (pop) {
+          deleteEditTowerFormData(pop);
+        }
+      }
+    } else {
+      setIsApartmentSingle(false);
+    }
+  }, [editTowerFormData[0].towerType]);
 
   return (
     <div className='tower-card-container relative flex flex-col transition-all duration-1000'>
@@ -69,7 +85,7 @@ export default function TowerForm() {
           </label>
           <label className='flex flex-wrap items-center justify-between gap-5 '>
             <span className='flex-[2] '>Tower Type:</span>
-            <span className='w-full flex-[5] pl-2 font-semibold'>
+            <span className='w-full flex-[5] pl-2'>
               <Select
                 onChange={(e) =>
                   updateEditTowerFormData(tower.id, 'towerType', e)
@@ -77,7 +93,13 @@ export default function TowerForm() {
                 value={tower.towerType}
               >
                 {editProjectFormData.towerTypeOptions?.map((option, index) => (
-                  <Option key={index}>{option.value}</Option>
+                  <Option
+                    key={index}
+                    value={option.value}
+                    className='cursor-pointer'
+                  >
+                    {option.label}
+                  </Option>
                 ))}
               </Select>
             </span>
@@ -231,22 +253,25 @@ export default function TowerForm() {
               </button>
             </div>
           </dialog>
-          <div className='absolute -bottom-6 -left-5 z-10 w-full '>
-            <button
-              type='button'
-              className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400 '
-              onClick={() => {
-                const newData = {
-                  ...tower,
-                  id: Math.max(...editTowerFormData.map((data) => data.id)) + 1,
-                  towerName: '',
-                };
-                addNewEditTowerData(newData);
-              }}
-            >
-              <BiPlus size={30} /> <span>Duplicate</span>
-            </button>
-          </div>
+          {!isApartmentSingle && (
+            <div className='absolute -bottom-6 -left-5 z-10 w-full '>
+              <button
+                type='button'
+                className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400 '
+                onClick={() => {
+                  const newData = {
+                    ...tower,
+                    id:
+                      Math.max(...editTowerFormData.map((data) => data.id)) + 1,
+                    towerName: '',
+                  };
+                  addNewEditTowerData(newData);
+                }}
+              >
+                <BiPlus size={30} /> <span>Duplicate</span>
+              </button>
+            </div>
+          )}
         </div>
       ))}
     </div>

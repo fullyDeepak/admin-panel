@@ -192,6 +192,7 @@ export default function ProjectForm() {
               updateProjectFormData({
                 towerTypeOptions: [
                   { label: 'Apartment', value: 'apartment' },
+                  { label: 'Apartment-Single', value: 'apartmentSingle' },
                   { label: 'Villa', value: 'villa' },
                   { label: 'Mixed', value: 'mixed' },
                 ],
