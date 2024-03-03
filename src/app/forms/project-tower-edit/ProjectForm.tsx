@@ -253,16 +253,21 @@ export default function ProjectForm() {
           <Select
             showSearch
             animation='slide-up'
-            optionFilterProp='label'
+            optionFilterProp='desc'
             value={editProjectFormData.selectedProject}
             onChange={(e) => updateEditProjectFormData({ selectedProject: e })}
             placeholder='Select Project Id and Name'
             className='rounded-full'
           >
             {editProjectFormData.selectedProjectOption.map((item, i) => (
-              <Select key={i} value={item.value} className='cursor-pointer'>
+              <Option
+                key={i}
+                value={item.value}
+                className='cursor-pointer'
+                desc={item.label}
+              >
                 {item.label}
-              </Select>
+              </Option>
             ))}
           </Select>
           {editProjectFormData.projectName && (
@@ -288,13 +293,18 @@ export default function ProjectForm() {
           <Select
             showSearch
             animation='slide-up'
-            optionFilterProp='label'
+            optionFilterProp='desc'
             value={editProjectFormData.village_id || undefined}
             onChange={(e) => updateEditProjectFormData({ village_id: e })}
             placeholder='Select Village'
           >
             {villageOptions?.map((item, i) => (
-              <Option key={i} value={item.value} className='cursor-pointer'>
+              <Option
+                key={i}
+                value={item.value}
+                className='cursor-pointer'
+                desc={item.label}
+              >
                 {item.label}
               </Option>
             ))}
