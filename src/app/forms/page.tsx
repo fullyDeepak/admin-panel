@@ -7,7 +7,9 @@ export default function page() {
       <h1 className='mb-4 text-3xl'>Select Forms</h1>
       <div className='flex flex-wrap justify-evenly gap-10'>
         <div className='flex w-fit flex-col gap-4 text-gray-500'>
-          <h2 className='text-xl font-semibold'>Village & SRO Forms</h2>
+          <h2 className='text-center text-xl font-semibold'>
+            Village & SRO Forms
+          </h2>
           <Link
             href={'/forms/village-replacement'}
             className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
@@ -28,7 +30,18 @@ export default function page() {
           </Link>
         </div>
         <div className='flex w-fit flex-col gap-4 text-gray-500'>
-          <h2 className='text-xl font-semibold'>Project Tower Forms</h2>
+          <h2 className='text-center text-xl font-semibold'>ETL Forms</h2>
+          <Link
+            href={'/forms/start-etl'}
+            className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
+          >
+            Start ETL Process
+          </Link>
+        </div>
+        <div className='flex w-fit flex-col gap-4 text-gray-500'>
+          <h2 className='text-center text-xl font-semibold'>
+            Project Tower Forms
+          </h2>
           <Link
             href={'/forms/project-tower'}
             className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
