@@ -1,5 +1,6 @@
 'use client';
 
+import axiosClient from '@/utils/AxiosClient';
 import { resolve } from 'path';
 import toast, { Toaster } from 'react-hot-toast';
 import { CgInfo } from 'react-icons/cg';
@@ -7,13 +8,18 @@ import { CgInfo } from 'react-icons/cg';
 export default function page() {
   async function handleETLStart() {
     let toastId: string = toast.loading('Starting process...');
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    toast.success('Process started.', { id: toastId, duration: 3000 });
+    const response = await axiosClient.post('/etl/startEtlProcess');
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    (
-      document.getElementById('etl-start-confirm-modal') as HTMLDialogElement
-    ).close();
-    (document.getElementById('etl-start-modal') as HTMLDialogElement).close();
+    if (response.status === 200) {
+      toast.success('Process started.', { id: toastId, duration: 3000 });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      (
+        document.getElementById('etl-start-confirm-modal') as HTMLDialogElement
+      ).close();
+      (document.getElementById('etl-start-modal') as HTMLDialogElement).close();
+    } else {
+      toast.error('Something went wrong', { id: toastId, duration: 3000 });
+    }
   }
   return (
     <div className='relative mt-40 flex items-center justify-center'>
