@@ -1,6 +1,6 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { useEditProjectStore } from '@/store/useEditProjectStore';
-import { useEditTowerStore } from '@/store/useEditTowerStore';
+import { editTowerDetail, useEditTowerStore } from '@/store/useEditTowerStore';
 import { useEffect, useState } from 'react';
 import { BiInfoCircle, BiPlus } from 'react-icons/bi';
 import Select, { Option } from 'rc-select';
@@ -102,6 +102,14 @@ export default function TowerForm() {
                   </Option>
                 ))}
               </Select>
+            </span>
+          </label>
+          <label className='flex flex-wrap items-center justify-between gap-5 '>
+            <span className='flex flex-[2] items-center  '>
+              <span>Tower ID:</span>
+            </span>
+            <span className='ml-[6px] w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
+              <span>{tower.towerId}</span>
             </span>
           </label>
           <label className='flex flex-wrap items-center justify-between gap-5 '>
@@ -259,11 +267,12 @@ export default function TowerForm() {
                 type='button'
                 className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400 '
                 onClick={() => {
-                  const newData = {
+                  const newData: editTowerDetail = {
                     ...tower,
                     id:
                       Math.max(...editTowerFormData.map((data) => data.id)) + 1,
                     towerName: '',
+                    towerId: '__new',
                   };
                   addNewEditTowerData(newData);
                 }}

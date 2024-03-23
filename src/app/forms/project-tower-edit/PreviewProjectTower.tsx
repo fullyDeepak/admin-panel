@@ -54,6 +54,10 @@ export default function PreviewProjectTower({
       accessorKey: 'towerType',
     },
     {
+      header: 'Tower ID',
+      accessorKey: 'towerId',
+    },
+    {
       header: 'Tower Name',
       accessorKey: 'towerName',
     },
