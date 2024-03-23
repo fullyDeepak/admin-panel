@@ -52,7 +52,7 @@ export default function TanstackReactTable({
     onGlobalFilterChange: setFiltering,
   });
   return (
-    <div className='mx-auto my-5 flex max-w-[80%] flex-col py-1.5'>
+    <div className='mx-auto my-5 flex flex-col py-1.5'>
       {/* <div>
         Item per page{' '}
         <select
