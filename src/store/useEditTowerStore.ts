@@ -13,7 +13,17 @@ export interface editTowerDetail {
   reraId: string;
   towerType: string;
   towerName: string;
+  towerDoorNo: string;
+  maxFloor: number;
+  groundFloorName: string;
+  groundFloorUnitNoMin: number | string;
+  groundFloorUnitNoMax: number | string;
+  typicalFloorUnitNoMin: number | string;
+  typicalFloorUnitNoMax: number | string;
+  deleteFullUnitNos: string;
+  exceptionUnitNos: string;
   etlUnitConfigs: etlUnitConfig[];
+  validTowerUnits: string[][] | null;
 }
 
 interface FormState {
@@ -39,12 +49,22 @@ interface FormState {
 const initialState: editTowerDetail[] = [
   {
     id: 1,
-    towerId: -1,
+    towerId: '__new',
     projectPhase: 1,
     reraId: '',
     towerType: '',
     towerName: '',
+    towerDoorNo: '',
+    maxFloor: 0,
+    groundFloorName: '',
+    groundFloorUnitNoMin: 0,
+    groundFloorUnitNoMax: 0,
+    typicalFloorUnitNoMin: 0,
+    typicalFloorUnitNoMax: 0,
+    deleteFullUnitNos: '',
+    exceptionUnitNos: '',
     etlUnitConfigs: [{ configName: '', minArea: 0, maxArea: 0 }],
+    validTowerUnits: null,
   },
 ];
 

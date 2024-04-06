@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import ETLTagData from './ETLTagData';
 import axiosClient from '@/utils/AxiosClient';
 import { useEditProjectStore } from '@/store/useEditProjectStore';
-import { useEditTowerStore } from '@/store/useEditTowerStore';
+import { editTowerDetail, useEditTowerStore } from '@/store/useEditTowerStore';
 import Select, { Option } from 'rc-select';
 import 'rc-select/assets/index.css';
 import { MultiSelect } from 'react-multi-select-component';
@@ -105,19 +105,31 @@ export default function ProjectForm() {
               project_id: number;
             }[];
           }[] = projectData.towers;
-          const towerData = towerDataRes.map((item, index) => ({
-            id: index + 1,
-            towerId: item.tower_id,
-            projectPhase: +item.phase,
-            reraId: item.rera_id,
-            towerType: item.type,
-            towerName: item.name,
-            etlUnitConfigs: item.unit_configs.map((unit) => ({
-              configName: unit.config,
-              minArea: unit.min_built,
-              maxArea: unit.max_built,
-            })),
-          }));
+          const towerData: editTowerDetail[] = towerDataRes.map(
+            (item, index) => ({
+              id: index + 1,
+              towerId: item.tower_id,
+              projectPhase: +item.phase,
+              reraId: item.rera_id,
+              towerType: item.type,
+              towerName: item.name,
+              etlUnitConfigs: item.unit_configs.map((unit) => ({
+                configName: unit.config,
+                minArea: unit.min_built,
+                maxArea: unit.max_built,
+              })),
+              maxFloor: 0,
+              groundFloorName: '',
+              deleteFullUnitNos: '',
+              exceptionUnitNos: '',
+              groundFloorUnitNoMax: '',
+              groundFloorUnitNoMin: '',
+              typicalFloorUnitNoMax: '',
+              typicalFloorUnitNoMin: '',
+              towerDoorNo: '',
+              validTowerUnits: null,
+            })
+          );
           console.log(towerData);
           setNewTowerEditData(towerData);
           const surveyContains: string[] = [];
