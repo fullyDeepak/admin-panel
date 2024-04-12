@@ -96,6 +96,16 @@ export default function ProjectForm() {
             phase: number;
             rera_id: string;
             tower_id: number;
+            max_floor: number;
+            min_floor: number;
+            tower_door_no: string;
+            ground_floor_name: string;
+            exception_unit_nos: string;
+            delete_full_unit_nos: string;
+            ground_floor_unit_no_max: string;
+            ground_floor_unit_no_min: string;
+            typical_floor_unit_no_max: number;
+            typical_floor_unit_no_min: number;
             unit_configs: {
               id: number;
               config: string;
@@ -118,15 +128,16 @@ export default function ProjectForm() {
                 minArea: unit.min_built,
                 maxArea: unit.max_built,
               })),
-              maxFloor: 0,
-              groundFloorName: '',
-              deleteFullUnitNos: '',
-              exceptionUnitNos: '',
-              groundFloorUnitNoMax: '',
-              groundFloorUnitNoMin: '',
-              typicalFloorUnitNoMax: '',
-              typicalFloorUnitNoMin: '',
-              towerDoorNo: '',
+              minFloor: item.min_floor,
+              maxFloor: item.max_floor,
+              groundFloorName: item.ground_floor_name,
+              deleteFullUnitNos: item.delete_full_unit_nos,
+              exceptionUnitNos: item.exception_unit_nos,
+              groundFloorUnitNoMax: item.ground_floor_unit_no_max,
+              groundFloorUnitNoMin: item.ground_floor_unit_no_min,
+              typicalFloorUnitNoMax: item.typical_floor_unit_no_max,
+              typicalFloorUnitNoMin: item.typical_floor_unit_no_min,
+              towerDoorNo: item.tower_door_no,
               validTowerUnits: null,
             })
           );

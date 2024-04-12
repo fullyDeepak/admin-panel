@@ -14,6 +14,7 @@ export interface editTowerDetail {
   towerType: string;
   towerName: string;
   towerDoorNo: string;
+  minFloor: number;
   maxFloor: number;
   groundFloorName: string;
   groundFloorUnitNoMin: number | string;
@@ -55,6 +56,7 @@ const initialState: editTowerDetail[] = [
     towerType: '',
     towerName: '',
     towerDoorNo: '',
+    minFloor: 0,
     maxFloor: 0,
     groundFloorName: '',
     groundFloorUnitNoMin: 0,

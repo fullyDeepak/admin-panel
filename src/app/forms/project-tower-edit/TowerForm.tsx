@@ -44,28 +44,31 @@ export default function TowerForm() {
     editTowerFormData.map((item) => {
       if (item.id === cardId) {
         const deleteUnitList: string[] = [];
-        item.deleteFullUnitNos
-          .split(',')
-          .map((item) => (item.trim() ? deleteUnitList.push(item.trim()) : ''));
+        item?.deleteFullUnitNos
+          ?.split(',')
+          ?.map((item) =>
+            item.trim() ? deleteUnitList.push(item.trim()) : ''
+          );
         const exceptionUnitList: string[] = [];
         item.exceptionUnitNos
-          .split(',')
-          .map((item) =>
+          ?.split(',')
+          ?.map((item) =>
             item.trim() ? exceptionUnitList.push(item.trim()) : ''
           );
-        const maxFloor = item.maxFloor;
+        const maxFloor = +item.maxFloor;
+        const minFloor = +item.minFloor;
         const unitMin = item.typicalFloorUnitNoMin;
         const unitMax = item.typicalFloorUnitNoMax;
         const gfName = item.groundFloorName;
         const gFMin = item.groundFloorUnitNoMin;
         const gFMax = item.groundFloorUnitNoMax;
-        exceptionUnitList.map((item) => {
+        exceptionUnitList?.map((item) => {
           if (item.includes('PH') || item.includes('Penthouse')) {
             validTableData.push([item]);
           }
         });
         // [x] unit min-max rules
-        for (let i = maxFloor; i > 0; i--) {
+        for (let i = maxFloor; i >= minFloor; i--) {
           let temp = [];
           console.log('UNITMIN->', unitMin);
           if (
@@ -316,6 +319,19 @@ export default function TowerForm() {
                     'towerDoorNo',
                     e.target.value
                   )
+                }
+              />
+            </label>
+            <label className='flex flex-wrap items-center justify-between gap-5 '>
+              <span className='flex flex-[2] items-center  '>
+                <span>Min Floor:</span>
+              </span>
+              <input
+                className={inputBoxClass}
+                name='maxFloor'
+                defaultValue={tower.minFloor ? tower.minFloor : ''}
+                onChange={(e) =>
+                  updateEditTowerFormData(tower.id, 'minFloor', e.target.value)
                 }
               />
             </label>
