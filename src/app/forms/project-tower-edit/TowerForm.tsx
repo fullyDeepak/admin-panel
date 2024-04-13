@@ -119,7 +119,7 @@ export default function TowerForm() {
           }
         });
         // [x] gf min-max rules
-        if (gfName && gFMin && gFMax) {
+        if (gFMin && gFMax) {
           const temp = [];
           if (
             typeof gFMax === 'string' &&
@@ -142,7 +142,7 @@ export default function TowerForm() {
           ) {
             for (let g = parseInt(gFMin); g <= parseInt(gFMax); g++) {
               let unit = '';
-              unit = `${gfName}${g}`;
+              unit = gfName ? `${gfName}${g}` : `${g}`;
               if (deleteUnitList.includes(unit)) {
                 continue;
               }
