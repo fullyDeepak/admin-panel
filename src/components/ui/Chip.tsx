@@ -23,6 +23,12 @@ const ChipInput = ({ chips, updateFormData, updateKey }: ChipInputProps) => {
         [updateKey]: [...chips, inputValue.trim()],
       });
       setInputValue('');
+    } else if (e.key === 'Backspace' && chips.length > 0) {
+      chips.pop();
+      updateFormData({
+        [updateKey]: chips,
+      });
+      setInputValue('');
     }
   };
 

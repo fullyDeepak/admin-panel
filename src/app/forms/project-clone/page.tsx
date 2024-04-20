@@ -8,8 +8,8 @@ import { useQuery } from '@tanstack/react-query';
 import ReactSelect, { SingleValue } from 'react-select';
 import Select from 'rc-select';
 import 'rc-select/assets/index.css';
-import ChipInput from '../project-tower/Chip';
 import { usePathname } from 'next/navigation';
+import ChipInput from '@/components/ui/Chip';
 
 export default function page() {
   const [responseData, setResponseData] = useState<object | undefined>(

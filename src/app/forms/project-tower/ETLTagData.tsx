@@ -1,5 +1,5 @@
+import ChipInput from '@/components/ui/Chip';
 import { useProjectStore } from '@/store/useProjectStore';
-import ChipInput from './Chip';
 
 export default function ETLTagData() {
   const { projectFormData, updateProjectFormData } = useProjectStore();
