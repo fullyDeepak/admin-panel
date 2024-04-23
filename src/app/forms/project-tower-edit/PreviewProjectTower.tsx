@@ -17,6 +17,8 @@ type PreviewProjectTowerProps = {
     apartmentContains: string;
     counterpartyContains: string;
     projectCoordinates: string[];
+    aptSurveyPlotDetails: boolean;
+    counterpartySurveyPlotDetails: boolean;
   };
   towerFormData: {
     id: number;
@@ -174,7 +176,11 @@ export default function PreviewProjectTower({
                     .join(', ')}
                 </span>
               ) : (
-                <span className='flex-[1] '>{value as string}</span>
+                <span className='flex-[1] '>
+                  {typeof value === 'boolean'
+                    ? JSON.stringify(value)
+                    : (value as string)}
+                </span>
               )}
             </div>
           ))}

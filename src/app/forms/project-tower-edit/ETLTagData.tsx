@@ -70,19 +70,61 @@ export default function ETLTagData() {
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Apartment Contains:</span>
-        <ChipInput
-          chips={editProjectFormData.apartmentContains}
-          updateFormData={updateEditProjectFormData}
-          updateKey='apartmentContains'
-        />
+        <div className='flex flex-[5] gap-4'>
+          <ChipInput
+            chips={editProjectFormData.apartmentContains}
+            updateFormData={updateEditProjectFormData}
+            updateKey='apartmentContains'
+            addTWClass='ml-0'
+          />
+          <div className='flex items-center gap-2'>
+            <label
+              className={`swap rounded  p-1 ${editProjectFormData.aptSurveyPlotDetails ? 'bg-green-200' : 'bg-rose-200'}`}
+            >
+              <input
+                type='checkbox'
+                checked={editProjectFormData.aptSurveyPlotDetails}
+                onChange={(e) =>
+                  updateEditProjectFormData({
+                    aptSurveyPlotDetails: e.target.checked,
+                  })
+                }
+              />
+              <div className='swap-on'>AND</div>
+              <div className='swap-off'>&nbsp;OR</div>
+            </label>
+            <p>Survey Plot Details</p>
+          </div>
+        </div>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Counterparty Contains:</span>
-        <ChipInput
-          chips={editProjectFormData.counterpartyContains}
-          updateFormData={updateEditProjectFormData}
-          updateKey='counterpartyContains'
-        />
+        <div className='flex flex-[5] gap-4'>
+          <ChipInput
+            chips={editProjectFormData.counterpartyContains}
+            updateFormData={updateEditProjectFormData}
+            updateKey='counterpartyContains'
+            addTWClass='ml-0'
+          />
+          <div className='flex items-center gap-2'>
+            <label
+              className={`swap rounded  p-1 ${editProjectFormData.counterpartySurveyPlotDetails ? 'bg-green-200' : 'bg-rose-200'}`}
+            >
+              <input
+                type='checkbox'
+                checked={editProjectFormData.counterpartySurveyPlotDetails}
+                onChange={(e) =>
+                  updateEditProjectFormData({
+                    counterpartySurveyPlotDetails: e.target.checked,
+                  })
+                }
+              />
+              <div className='swap-on'>AND</div>
+              <div className='swap-off'>&nbsp;OR</div>
+            </label>
+            <p>Survey Plot Details</p>
+          </div>
+        </div>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Survey & Plot Equals:</span>
