@@ -16,8 +16,9 @@ export default function ProjectForm() {
     editProjectFormData,
     updateEditProjectFormData,
     resetEditProjectFormData,
+    updateOldProjectFormData,
   } = useEditProjectStore();
-  const { setNewTowerEditData } = useEditTowerStore();
+  const { setNewTowerEditData, setOldTowerEditData } = useEditTowerStore();
 
   // populate project dropdown
   useQuery({
@@ -143,6 +144,7 @@ export default function ProjectForm() {
           );
           console.log(towerData);
           setNewTowerEditData(towerData);
+          setOldTowerEditData(towerData);
           const surveyContains: string[] = [];
           const surveyEqual: string[] = [];
           const plotEqual: string[] = [];
@@ -191,7 +193,7 @@ export default function ProjectForm() {
               value: item.id,
             })
           );
-          updateEditProjectFormData({
+          const projectFormData = {
             village_id: projectData.village_id,
             projectName: projectData.project_name,
             developerGroup: projectData.developer_group_name,
@@ -206,7 +208,9 @@ export default function ProjectForm() {
             amenitiesTags: amenities,
             apartmentContains: projectData.apartment_contains || [],
             counterpartyContains: projectData.counterparty_contains || [],
-          });
+          };
+          updateEditProjectFormData(projectFormData);
+          updateOldProjectFormData(projectFormData);
         }
         return true;
       } catch (error) {

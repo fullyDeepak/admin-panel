@@ -17,9 +17,10 @@ export default function page() {
     undefined
   );
   const [formCount, setFormCount] = useState<number>(0);
-  const { editProjectFormData, resetEditProjectFormData } =
+  const { editProjectFormData, resetEditProjectFormData, oldProjectFormData } =
     useEditProjectStore();
-  const { editTowerFormData, resetEditTowerFormData } = useEditTowerStore();
+  const { editTowerFormData, resetEditTowerFormData, oldTowerFormData } =
+    useEditTowerStore();
   useEffect(() => {
     resetEditProjectFormData();
     resetEditTowerFormData();
@@ -34,9 +35,6 @@ export default function page() {
   delete newProjectFormData.selectedProjectOption;
   delete newProjectFormData.projectSubTypeOptions;
   delete newProjectFormData.towerTypeOptions;
-  //   newProjectFormData = JSON.stringify(newProjectFormData.amenitiesTags);
-  //   delete newProjectFormData.amenitiesTags;
-  //   newProjectFormData.village_id = newProjectFormData.village_id?.value;
   let newTowerFormData: any;
   newTowerFormData = editTowerFormData.map((item) => ({
     ...item,
@@ -70,9 +68,21 @@ export default function page() {
         });
         return null;
       }
+      let modifiedOldProjectFormData = JSON.parse(
+        JSON.stringify(oldProjectFormData)
+      );
+      delete modifiedOldProjectFormData?.selectedProjectOption;
+      delete modifiedOldProjectFormData?.projectSubTypeOptions;
+      delete modifiedOldProjectFormData?.towerTypeOptions;
       const data = {
-        projectData: newProjectFormData,
-        towerData: newTowerFormData,
+        new: {
+          projectData: newProjectFormData,
+          towerData: newTowerFormData,
+        },
+        old: {
+          projectData: modifiedOldProjectFormData,
+          towerData: oldTowerFormData,
+        },
       };
       console.log(data);
       setResponseData(data);
@@ -146,7 +156,7 @@ export default function page() {
   }
 
   return (
-    <div className='mx-auto mt-10 flex w-full flex-col md:w-[80%]'>
+    <div className='mx-auto mt-10 flex w-full flex-col'>
       <Toaster />
       <h1 className='self-center text-2xl md:text-3xl'>
         Form: Update Project Tower Tagging Data
@@ -198,7 +208,7 @@ export default function page() {
         </div>
       </dialog>
       <form
-        className='mt-5 flex w-full max-w-full  flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
+        className='mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-16 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
         id='projectTowerEditForm'
         onSubmit={submitForm}
       >

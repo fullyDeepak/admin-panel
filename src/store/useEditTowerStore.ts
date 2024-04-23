@@ -29,7 +29,9 @@ export interface editTowerDetail {
 
 interface FormState {
   editTowerFormData: editTowerDetail[];
+  oldTowerFormData: editTowerDetail[];
   setNewTowerEditData: (data: editTowerDetail[]) => void;
+  setOldTowerEditData: (data: editTowerDetail[]) => void;
   updateEditTowerFormData: (
     id: number,
     key: keyof editTowerDetail,
@@ -73,10 +75,16 @@ const initialState: editTowerDetail[] = [
 export const useEditTowerStore = create<FormState>((set) => ({
   // Initial state
   editTowerFormData: initialState,
+  oldTowerFormData: initialState,
 
   setNewTowerEditData: (data) => {
     set(() => ({
       editTowerFormData: data,
+    }));
+  },
+  setOldTowerEditData: (data) => {
+    set(() => ({
+      oldTowerFormData: data,
     }));
   },
 

@@ -6,6 +6,7 @@ import { useProjectStore } from '@/store/useProjectStore';
 import ETLTagData from './ETLTagData';
 import axiosClient from '@/utils/AxiosClient';
 import { MultiSelect } from 'react-multi-select-component';
+import { extractKMLCoordinates } from '@/utils/extractKMLCoordinates';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
@@ -16,8 +17,6 @@ export default function ProjectForm() {
     label: string;
     value: number;
   } | null>();
-
-  const [xmlData, setXmlData] = useState<string | undefined>();
 
   // populate village dropdown
   const { isPending: loadingVillages, data: villageOptions } = useQuery({
@@ -47,38 +46,6 @@ export default function ProjectForm() {
     staleTime: Infinity,
   });
 
-  const extractKMLCoordinates = async (e: ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const reader = new FileReader();
-    if (e.target && e.target.files && e.target.files[0]) {
-      reader.onload = async (e) => {
-        if (e.target) {
-          const text = e.target.result as string;
-          setXmlData(text);
-        }
-      };
-      reader.readAsText(e.target.files[0]);
-    }
-  };
-
-  function findValueByKey(
-    obj: { [key: string]: any },
-    targetKey: string
-  ): string | undefined {
-    for (const key in obj) {
-      if (key === targetKey) {
-        return obj[key];
-      }
-      if (typeof obj[key] === 'object' && obj[key] !== null) {
-        const result = findValueByKey(obj[key], targetKey);
-        if (result !== undefined) {
-          return result;
-        }
-      }
-    }
-    return undefined;
-  }
-
   const { data: amenitiesOptions, isLoading: loadingAmenities } = useQuery({
     queryKey: ['amenitiesOptions'],
     queryFn: async () => {
@@ -91,18 +58,6 @@ export default function ProjectForm() {
       return amenitiesOptions;
     },
   });
-
-  useEffect(() => {
-    if (xmlData) {
-      const parser = new XMLParser();
-      const xmlObj = parser.parse(xmlData);
-      const cord = findValueByKey(xmlObj, 'coordinates');
-      const newCoord = cord
-        ?.split(',0 ')
-        .map((ele) => ele.replace(',', ' ').replace(',0', ''));
-      updateProjectFormData({ projectCoordinates: newCoord });
-    }
-  }, [xmlData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -291,7 +246,10 @@ export default function ProjectForm() {
           name='kmlFile'
           accept='.kml'
           className='file-input input-bordered w-full flex-[5]'
-          onChange={(e) => extractKMLCoordinates(e)}
+          onChange={async (e) => {
+            const text = await extractKMLCoordinates(e);
+            updateProjectFormData({ projectCoordinates: text });
+          }}
         />
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
