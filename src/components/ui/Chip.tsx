@@ -1,12 +1,37 @@
 import { ChangeEvent, useState, KeyboardEvent } from 'react';
 
-type ChipInputProps = {
-  chips: string[];
-  updateFormData: (newDetails: Partial<object>) => void;
-  updateKey: string;
-};
+type ChipInputProps =
+  | {
+      chips: string[];
+      updateFormData: (newDetails: Partial<object>) => void;
+      updateKey: string;
+      regexPattern?: RegExp;
+      placeholder?: string;
+      addTWClass?: string;
+      enableGeneration?: true;
+      generationKey: string;
+    }
+  | {
+      chips: string[];
+      updateFormData: (newDetails: Partial<object>) => void;
+      updateKey: string;
+      regexPattern?: RegExp;
+      placeholder?: string;
+      addTWClass?: string;
+      enableGeneration?: false;
+      generationKey?: never;
+    };
 
-const ChipInput = ({ chips, updateFormData, updateKey }: ChipInputProps) => {
+const ChipInput = ({
+  chips,
+  updateFormData,
+  placeholder,
+  regexPattern,
+  addTWClass,
+  updateKey,
+  enableGeneration,
+  generationKey,
+}: ChipInputProps) => {
   const [inputValue, setInputValue] = useState('');
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -19,11 +44,37 @@ const ChipInput = ({ chips, updateFormData, updateKey }: ChipInputProps) => {
       inputValue.trim() !== '' &&
       !chips.includes(inputValue.trim())
     ) {
-      updateFormData({
-        [updateKey]: [...chips, inputValue.trim()],
-      });
-      setInputValue('');
-    } else if (e.key === 'Backspace' && chips.length > 0) {
+      if (enableGeneration && inputValue.includes(generationKey)) {
+        const [start, stop] = inputValue.split(generationKey);
+        const generatedChips = [];
+        for (let i = +start; i <= +stop; i++) {
+          !chips.includes(String(i)) ? generatedChips.push(String(i)) : null;
+        }
+        updateFormData({
+          [updateKey]: [...chips, ...generatedChips],
+        });
+        setInputValue('');
+      } else {
+        if (regexPattern !== undefined) {
+          const value = inputValue.trim();
+          if (regexPattern.test(value)) {
+            updateFormData({
+              [updateKey]: [...chips, inputValue.trim()],
+            });
+            setInputValue('');
+          }
+        } else {
+          updateFormData({
+            [updateKey]: [...chips, inputValue.trim()],
+          });
+          setInputValue('');
+        }
+      }
+    } else if (
+      e.key === 'Backspace' &&
+      chips.length > 0 &&
+      inputValue.length === 0
+    ) {
       chips.pop();
       updateFormData({
         [updateKey]: chips,
@@ -39,7 +90,9 @@ const ChipInput = ({ chips, updateFormData, updateKey }: ChipInputProps) => {
   };
 
   return (
-    <div className='ml-[6px] flex w-full flex-[5] flex-wrap items-center gap-3 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus-within:ring-2 focus-within:ring-inset focus-within:ring-rose-600 '>
+    <div
+      className={`ml-[6px] flex w-full flex-[5] flex-wrap items-center gap-3 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus-within:ring-2 focus-within:ring-inset focus-within:ring-rose-600 ${addTWClass}`}
+    >
       {chips?.map((chip, index) => (
         <div
           key={index}
@@ -60,7 +113,7 @@ const ChipInput = ({ chips, updateFormData, updateKey }: ChipInputProps) => {
         value={inputValue}
         onChange={handleInputChange}
         onKeyDown={handleInputKeyDown}
-        placeholder={'Hit Enter or Comma for chip'}
+        placeholder={placeholder ? placeholder : 'Hit Enter or Comma for chip'}
       />
     </div>
   );
