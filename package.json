@@ -24,6 +24,7 @@
     "date-fns": "^3.6.0",
     "fast-xml-parser": "^4.3.6",
     "leaflet": "^1.9.4",
+    "lodash": "^4.17.21",
     "mongoose": "^8.2.3",
     "next": "14.1.4",
     "next-auth": "^4.24.7",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@tanstack/react-query-devtools": "^5.28.6",
     "@types/bcryptjs": "^2.4.6",
+    "@types/lodash": "^4.17.0",
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.69",
     "@types/react-dom": "^18.2.22",

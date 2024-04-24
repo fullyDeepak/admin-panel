@@ -71,6 +71,13 @@ input[type='number'] {
 .btn-info {
   @apply text-white;
 }
+.btn-rezy {
+  @apply btn min-h-0 border-none bg-rose-500 text-white hover:bg-rose-600;
+}
+
+.btn-rezy-sm {
+  @apply btn btn-sm border-none bg-rose-500 text-white hover:bg-rose-600;
+}
 
 .rc-select {
   width: 100% !important;
@@ -80,4 +87,13 @@ input[type='number'] {
 .rc-select-selection-search input {
   background: none !important;
   font-size: 18px;
+}
+
+.rmsc .dropdown-heading {
+  height: auto !important;
+  min-height: 38px !important;
+}
+
+.rmsc .dropdown-heading .dropdown-heading-value {
+  white-space: unset !important;
 }
