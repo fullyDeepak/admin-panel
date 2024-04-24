@@ -35,6 +35,8 @@ export interface ProjectTaggingType {
   rootDocs: string[];
   apartmentContains: string[];
   counterpartyContains: string[];
+  aptSurveyPlotDetails: boolean;
+  counterpartySurveyPlotDetails: boolean;
   plotEqual: string[];
   surveyContains: string[];
   plotContains: string[];
@@ -72,6 +74,8 @@ const initialState: ProjectTaggingType = {
   rootDocs: [],
   apartmentContains: [],
   counterpartyContains: [],
+  aptSurveyPlotDetails: false,
+  counterpartySurveyPlotDetails: false,
   surveyEqual: [],
   plotEqual: [],
   surveyContains: [],
