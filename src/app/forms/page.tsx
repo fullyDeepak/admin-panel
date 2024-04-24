@@ -3,9 +3,11 @@ import React from 'react';
 
 export default function page() {
   return (
-    <div className='mx-auto mt-10 flex w-[90%] flex-col'>
-      <h1 className='mb-4 text-3xl'>Select Forms</h1>
-      <div className='flex flex-wrap justify-evenly gap-10'>
+    <div className='mx-auto my-10 flex w-[60%] flex-col'>
+      <h1 className='mb-4 text-center text-3xl font-semibold underline'>
+        Select Form
+      </h1>
+      <div className='mt-5 flex flex-wrap justify-evenly gap-10'>
         <div className='flex w-fit flex-col gap-4 text-gray-500'>
           <h2 className='text-center text-xl font-semibold'>
             Village & SRO Forms
@@ -46,19 +48,25 @@ export default function page() {
             href={'/forms/project-tower'}
             className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
           >
-            Add New Project Tower
+            Onboard Project
+          </Link>
+          <Link
+            href={'/forms/project-tower-rera'}
+            className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
+          >
+            Onboard Project via RERA
           </Link>
           <Link
             href={'/forms/project-tower-edit'}
             className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
           >
-            Update Project Tower
+            Update Onboarded Project
           </Link>
           <Link
             href={'/forms/project-clone'}
             className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
           >
-            Clone Project
+            Clone Onboarded Project
           </Link>
         </div>
       </div>
