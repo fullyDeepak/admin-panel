@@ -2,11 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import ETLTagData from './ETLTagData';
 import axiosClient from '@/utils/AxiosClient';
-import { useEditProjectStore } from '@/store/useEditProjectStore';
+import {
+  ProjectTaggingType,
+  useEditProjectStore,
+} from '@/store/useEditProjectStore';
 import { editTowerDetail, useEditTowerStore } from '@/store/useEditTowerStore';
 import Select, { Option } from 'rc-select';
 import 'rc-select/assets/index.css';
 import { MultiSelect } from 'react-multi-select-component';
+import { GetProjectDetails } from '@/types/types';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
@@ -86,36 +90,12 @@ export default function ProjectForm() {
     queryFn: async () => {
       try {
         if (editProjectFormData.selectedProject) {
-          const res = await axiosClient.get(
+          const res = await axiosClient.get<{ data: GetProjectDetails }>(
             `/projects/${editProjectFormData.selectedProject}`
           );
           const projectData = res.data.data;
           console.log(projectData);
-          const towerDataRes: {
-            name: string;
-            type: string;
-            phase: number;
-            rera_id: string;
-            tower_id: number;
-            max_floor: number;
-            min_floor: number;
-            tower_door_no: string;
-            ground_floor_name: string;
-            exception_unit_nos: string;
-            delete_full_unit_nos: string;
-            ground_floor_unit_no_max: string;
-            ground_floor_unit_no_min: string;
-            typical_floor_unit_no_max: number;
-            typical_floor_unit_no_min: number;
-            unit_configs: {
-              id: number;
-              config: string;
-              tower_id: number;
-              max_built: number;
-              min_built: number;
-              project_id: number;
-            }[];
-          }[] = projectData.towers;
+          const towerDataRes = projectData.towers;
           const towerData: editTowerDetail[] = towerDataRes.map(
             (item, index) => ({
               id: index + 1,
@@ -129,8 +109,8 @@ export default function ProjectForm() {
                 minArea: unit.min_built,
                 maxArea: unit.max_built,
               })),
-              minFloor: item.min_floor,
-              maxFloor: item.max_floor,
+              minFloor: +item.min_floor,
+              maxFloor: +item.max_floor,
               groundFloorName: item.ground_floor_name,
               deleteFullUnitNos: item.delete_full_unit_nos,
               exceptionUnitNos: item.exception_unit_nos,
@@ -145,55 +125,16 @@ export default function ProjectForm() {
           console.log(towerData);
           setNewTowerEditData(towerData);
           setOldTowerEditData(towerData);
-          const surveyContains: string[] = [];
-          const surveyEqual: string[] = [];
-          const plotEqual: string[] = [];
-          projectData?.surveys?.map(
-            (item: {
-              surveys: {
-                type: 'CONTAINS' | 'EQUALS';
-                surveys: string[];
-              };
-            }) => {
-              if (
-                item.surveys.type === 'CONTAINS' &&
-                item.surveys.surveys.length > 0
-              ) {
-                for (const iterator of item.surveys.surveys) {
-                  surveyContains.push(iterator);
-                }
-              }
-              if (
-                item.surveys.type === 'EQUALS' &&
-                item.surveys.surveys.length > 0
-              ) {
-                for (const iterator of item.surveys.surveys) {
-                  surveyEqual.push(iterator);
-                }
-              }
-            }
-          );
-          projectData?.plots?.map(
-            (item: {
-              plots: {
-                type: 'EQUALS';
-                plots: string[];
-              };
-            }) => {
-              if (item.plots.type === 'EQUALS' && item.plots.plots.length > 0) {
-                for (const iterator of item.plots.plots) {
-                  plotEqual.push(iterator);
-                }
-              }
-            }
-          );
+          const surveyEquals = projectData?.survey_equals;
+          const surveyContains = projectData?.survey_contains;
+          const plotEquals = projectData?.plot_equals;
           const amenities = projectData.amenities.map(
             (item: { id: number; amenity: string }) => ({
               label: item.amenity,
               value: item.id,
             })
           );
-          const projectFormData = {
+          const projectFormData: Partial<ProjectTaggingType> = {
             village_id: projectData.village_id,
             projectName: projectData.project_name,
             developerGroup: projectData.developer_group_name,
@@ -203,8 +144,8 @@ export default function ProjectForm() {
             projectType: projectData.project_category,
             projectSubType: projectData.project_subtype,
             surveyContains: surveyContains,
-            surveyEqual: surveyEqual,
-            plotEqual: plotEqual,
+            surveyEquals: surveyEquals,
+            plotEquals: plotEquals,
             amenitiesTags: amenities,
             apartmentContains: projectData.apartment_contains || [],
             counterpartyContains: projectData.counterparty_contains || [],

@@ -18,7 +18,18 @@ interface towerDetailRera {
   }>;
   towerTypeSuggestion: string;
   towerName: string;
+  towerDoorNo: string;
+  minFloor: number;
+  maxFloor: number;
+  groundFloorName: string;
+  groundFloorUnitNoMin: number | string;
+  groundFloorUnitNoMax: number | string;
+  typicalFloorUnitNoMin: number | string;
+  typicalFloorUnitNoMax: number | string;
+  deleteFullUnitNos: string;
+  exceptionUnitNos: string;
   etlUnitConfigs: etlUnitConfigRera[];
+  validTowerUnits: string[][] | null;
 }
 
 interface FormState {
@@ -59,6 +70,17 @@ const initialState: towerDetailRera[] = [
     },
     towerTypeSuggestion: '',
     towerName: '',
+    towerDoorNo: '',
+    minFloor: 0,
+    maxFloor: 0,
+    validTowerUnits: null,
+    groundFloorName: '',
+    groundFloorUnitNoMin: 0,
+    groundFloorUnitNoMax: 0,
+    typicalFloorUnitNoMin: 0,
+    typicalFloorUnitNoMax: 0,
+    deleteFullUnitNos: '',
+    exceptionUnitNos: '',
     etlUnitConfigs: [{ configName: '', minArea: 0, maxArea: 0 }],
   },
 ];

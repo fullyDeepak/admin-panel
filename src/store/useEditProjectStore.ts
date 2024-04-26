@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { SingleValue } from 'react-select';
 
 export interface ProjectTaggingType {
   selectedProject: number | undefined;
@@ -29,22 +28,26 @@ export interface ProjectTaggingType {
     | [];
   projectSubType: string;
   projectDesc: string;
-  amenitiesTags: { label: string; value: string; __isNew__?: boolean }[];
-  surveyEqual: string[];
-  docId: string;
+  amenitiesTags: {
+    label: string;
+    value: string | number;
+    __isNew__?: boolean;
+  }[];
+  surveyEquals: string[];
+  docId: string[];
   rootDocs: string[];
   apartmentContains: string[];
   counterpartyContains: string[];
   aptSurveyPlotDetails: boolean;
   counterpartySurveyPlotDetails: boolean;
-  plotEqual: string[];
+  plotEquals: string[];
   surveyContains: string[];
   plotContains: string[];
   localityContains: string[];
   wardBlock: string[];
   localityPlot: string[];
-  doorNoStartWith: string;
-  aptNameNotContains: string;
+  doorNoStartWith: string[];
+  aptNameNotContains: string[];
 }
 
 interface FormState {
@@ -70,21 +73,21 @@ const initialState: ProjectTaggingType = {
   projectSubTypeOptions: [],
   projectDesc: '',
   amenitiesTags: [],
-  docId: '',
+  docId: [],
   rootDocs: [],
   apartmentContains: [],
   counterpartyContains: [],
   aptSurveyPlotDetails: false,
   counterpartySurveyPlotDetails: false,
-  surveyEqual: [],
-  plotEqual: [],
+  surveyEquals: [],
+  plotEquals: [],
   surveyContains: [],
   plotContains: [],
   localityContains: [],
   wardBlock: [],
   localityPlot: [],
-  doorNoStartWith: '',
-  aptNameNotContains: '',
+  doorNoStartWith: [],
+  aptNameNotContains: [],
 };
 
 export const useEditProjectStore = create<FormState>((set) => ({
