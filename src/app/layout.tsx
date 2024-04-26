@@ -1,10 +1,20 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+// import { Inter } from 'next/font/google';
 import './globals.css';
 import React from 'react';
 import ReactQueryProvider from '@/components/providers/ReactQueryProvider';
 import NavBar from '@/components/ui/Navbar';
-const inter = Inter({ subsets: ['latin'] });
+// const inter = Inter({ subsets: ['latin'] });
+import localFont from 'next/font/local';
+
+const gsans = localFont({
+  src: [
+    { path: '../fonts/GoogleSans-Regular.woff2', weight: '400' },
+    { path: '../fonts/GoogleSans-Medium.woff2', weight: '500' },
+    { path: '../fonts/GoogleSans-Bold.woff2', weight: '700' },
+  ],
+  variable: '--font-gsans',
+});
 
 export const metadata: Metadata = {
   title: 'Rezy Admin Dashboard',
@@ -17,8 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='en'>
-      <body className={inter.className}>
+    <html lang='en' className={`${gsans.variable}`}>
+      <body className={'font-gsans'}>
         <NavBar />
         <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>

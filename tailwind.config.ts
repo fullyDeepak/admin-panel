@@ -8,6 +8,15 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        gsans: ['var(--font-gsans)'],
+        gilroy: ['var(--font-gilroy)'],
+      },
+      boxShadow: {
+        c: '0 1px 6px rgb(32 33 36 / 28%)',
+        c2: '0 1px 1px rgb(0 0 0 / 10%)',
+        darkC: '0px 1px 6px rgba(150 150 150 / 20%)',
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
