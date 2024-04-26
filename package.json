@@ -2,7 +2,7 @@
   "name": "rezy-admin-dashboard",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@8.12.1",
+  "packageManager": "pnpm@9.0.6",
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
+    "@react-pdf-viewer/core": "3.12.0",
+    "@react-pdf-viewer/default-layout": "^3.12.0",
     "@szhsin/react-menu": "^4.1.0",
     "@tanstack/react-query": "^5.28.6",
     "@tanstack/react-table": "^8.15.0",
@@ -28,6 +30,7 @@
     "mongoose": "^8.2.3",
     "next": "14.1.4",
     "next-auth": "^4.24.7",
+    "pdfjs-dist": "3.11.174",
     "postgres": "^3.4.4",
     "primereact": "^9.6.4",
     "rc-select": "^14.13.0",
@@ -40,6 +43,7 @@
     "react-icons": "^5.0.1",
     "react-leaflet": "^4.2.1",
     "react-multi-select-component": "^4.3.4",
+    "react-rnd": "^10.4.10",
     "react-select": "^5.8.0",
     "sharp": "^0.33.2",
     "zustand": "^4.5.2"

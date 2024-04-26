@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import { uniq } from 'lodash';
 import { useTowerStoreRera } from '@/store/useTowerStoreRera';
 import ChipInput from '@/components/ui/Chip';
+import { useReraDocStore } from '@/store/useReraDocStore';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
@@ -31,6 +32,7 @@ export default function ProjectForm() {
     updateTowerFormDataRera,
     setTowersDataRera,
   } = useTowerStoreRera();
+  const { resetReraDocs } = useReraDocStore();
   const [mainProject, setMainProject] = useState<string>('');
 
   async function fetchDropdownOption(
@@ -227,6 +229,7 @@ export default function ProjectForm() {
     };
     console.log(dmvp);
     resetProjectFormDataRera();
+    resetReraDocs();
     updateProjectFormDataRera(dmvp);
     const selectedProjectIds = projectFormDataRera.projects.map(
       (item) => +item.value
@@ -281,6 +284,17 @@ export default function ProjectForm() {
         },
         towerName: item.tower_name,
         etlUnitConfigs: item.etl_unit_configs,
+        towerDoorNo: '',
+        minFloor: 0,
+        maxFloor: 0,
+        validTowerUnits: null,
+        groundFloorName: '',
+        groundFloorUnitNoMin: 0,
+        groundFloorUnitNoMax: 0,
+        typicalFloorUnitNoMin: 0,
+        typicalFloorUnitNoMax: 0,
+        deleteFullUnitNos: '',
+        exceptionUnitNos: '',
       };
     });
     setTowersDataRera(towersData);
@@ -375,7 +389,7 @@ export default function ProjectForm() {
         <span className='flex-[2] text-xl'>Assign Main Project Name:</span>
         <div className='flex w-full flex-[5] items-center gap-5'>
           <input
-            className={`${inputBoxClass} ml-0`}
+            className={`${inputBoxClass} !ml-0`}
             name='mainProjectName'
             onChange={(e) => setMainProject(e.target.value)}
           />
@@ -553,7 +567,7 @@ export default function ProjectForm() {
           type='file'
           name='kmlFile'
           accept='.kml'
-          className='file-input input-bordered w-full flex-[5]'
+          className='file-input input-bordered ml-[6px] w-full flex-[5]'
           onChange={async (e) => {
             const text = await extractKMLCoordinates(e);
             updateProjectFormDataRera({ projectCoordinates: text });
