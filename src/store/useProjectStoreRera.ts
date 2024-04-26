@@ -54,6 +54,8 @@ export interface ProjectTaggingTypeRera {
   rootDocs: string[];
   apartmentContains: string[];
   counterpartyContains: string[];
+  aptSurveyPlotDetails: boolean;
+  counterpartySurveyPlotDetails: boolean;
   surveyEqual: string[];
   plotEqual: string[];
   surveyContains: string[];
@@ -103,6 +105,8 @@ const initialState: ProjectTaggingTypeRera = {
   rootDocs: [],
   apartmentContains: [],
   counterpartyContains: [],
+  aptSurveyPlotDetails: false,
+  counterpartySurveyPlotDetails: false,
   plotEqual: [],
   surveyContains: [],
   plotContains: [],
@@ -121,7 +125,5 @@ export const useProjectStoreRera = create<FormState>((set) => ({
       projectFormDataRera: { ...state.projectFormDataRera, ...newDetails },
     })),
 
-  resetProjectFormDataRera: () => {
-    set({ projectFormDataRera: initialState });
-  },
+  resetProjectFormDataRera: () => set({ projectFormDataRera: initialState }),
 }));
