@@ -116,13 +116,13 @@ export default function ETLTagData() {
           <ChipInput
             chips={editProjectFormData.surveyEquals}
             updateFormData={updateEditProjectFormData}
-            updateKey='surveyEqual'
+            updateKey='surveyEquals'
             addTWClass='!ml-0'
           />
           <ChipInput
             chips={editProjectFormData.plotEquals}
             updateFormData={updateEditProjectFormData}
-            updateKey='plotEqual'
+            updateKey='plotEquals'
             addTWClass='ml-0'
           />
         </div>
