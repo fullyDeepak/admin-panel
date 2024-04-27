@@ -149,6 +149,14 @@ export default function ProjectForm() {
             amenitiesTags: amenities,
             apartmentContains: projectData.apartment_contains || [],
             counterpartyContains: projectData.counterparty_contains || [],
+            aptSurveyPlotDetails: projectData.aptsurveyplotdetails,
+            aptNameNotContains: projectData.apt_name_not_contains,
+            counterpartySurveyPlotDetails:
+              projectData.counterpartysurveyplotdetails,
+            docId: projectData.doc_id,
+            doorNoStartWith: projectData.door_no_start,
+            rootDocs: projectData.linked_doc,
+            plotContains: projectData.plot_contains,
           };
           updateEditProjectFormData(projectFormData);
           updateOldProjectFormData(projectFormData);

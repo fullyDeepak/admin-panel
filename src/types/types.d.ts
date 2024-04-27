@@ -207,4 +207,10 @@ export interface GetProjectDetails {
   surveys: string[];
   plots: string[];
   towers: GetProjectTowerDetails[];
+  aptsurveyplotdetails: boolean;
+  counterpartysurveyplotdetails: boolean;
+  locality_wb_plot: string[];
+  door_no_start: string[];
+  apt_name_not_contains: string[];
+  plot_contains: string[];
 }
