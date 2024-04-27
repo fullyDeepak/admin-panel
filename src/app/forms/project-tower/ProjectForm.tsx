@@ -213,11 +213,11 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
+      <div className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Amenities Tags:</span>
         {amenitiesOptions && amenitiesOptions.length > 0 && (
           <MultiSelect
-            className='w-full flex-[2]'
+            className='w-full flex-[5]'
             options={amenitiesOptions}
             isLoading={loadingAmenities}
             value={projectFormData.amenitiesTags}
@@ -238,7 +238,7 @@ export default function ProjectForm() {
             hasSelectAll={false}
           />
         )}
-      </label>
+      </div>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Upload KML File:</span>
         <input

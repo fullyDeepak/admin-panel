@@ -143,9 +143,9 @@ export default function ProjectForm() {
             projectDesc: projectData.project_description,
             projectType: projectData.project_category,
             projectSubType: projectData.project_subtype,
-            surveyContains: surveyContains,
-            surveyEquals: surveyEquals,
-            plotEquals: plotEquals,
+            surveyContains: surveyContains || [],
+            surveyEquals: surveyEquals || [],
+            plotEquals: plotEquals || [],
             amenitiesTags: amenities,
             apartmentContains: projectData.apartment_contains || [],
             counterpartyContains: projectData.counterparty_contains || [],
@@ -375,7 +375,7 @@ export default function ProjectForm() {
         <span className='flex-[2] '>Amenities Tags:</span>
         {amenitiesOptions && amenitiesOptions.length > 0 && (
           <MultiSelect
-            className='w-full flex-[2]'
+            className='w-full flex-[5]'
             options={amenitiesOptions}
             isLoading={loadingAmenities}
             value={editProjectFormData.amenitiesTags}
