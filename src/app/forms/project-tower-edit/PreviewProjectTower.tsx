@@ -27,6 +27,7 @@ type PreviewProjectTowerProps = {
     towerType: string;
     towerName: string;
     etlUnitConfigs: { configName: string; minArea: number; maxArea: number }[];
+    minFloor: number;
     maxFloor: number;
     groundFloorName: string;
     deleteFullUnitNos: string;

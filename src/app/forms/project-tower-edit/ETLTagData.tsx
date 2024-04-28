@@ -1,11 +1,9 @@
-import { inputBoxClass } from '@/app/constants/tw-class';
 import ChipInput from '@/components/ui/Chip';
 import { useEditProjectStore } from '@/store/useEditProjectStore';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent } from 'react';
 import { BiInfoCircle } from 'react-icons/bi';
 
 export default function ETLTagData() {
-  const [docIdPatterError, setDocIdPatterError] = useState<boolean>(false);
   const { editProjectFormData, updateEditProjectFormData } =
     useEditProjectStore();
   const docIdPattern: RegExp =
@@ -160,6 +158,7 @@ export default function ETLTagData() {
             updateKey='wardBlock'
             addTWClass='ml-0'
             placeholder='Add chips'
+            regexPattern={/^\d{1,2}-\d{1,2}$/gm}
           />
           <ChipInput
             chips={editProjectFormData.localityPlot}
