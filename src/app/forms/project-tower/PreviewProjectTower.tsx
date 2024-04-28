@@ -25,6 +25,17 @@ type PreviewProjectTowerProps = {
     towerType: string;
     towerName: string;
     etlUnitConfigs: { configName: string; minArea: number; maxArea: number }[];
+    minFloor: number;
+    maxFloor: number;
+    groundFloorName: string;
+    deleteFullUnitNos: string;
+    exceptionUnitNos: string;
+    groundFloorUnitNoMax: string;
+    groundFloorUnitNoMin: string;
+    typicalFloorUnitNoMax: string;
+    typicalFloorUnitNoMin: string;
+    towerDoorNo: string;
+    validTowerUnits: string[][];
   }[];
 };
 
@@ -56,6 +67,50 @@ export default function PreviewProjectTower({
     {
       header: 'Tower Name',
       accessorKey: 'towerName',
+    },
+    {
+      header: 'Tower Name',
+      accessorKey: 'towerName',
+    },
+    {
+      header: 'Tower Door No',
+      accessorKey: 'towerDoorNo',
+    },
+    {
+      header: 'Min Floor',
+      accessorKey: 'minFloor',
+    },
+    {
+      header: 'Max Floor',
+      accessorKey: 'maxFloor',
+    },
+    {
+      header: 'Ground Floor Name',
+      accessorKey: 'groundFloorName',
+    },
+    {
+      header: 'Delete Full Unit Nos',
+      accessorKey: 'deleteFullUnitNos',
+    },
+    {
+      header: 'Exception Unit Nos',
+      accessorKey: 'exceptionUnitNos',
+    },
+    {
+      header: 'Ground Floor Unit No Min',
+      accessorKey: 'groundFloorUnitNoMin',
+    },
+    {
+      header: 'Ground Floor Unit No Max',
+      accessorKey: 'groundFloorUnitNoMax',
+    },
+    {
+      header: 'Typical Floor Unit No Min',
+      accessorKey: 'typicalFloorUnitNoMin',
+    },
+    {
+      header: 'Typical Floor Unit No Max',
+      accessorKey: 'typicalFloorUnitNoMax',
     },
   ];
   const etlColumns = [
@@ -123,7 +178,11 @@ export default function PreviewProjectTower({
                     .join(', ')}
                 </span>
               ) : (
-                <span className='flex-[1] '>{value as string}</span>
+                <span className='flex-[1] '>
+                  {typeof value === 'boolean'
+                    ? JSON.stringify(value)
+                    : (value as string)}
+                </span>
               )}
             </div>
           ))}
@@ -131,12 +190,14 @@ export default function PreviewProjectTower({
       </div>
       <div className='flex flex-col gap-5'>
         <p className='text-center text-3xl font-semibold'>Tower Data</p>
-        <TanstackReactTable
-          columns={towerColumns}
-          data={towerFormData}
-          enableSearch={false}
-          showPagination={false}
-        />
+        <div className='overflow-auto'>
+          <TanstackReactTable
+            columns={towerColumns}
+            data={towerFormData}
+            enableSearch={false}
+            showPagination={false}
+          />
+        </div>
       </div>
       <div className='flex flex-col gap-5'>
         <p className='text-center text-3xl font-semibold'>

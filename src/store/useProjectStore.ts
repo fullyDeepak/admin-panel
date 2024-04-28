@@ -32,12 +32,22 @@ export interface ProjectTaggingType {
   }>;
   projectDesc: string;
   amenitiesTags: { label: string; value: string; __isNew__?: boolean }[];
-  surveyEqual: string[];
+  surveyEquals: string[];
   surveyContains: string[];
-  plotEqual: string[];
+  plotEquals: string[];
+  plotContains: string[];
   apartmentContains: string[];
   counterpartyContains: string[];
   projectCoordinates: string[];
+  docId: string[];
+  rootDocs: string[];
+  aptSurveyPlotDetails: boolean;
+  counterpartySurveyPlotDetails: boolean;
+  localityContains: string[];
+  wardBlock: string[];
+  localityPlot: string[];
+  doorNoStartWith: string[];
+  aptNameNotContains: string[];
 }
 
 interface FormState {
@@ -67,12 +77,22 @@ const initialState: ProjectTaggingType = {
   },
   projectDesc: '',
   amenitiesTags: [],
-  surveyEqual: [],
+  surveyEquals: [],
   surveyContains: [],
-  plotEqual: [],
+  plotEquals: [],
   apartmentContains: [],
   counterpartyContains: [],
   projectCoordinates: [],
+  aptNameNotContains: [],
+  aptSurveyPlotDetails: false,
+  counterpartySurveyPlotDetails: false,
+  docId: [],
+  doorNoStartWith: [],
+  localityContains: [],
+  localityPlot: [],
+  plotContains: [],
+  rootDocs: [],
+  wardBlock: [],
 };
 
 export const useProjectStore = create<FormState>((set) => ({

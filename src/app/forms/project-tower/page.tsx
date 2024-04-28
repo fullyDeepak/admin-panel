@@ -111,7 +111,7 @@ export default function page() {
   };
 
   return (
-    <div className='mx-auto mt-10 flex w-full flex-col md:w-[80%]'>
+    <div className='mx-auto mt-10 flex w-full flex-col'>
       <Toaster />
       <h1 className='self-center text-2xl md:text-3xl'>
         Form: Project Tower Tagging
