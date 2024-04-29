@@ -138,7 +138,14 @@ export default function ProjectForm() {
             locality_contains: string[];
             ward_block: string[];
             locality_plot: string[];
-          } = JSON.parse(projectData.locality_wb_plot[0]);
+          } =
+            projectData.locality_wb_plot.length > 0
+              ? JSON.parse(projectData.locality_wb_plot[0])
+              : {
+                  locality_contains: [],
+                  ward_block: [],
+                  locality_plot: [],
+                };
           const projectFormData: Partial<ProjectTaggingType> = {
             village_id: projectData.village_id,
             projectName: projectData.project_name,
