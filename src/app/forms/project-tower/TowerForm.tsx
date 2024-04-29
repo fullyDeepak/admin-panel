@@ -77,7 +77,7 @@ export default function TowerForm() {
           ) {
             for (let j = parseInt(unitMin); j <= parseInt(unitMax); j++) {
               let unit = '';
-              unit = `${i}0${j}`;
+              unit = j <= 9 ? `${i}0${j}` : `${i}${j}`;
               if (deleteUnitList.includes(unit)) {
                 continue;
               }
@@ -89,6 +89,7 @@ export default function TowerForm() {
             typeof unitMax === 'string' &&
             typeof unitMin === 'string'
           ) {
+            console.log('applying rule 2');
             for (let j = parseInt(unitMin); j <= parseInt(unitMax); j++) {
               let unit = '';
               unit = `${i}${j}`;
@@ -101,6 +102,7 @@ export default function TowerForm() {
             typeof unitMax === 'string' &&
             typeof unitMin === 'string'
           ) {
+            console.log('applying rule 3');
             for (let j = alphaToVal(unitMin); j <= alphaToVal(unitMax); j++) {
               let unit = '';
               unit = `${i}${valToAlpha(j)}`;
@@ -127,7 +129,7 @@ export default function TowerForm() {
           ) {
             for (let g = parseInt(gFMin); g <= parseInt(gFMax); g++) {
               let unit = '';
-              unit = `${gfName}0${g}`;
+              unit = g <= 9 ? `${gfName}0${g}` : `${gfName}${g}`;
               if (deleteUnitList.includes(unit)) {
                 continue;
               }
