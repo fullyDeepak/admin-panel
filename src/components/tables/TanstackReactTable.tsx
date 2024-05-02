@@ -52,7 +52,7 @@ export default function TanstackReactTable({
     onGlobalFilterChange: setFiltering,
   });
   return (
-    <div className='mx-auto my-5 flex flex-col py-1.5'>
+    <div className='mx-auto flex flex-col'>
       {/* <div>
         Item per page{' '}
         <select
@@ -158,7 +158,7 @@ export default function TanstackReactTable({
           {/* <div>{table.getRowModel().rows.length} Rows</div> */}
           <select
             value={table.getState().pagination.pageSize}
-            className='hidden md:inline-block'
+            className='select select-sm hidden border-2 border-rose-400 outline-none focus:border-rose-400 focus:outline-none md:inline-block'
             onChange={(e) => {
               table.setPageSize(Number(e.target.value));
             }}
