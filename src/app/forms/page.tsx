@@ -14,19 +14,19 @@ export default function page() {
           </h2>
           <Link
             href={'/forms/village-replacement'}
-            className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
+            className=' btn flex items-center active:btn-success hover:text-black active:text-white'
           >
             Village Replacement
           </Link>
           <Link
             href={'/forms/village-onboarding'}
-            className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn  flex items-center active:btn-success hover:text-black active:text-white'
           >
             Village Onboarding
           </Link>
           <Link
             href={'/forms/sro-scraper'}
-            className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn  flex items-center active:btn-success hover:text-black active:text-white'
           >
             SRO Scraper
           </Link>
@@ -35,9 +35,24 @@ export default function page() {
           <h2 className='text-center text-xl font-semibold'>ETL Forms</h2>
           <Link
             href={'/forms/start-etl'}
-            className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn  flex items-center active:btn-success hover:text-black active:text-white'
           >
             Start ETL Process
+          </Link>
+        </div>
+        <div className='flex w-fit flex-col gap-4 text-gray-500'>
+          <h2 className='text-center text-xl font-semibold'>RERA</h2>
+          <Link
+            href={'/forms/project-tower-rera'}
+            className='btn  flex items-center active:btn-success hover:text-black active:text-white'
+          >
+            Onboard Project via RERA
+          </Link>
+          <Link
+            href={'/forms/rera-correction'}
+            className='btn  flex items-center active:btn-success hover:text-black active:text-white'
+          >
+            RERA Correction Form
           </Link>
         </div>
         <div className='flex w-fit flex-col gap-4 text-gray-500'>
@@ -46,25 +61,19 @@ export default function page() {
           </h2>
           <Link
             href={'/forms/project-tower'}
-            className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn  flex items-center active:btn-success hover:text-black active:text-white'
           >
             Onboard Project
           </Link>
           <Link
-            href={'/forms/project-tower-rera'}
-            className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
-          >
-            Onboard Project via RERA
-          </Link>
-          <Link
             href={'/forms/project-tower-edit'}
-            className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn  flex items-center active:btn-success hover:text-black active:text-white'
           >
             Update Onboarded Project
           </Link>
           <Link
             href={'/forms/project-clone'}
-            className='link-hover btn link flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn  flex items-center active:btn-success hover:text-black active:text-white'
           >
             Clone Onboarded Project
           </Link>
