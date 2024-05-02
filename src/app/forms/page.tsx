@@ -54,6 +54,12 @@ export default function page() {
           >
             RERA Correction Form
           </Link>
+          <Link
+            href={'/forms/rera-project-status'}
+            className='btn  flex items-center active:btn-success hover:text-black active:text-white'
+          >
+            RERA Project Status
+          </Link>
         </div>
         <div className='flex w-fit flex-col gap-4 text-gray-500'>
           <h2 className='text-center text-xl font-semibold'>
