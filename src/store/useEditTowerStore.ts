@@ -14,6 +14,10 @@ export interface editTowerDetail {
   towerType: string;
   towerName: string;
   towerDoorNo: string;
+  singleUnit: boolean;
+  towerPattern: string;
+  floorPattern: string;
+  unitPattern: string;
   minFloor: number;
   maxFloor: number;
   groundFloorName: string;
@@ -57,7 +61,11 @@ const initialState: editTowerDetail[] = [
     reraId: '',
     towerType: '',
     towerName: '',
+    singleUnit: false,
     towerDoorNo: '',
+    towerPattern: '',
+    floorPattern: '',
+    unitPattern: '',
     minFloor: 0,
     maxFloor: 0,
     groundFloorName: '',

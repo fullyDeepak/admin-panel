@@ -75,6 +75,22 @@ export default function PreviewProjectTower({
       accessorKey: 'towerName',
     },
     {
+      header: 'Single Unit',
+      accessorKey: 'singleUnit',
+    },
+    {
+      header: 'Tower Pattern',
+      accessorKey: 'towerPattern',
+    },
+    {
+      header: 'Floor Pattern',
+      accessorKey: 'floorPattern',
+    },
+    {
+      header: 'Unit Pattern',
+      accessorKey: 'unitPattern',
+    },
+    {
       header: 'Tower Door No',
       accessorKey: 'towerDoorNo',
     },
