@@ -8,9 +8,13 @@ import axiosClient from '@/utils/AxiosClient';
 import toast, { Toaster } from 'react-hot-toast';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import { isEqual, uniqWith } from 'lodash';
+import { MultiSelect } from 'react-multi-select-component';
+import FetchDocs from './FetchDocs';
+import { useReraCorrectionStore } from '@/store/useReraCorrectionStore';
+import ChipInput from '@/components/ui/Chip';
 
 type tableData = {
-  id: string;
+  id: number;
   project_name: string;
   district: string;
   district_id: number;
@@ -29,10 +33,22 @@ type SroResponse = {
   village_id: number;
   village_name: string;
 };
-
+const inputBoxClass =
+  'w-full rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
 export default function page() {
-  const inputBoxClass =
-    'w-full rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
+  const [pdfPreviewDivs, setPdfPreviewDivs] = useState<React.JSX.Element[]>([]);
+  const {
+    projectOption,
+    reraDocsList,
+    resetReraDocsList,
+    selectedProjects,
+    setProjectOptions,
+    setReraDocList,
+    setSelectedProjects,
+    reraTableDataStore,
+    setRERATableDataStore,
+  } = useReraCorrectionStore();
+
   const sroTableColumns = [
     {
       header: 'District ID',
@@ -97,7 +113,18 @@ export default function page() {
       header: 'Village Name',
       accessorKey: 'village',
     },
+    {
+      header: 'RERA Docs',
+      cell: ({ row }: any) => (
+        <FetchDocs
+          projectIds={[row.original?.id]}
+          pdfPreviewDivs={pdfPreviewDivs}
+          setPdfPreviewDivs={setPdfPreviewDivs}
+        />
+      ),
+    },
   ];
+
   const [selectedSroDistrict, setSelectedSroDistrict] = useState<{
     label: string;
     value: number;
@@ -120,6 +147,13 @@ export default function page() {
   } | null>();
   const [reraTableData, setReraTableData] = useState<tableData[] | null>();
   const [sroTableData, setSroTableData] = useState<SroResponse[] | null>();
+  const [mandalIdValue, setMandalIdValue] = useState<string | undefined>(
+    undefined
+  );
+  const [villageIdValue, setVillageIdValue] = useState<string | undefined>(
+    undefined
+  );
+  const [surveyValue, setSurveyValue] = useState<string[]>([]);
 
   // populate sro and rera district dropdown
   const { isPending: loadingDistricts, data: districtOptions } = useQuery({
@@ -131,6 +165,7 @@ export default function page() {
         value: item.value,
       }));
     },
+    // staleTime: Infinity,
   });
 
   // populate sro mandal dropdown on sro district selection
@@ -161,6 +196,8 @@ export default function page() {
         return uniqWith(options, isEqual);
       }
     },
+    refetchOnWindowFocus: false,
+    // staleTime: Infinity,
   });
 
   // populated sro village dropdown on sro mandal selection
@@ -191,6 +228,8 @@ export default function page() {
         return uniqWith(options, isEqual);
       }
     },
+    refetchOnWindowFocus: false,
+    // staleTime: Infinity,
   });
 
   // populate rera mandal dropdown on rera district selection
@@ -199,7 +238,7 @@ export default function page() {
     data: reraMandalOptions,
     refetch: refetchReraMandalOptions,
   } = useQuery({
-    queryKey: ['rera-mandals', selectedSroDistrict],
+    queryKey: ['rera-district', selectedSroDistrict],
     queryFn: async () => {
       if (selectedSroDistrict !== undefined && selectedSroDistrict !== null) {
         const response = await axiosClient.get<{ data: tableData[] }>(
@@ -210,17 +249,33 @@ export default function page() {
         );
         const data = response.data?.data;
         const options = [{ label: 'ALL', value: '-1' }];
+        const optionsForProjects: {
+          label: string;
+          value: number;
+        }[] = [];
         data.map((item) => {
           options.push({
             label: `${item.mandal_id}:${item.mandal}`,
             value: item.mandal,
           });
+          optionsForProjects.push({
+            label: `${item.id}:${item.project_name}`,
+            value: item.id,
+          });
         });
         console.log({ mandals: uniqWith(options, isEqual) });
+        setMandalIdValue('');
+        setVillageIdValue('');
+        setSurveyValue([]);
         setReraTableData(data);
+        setRERATableDataStore(data);
+        setProjectOptions(optionsForProjects);
+        setSelectedProjects(optionsForProjects);
         return uniqWith(options, isEqual);
       }
     },
+    refetchOnWindowFocus: false,
+    // staleTime: Infinity,
   });
 
   //  populate rera locality dropdown on rera mandal selection
@@ -229,7 +284,7 @@ export default function page() {
     data: reraLocalityOptions,
     refetch: refetchReraLocalityOptions,
   } = useQuery({
-    queryKey: ['rera-locality', selectedReraMandal],
+    queryKey: ['rera-mandals', selectedReraMandal],
     queryFn: async () => {
       if (selectedReraMandal !== undefined && selectedReraMandal !== null) {
         if (selectedReraMandal?.value === '-1') {
@@ -247,16 +302,32 @@ export default function page() {
         );
         const data = response.data?.data;
         const options = [{ label: 'ALL', value: '-1' }];
+        const optionsForProjects: {
+          label: string;
+          value: number;
+        }[] = [];
         data.map((item) => {
           options.push({
             label: item.locality,
             value: item.locality,
           });
+          optionsForProjects.push({
+            label: `${item.id}:${item.project_name}`,
+            value: item.id,
+          });
         });
+        setMandalIdValue('');
+        setVillageIdValue('');
+        setSurveyValue([]);
         setReraTableData(data);
+        setRERATableDataStore(data);
+        setProjectOptions(optionsForProjects);
+        setSelectedProjects(optionsForProjects);
         return uniqWith(options, isEqual);
       }
     },
+    refetchOnWindowFocus: false,
+    // staleTime: Infinity,
   });
 
   //  populate rera village dropdown on rera locality selection
@@ -265,7 +336,7 @@ export default function page() {
     data: reraVillageOptions,
     refetch: refetchReraVillageOptions,
   } = useQuery({
-    queryKey: ['rera-villages', selectedReraLocality],
+    queryKey: ['rera-locality', selectedReraLocality],
     queryFn: async () => {
       if (selectedReraMandal !== undefined && selectedReraMandal !== null) {
         if (selectedReraLocality?.value === '-1') {
@@ -284,18 +355,80 @@ export default function page() {
         );
         const data = response.data?.data;
         const options = [{ label: 'ALL', value: '-1' }];
+        const optionsForProjects: {
+          label: string;
+          value: number;
+        }[] = [];
         data.map((item) => {
           options.push({
             label: `${item.village_id}:${item.village}`,
             value: item.village,
           });
+          optionsForProjects.push({
+            label: `${item.id}:${item.project_name}`,
+            value: item.id,
+          });
         });
         console.log({ mandals: uniqWith(options, isEqual) });
+        setMandalIdValue('');
+        setVillageIdValue('');
+        setSurveyValue([]);
         setReraTableData(data);
+        setRERATableDataStore(data);
+        setProjectOptions(optionsForProjects);
+        setSelectedProjects(optionsForProjects);
         return uniqWith(options, isEqual);
       }
     },
+    refetchOnWindowFocus: false,
+    // staleTime: Infinity,
   });
+
+  //  filter rera table data on rera village selection
+  useQuery({
+    queryKey: ['rera-villages', selectedReraVillage],
+    queryFn: async () => {
+      if (selectedReraMandal !== undefined && selectedReraMandal !== null) {
+        if (selectedReraVillage?.value === '-1') {
+          refetchReraVillageOptions();
+          return null;
+        }
+        const response = await axiosClient.get<{ data: tableData[] }>(
+          '/forms/rera/getReraProjectsByDMLVId',
+          {
+            params: {
+              district_id: selectedSroDistrict?.value,
+              mandal: selectedReraMandal?.value,
+              locality: selectedReraLocality?.value,
+              village: selectedReraVillage?.value,
+            },
+          }
+        );
+        const data = response.data?.data;
+        const optionsForProjects: {
+          label: string;
+          value: number;
+        }[] = [];
+        data.map((item) => {
+          optionsForProjects.push({
+            label: `${item.id}:${item.project_name}`,
+            value: item.id,
+          });
+        });
+        setMandalIdValue('');
+        setVillageIdValue('');
+        setSurveyValue([]);
+        setReraTableData(data);
+        setRERATableDataStore(data);
+        setProjectOptions(optionsForProjects);
+        setSelectedProjects(optionsForProjects);
+        // return true ;
+      }
+    },
+    refetchOnWindowFocus: false,
+    // staleTime: Infinity,
+  });
+
   useEffect(() => {
     setSelectedReraLocality(null);
   }, [selectedReraMandal?.value]);
@@ -303,12 +436,69 @@ export default function page() {
   useEffect(() => {
     setSelectedReraVillage(null);
   }, [selectedReraLocality?.value]);
+
+  let loadingToastId: string;
+
+  async function setReraDMVLId(type: 'MANDAL' | 'VILLAGE' | 'SURVEY') {
+    const projectIds = selectedProjects.map((item) => item.value);
+    if (type === 'MANDAL' && mandalIdValue && mandalIdValue.trim()) {
+      toast.loading(`Saving mandal id to database.`, {
+        id: loadingToastId,
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        const response = await axiosClient.put('/forms/rera/mandal', {
+          project_ids: projectIds,
+          mandal_id: +mandalIdValue,
+        });
+        if (response.status === 200) {
+          toast.dismiss(loadingToastId);
+          toast.success('Mandal ID updated', {
+            id: loadingToastId,
+            duration: 3000,
+          });
+          refetchReraMandalOptions();
+        }
+      } catch (error) {
+        toast.dismiss(loadingToastId);
+        toast.error(`Couldn't save mandal id.`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
+      }
+    } else if (type === 'VILLAGE' && villageIdValue && villageIdValue.trim()) {
+      toast.loading(`Saving village id to database.`, {
+        id: loadingToastId,
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        const response = await axiosClient.put('/forms/rera/village', {
+          project_ids: projectIds,
+          village_id: +villageIdValue,
+        });
+        if (response.status === 200) {
+          toast.dismiss(loadingToastId);
+          toast.success('Village ID updated', {
+            id: loadingToastId,
+            duration: 3000,
+          });
+          refetchReraVillageOptions();
+        }
+      } catch (error) {
+        toast.dismiss(loadingToastId);
+        toast.error(`Couldn't save village id.`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
+      }
+    }
+  }
   return (
     <div className='mx-auto mt-10 flex w-[80%] flex-col'>
       <h1 className='self-center text-3xl'>Form: RERA Correction</h1>
       <Toaster />
       <div className='flex justify-start gap-5'>
-        <form className='mt-5 flex flex-1 flex-col gap-3 rounded p-10 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
+        <div className='mt-5 flex flex-1 flex-col gap-3 rounded p-10 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
           <h3 className='text-center text-2xl font-semibold'>SRO DMVs</h3>
           <label className='flex items-center justify-between gap-5 '>
             <span className='flex-[2] text-xl'>District:</span>
@@ -345,9 +535,41 @@ export default function page() {
               isDisabled={Boolean(!selectedSroDistrict)}
             />
           </label>
-        </form>
+        </div>
+
         <form className='mt-5 flex flex-1 flex-col gap-3 rounded p-10 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
           <h3 className='text-center text-2xl font-semibold'>RERA DMLVs</h3>
+          <div className='flex items-center justify-between gap-5 '>
+            <span className='flex-[2] text-xl'>Projects:</span>
+            <div className='flex flex-[5] items-center gap-3'>
+              <MultiSelect
+                options={projectOption}
+                value={selectedProjects}
+                className='w-full'
+                labelledBy=''
+                onChange={(
+                  e: {
+                    label: string;
+                    value: number;
+                  }[]
+                ) => {
+                  setSelectedProjects(e);
+                  const selectedProjectId = e.map((item) => item.value);
+                  console.log({ selectedProjectId });
+                  const filteredTableData = reraTableDataStore?.filter((item) =>
+                    selectedProjectId.includes(item.id)
+                  );
+                  console.log({ filteredTableData });
+                  setReraTableData(filteredTableData);
+                }}
+              />
+              <span
+                className={`badge aspect-square h-10 rounded-full bg-rose-200 ${selectedProjects.length > 100 ? 'text-base' : 'text-lg'} `}
+              >
+                {selectedProjects.length}
+              </span>
+            </div>
+          </div>
           <label className='flex items-center justify-between gap-5 '>
             <span className='flex-[2] text-xl'>District:</span>
             <Select
@@ -382,28 +604,7 @@ export default function page() {
               isDisabled={Boolean(!selectedSroDistrict)}
             />
           </label>
-          <div className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex-[2] '>Assign Mandal ID:</span>
-            <div className='flex flex-[5] gap-4'>
-              <span className={inputBoxClass}>
-                {selectedReraMandal?.value ? selectedReraMandal?.value : '🚫'}
-              </span>
-              <input
-                className={inputBoxClass}
-                name='mandal_id'
-                placeholder='Enter ID here'
-              />
-              <button
-                className='btn-rezy max-h-10'
-                disabled={
-                  !selectedReraMandal?.value ||
-                  selectedReraMandal?.value === '-1'
-                }
-              >
-                Save
-              </button>
-            </div>
-          </div>
+
           <label className='flex items-center justify-between gap-5 '>
             <span className='flex-[2] text-xl'>Locality:</span>
             <Select
@@ -429,6 +630,33 @@ export default function page() {
             />
           </label>
           <div className='flex flex-wrap items-center justify-between gap-5 '>
+            <span className='flex-[2] '>Assign Mandal ID:</span>
+            <div className='flex flex-[5] gap-4'>
+              <span className={inputBoxClass}>
+                {selectedReraMandal?.value ? selectedReraMandal?.value : '🚫'}
+              </span>
+              <input
+                className={inputBoxClass}
+                name='mandal_id'
+                placeholder='Enter ID here'
+                type='number'
+                value={mandalIdValue}
+                onChange={(e) => setMandalIdValue(e.target.value)}
+              />
+              <button
+                className='btn-rezy max-h-10'
+                disabled={
+                  !selectedReraMandal?.value ||
+                  selectedReraMandal?.value === '-1'
+                }
+                type='button'
+                onClick={() => setReraDMVLId('MANDAL')}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+          <div className='flex flex-wrap items-center justify-between gap-5 '>
             <span className='flex-[2] '>Assign Village ID:</span>
             <div className='flex flex-[5] gap-4'>
               <span className={inputBoxClass}>
@@ -438,6 +666,8 @@ export default function page() {
                 className={inputBoxClass}
                 name='village_id'
                 placeholder='Enter ID here'
+                value={villageIdValue}
+                onChange={(e) => setVillageIdValue(e.target.value)}
               />
               <button
                 className='btn-rezy max-h-10'
@@ -445,6 +675,25 @@ export default function page() {
                   !selectedReraVillage?.value ||
                   selectedReraVillage?.value === '-1'
                 }
+                type='button'
+                onClick={() => setReraDMVLId('VILLAGE')}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+          <div className='flex flex-wrap items-center justify-between gap-5 '>
+            <span className='flex-[2] text-xl '>Assign Survey:</span>
+            <div className='flex flex-[5] gap-4'>
+              <ChipInput
+                updateChipsFn={setSurveyValue}
+                chips={surveyValue}
+                addTWClass='!ml-0'
+              />
+              <button
+                className='btn-rezy max-h-10'
+                disabled //{selectedProjects.length === 1 ? false : true}
+                type='button'
               >
                 Save
               </button>
@@ -452,37 +701,35 @@ export default function page() {
           </div>
         </form>
       </div>
-      <div className='flex w-full'>
-        <div className='w-1/2 flex-1'>
-          {sroTableData && sroTableData?.length > 0 && (
-            <>
-              <h3 className='pt-8 text-center text-2xl font-semibold underline'>
-                SRO Data
-              </h3>
-              <div className='overflow-x-auto pb-20'>
-                <TanstackReactTable
-                  columns={sroTableColumns}
-                  data={sroTableData}
-                />
-              </div>
-            </>
-          )}
-        </div>
-        <div className='w-1/2 flex-1'>
-          {reraTableData && reraTableData?.length > 0 && (
-            <>
-              <h3 className='pt-8 text-center text-2xl font-semibold underline'>
-                RERA Data
-              </h3>
-              <div className='overflow-x-auto pb-20'>
-                <TanstackReactTable
-                  columns={reraTableColumns}
-                  data={reraTableData}
-                />
-              </div>
-            </>
-          )}
-        </div>
+      {pdfPreviewDivs}
+      {/* <PreviewPdfs pdfPreviewDivs={pdfPreviewDivs} /> */}
+      <div className='my-5 flex w-full gap-5 '>
+        {sroTableData && sroTableData?.length > 0 && (
+          <div className='max-w-[49%] flex-1 rounded-lg border-2 p-2'>
+            <h3 className='mt-5 text-center text-2xl font-semibold underline'>
+              SRO Data
+            </h3>
+            <div className='overflow-x-auto'>
+              <TanstackReactTable
+                columns={sroTableColumns}
+                data={sroTableData}
+              />
+            </div>
+          </div>
+        )}
+        {reraTableData && reraTableData?.length > 0 && (
+          <div className='max-w-[49%] flex-1 rounded-lg border-2 p-2'>
+            <h3 className='mt-5 text-center text-2xl font-semibold underline'>
+              RERA Data
+            </h3>
+            <div className='overflow-x-auto'>
+              <TanstackReactTable
+                columns={reraTableColumns}
+                data={reraTableData}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
