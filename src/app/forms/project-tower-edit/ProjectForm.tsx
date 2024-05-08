@@ -104,12 +104,10 @@ export default function ProjectForm() {
               reraId: item.rera_id,
               towerType: item.type,
               towerName: item.name,
-              singleUnit: item?.pattern_flag
-                ? (JSON.parse(item.pattern_flag)?.singleUnit as boolean)
-                : false,
+              singleUnit: item?.single_unit,
               towerPattern: item?.tower_pattern || '',
               floorPattern: item?.floor_pattern || '',
-              unitPattern: item.unit_pattern,
+              unitPattern: item?.unit_pattern || '',
               etlUnitConfigs: item.unit_configs.map((unit) => ({
                 configName: unit.config,
                 minArea: unit.min_built,

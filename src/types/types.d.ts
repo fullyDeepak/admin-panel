@@ -167,7 +167,7 @@ export interface GetProjectTowerDetails {
   tower_id: number;
   max_floor: string;
   min_floor: string;
-  pattern_flag: string;
+  single_unit: boolean;
   tower_pattern: string;
   floor_pattern: string;
   unit_pattern: string;
