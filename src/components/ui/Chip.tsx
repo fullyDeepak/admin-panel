@@ -1,9 +1,10 @@
-import { ChangeEvent, useState, KeyboardEvent } from 'react';
+import React, { ChangeEvent, useState, KeyboardEvent } from 'react';
 
 type ChipInputProps =
   | {
       chips: string[];
       updateFormData: (newDetails: Partial<object>) => void;
+      updateChipsFn?: never;
       updateKey: string;
       regexPattern?: RegExp;
       placeholder?: string;
@@ -14,7 +15,19 @@ type ChipInputProps =
   | {
       chips: string[];
       updateFormData: (newDetails: Partial<object>) => void;
+      updateChipsFn?: never;
       updateKey: string;
+      regexPattern?: RegExp;
+      placeholder?: string;
+      addTWClass?: string;
+      enableGeneration?: false;
+      generationKey?: never;
+    }
+  | {
+      chips: string[];
+      updateChipsFn: React.Dispatch<React.SetStateAction<string[]>>;
+      updateFormData?: never;
+      updateKey?: never;
       regexPattern?: RegExp;
       placeholder?: string;
       addTWClass?: string;
@@ -31,6 +44,7 @@ const ChipInput = ({
   updateKey,
   enableGeneration,
   generationKey,
+  updateChipsFn,
 }: ChipInputProps) => {
   const [inputValue, setInputValue] = useState('');
 
@@ -57,16 +71,22 @@ const ChipInput = ({
       } else {
         if (regexPattern !== undefined) {
           const value = inputValue.trim();
-          if (regexPattern.test(value)) {
+          if (regexPattern.test(value) && updateFormData) {
             updateFormData({
               [updateKey]: [...chips, inputValue.trim()],
             });
             setInputValue('');
+          } else if (updateChipsFn) {
+            updateChipsFn([...chips, inputValue.trim()]);
           }
         } else {
-          updateFormData({
-            [updateKey]: [...chips, inputValue.trim()],
-          });
+          if (updateFormData) {
+            updateFormData({
+              [updateKey]: [...chips, inputValue.trim()],
+            });
+          } else if (updateChipsFn) {
+            updateChipsFn([...chips, inputValue.trim()]);
+          }
           setInputValue('');
         }
       }
@@ -75,18 +95,27 @@ const ChipInput = ({
       chips.length > 0 &&
       inputValue.length === 0
     ) {
-      chips.pop();
-      updateFormData({
-        [updateKey]: chips,
-      });
+      const newChips = [...chips];
+      newChips.pop();
+      if (updateFormData) {
+        updateFormData({
+          [updateKey]: newChips,
+        });
+      } else if (updateChipsFn) {
+        updateChipsFn(newChips);
+      }
       setInputValue('');
     }
   };
 
   const handleChipRemove = (indexToRemove: number) => {
-    updateFormData({
-      [updateKey]: chips.filter((_, index) => index !== indexToRemove),
-    });
+    if (updateFormData) {
+      updateFormData({
+        [updateKey]: chips.filter((_, index) => index !== indexToRemove),
+      });
+    } else if (updateChipsFn) {
+      updateChipsFn(chips.filter((_, index) => index !== indexToRemove));
+    }
   };
 
   return (
