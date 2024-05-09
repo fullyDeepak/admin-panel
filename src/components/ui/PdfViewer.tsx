@@ -57,8 +57,8 @@ export default function PDFViewer({ content, title }: PDFViewerProps) {
       default={{
         x: 0,
         y: 0,
-        width: 600,
-        height: 300,
+        width: 900,
+        height: 600,
       }}
       className='relative z-30 !cursor-default rounded-xl bg-base-300 pt-10 shadow-c'
       cancel='.cancel'
