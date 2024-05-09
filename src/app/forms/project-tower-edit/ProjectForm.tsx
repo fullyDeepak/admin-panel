@@ -44,6 +44,7 @@ export default function ProjectForm() {
     },
   });
 
+  //   populated amenities options
   const { data: amenitiesOptions, isLoading: loadingAmenities } = useQuery({
     queryKey: ['amenitiesOptions'],
     queryFn: async () => {
@@ -58,21 +59,31 @@ export default function ProjectForm() {
     refetchOnWindowFocus: false,
   });
 
+  //   populated localities options
   const { data: localitiesOptions, isLoading: loadingLocalities } = useQuery({
     queryKey: ['localitiesOptions'],
     queryFn: async () => {
       const response = await axiosClient.get<{
-        data: { localities: string[] };
+        data: string[];
       }>('/forms/localities');
-      const localities = response.data.data.localities;
-      const localitiesOptions = localities.map((item) => ({
-        label: item,
-        value: item,
-      }));
+      const localities = response.data.data;
+      const localitiesOptions: {
+        label: string;
+        value: string;
+      }[] = [];
+      localities.map((item) => {
+        if (item.length > 2) {
+          localitiesOptions.push({
+            label: item,
+            value: item,
+          });
+        }
+      });
       console.log({ localitiesOptions });
       return localitiesOptions;
     },
     refetchOnWindowFocus: false,
+    staleTime: Infinity,
   });
 
   // populate village option
