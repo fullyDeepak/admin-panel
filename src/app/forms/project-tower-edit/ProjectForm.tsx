@@ -156,7 +156,7 @@ export default function ProjectForm() {
           const localities: {
             label: string;
             value: string | number;
-          }[] = projectData.localities.map((locality) => ({
+          }[] = projectData?.localities?.map((locality) => ({
             label: locality,
             value: locality,
           }));
