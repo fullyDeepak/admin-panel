@@ -213,13 +213,19 @@ export default function page() {
         onSubmit={submitForm}
       >
         <ul className='steps mb-5'>
-          <li className={`${formCount >= 0 ? 'step-error' : ''} step`}>
+          <li
+            className={`${formCount >= 0 ? 'step-error after:!text-white' : ''} step`}
+          >
             Project
           </li>
-          <li className={`${formCount >= 1 ? 'step-error' : ''} step`}>
+          <li
+            className={`${formCount >= 1 ? 'step-error after:!text-white' : ''} step`}
+          >
             Tower
           </li>
-          <li className={`${formCount >= 2 ? 'step-error' : ''} step`}>
+          <li
+            className={`${formCount >= 2 ? 'step-error after:!text-white' : ''} step`}
+          >
             Final Preview
           </li>
         </ul>

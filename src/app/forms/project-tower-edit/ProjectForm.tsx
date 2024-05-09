@@ -104,10 +104,6 @@ export default function ProjectForm() {
               reraId: item.rera_id,
               towerType: item.type,
               towerName: item.name,
-              singleUnit: item?.single_unit,
-              towerPattern: item?.tower_pattern || '',
-              floorPattern: item?.floor_pattern || '',
-              unitPattern: item?.unit_pattern || '',
               etlUnitConfigs: item.unit_configs.map((unit) => ({
                 configName: unit.config,
                 minArea: unit.min_built,
@@ -176,6 +172,10 @@ export default function ProjectForm() {
             localityContains: localityWbPlot.locality_contains,
             localityPlot: localityWbPlot.locality_plot,
             wardBlock: localityWbPlot.ward_block,
+            singleUnit: projectData?.single_unit,
+            towerPattern: projectData?.tower_pattern || '',
+            floorPattern: projectData?.floor_pattern || '',
+            unitPattern: projectData?.unit_pattern || '',
           };
           updateEditProjectFormData(projectFormData);
           updateOldProjectFormData(projectFormData);
