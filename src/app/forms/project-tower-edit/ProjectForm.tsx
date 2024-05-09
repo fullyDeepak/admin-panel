@@ -55,7 +55,26 @@ export default function ProjectForm() {
       }));
       return amenitiesOptions;
     },
+    refetchOnWindowFocus: false,
   });
+
+  const { data: localitiesOptions, isLoading: loadingLocalities } = useQuery({
+    queryKey: ['localitiesOptions'],
+    queryFn: async () => {
+      const response = await axiosClient.get<{
+        data: { localities: string[] };
+      }>('/forms/localities');
+      const localities = response.data.data.localities;
+      const localitiesOptions = localities.map((item) => ({
+        label: item,
+        value: item,
+      }));
+      console.log({ localitiesOptions });
+      return localitiesOptions;
+    },
+    refetchOnWindowFocus: false,
+  });
+
   // populate village option
   const { isPending: loadingVillages, data: villageOptions } = useQuery({
     queryKey: ['village'],
@@ -134,6 +153,14 @@ export default function ProjectForm() {
               value: item.id,
             })
           );
+          const localities: {
+            label: string;
+            value: string | number;
+          }[] = projectData.localities.map((locality) => ({
+            label: locality,
+            value: locality,
+          }));
+
           const localityWbPlot: {
             locality_contains: string[];
             ward_block: string[];
@@ -176,6 +203,7 @@ export default function ProjectForm() {
             towerPattern: projectData?.tower_pattern || '',
             floorPattern: projectData?.floor_pattern || '',
             unitPattern: projectData?.unit_pattern || '',
+            localities: localities || [],
           };
           updateEditProjectFormData(projectFormData);
           updateOldProjectFormData(projectFormData);
@@ -400,29 +428,49 @@ export default function ProjectForm() {
       </label>
       <div className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Amenities Tags:</span>
-        {amenitiesOptions && amenitiesOptions.length > 0 && (
-          <MultiSelect
-            className='w-full flex-[5]'
-            options={amenitiesOptions}
-            isLoading={loadingAmenities}
-            value={editProjectFormData.amenitiesTags}
-            onChange={(
-              e: {
-                label: string;
-                value: string;
-                __isNew__?: boolean | undefined;
-              }[]
-            ) => {
-              updateEditProjectFormData({
-                amenitiesTags: e,
-              });
-              console.log(e);
-            }}
-            labelledBy={'amenitiesTags'}
-            isCreatable={true}
-            hasSelectAll={false}
-          />
-        )}
+        <MultiSelect
+          className='w-full flex-[5]'
+          options={amenitiesOptions || []}
+          isLoading={loadingAmenities}
+          value={editProjectFormData.amenitiesTags}
+          onChange={(
+            e: {
+              label: string;
+              value: string;
+              __isNew__?: boolean | undefined;
+            }[]
+          ) => {
+            updateEditProjectFormData({
+              amenitiesTags: e,
+            });
+            console.log(e);
+          }}
+          labelledBy={'amenitiesTags'}
+          isCreatable={true}
+          hasSelectAll={false}
+        />
+      </div>
+      <div className='flex flex-wrap items-center justify-between gap-5 '>
+        <span className='flex-[2] '>Localities:</span>
+        <MultiSelect
+          className='w-full flex-[5]'
+          options={localitiesOptions || []}
+          isLoading={loadingLocalities}
+          value={editProjectFormData.localities}
+          onChange={(
+            e: {
+              label: string;
+              value: string;
+            }[]
+          ) => {
+            updateEditProjectFormData({
+              localities: e,
+            });
+          }}
+          labelledBy={'amenitiesTags'}
+          isCreatable={false}
+          hasSelectAll={false}
+        />
       </div>
       <ETLTagData />
     </>

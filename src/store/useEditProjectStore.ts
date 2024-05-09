@@ -52,6 +52,10 @@ export interface ProjectTaggingType {
   towerPattern: string;
   floorPattern: string;
   unitPattern: string;
+  localities: {
+    label: string;
+    value: string | number;
+  }[];
 }
 
 interface FormState {
@@ -96,6 +100,7 @@ const initialState: ProjectTaggingType = {
   towerPattern: '',
   floorPattern: '',
   unitPattern: '',
+  localities: [],
 };
 
 export const useEditProjectStore = create<FormState>((set) => ({

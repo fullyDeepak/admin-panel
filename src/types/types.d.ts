@@ -67,4 +67,5 @@ export interface GetProjectDetails {
   tower_pattern: string;
   floor_pattern: string;
   unit_pattern: string;
+  localities: string[];
 }
