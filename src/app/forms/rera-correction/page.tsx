@@ -723,10 +723,6 @@ export default function page() {
               />
               <button
                 className='btn-rezy max-h-10'
-                disabled={
-                  !selectedReraMandal?.value ||
-                  selectedReraMandal?.value === '-1'
-                }
                 type='button'
                 onClick={() => setReraDMVLId('MANDAL')}
               >
@@ -749,10 +745,6 @@ export default function page() {
               />
               <button
                 className='btn-rezy max-h-10'
-                disabled={
-                  !selectedReraVillage?.value ||
-                  selectedReraVillage?.value === '-1'
-                }
                 type='button'
                 onClick={() => setReraDMVLId('VILLAGE')}
               >
