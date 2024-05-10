@@ -34,7 +34,7 @@ export default function FetchDocs({
     }[]
   >([]);
 
-  const { reraDocsList, setReraDocList } = useReraCorrectionStore();
+  //   const { reraDocsList, setReraDocList } = useReraCorrectionStore();
 
   async function fetchReraDocs(projectIds: number[]) {
     try {
@@ -46,7 +46,7 @@ export default function FetchDocs({
         }
       );
       setReraDocs(response?.data?.data);
-      setReraDocList(response?.data?.data);
+      //   setReraDocList(response?.data?.data);
       setLoadingReraDocsState('complete');
     } catch (error) {
       console.log(error);

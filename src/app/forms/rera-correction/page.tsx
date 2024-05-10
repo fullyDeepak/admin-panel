@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Select, { SingleValue } from 'react-select';
 import { useQuery } from '@tanstack/react-query';
 import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
@@ -23,6 +23,8 @@ type tableData = {
   locality: string;
   village: string;
   village_id: number;
+  clean_survey_number: string;
+  clean_plot_number: string;
 };
 
 type SroResponse = {
@@ -76,54 +78,65 @@ export default function page() {
     },
   ];
 
-  const reraTableColumns = [
-    {
-      header: 'Project ID',
-      accessorKey: 'id',
-    },
-    {
-      header: 'Project Name',
-      accessorKey: 'project_name',
-    },
-    {
-      header: 'District ID',
-      accessorKey: 'district_id',
-    },
-    {
-      header: 'District Name',
-      accessorKey: 'district',
-    },
-    {
-      header: 'Mandal ID',
-      accessorKey: 'mandal_id',
-    },
-    {
-      header: 'Mandal Name',
-      accessorKey: 'mandal',
-    },
-    {
-      header: 'Locality',
-      accessorKey: 'locality',
-    },
-    {
-      header: 'Village ID',
-      accessorKey: 'village_id',
-    },
-    {
-      header: 'Village Name',
-      accessorKey: 'village',
-    },
-    {
-      header: 'RERA Docs',
-      cell: ({ row }: any) => (
-        <FetchDocs
-          projectIds={[row.original?.id]}
-          pdfPreviewDivs={pdfPreviewDivs}
-          setPdfPreviewDivs={setPdfPreviewDivs}
-        />
-      ),
-    },
-  ];
+  const reraTableColumns = useMemo(
+    () => [
+      {
+        header: 'Project ID',
+        accessorKey: 'id',
+      },
+      {
+        header: 'Project Name',
+        accessorKey: 'project_name',
+      },
+      {
+        header: 'District ID',
+        accessorKey: 'district_id',
+      },
+      {
+        header: 'District Name',
+        accessorKey: 'district',
+      },
+      {
+        header: 'Mandal ID',
+        accessorKey: 'mandal_id',
+      },
+      {
+        header: 'Mandal Name',
+        accessorKey: 'mandal',
+      },
+      {
+        header: 'Locality',
+        accessorKey: 'locality',
+      },
+      {
+        header: 'Village ID',
+        accessorKey: 'village_id',
+      },
+      {
+        header: 'Village Name',
+        accessorKey: 'village',
+      },
+      {
+        header: 'Clean Survey',
+        accessorKey: 'clean_survey_number',
+      },
+      {
+        header: 'Clean Plot',
+        accessorKey: 'clean_plot_number',
+      },
+      {
+        header: 'RERA Docs',
+        cell: ({ row }: any) => (
+          <FetchDocs
+            projectIds={[row.original?.id]}
+            pdfPreviewDivs={pdfPreviewDivs}
+            setPdfPreviewDivs={setPdfPreviewDivs}
+          />
+        ),
+      },
+    ],
+    []
+  );
 
   const [selectedSroDistrict, setSelectedSroDistrict] = useState<{
     label: string;
@@ -154,6 +167,7 @@ export default function page() {
     undefined
   );
   const [surveyValue, setSurveyValue] = useState<string[]>([]);
+  const [plotValue, setPlotValue] = useState<string[]>([]);
 
   // populate sro and rera district dropdown
   const { isPending: loadingDistricts, data: districtOptions } = useQuery({
@@ -267,6 +281,7 @@ export default function page() {
         setMandalIdValue('');
         setVillageIdValue('');
         setSurveyValue([]);
+        setPlotValue([]);
         setReraTableData(data);
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
@@ -319,6 +334,7 @@ export default function page() {
         setMandalIdValue('');
         setVillageIdValue('');
         setSurveyValue([]);
+        setPlotValue([]);
         setReraTableData(data);
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
@@ -373,6 +389,7 @@ export default function page() {
         setMandalIdValue('');
         setVillageIdValue('');
         setSurveyValue([]);
+        setPlotValue([]);
         setReraTableData(data);
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
@@ -418,6 +435,7 @@ export default function page() {
         setMandalIdValue('');
         setVillageIdValue('');
         setSurveyValue([]);
+        setPlotValue([]);
         setReraTableData(data);
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
@@ -490,6 +508,67 @@ export default function page() {
           id: loadingToastId,
           duration: 3000,
         });
+      }
+    }
+  }
+
+  async function setSurveyPlot(type: 'SURVEY' | 'PLOT') {
+    if (selectedProjects.length === 1) {
+      const projectId = selectedProjects[0].value;
+      if (type === 'SURVEY' && surveyValue && surveyValue.length > 0) {
+        toast.loading(`Saving surveys to database.`, {
+          id: loadingToastId,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        try {
+          const response = await axiosClient.put('/forms/rera/survey', {
+            project_id: projectId,
+            surveys: surveyValue,
+          });
+          if (response.status === 200) {
+            toast.dismiss(loadingToastId);
+            toast.success('Surveys cleaned ✨', {
+              id: loadingToastId,
+              duration: 3000,
+            });
+            refetchReraVillageOptions();
+            setSurveyValue([]);
+            setPlotValue([]);
+          }
+        } catch (error) {
+          toast.dismiss(loadingToastId);
+          toast.error(`Couldn't save survey to DB.`, {
+            id: loadingToastId,
+            duration: 3000,
+          });
+        }
+      } else if (type === 'PLOT' && plotValue && plotValue.length > 0) {
+        toast.loading(`Saving plots to database.`, {
+          id: loadingToastId,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        try {
+          const response = await axiosClient.put('/forms/rera/plot', {
+            project_id: projectId,
+            plots: plotValue,
+          });
+          if (response.status === 200) {
+            toast.dismiss(loadingToastId);
+            toast.success('Plot cleaned ✨', {
+              id: loadingToastId,
+              duration: 3000,
+            });
+            refetchReraVillageOptions();
+            setSurveyValue([]);
+            setPlotValue([]);
+          }
+        } catch (error) {
+          toast.dismiss(loadingToastId);
+          toast.error(`Couldn't save plot to DB.`, {
+            id: loadingToastId,
+            duration: 3000,
+          });
+        }
       }
     }
   }
@@ -604,7 +683,6 @@ export default function page() {
               isDisabled={Boolean(!selectedSroDistrict)}
             />
           </label>
-
           <label className='flex items-center justify-between gap-5 '>
             <span className='flex-[2] text-xl'>Locality:</span>
             <Select
@@ -683,7 +761,7 @@ export default function page() {
             </div>
           </div>
           <div className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex-[2] text-xl '>Assign Survey:</span>
+            <span className='flex-[2] text-xl'>Assign Survey:</span>
             <div className='flex flex-[5] gap-4'>
               <ChipInput
                 updateChipsFn={setSurveyValue}
@@ -692,8 +770,27 @@ export default function page() {
               />
               <button
                 className='btn-rezy max-h-10'
-                disabled //{selectedProjects.length === 1 ? false : true}
+                disabled={selectedProjects.length === 1 ? false : true}
                 type='button'
+                onClick={() => setSurveyPlot('SURVEY')}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+          <div className='flex flex-wrap items-center justify-between gap-5 '>
+            <span className='flex-[2] text-xl'>Assign Plot:</span>
+            <div className='flex flex-[5] gap-4'>
+              <ChipInput
+                updateChipsFn={setPlotValue}
+                chips={plotValue}
+                addTWClass='!ml-0'
+              />
+              <button
+                className='btn-rezy max-h-10'
+                disabled={selectedProjects.length === 1 ? false : true}
+                type='button'
+                onClick={() => setSurveyPlot('PLOT')}
               >
                 Save
               </button>
@@ -701,8 +798,6 @@ export default function page() {
           </div>
         </form>
       </div>
-      {pdfPreviewDivs}
-      {/* <PreviewPdfs pdfPreviewDivs={pdfPreviewDivs} /> */}
       <div className='my-5 flex w-full gap-5 '>
         {sroTableData && sroTableData?.length > 0 && (
           <div className='max-w-[49%] flex-1 rounded-lg border-2 p-2'>
@@ -723,6 +818,7 @@ export default function page() {
               RERA Data
             </h3>
             <div className='overflow-x-auto'>
+              {pdfPreviewDivs}
               <TanstackReactTable
                 columns={reraTableColumns}
                 data={reraTableData}

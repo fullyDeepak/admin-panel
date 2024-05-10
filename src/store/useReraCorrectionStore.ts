@@ -20,6 +20,8 @@ type tableData = {
   locality: string;
   village: string;
   village_id: number;
+  clean_survey_number: string;
+  clean_plot_number: string;
 };
 
 interface FormState {
