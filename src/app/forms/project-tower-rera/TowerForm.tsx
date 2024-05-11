@@ -103,10 +103,10 @@ export default function TowerForm() {
           {projectFormDataRera.isRERAProject && (
             <label className='flex flex-wrap items-center justify-between gap-5 '>
               <span className='flex flex-[2] items-center  '>
-                <span>Tower ID:</span>
+                <span>RERA Tower ID:</span>
               </span>
               <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
-                <span>{tower.towerId}</span>
+                <span>{tower.reraTowerId}</span>
               </span>
             </label>
           )}

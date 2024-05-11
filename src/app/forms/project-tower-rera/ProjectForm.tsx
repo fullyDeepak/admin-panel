@@ -259,7 +259,7 @@ export default function ProjectForm() {
         id: index + 1,
         projectPhase: phases[+item.project_id],
         reraId: item.rera_id,
-        towerId: item.tower_id,
+        reraTowerId: item.tower_id,
         towerTypeSuggestion: item.tower_type,
         towerType: {
           label: '',

@@ -1,37 +1,15 @@
 import { create } from 'zustand';
 import { SingleValue } from 'react-select';
+import { FormTowerDetailType } from '@/types/types';
 
-interface etlUnitConfigRera {
-  configName: string;
-  minArea: number;
-  maxArea: number;
-}
-
-interface towerDetailRera {
-  id: number;
-  projectPhase: number;
-  reraId: string;
-  towerId: string;
+interface towerDetailRera extends FormTowerDetailType {
+  reraTowerId: string;
   towerType: SingleValue<{
     label: string;
     value: string;
   }>;
   towerTypeSuggestion: string;
-  towerName: string;
-  towerDoorNo: string;
-  minFloor: number;
-  maxFloor: number;
-  groundFloorName: string;
-  groundFloorUnitNoMin: number | string;
-  groundFloorUnitNoMax: number | string;
-  typicalFloorUnitNoMin: number | string;
-  typicalFloorUnitNoMax: number | string;
-  deleteFullUnitNos: string;
-  exceptionUnitNos: string;
-  etlUnitConfigs: etlUnitConfigRera[];
-  validTowerUnits: string[][] | null;
 }
-
 interface FormState {
   towerFormDataRera: towerDetailRera[];
   setTowersDataRera: (data: towerDetailRera[]) => void;
@@ -63,7 +41,7 @@ const initialState: towerDetailRera[] = [
     id: 1,
     projectPhase: 1,
     reraId: '',
-    towerId: '',
+    reraTowerId: '',
     towerType: {
       label: '',
       value: '',

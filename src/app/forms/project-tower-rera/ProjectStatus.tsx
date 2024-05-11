@@ -1,12 +1,12 @@
 'use client';
 
 import Select from 'react-select';
-import { Toaster } from 'react-hot-toast';
 import { formatISO } from 'date-fns';
+import { inputBoxClass } from '@/app/constants/tw-class';
+import { useProjectStoreRera } from '@/store/useProjectStoreRera';
+import { useTowerStoreRera } from '@/store/useTowerStoreRera';
 
 export default function ProjectStatus() {
-  const inputBoxClass =
-    'flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
   const asiaCurrentDate = formatISO(
     new Date().toLocaleString('en-Us', {
       timeZone: 'Asia/Kolkata',
@@ -14,20 +14,29 @@ export default function ProjectStatus() {
     { representation: 'date' }
   );
 
+  const { projectFormDataRera } = useProjectStoreRera();
+  const { towerFormDataRera } = useTowerStoreRera();
+
   return (
     <>
-      <h3 className='my-4 text-2xl font-semibold'>Section: Project Status</h3>
+      <h3 className='my-4 text-2xl font-semibold'>
+        Section: Project Status(WIP)
+      </h3>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[3] text-xl'>Updated at:</span>
         <p className={inputBoxClass}>{asiaCurrentDate}</p>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[3] text-xl'>Project ID:</span>
-        <p className={inputBoxClass}>123</p>
+        <p className={`${inputBoxClass} h-11`}>
+          {projectFormDataRera.projectIds.join('||')}
+        </p>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[3] text-xl'>Tower ID:</span>
-        <p className={inputBoxClass}>123</p>
+        <p className={`${inputBoxClass} h-11`}>
+          {towerFormDataRera.map((item) => item.reraTowerId).join(',')}
+        </p>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[3] text-xl'>Overall Percentage:</span>

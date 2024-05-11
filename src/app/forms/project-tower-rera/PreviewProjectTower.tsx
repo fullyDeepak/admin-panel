@@ -67,8 +67,8 @@ export default function PreviewProjectTower({
       accessorKey: 'towerType',
     },
     {
-      header: 'Tower ID',
-      accessorKey: 'towerId',
+      header: 'RERA Tower ID',
+      accessorKey: 'reraTowerId',
     },
     {
       header: 'Tower Name',
@@ -149,7 +149,7 @@ export default function PreviewProjectTower({
       <div className='flex flex-col gap-5'>
         <p className='text-center text-3xl font-semibold'>Project Data</p>
         <div className='flex flex-col rounded-lg border-4 p-3 '>
-          <div className='mb-3 flex items-center justify-between gap-5 border-b-2 bg-slate-100'>
+          <div className='mb-3 flex items-center justify-between gap-5 border-b-2 bg-slate-100 text-center'>
             <span className='flex-[4] p-2 font-semibold'>Field Name</span>
             <span className='flex-[5] font-semibold '>Value</span>
           </div>

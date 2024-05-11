@@ -94,49 +94,41 @@ export default function Page() {
       projectData: newProjectFormData,
       towerData: newTowerFormData,
     };
-    // rera project submit here
-    if (projectFormDataRera.isRERAProject) {
-      alert(
-        'You have submitted a RERA projects, Unfortunately it is still WIP.'
-      );
-      toast.dismiss(loadingToastId);
-      toast.error(`Come back later`, {
-        id: loadingToastId,
-        duration: 3000,
-      });
-      return null;
-    }
-    // non-rera project submit here
-    else {
-      try {
-        const projectRes = await axiosClient.post('/projects', data);
-        if (projectRes.status === 200) {
-          toast.dismiss(loadingToastId);
-          toast.success(`Project and Tower data added to database.`, {
-            id: loadingToastId,
-            duration: 3000,
-          });
-          setResponseData(projectRes.data);
-          resetProjectFormDataRera();
-          resetTowerFormDataRera();
-        }
-      } catch (error) {
-        if (
-          axios.isAxiosError(error) &&
-          error.response?.status &&
-          error.response?.status >= 400
-        ) {
-          const errMsg =
-            error.response.data?.message || error.response.data?.error;
-          setResponseData((prev) => {
-            return JSON.stringify(prev) + JSON.stringify(errMsg);
-          });
-          toast.dismiss(loadingToastId);
-          toast.error(`Error: ${errMsg}`, {
-            id: loadingToastId,
-            duration: 3000,
-          });
-        }
+
+    try {
+      const projectRes = await axiosClient.post('/projects', data);
+      if (projectRes.status === 200) {
+        toast.dismiss(loadingToastId);
+        toast.success(`Project and Tower data added to database.`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
+        setResponseData(projectRes.data);
+        resetProjectFormDataRera();
+        resetTowerFormDataRera();
+      }
+    } catch (error) {
+      if (
+        axios.isAxiosError(error) &&
+        error.response?.status &&
+        error.response?.status >= 400
+      ) {
+        const errMsg =
+          error.response.data?.message || error.response.data?.error;
+        setResponseData((prev) => {
+          return JSON.stringify(prev) + JSON.stringify(errMsg);
+        });
+        toast.dismiss(loadingToastId);
+        toast.error(`Error: ${errMsg}`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
+      } else {
+        toast.dismiss(loadingToastId);
+        toast.error("Couldn't send data to server.", {
+          id: loadingToastId,
+          duration: 3000,
+        });
       }
     }
   };
@@ -192,7 +184,7 @@ export default function Page() {
                 setFormCount(0);
               }}
             />
-            <span>{`This is ${projectFormDataRera.isRERAProject ? 'a RERA project(WIP)' : 'NOT a RERA project'}`}</span>
+            <span>{`This is ${projectFormDataRera.isRERAProject ? 'a RERA project' : 'NOT a RERA project'}`}</span>
           </div>
         </div>
         {projectFormDataRera.isRERAProject
