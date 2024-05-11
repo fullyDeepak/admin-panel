@@ -162,10 +162,11 @@ export default function ProjectForm() {
               value: item.id,
             })
           );
+
           const localities: {
             label: string;
             value: string;
-          }[] = JSON.parse(projectData?.localities)?.map(
+          }[] = JSON.parse(projectData?.localities || '[]')?.map(
             (locality: string) => ({
               label: locality,
               value: locality,
