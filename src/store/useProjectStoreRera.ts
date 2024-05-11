@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 import { FormProjectTaggingType } from '@/types/types';
 export interface ProjectTaggingTypeRera extends FormProjectTaggingType {
-  isRERAForm: boolean;
+  isRERAProject: boolean;
   district: SingleValue<{
     label: string;
     value: number;
@@ -15,7 +15,6 @@ export interface ProjectTaggingTypeRera extends FormProjectTaggingType {
     label: string;
     value: number;
   }>;
-  village_id: number;
   projects: {
     label: string;
     value: string;
@@ -45,11 +44,10 @@ interface FormState {
 }
 
 const initialState: ProjectTaggingTypeRera = {
-  isRERAForm: true,
+  isRERAProject: true,
   district: null,
   mandal: null,
   village: null,
-  village_id: 0,
   projects: [],
   projectName: '',
   projectIds: [],

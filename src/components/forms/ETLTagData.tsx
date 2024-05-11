@@ -6,18 +6,22 @@ import { BiInfoCircle } from 'react-icons/bi';
 interface ETLTagDataType {
   formData: FormETLTagDataType;
   updateFormData: (newDetails: Partial<FormProjectTaggingType>) => void;
+  showHeading?: boolean;
 }
 
 export default function ETLTagData({
   formData,
   updateFormData,
+  showHeading = true,
 }: ETLTagDataType) {
   const docIdPattern: RegExp =
     /^(100\d|10[1-9]\d|1[1-9]\d{2}|[2-9]\d{3})-(19[0-9][0-9]|2[0][0-9]{2})-([1-9]\d{1,5}|[1-9])$/gm;
 
   return (
     <>
-      <h3 className='my-4 text-2xl font-semibold'>Section: ETL Tag Data</h3>
+      {showHeading && (
+        <h3 className='my-4 text-2xl font-semibold'>Section: ETL Tag Data</h3>
+      )}
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex flex-[2] items-center  '>
           <span>Single Unit?:</span>

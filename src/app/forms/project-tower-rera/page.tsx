@@ -10,14 +10,18 @@ import PreviewProjectTower from './PreviewProjectTower';
 import { useProjectStoreRera } from '@/store/useProjectStoreRera';
 import { useTowerStoreRera } from '@/store/useTowerStoreRera';
 import { usePathname } from 'next/navigation';
+import ProjectStatus from './ProjectStatus';
 
-export default function page() {
+export default function Page() {
   const [responseData, setResponseData] = useState<object | undefined>(
     undefined
   );
   const [formCount, setFormCount] = useState<number>(0);
-  const { projectFormDataRera, resetProjectFormDataRera } =
-    useProjectStoreRera();
+  const {
+    projectFormDataRera,
+    resetProjectFormDataRera,
+    updateProjectFormDataRera,
+  } = useProjectStoreRera();
   const { towerFormDataRera, resetTowerFormDataRera } = useTowerStoreRera();
 
   useEffect(() => {
@@ -30,13 +34,14 @@ export default function page() {
 
   let newProjectFormData: any;
   newProjectFormData = { ...projectFormDataRera };
+
   delete newProjectFormData.towerTypeOptions;
   delete newProjectFormData.projectSubTypeOptions;
   delete newProjectFormData.district;
   delete newProjectFormData.mandal;
-  delete newProjectFormData.village;
   delete newProjectFormData.projects;
-  newProjectFormData.village_id = newProjectFormData.village_id?.value;
+  newProjectFormData.village_id = newProjectFormData.village?.value;
+  delete newProjectFormData.village;
   newProjectFormData.projectType = newProjectFormData.projectType?.value;
   newProjectFormData.projectSubType = newProjectFormData.projectSubType?.value;
   newProjectFormData.projectSubTypeOption =
@@ -51,11 +56,22 @@ export default function page() {
       (item) => item.configName !== ''
     ),
   }));
-  const formsStep: ReactElement[] = [
+  const nonReraFormSteps: ReactElement[] = [
     <ProjectForm key={1} />,
     <TowerForm key={2} />,
     <PreviewProjectTower
       key={3}
+      projectFormData={newProjectFormData}
+      towerFormData={newTowerFormData}
+    />,
+  ];
+
+  const reraFormSteps: ReactElement[] = [
+    <ProjectForm key={1} />,
+    <TowerForm key={2} />,
+    <ProjectStatus key={3} />,
+    <PreviewProjectTower
+      key={4}
       projectFormData={newProjectFormData}
       towerFormData={newTowerFormData}
     />,
@@ -66,55 +82,61 @@ export default function page() {
       id: loadingToastId,
     });
     e.preventDefault();
-
-    try {
-      if (!newProjectFormData.projectName) {
-        toast.dismiss(loadingToastId);
-        toast.error(`Project name is missing.`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
-        return null;
-      }
-      const data = {
-        projectData: newProjectFormData,
-        towerData: newTowerFormData,
-      };
-      const projectRes = await axiosClient.post('/', data);
-      if (projectRes.status === 200) {
-        toast.dismiss(loadingToastId);
-        toast.success(`Project and Tower data added to database.`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
-        setResponseData(projectRes.data);
-        resetProjectFormDataRera();
-        resetTowerFormDataRera();
-      } else {
-        toast.dismiss(loadingToastId);
-        toast.error(`Something went wrong.`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
-        setResponseData(projectRes.data);
-        return null;
-      }
-    } catch (error) {
-      if (
-        axios.isAxiosError(error) &&
-        error.response?.status &&
-        error.response?.status >= 400
-      ) {
-        const errMsg =
-          error.response.data?.message || error.response.data?.error;
-        setResponseData((prev) => {
-          return JSON.stringify(prev) + JSON.stringify(errMsg);
-        });
-        toast.dismiss(loadingToastId);
-        toast.error(`Error: ${errMsg}`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
+    if (!newProjectFormData.projectName) {
+      toast.dismiss(loadingToastId);
+      toast.error(`Project name is missing.`, {
+        id: loadingToastId,
+        duration: 3000,
+      });
+      return null;
+    }
+    const data = {
+      projectData: newProjectFormData,
+      towerData: newTowerFormData,
+    };
+    // rera project submit here
+    if (projectFormDataRera.isRERAProject) {
+      alert(
+        'You have submitted a RERA projects, Unfortunately it is still WIP.'
+      );
+      toast.dismiss(loadingToastId);
+      toast.error(`Come back later`, {
+        id: loadingToastId,
+        duration: 3000,
+      });
+      return null;
+    }
+    // non-rera project submit here
+    else {
+      try {
+        const projectRes = await axiosClient.post('/projects', data);
+        if (projectRes.status === 200) {
+          toast.dismiss(loadingToastId);
+          toast.success(`Project and Tower data added to database.`, {
+            id: loadingToastId,
+            duration: 3000,
+          });
+          setResponseData(projectRes.data);
+          resetProjectFormDataRera();
+          resetTowerFormDataRera();
+        }
+      } catch (error) {
+        if (
+          axios.isAxiosError(error) &&
+          error.response?.status &&
+          error.response?.status >= 400
+        ) {
+          const errMsg =
+            error.response.data?.message || error.response.data?.error;
+          setResponseData((prev) => {
+            return JSON.stringify(prev) + JSON.stringify(errMsg);
+          });
+          toast.dismiss(loadingToastId);
+          toast.error(`Error: ${errMsg}`, {
+            id: loadingToastId,
+            duration: 3000,
+          });
+        }
       }
     }
   };
@@ -137,11 +159,45 @@ export default function page() {
           <li className={`${formCount >= 1 ? 'step-error' : ''} step`}>
             Tower
           </li>
-          <li className={`${formCount >= 2 ? 'step-error' : ''} step`}>
-            Final Preview
-          </li>
+          {projectFormDataRera.isRERAProject ? (
+            <>
+              <li className={`${formCount >= 2 ? 'step-error' : ''} step`}>
+                Status
+              </li>
+              <li className={`${formCount >= 3 ? 'step-error' : ''} step`}>
+                Final Preview
+              </li>
+            </>
+          ) : (
+            <li className={`${formCount >= 2 ? 'step-error' : ''} step`}>
+              Final Preview
+            </li>
+          )}
         </ul>
-        {formsStep[formCount]}
+
+        <div className='mx-auto flex flex-wrap items-center justify-between gap-5 rounded-full bg-rose-100 p-2 px-6 text-2xl transition-all '>
+          <div className='flex items-center gap-5 transition-all duration-1000'>
+            <span>Is RERA project?:</span>
+            <input
+              className={`toggle ${projectFormDataRera.isRERAProject ? 'toggle-success' : ''}`}
+              type='checkbox'
+              name='towerDoorNo'
+              defaultChecked={projectFormDataRera.isRERAProject}
+              onChange={(e) => {
+                resetProjectFormDataRera();
+                resetTowerFormDataRera();
+                updateProjectFormDataRera({
+                  isRERAProject: e.target.checked,
+                });
+                setFormCount(0);
+              }}
+            />
+            <span>{`This is ${projectFormDataRera.isRERAProject ? 'a RERA project(WIP)' : 'NOT a RERA project'}`}</span>
+          </div>
+        </div>
+        {projectFormDataRera.isRERAProject
+          ? reraFormSteps[formCount]
+          : nonReraFormSteps[formCount]}
         <div className='mx-auto flex w-full items-center justify-center gap-10 md:w-[80%] md:gap-40 '>
           <button
             type='button'
@@ -151,7 +207,9 @@ export default function page() {
           >
             Previous
           </button>
-          {formsStep.length - 1 !== formCount && (
+          {(projectFormDataRera.isRERAProject
+            ? reraFormSteps.length - 1 !== formCount
+            : nonReraFormSteps.length - 1 !== formCount) && (
             <button
               type='button'
               className='btn btn-info btn-sm w-32 text-white md:btn-md'
@@ -160,7 +218,9 @@ export default function page() {
               Next
             </button>
           )}
-          {formsStep.length - 1 === formCount && (
+          {(projectFormDataRera.isRERAProject
+            ? reraFormSteps.length - 1 === formCount
+            : nonReraFormSteps.length - 1 === formCount) && (
             <button
               className='btn btn-sm w-32 border-none bg-rose-500 text-white md:btn-md hover:bg-red-600'
               disabled={

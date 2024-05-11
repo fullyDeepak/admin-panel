@@ -2,16 +2,16 @@ import { useQuery } from '@tanstack/react-query';
 import Select, { SingleValue } from 'react-select';
 import React, { useEffect, useState } from 'react';
 import { useProjectStoreRera } from '@/store/useProjectStoreRera';
-import ETLTagData from './ETLTagData';
 import axiosClient from '@/utils/AxiosClient';
 import { MultiSelect } from 'react-multi-select-component';
-import { startCase } from 'lodash';
 import { extractKMLCoordinates } from '@/utils/extractKMLCoordinates';
 import toast from 'react-hot-toast';
-import { uniq } from 'lodash';
+import { uniq, startCase } from 'lodash';
 import { useTowerStoreRera } from '@/store/useTowerStoreRera';
 import ChipInput from '@/components/ui/Chip';
 import { useReraDocStore } from '@/store/useReraDocStore';
+import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
+import DocsETLTagData from './DocsETLTagData';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
@@ -35,49 +35,6 @@ export default function ProjectForm() {
   const { resetReraDocs } = useReraDocStore();
   const [mainProject, setMainProject] = useState<string>('');
 
-  async function fetchDropdownOption(
-    type: 'districts' | 'mandals' | 'villages' | 'projects',
-    params?: object
-  ) {
-    if (params !== undefined && type !== 'projects') {
-      const res = await axiosClient.get<{
-        data: { name: string }[];
-        message: string;
-        statusCode: number;
-      }>(`/forms/rera/get${startCase(type)}`, { params: params });
-      const options = res?.data?.data;
-      const dropdownOptions = options.map((item) => {
-        return { value: item.name, label: startCase(item.name.toLowerCase()) };
-      });
-      return dropdownOptions;
-    } else if (type === 'projects') {
-      const res = await axiosClient.get<{
-        data: { id: string; project_name: string }[];
-        message: string;
-        statusCode: number;
-      }>(`/forms/rera/get${startCase(type)}`, { params: params });
-      const options = res?.data?.data;
-      const dropdownOptions = options.map((item) => {
-        return {
-          value: item.id,
-          label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
-        };
-      });
-      return dropdownOptions;
-    } else {
-      const res = await axiosClient.get<{
-        data: { name: string }[];
-        message: string;
-        statusCode: number;
-      }>(`/forms/rera/get${startCase(type)}`);
-      const options = res?.data?.data;
-      const dropdownOptions = options.map((item) => {
-        return { value: item.name, label: startCase(item.name.toLowerCase()) };
-      });
-      return dropdownOptions;
-    }
-  }
-
   const { data: amenitiesOptions, isLoading: loadingAmenities } = useQuery({
     queryKey: ['amenitiesOptions'],
     queryFn: async () => {
@@ -91,100 +48,124 @@ export default function ProjectForm() {
     },
   });
 
+  const { data: localitiesOptions, isLoading: loadingLocalities } = useQuery({
+    queryKey: ['localitiesOptions'],
+    queryFn: async () => {
+      const response = await axiosClient.get<{
+        data: string[];
+      }>('/forms/localities');
+      const localities = response.data.data;
+      const localitiesOptions: {
+        label: string;
+        value: string;
+      }[] = [];
+      localities.map((item) => {
+        if (item.length > 2) {
+          localitiesOptions.push({
+            label: item,
+            value: item,
+          });
+        }
+      });
+      console.log({ localitiesOptions });
+      return localitiesOptions;
+    },
+    refetchOnWindowFocus: false,
+    staleTime: Infinity,
+  });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     updateProjectFormDataRera({ [name]: value });
   };
 
   //   district dropdown
-  const {
-    isPending: loadingDistricts,
-    error: distError,
-    status: districtCallStatus,
-    data: districtOptions,
-  } = useQuery({
+  const { isPending: loadingDistricts, data: districtOptions } = useQuery({
     queryKey: ['district'],
-    queryFn: () => {
-      return fetchDropdownOption('districts');
+    queryFn: async () => {
+      const options = await fetchDropdownOption('districts', 'state', 36);
+      return options.map((item) => ({
+        label: `${item.value}:${startCase(item.label.toLowerCase())}`,
+        value: item.value,
+      }));
     },
     staleTime: Infinity,
   });
 
   // mandal dropdown
-  const {
-    isPending: loadingMandals,
-    error: mandalError,
-    status: mandalCallStatus,
-    data: mandalOptions,
-  } = useQuery({
+  const { isPending: loadingMandals, data: mandalOptions } = useQuery({
     queryKey: ['mandal', projectFormDataRera.district],
-    queryFn: () => {
+    queryFn: async () => {
       if (
         projectFormDataRera.district !== undefined &&
         projectFormDataRera.district !== null
       ) {
-        return fetchDropdownOption('mandals', {
-          district: projectFormDataRera.district?.value,
-        });
+        const options = await fetchDropdownOption(
+          'mandals',
+          'district',
+          projectFormDataRera.district?.value
+        );
+        return options.map((item) => ({
+          label: `${item.value}:${startCase(item.label.toLowerCase())}`,
+          value: item.value,
+        }));
       }
     },
     staleTime: Infinity,
   });
 
   //   village dropdown
-  const {
-    isPending: loadingVillages,
-    error: villageError,
-    status: villageCallStatus,
-    data: villageOptions,
-  } = useQuery({
+  const { isPending: loadingVillages, data: villageOptions } = useQuery({
     queryKey: ['village', projectFormDataRera.mandal],
-    queryFn: () => {
+    queryFn: async () => {
       if (
         projectFormDataRera.mandal !== undefined &&
         projectFormDataRera.mandal !== null
       ) {
-        return fetchDropdownOption('villages', {
-          district: projectFormDataRera.district?.value,
-          mandal: projectFormDataRera.mandal?.value,
-        });
+        console.log('fetching villages', projectFormDataRera.mandal);
+        const options = await fetchDropdownOption(
+          'villages',
+          'mandal',
+          projectFormDataRera.mandal?.value
+        );
+        return options.map((item) => ({
+          label: `${item.value}:${startCase(item.label.toLowerCase())}`,
+          value: item.value,
+        }));
       }
     },
     staleTime: Infinity,
   });
 
   //   projects dropdown
-  const {
-    isPending: loadingProjects,
-    error: projectLoadingError,
-    status: projectCallStatus,
-    data: projectOptions,
-  } = useQuery({
+  const { isPending: loadingProjects, data: projectOptions } = useQuery({
     queryKey: ['project', projectFormDataRera.village],
-    queryFn: () => {
+    queryFn: async () => {
       if (
         projectFormDataRera.mandal !== undefined &&
         projectFormDataRera.mandal !== null &&
         projectFormDataRera.village !== undefined &&
         projectFormDataRera.village !== null
       ) {
-        return fetchDropdownOption('projects', {
-          district: projectFormDataRera.district?.value,
-          mandal: projectFormDataRera.mandal?.value,
-          village: projectFormDataRera.village?.value,
+        const res = await axiosClient.get<{
+          data: { id: string; project_name: string }[];
+          message: string;
+          statusCode: number;
+        }>(`/forms/rera/getProjects`, {
+          params: { village_id: projectFormDataRera.village.value },
         });
+        const options = res?.data?.data;
+        const dropdownOptions = options.map((item) => {
+          return {
+            value: item.id,
+            label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
+          };
+        });
+        return dropdownOptions;
       }
     },
     staleTime: Infinity,
   });
-
-  //   useEffect(() => {
-  //     updateProjectFormDataRera({ village: null });
-  //   }, [projectFormDataRera.mandal]);
-
-  //   useEffect(() => {
-  //     updateProjectFormDataRera({ projects: [] });
-  //   }, [projectFormDataRera.village]);
 
   let loadingToastId: string;
 
@@ -259,9 +240,11 @@ export default function ProjectForm() {
       params: { projectIds: JSON.stringify(selectedProjectIds) },
     });
     const data = response.data.data;
+    const developers = uniq(data.map((item) => item.developer_name));
     updateProjectFormDataRera({
+      projectName: uniq(data.map((item) => item.project_name)).join(' || '),
       projectIds: uniq(data.map((item) => +item.project_id)),
-      developers: uniq(data.map((item) => item.developer_name)),
+      developer: developers.join(' || '),
       projectTypeSuggestion: uniq(data.map((item) => item.project_type)),
       projectSubTypeSuggestion: uniq(data.map((item) => item.project_subtype)),
       surveySuggestion: uniq(data.map((item) => item.survey_number)),
@@ -299,9 +282,6 @@ export default function ProjectForm() {
     });
     setTowersDataRera(towersData);
   }
-  useEffect(() => {
-    console.log(projectFormDataRera.village);
-  });
   return (
     <>
       <h3 className='my-4 text-2xl font-semibold'>Section: Project Details</h3>
@@ -316,7 +296,7 @@ export default function ProjectForm() {
           onChange={(
             e: SingleValue<{
               label: string;
-              value: string;
+              value: number;
             }>
           ) => {
             updateProjectFormDataRera({ district: e, mandal: null });
@@ -351,75 +331,100 @@ export default function ProjectForm() {
           isDisabled={Boolean(!projectFormDataRera.mandal)}
         />
       </label>
-      <div className='flex items-center justify-between gap-5 '>
-        <span className='flex-[2] text-xl'>Select Projects:</span>
-        <div className='flex flex-[5] items-center gap-5'>
-          <MultiSelect
-            className='w-full'
-            options={projectOptions || []}
-            isLoading={loadingProjects}
-            value={projectFormDataRera.projects}
-            onChange={(
-              e: {
-                label: string;
-                value: string;
-              }[]
-            ) => {
-              updateProjectFormDataRera({ projects: e });
-            }}
-            labelledBy={'projects'}
-            isCreatable={false}
-            hasSelectAll={true}
-            disabled={Boolean(!projectFormDataRera.village)}
-            valueRenderer={(selected, _options) => {
-              return selected.length ? selected.map(({ label }) => label) : '';
-            }}
-          />
-          <button
-            className='btn-rezy-sm'
-            type='button'
-            disabled={Boolean(!projectFormDataRera.projects.length)}
-            onClick={fetchProjectsDetails}
-          >
-            Fetch
-          </button>
-        </div>
-      </div>
-      <div className='flex items-center justify-between gap-5 '>
-        <span className='flex-[2] text-xl'>Assign Main Project Name:</span>
-        <div className='flex w-full flex-[5] items-center gap-5'>
-          <input
-            className={`${inputBoxClass} !ml-0`}
-            name='mainProjectName'
-            onChange={(e) => setMainProject(e.target.value)}
-          />
-          <button
-            className='btn-rezy-sm'
-            type='button'
-            disabled={Boolean(
-              !(mainProject.trim().length > 3) ||
-                !projectFormDataRera.projects.length
-            )}
-            onClick={() => postMainProject()}
-          >
-            Save
-          </button>
-        </div>
-      </div>
+      {projectFormDataRera.isRERAProject && (
+        <>
+          <div className='flex items-center justify-between gap-5 '>
+            <span className='flex-[2] text-xl'>Select Projects:</span>
+            <div className='flex flex-[5] items-center gap-5'>
+              <MultiSelect
+                className='w-full'
+                options={projectOptions || []}
+                isLoading={loadingProjects}
+                value={projectFormDataRera.projects}
+                onChange={(
+                  e: {
+                    label: string;
+                    value: string;
+                  }[]
+                ) => {
+                  updateProjectFormDataRera({ projects: e });
+                }}
+                labelledBy={'projects'}
+                isCreatable={false}
+                hasSelectAll={true}
+                disabled={Boolean(!projectFormDataRera.village)}
+                valueRenderer={(selected, _options) => {
+                  return selected.length
+                    ? selected.map(({ label }) => label)
+                    : '';
+                }}
+              />
+              <button
+                className='btn-rezy-sm'
+                type='button'
+                disabled={Boolean(!projectFormDataRera.projects.length)}
+                onClick={fetchProjectsDetails}
+              >
+                Fetch
+              </button>
+            </div>
+          </div>
+          <div className='flex items-center justify-between gap-5 '>
+            <span className='flex-[2] text-xl'>Assign Main Project Name:</span>
+            <div className='flex w-full flex-[5] items-center gap-5'>
+              <input
+                className={`${inputBoxClass} !ml-0`}
+                name='mainProjectName'
+                onChange={(e) => setMainProject(e.target.value)}
+              />
+              <button
+                className='btn-rezy-sm'
+                type='button'
+                disabled={Boolean(
+                  !(mainProject.trim().length > 3) ||
+                    !projectFormDataRera.projects.length
+                )}
+                onClick={() => postMainProject()}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+          <label className='flex flex-wrap items-center justify-between gap-5 '>
+            <span className='flex flex-[2] items-center  '>
+              <span>Project IDs:</span>
+            </span>
+            <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
+              <span>{projectFormDataRera.projectIds.join(', ')}</span>
+            </span>
+          </label>
+        </>
+      )}
       <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex flex-[2] items-center  '>
-          <span>Project IDs:</span>
-        </span>
-        <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
-          <span>{projectFormDataRera.projectIds.join(', ')}</span>
-        </span>
+        <span className='flex-[2] '>Project Name:</span>
+        <input
+          className={inputBoxClass}
+          name='projectName'
+          value={projectFormDataRera.projectName}
+          onChange={handleChange}
+        />
+      </label>
+      <label className='flex flex-wrap items-center justify-between gap-5 '>
+        <span className='flex-[2] '>Layout Name:</span>
+        <input
+          className={inputBoxClass}
+          name='layoutName'
+          defaultValue={projectFormDataRera.layoutName}
+          onChange={handleChange}
+        />
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Developers:</span>
-        <ChipInput
-          chips={projectFormDataRera.developers}
-          updateFormData={updateProjectFormDataRera}
-          updateKey='developers'
+        <input
+          className={inputBoxClass}
+          name='developer'
+          defaultValue={projectFormDataRera.developer}
+          onChange={handleChange}
         />
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
@@ -528,13 +533,16 @@ export default function ProjectForm() {
       </div>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Project Description:</span>
-        <input
-          type='text'
+        <textarea
+          rows={6}
           className={inputBoxClass}
           name='projectDesc'
-          defaultValue={projectFormDataRera.projectDesc}
-          onChange={handleChange}
-        />
+          value={projectFormDataRera.projectDesc}
+          onChange={(e) =>
+            updateProjectFormDataRera({ projectDesc: e.target.value })
+          }
+          placeholder='Add description here...'
+        ></textarea>
       </label>
       <div className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Amenities Tags:</span>
@@ -584,7 +592,29 @@ export default function ProjectForm() {
           onChange={(e) => {}}
         />
       </label>
-      <ETLTagData />
+      <div className='flex flex-wrap items-center justify-between gap-5 '>
+        <span className='flex-[2] '>Localities:</span>
+        <MultiSelect
+          className='w-full flex-[5]'
+          options={localitiesOptions || []}
+          isLoading={loadingLocalities}
+          value={projectFormDataRera.localities}
+          onChange={(
+            e: {
+              label: string;
+              value: string;
+            }[]
+          ) => {
+            updateProjectFormDataRera({
+              localities: e,
+            });
+          }}
+          labelledBy={'amenitiesTags'}
+          isCreatable={false}
+          hasSelectAll={false}
+        />
+      </div>
+      <DocsETLTagData />
     </>
   );
 }

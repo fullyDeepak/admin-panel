@@ -17,6 +17,8 @@ type PreviewProjectTowerProps = {
     apartmentContains: string;
     counterpartyContains: string;
     projectCoordinates: string[];
+    aptSurveyPlotDetails: boolean;
+    counterpartySurveyPlotDetails: boolean;
   };
   towerFormData: {
     id: number;
@@ -25,6 +27,17 @@ type PreviewProjectTowerProps = {
     towerType: string;
     towerName: string;
     etlUnitConfigs: { configName: string; minArea: number; maxArea: number }[];
+    minFloor: number;
+    maxFloor: number;
+    groundFloorName: string;
+    deleteFullUnitNos: string;
+    exceptionUnitNos: string;
+    groundFloorUnitNoMax: string;
+    groundFloorUnitNoMin: string;
+    typicalFloorUnitNoMax: string;
+    typicalFloorUnitNoMin: string;
+    towerDoorNo: string;
+    validTowerUnits: string[][];
   }[];
 };
 
@@ -54,8 +67,48 @@ export default function PreviewProjectTower({
       accessorKey: 'towerType',
     },
     {
+      header: 'Tower ID',
+      accessorKey: 'towerId',
+    },
+    {
       header: 'Tower Name',
       accessorKey: 'towerName',
+    },
+    {
+      header: 'Tower Door No',
+      accessorKey: 'towerDoorNo',
+    },
+    {
+      header: 'Max Floor',
+      accessorKey: 'maxFloor',
+    },
+    {
+      header: 'Ground Floor Name',
+      accessorKey: 'groundFloorName',
+    },
+    {
+      header: 'Delete Full Unit Nos',
+      accessorKey: 'deleteFullUnitNos',
+    },
+    {
+      header: 'Exception Unit Nos',
+      accessorKey: 'exceptionUnitNos',
+    },
+    {
+      header: 'Ground Floor Unit No Min',
+      accessorKey: 'groundFloorUnitNoMin',
+    },
+    {
+      header: 'Ground Floor Unit No Max',
+      accessorKey: 'groundFloorUnitNoMax',
+    },
+    {
+      header: 'Typical Floor Unit No Min',
+      accessorKey: 'typicalFloorUnitNoMin',
+    },
+    {
+      header: 'Typical Floor Unit No Max',
+      accessorKey: 'typicalFloorUnitNoMax',
     },
   ];
   const etlColumns = [
@@ -95,7 +148,6 @@ export default function PreviewProjectTower({
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-5'>
         <p className='text-center text-3xl font-semibold'>Project Data</p>
-
         <div className='flex flex-col rounded-lg border-4 p-3 '>
           <div className='mb-3 flex items-center justify-between gap-5 border-b-2 bg-slate-100'>
             <span className='flex-[4] p-2 font-semibold'>Field Name</span>
@@ -123,7 +175,11 @@ export default function PreviewProjectTower({
                     .join(', ')}
                 </span>
               ) : (
-                <span className='flex-[1] '>{value as string}</span>
+                <span className='flex-[1] '>
+                  {typeof value === 'boolean'
+                    ? JSON.stringify(value)
+                    : (value as string)}
+                </span>
               )}
             </div>
           ))}
@@ -131,12 +187,14 @@ export default function PreviewProjectTower({
       </div>
       <div className='flex flex-col gap-5'>
         <p className='text-center text-3xl font-semibold'>Tower Data</p>
-        <TanstackReactTable
-          columns={towerColumns}
-          data={towerFormData}
-          enableSearch={false}
-          showPagination={false}
-        />
+        <div className='overflow-auto'>
+          <TanstackReactTable
+            columns={towerColumns}
+            data={towerFormData}
+            enableSearch={false}
+            showPagination={false}
+          />
+        </div>
       </div>
       <div className='flex flex-col gap-5'>
         <p className='text-center text-3xl font-semibold'>
