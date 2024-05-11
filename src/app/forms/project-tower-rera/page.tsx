@@ -44,6 +44,9 @@ export default function Page() {
   delete newProjectFormData.village;
   newProjectFormData.projectType = newProjectFormData.projectType?.value;
   newProjectFormData.projectSubType = newProjectFormData.projectSubType?.value;
+  newProjectFormData.localities = newProjectFormData?.localities?.map(
+    (item: { value: string; label: string }) => item.value
+  );
   newProjectFormData.projectSubTypeOption =
     newProjectFormData.projectSubTypeOption?.value;
   newProjectFormData.towerTypeOptions =

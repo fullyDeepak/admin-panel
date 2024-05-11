@@ -35,6 +35,9 @@ export default function page() {
   delete newProjectFormData.selectedProjectOption;
   delete newProjectFormData.projectSubTypeOptions;
   delete newProjectFormData.towerTypeOptions;
+  newProjectFormData.localities = newProjectFormData?.localities?.map(
+    (item: { value: string; label: string }) => item.value
+  );
   let newTowerFormData: any;
   newTowerFormData = editTowerFormData.map((item) => ({
     ...item,

@@ -165,11 +165,12 @@ export default function ProjectForm() {
           const localities: {
             label: string;
             value: string;
-          }[] = projectData?.localities?.map((locality) => ({
-            label: locality,
-            value: locality,
-          }));
-
+          }[] = JSON.parse(projectData?.localities)?.map(
+            (locality: string) => ({
+              label: locality,
+              value: locality,
+            })
+          );
           const localityWbPlot: {
             locality_contains: string[];
             ward_block: string[];
