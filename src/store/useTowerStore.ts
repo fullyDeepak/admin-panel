@@ -1,41 +1,30 @@
 import { create } from 'zustand';
 import { SingleValue } from 'react-select';
+import { FormTowerDetailType } from '@/types/types';
 
-interface etlUnitConfig {
-  configName: string;
-  minArea: number;
-  maxArea: number;
-}
-
-interface towerDetail {
-  id: number;
-  projectPhase: number;
-  reraId: string;
-  towerType: SingleValue<{
+interface TowerDetailsDataType extends FormTowerDetailType {
+  towerType: {
     label: string;
     value: string;
-  }>;
-  towerName: string;
-  towerDoorNo: string;
-  minFloor: number;
-  maxFloor: number;
-  groundFloorName: string;
-  groundFloorUnitNoMin: number | string;
-  groundFloorUnitNoMax: number | string;
-  typicalFloorUnitNoMin: number | string;
-  typicalFloorUnitNoMax: number | string;
-  deleteFullUnitNos: string;
-  exceptionUnitNos: string;
-  etlUnitConfigs: etlUnitConfig[];
-  validTowerUnits: string[][] | null;
+  };
 }
 
 interface FormState {
-  towerFormData: towerDetail[];
-  updateTowerFormData: (id: number, key: keyof towerDetail, value: any) => void;
-  addNewTowerData: (newDetails: towerDetail) => void;
+  towerFormData: TowerDetailsDataType[];
+  updateTowerFormData: (
+    id: number,
+    key: keyof TowerDetailsDataType,
+    value: any
+  ) => void;
+  addNewTowerData: (newDetails: TowerDetailsDataType) => void;
   deleteTowerFormData: (towerId: number) => void;
   addEtlUnitConfig: (
+    towerId: number,
+    configName: string,
+    minArea: number,
+    maxArea: number
+  ) => void;
+  updateEtlUnitConfig: (
     towerId: number,
     configName: string,
     minArea: number,
@@ -45,7 +34,7 @@ interface FormState {
   resetTowerFormData: () => void;
 }
 
-const initialState: towerDetail[] = [
+const initialState: TowerDetailsDataType[] = [
   {
     id: 1,
     projectPhase: 1,
@@ -104,6 +93,28 @@ export const useTowerStore = create<FormState>((set) => ({
                 ...data.etlUnitConfigs,
                 { configName, minArea, maxArea },
               ],
+            }
+          : data
+      ),
+    }));
+  },
+
+  updateEtlUnitConfig: (towerId, configName, minArea, maxArea) => {
+    set((state) => ({
+      towerFormData: state.towerFormData.map((data) =>
+        data.id === towerId
+          ? {
+              ...data,
+              etlUnitConfigs: data.etlUnitConfigs.map((unit) =>
+                unit.configName === configName
+                  ? {
+                      ...unit,
+                      configName: unit.configName,
+                      minArea: minArea,
+                      maxArea: maxArea,
+                    }
+                  : unit
+              ),
             }
           : data
       ),

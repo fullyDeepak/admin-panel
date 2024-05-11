@@ -117,3 +117,27 @@ export interface FormProjectTaggingType extends FormETLTagDataType {
   }[];
   localities: { label: string; value: string }[];
 }
+export interface FormEtlUnitConfigType {
+  configName: string;
+  minArea: number;
+  maxArea: number;
+}
+
+export interface FormTowerDetailType {
+  id: number;
+  projectPhase: number;
+  reraId: string;
+  towerName: string;
+  towerDoorNo: string;
+  minFloor: number;
+  maxFloor: number;
+  groundFloorName: string;
+  groundFloorUnitNoMin: number | string;
+  groundFloorUnitNoMax: number | string;
+  typicalFloorUnitNoMin: number | string;
+  typicalFloorUnitNoMax: number | string;
+  deleteFullUnitNos: string;
+  exceptionUnitNos: string;
+  etlUnitConfigs: FormEtlUnitConfigType[];
+  validTowerUnits: string[][] | null;
+}

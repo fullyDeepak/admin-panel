@@ -1,9 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { XMLParser } from 'fast-xml-parser';
 import Select, { SingleValue } from 'react-select';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useProjectStore } from '@/store/useProjectStore';
-// import ETLTagData from './ETLTagData';
 import axiosClient from '@/utils/AxiosClient';
 import { MultiSelect } from 'react-multi-select-component';
 import { extractKMLCoordinates } from '@/utils/extractKMLCoordinates';

@@ -1,67 +1,38 @@
 import { create } from 'zustand';
 import { SingleValue } from 'react-select';
-
-export interface ProjectTaggingTypeRera {
+import { FormProjectTaggingType } from '@/types/types';
+export interface ProjectTaggingTypeRera extends FormProjectTaggingType {
+  isRERAForm: boolean;
   district: SingleValue<{
     label: string;
-    value: string;
+    value: number;
   }>;
   mandal: SingleValue<{
     label: string;
-    value: string;
+    value: number;
   }>;
   village: SingleValue<{
     label: string;
-    value: string;
+    value: number;
   }>;
   village_id: number;
   projects: {
     label: string;
     value: string;
   }[];
-  projectName: string;
   projectIds: number[];
-  layoutName: string;
-  developers: string[];
-  developerGroup: string;
   projectType: SingleValue<{
     label: string;
     value: string;
   }>;
-  towerTypeOptions:
-    | {
-        label: string;
-        value: string;
-      }[]
-    | undefined;
-  projectSubTypeOptions:
-    | {
-        label: string;
-        value: string;
-      }[]
-    | undefined;
   projectSubType: SingleValue<{
     label: string;
     value: string;
   }>;
   projectTypeSuggestion: string[];
   projectSubTypeSuggestion: string[];
-  projectDesc: string;
-  amenitiesTags: { label: string; value: string; __isNew__?: boolean }[];
   surveySuggestion: string[];
   plotSuggestion: string[];
-  docId: string;
-  rootDocs: string[];
-  apartmentContains: string[];
-  counterpartyContains: string[];
-  aptSurveyPlotDetails: boolean;
-  counterpartySurveyPlotDetails: boolean;
-  surveyEqual: string[];
-  plotEqual: string[];
-  surveyContains: string[];
-  plotContains: string[];
-  doorNoStartWith: string;
-  aptNameNotContains: string;
   projectCoordinates: string[];
 }
 
@@ -74,6 +45,7 @@ interface FormState {
 }
 
 const initialState: ProjectTaggingTypeRera = {
+  isRERAForm: true,
   district: null,
   mandal: null,
   village: null,
@@ -82,7 +54,7 @@ const initialState: ProjectTaggingTypeRera = {
   projectName: '',
   projectIds: [],
   layoutName: '',
-  developers: [],
+  developer: '',
   developerGroup: '',
   projectType: {
     label: '',
@@ -98,21 +70,29 @@ const initialState: ProjectTaggingTypeRera = {
   projectSubTypeSuggestion: [],
   projectDesc: '',
   amenitiesTags: [],
-  surveyEqual: [],
+  surveyEquals: [],
   surveySuggestion: [],
   plotSuggestion: [],
-  docId: '',
+  docId: [],
   rootDocs: [],
   apartmentContains: [],
   counterpartyContains: [],
   aptSurveyPlotDetails: false,
   counterpartySurveyPlotDetails: false,
-  plotEqual: [],
+  plotEquals: [],
   surveyContains: [],
   plotContains: [],
-  doorNoStartWith: '',
-  aptNameNotContains: '',
+  doorNoStartWith: [],
+  aptNameNotContains: [],
   projectCoordinates: [],
+  singleUnit: false,
+  towerPattern: '',
+  floorPattern: '',
+  unitPattern: '',
+  localities: [],
+  localityContains: [],
+  localityPlot: [],
+  wardBlock: [],
 };
 
 export const useProjectStoreRera = create<FormState>((set) => ({

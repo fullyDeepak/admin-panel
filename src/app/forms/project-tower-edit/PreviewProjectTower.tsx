@@ -135,17 +135,15 @@ export default function PreviewProjectTower({
     minArea: number;
     maxArea: number;
   }[] = [];
-  towerFormData.map((item) =>
+  towerFormData?.map((item) =>
     item.etlUnitConfigs.map((etl) =>
       etlUnitConfigs.push({ ...etl, id: item.id })
     )
   );
-
   projectFormData.amenitiesTags.map((item) => item.label);
   const amenitiesLabels: string[] = [];
   projectFormData.amenitiesTags.map((item) => amenitiesLabels.push(item.label));
   console.log(projectFormData);
-
   return (
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-5'>
@@ -166,7 +164,7 @@ export default function PreviewProjectTower({
               {value &&
               Array.isArray(value) &&
               value.length > 0 &&
-              value[0].constructor === Object ? (
+              value[0]?.constructor === Object ? (
                 <span className='flex-[1] '>
                   {value
                     .map((item) => {

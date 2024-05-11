@@ -1,30 +1,9 @@
+import { FormTowerDetailType } from '@/types/types';
 import { create } from 'zustand';
 
-interface etlUnitConfig {
-  configName: string;
-  minArea: number;
-  maxArea: number;
-}
-
-export interface editTowerDetail {
-  id: number;
+export interface editTowerDetail extends FormTowerDetailType {
   towerId: number | '__new';
-  projectPhase: number;
-  reraId: string;
   towerType: string;
-  towerName: string;
-  towerDoorNo: string;
-  minFloor: number;
-  maxFloor: number;
-  groundFloorName: string;
-  groundFloorUnitNoMin: number | string;
-  groundFloorUnitNoMax: number | string;
-  typicalFloorUnitNoMin: number | string;
-  typicalFloorUnitNoMax: number | string;
-  deleteFullUnitNos: string;
-  exceptionUnitNos: string;
-  etlUnitConfigs: etlUnitConfig[];
-  validTowerUnits: string[][] | null;
 }
 
 interface FormState {
@@ -40,6 +19,12 @@ interface FormState {
   addNewEditTowerData: (newDetails: editTowerDetail) => void;
   deleteEditTowerFormData: (towerId: number) => void;
   addEtlUnitConfig: (
+    towerId: number,
+    configName: string,
+    minArea: number,
+    maxArea: number
+  ) => void;
+  updateEtlUnitConfig: (
     towerId: number,
     configName: string,
     minArea: number,
@@ -120,6 +105,28 @@ export const useEditTowerStore = create<FormState>((set) => ({
                 ...data.etlUnitConfigs,
                 { configName, minArea, maxArea },
               ],
+            }
+          : data
+      ),
+    }));
+  },
+
+  updateEtlUnitConfig: (towerId, configName, minArea, maxArea) => {
+    set((state) => ({
+      editTowerFormData: state.editTowerFormData.map((data) =>
+        data.id === towerId
+          ? {
+              ...data,
+              etlUnitConfigs: data.etlUnitConfigs.map((unit) =>
+                unit.configName === configName
+                  ? {
+                      ...unit,
+                      configName: unit.configName,
+                      minArea: minArea,
+                      maxArea: maxArea,
+                    }
+                  : unit
+              ),
             }
           : data
       ),
