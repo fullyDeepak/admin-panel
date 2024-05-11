@@ -48,6 +48,11 @@ export interface ProjectTaggingType {
   localityPlot: string[];
   doorNoStartWith: string[];
   aptNameNotContains: string[];
+  singleUnit: boolean;
+  towerPattern: string;
+  floorPattern: string;
+  unitPattern: string;
+  localities: { label: string; value: string }[];
 }
 
 interface FormState {
@@ -93,6 +98,11 @@ const initialState: ProjectTaggingType = {
   plotContains: [],
   rootDocs: [],
   wardBlock: [],
+  singleUnit: false,
+  towerPattern: '',
+  floorPattern: '',
+  unitPattern: '',
+  localities: [],
 };
 
 export const useProjectStore = create<FormState>((set) => ({

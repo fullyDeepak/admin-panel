@@ -1,3 +1,4 @@
+import { inputBoxClass } from '@/app/constants/tw-class';
 import ChipInput from '@/components/ui/Chip';
 import { useProjectStore } from '@/store/useProjectStore';
 import { ChangeEvent } from 'react';
@@ -14,6 +15,59 @@ export default function ETLTagData() {
   return (
     <>
       <h3 className='my-4 text-2xl font-semibold'>Section: ETL Tag Data</h3>
+      <label className='flex flex-wrap items-center justify-between gap-5 '>
+        <span className='flex flex-[2] items-center  '>
+          <span>Single Unit?:</span>
+        </span>
+        <div className='flex flex-[5] items-center gap-5'>
+          <input
+            className={`toggle ${projectFormData.singleUnit ? 'toggle-success' : ''}`}
+            type='checkbox'
+            name='towerDoorNo'
+            defaultChecked={projectFormData.singleUnit}
+            onChange={(e) =>
+              updateProjectFormData({ singleUnit: e.target.checked })
+            }
+          />{' '}
+          <span>{projectFormData.singleUnit ? 'True' : 'False'}</span>
+        </div>
+      </label>
+      <div className='flex flex-wrap items-center justify-between gap-5 '>
+        <span className='flex flex-[2] items-center  '>
+          <span>Pattern:</span>
+        </span>
+        <div className='flex w-full flex-[5]'>
+          <input
+            className={`${inputBoxClass} !ml-0`}
+            name='towerPattern'
+            defaultValue={projectFormData.towerPattern}
+            onChange={(e) =>
+              updateProjectFormData({
+                towerPattern: e.target.value,
+              })
+            }
+            placeholder='Tower Pattern'
+          />
+          <input
+            className={inputBoxClass}
+            name='floorPattern'
+            defaultValue={projectFormData.floorPattern}
+            onChange={(e) =>
+              updateProjectFormData({ floorPattern: e.target.value })
+            }
+            placeholder='Floor Pattern'
+          />
+          <input
+            className={inputBoxClass}
+            name='unitPattern'
+            defaultValue={projectFormData.unitPattern}
+            onChange={(e) =>
+              updateProjectFormData({ unitPattern: e.target.value })
+            }
+            placeholder='Unit Pattern'
+          />
+        </div>
+      </div>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex flex-[2] items-center'>
           <span>Doc ID:</span>
