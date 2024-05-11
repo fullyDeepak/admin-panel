@@ -1,17 +1,20 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import ChipInput from '@/components/ui/Chip';
-import { useProjectStore } from '@/store/useProjectStore';
-import { ChangeEvent } from 'react';
+import { FormETLTagDataType, FormProjectTaggingType } from '@/types/types';
 import { BiInfoCircle } from 'react-icons/bi';
 
-export default function ETLTagData() {
-  const { projectFormData, updateProjectFormData } = useProjectStore();
+interface ETLTagDataType {
+  formData: FormETLTagDataType;
+  updateFormData: (newDetails: Partial<FormProjectTaggingType>) => void;
+}
+
+export default function ETLTagData({
+  formData,
+  updateFormData,
+}: ETLTagDataType) {
   const docIdPattern: RegExp =
     /^(100\d|10[1-9]\d|1[1-9]\d{2}|[2-9]\d{3})-(19[0-9][0-9]|2[0][0-9]{2})-([1-9]\d{1,5}|[1-9])$/gm;
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    updateProjectFormData({ [name]: value });
-  };
+
   return (
     <>
       <h3 className='my-4 text-2xl font-semibold'>Section: ETL Tag Data</h3>
@@ -21,15 +24,13 @@ export default function ETLTagData() {
         </span>
         <div className='flex flex-[5] items-center gap-5'>
           <input
-            className={`toggle ${projectFormData.singleUnit ? 'toggle-success' : ''}`}
+            className={`toggle ${formData.singleUnit ? 'toggle-success' : ''}`}
             type='checkbox'
             name='towerDoorNo'
-            defaultChecked={projectFormData.singleUnit}
-            onChange={(e) =>
-              updateProjectFormData({ singleUnit: e.target.checked })
-            }
+            defaultChecked={formData.singleUnit}
+            onChange={(e) => updateFormData({ singleUnit: e.target.checked })}
           />{' '}
-          <span>{projectFormData.singleUnit ? 'True' : 'False'}</span>
+          <span>{formData.singleUnit ? 'True' : 'False'}</span>
         </div>
       </label>
       <div className='flex flex-wrap items-center justify-between gap-5 '>
@@ -40,9 +41,9 @@ export default function ETLTagData() {
           <input
             className={`${inputBoxClass} !ml-0`}
             name='towerPattern'
-            defaultValue={projectFormData.towerPattern}
+            defaultValue={formData.towerPattern}
             onChange={(e) =>
-              updateProjectFormData({
+              updateFormData({
                 towerPattern: e.target.value,
               })
             }
@@ -51,19 +52,15 @@ export default function ETLTagData() {
           <input
             className={inputBoxClass}
             name='floorPattern'
-            defaultValue={projectFormData.floorPattern}
-            onChange={(e) =>
-              updateProjectFormData({ floorPattern: e.target.value })
-            }
+            defaultValue={formData.floorPattern}
+            onChange={(e) => updateFormData({ floorPattern: e.target.value })}
             placeholder='Floor Pattern'
           />
           <input
             className={inputBoxClass}
             name='unitPattern'
-            defaultValue={projectFormData.unitPattern}
-            onChange={(e) =>
-              updateProjectFormData({ unitPattern: e.target.value })
-            }
+            defaultValue={formData.unitPattern}
+            onChange={(e) => updateFormData({ unitPattern: e.target.value })}
             placeholder='Unit Pattern'
           />
         </div>
@@ -79,8 +76,8 @@ export default function ETLTagData() {
           </span>
         </span>
         <ChipInput
-          chips={projectFormData.docId}
-          updateFormData={updateProjectFormData}
+          chips={formData.docId}
+          updateFormData={updateFormData}
           updateKey='docId'
           regexPattern={docIdPattern}
         />
@@ -96,8 +93,8 @@ export default function ETLTagData() {
           </span>
         </span>
         <ChipInput
-          chips={projectFormData.rootDocs}
-          updateFormData={updateProjectFormData}
+          chips={formData.rootDocs}
+          updateFormData={updateFormData}
           updateKey='rootDocs'
           regexPattern={docIdPattern}
         />
@@ -106,20 +103,20 @@ export default function ETLTagData() {
         <span className='flex-[2] '>Apartment Contains:</span>
         <div className='flex flex-[5] gap-4'>
           <ChipInput
-            chips={projectFormData.apartmentContains}
-            updateFormData={updateProjectFormData}
+            chips={formData.apartmentContains}
+            updateFormData={updateFormData}
             updateKey='apartmentContains'
             addTWClass='!ml-0'
           />
           <div className='flex items-center gap-2'>
             <label
-              className={`swap rounded  p-1 ${projectFormData.aptSurveyPlotDetails ? 'bg-green-200' : 'bg-rose-200'}`}
+              className={`swap rounded  p-1 ${formData.aptSurveyPlotDetails ? 'bg-green-200' : 'bg-rose-200'}`}
             >
               <input
                 type='checkbox'
-                checked={projectFormData.aptSurveyPlotDetails}
+                checked={formData.aptSurveyPlotDetails}
                 onChange={(e) =>
-                  updateProjectFormData({
+                  updateFormData({
                     aptSurveyPlotDetails: e.target.checked,
                   })
                 }
@@ -135,20 +132,20 @@ export default function ETLTagData() {
         <span className='flex-[2] '>Counterparty Contains:</span>
         <div className='flex flex-[5] gap-4'>
           <ChipInput
-            chips={projectFormData.counterpartyContains}
-            updateFormData={updateProjectFormData}
+            chips={formData.counterpartyContains}
+            updateFormData={updateFormData}
             updateKey='counterpartyContains'
             addTWClass='!ml-0'
           />
           <div className='flex items-center gap-2'>
             <label
-              className={`swap rounded  p-1 ${projectFormData.counterpartySurveyPlotDetails ? 'bg-green-200' : 'bg-rose-200'}`}
+              className={`swap rounded  p-1 ${formData.counterpartySurveyPlotDetails ? 'bg-green-200' : 'bg-rose-200'}`}
             >
               <input
                 type='checkbox'
-                checked={projectFormData.counterpartySurveyPlotDetails}
+                checked={formData.counterpartySurveyPlotDetails}
                 onChange={(e) =>
-                  updateProjectFormData({
+                  updateFormData({
                     counterpartySurveyPlotDetails: e.target.checked,
                   })
                 }
@@ -164,14 +161,14 @@ export default function ETLTagData() {
         <span className='flex-[2] '>Survey & Plot Equals:</span>
         <div className='flex flex-[5] gap-2'>
           <ChipInput
-            chips={projectFormData.surveyEquals}
-            updateFormData={updateProjectFormData}
+            chips={formData.surveyEquals}
+            updateFormData={updateFormData}
             updateKey='surveyEquals'
             addTWClass='!ml-0'
           />
           <ChipInput
-            chips={projectFormData.plotEquals}
-            updateFormData={updateProjectFormData}
+            chips={formData.plotEquals}
+            updateFormData={updateFormData}
             updateKey='plotEquals'
             addTWClass='ml-0'
           />
@@ -181,14 +178,14 @@ export default function ETLTagData() {
         <span className='flex-[2] '>Survey & Plot Contains:</span>
         <div className='flex flex-[5] gap-2'>
           <ChipInput
-            chips={projectFormData.surveyContains}
-            updateFormData={updateProjectFormData}
+            chips={formData.surveyContains}
+            updateFormData={updateFormData}
             updateKey='surveyContains'
             addTWClass='!ml-0'
           />
           <ChipInput
-            chips={projectFormData.plotContains}
-            updateFormData={updateProjectFormData}
+            chips={formData.plotContains}
+            updateFormData={updateFormData}
             updateKey='plotContains'
             addTWClass='ml-0'
           />
@@ -198,22 +195,23 @@ export default function ETLTagData() {
         <span className='flex-[2] '>Locality contains, W-B, Plot:</span>
         <div className='flex flex-[5] gap-2'>
           <ChipInput
-            chips={projectFormData.localityContains}
-            updateFormData={updateProjectFormData}
+            chips={formData.localityContains}
+            updateFormData={updateFormData}
             updateKey='localityContains'
             addTWClass='!ml-0'
             placeholder='Add chips'
           />
           <ChipInput
-            chips={projectFormData.wardBlock}
-            updateFormData={updateProjectFormData}
+            chips={formData.wardBlock}
+            updateFormData={updateFormData}
             updateKey='wardBlock'
             addTWClass='ml-0'
             placeholder='Add chips'
+            regexPattern={/^\d{1,2}-\d{1,2}$/gm}
           />
           <ChipInput
-            chips={projectFormData.localityPlot}
-            updateFormData={updateProjectFormData}
+            chips={formData.localityPlot}
+            updateFormData={updateFormData}
             updateKey='localityPlot'
             addTWClass='ml-0'
             placeholder='Add chips'
@@ -225,8 +223,8 @@ export default function ETLTagData() {
           <span>Door no. start with:</span>
         </span>
         <ChipInput
-          chips={projectFormData.doorNoStartWith}
-          updateFormData={updateProjectFormData}
+          chips={formData.doorNoStartWith}
+          updateFormData={updateFormData}
           updateKey='doorNoStartWith'
         />
       </label>
@@ -235,8 +233,8 @@ export default function ETLTagData() {
           <span>Apartment name doesn&apos;t contains:</span>
         </span>
         <ChipInput
-          chips={projectFormData.aptNameNotContains}
-          updateFormData={updateProjectFormData}
+          chips={formData.aptNameNotContains}
+          updateFormData={updateFormData}
           updateKey='aptNameNotContains'
         />
       </label>

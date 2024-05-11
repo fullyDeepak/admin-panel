@@ -1,58 +1,21 @@
 import { create } from 'zustand';
 import { SingleValue } from 'react-select';
+import { FormProjectTaggingType } from '@/types/types';
 
-export interface ProjectTaggingType {
+export interface ProjectTaggingType extends FormProjectTaggingType {
   village_id: SingleValue<{
     label: string;
     value: number;
   }>;
-  projectName: string;
-  layoutName: string;
-  developer: string;
-  developerGroup: string;
   projectType: SingleValue<{
     label: string;
     value: string;
   }>;
-  towerTypeOptions:
-    | {
-        label: string;
-        value: string;
-      }[]
-    | undefined;
-  projectSubTypeOptions:
-    | {
-        label: string;
-        value: string;
-      }[]
-    | undefined;
   projectSubType: SingleValue<{
     label: string;
     value: string;
   }>;
-  projectDesc: string;
-  amenitiesTags: { label: string; value: string; __isNew__?: boolean }[];
-  surveyEquals: string[];
-  surveyContains: string[];
-  plotEquals: string[];
-  plotContains: string[];
-  apartmentContains: string[];
-  counterpartyContains: string[];
   projectCoordinates: string[];
-  docId: string[];
-  rootDocs: string[];
-  aptSurveyPlotDetails: boolean;
-  counterpartySurveyPlotDetails: boolean;
-  localityContains: string[];
-  wardBlock: string[];
-  localityPlot: string[];
-  doorNoStartWith: string[];
-  aptNameNotContains: string[];
-  singleUnit: boolean;
-  towerPattern: string;
-  floorPattern: string;
-  unitPattern: string;
-  localities: { label: string; value: string }[];
 }
 
 interface FormState {

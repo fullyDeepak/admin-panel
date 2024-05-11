@@ -1,6 +1,8 @@
+import { FormProjectTaggingType } from '@/types/types';
 import { create } from 'zustand';
 
-export interface ProjectTaggingType {
+export interface EditProjectTaggingType extends FormProjectTaggingType {
+  village_id: number;
   selectedProject: number | undefined;
   selectedProjectOption:
     | {
@@ -8,11 +10,6 @@ export interface ProjectTaggingType {
         value: string;
       }[]
     | [];
-  village_id: number;
-  projectName: string;
-  layoutName: string;
-  developer: string;
-  developerGroup: string;
   projectType: string;
   towerTypeOptions:
     | {
@@ -27,47 +24,22 @@ export interface ProjectTaggingType {
       }[]
     | [];
   projectSubType: string;
-  projectDesc: string;
-  amenitiesTags: {
-    label: string;
-    value: string | number;
-    __isNew__?: boolean;
-  }[];
-  surveyEquals: string[];
-  docId: string[];
-  rootDocs: string[];
-  apartmentContains: string[];
-  counterpartyContains: string[];
-  aptSurveyPlotDetails: boolean;
-  counterpartySurveyPlotDetails: boolean;
-  plotEquals: string[];
-  surveyContains: string[];
-  plotContains: string[];
-  localityContains: string[];
-  wardBlock: string[];
-  localityPlot: string[];
-  doorNoStartWith: string[];
-  aptNameNotContains: string[];
-  singleUnit: boolean;
-  towerPattern: string;
-  floorPattern: string;
-  unitPattern: string;
-  localities: {
-    label: string;
-    value: string | number;
-  }[];
 }
 
 interface FormState {
-  editProjectFormData: ProjectTaggingType;
-  oldProjectFormData: ProjectTaggingType | null;
-  updateOldProjectFormData: (oldDetails: Partial<ProjectTaggingType>) => void;
-  updateEditProjectFormData: (newDetails: Partial<ProjectTaggingType>) => void;
+  editProjectFormData: EditProjectTaggingType;
+  oldProjectFormData: EditProjectTaggingType | null;
+  updateOldProjectFormData: (
+    oldDetails: Partial<EditProjectTaggingType>
+  ) => void;
+  updateEditProjectFormData: (
+    newDetails: Partial<EditProjectTaggingType>
+  ) => void;
   loadEditProjectFormData?: (data: any) => void;
   resetEditProjectFormData: () => void;
 }
 
-const initialState: ProjectTaggingType = {
+const initialState: EditProjectTaggingType = {
   selectedProject: undefined,
   selectedProjectOption: [],
   village_id: 0,

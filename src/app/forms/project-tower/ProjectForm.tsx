@@ -3,10 +3,11 @@ import { XMLParser } from 'fast-xml-parser';
 import Select, { SingleValue } from 'react-select';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useProjectStore } from '@/store/useProjectStore';
-import ETLTagData from './ETLTagData';
+// import ETLTagData from './ETLTagData';
 import axiosClient from '@/utils/AxiosClient';
 import { MultiSelect } from 'react-multi-select-component';
 import { extractKMLCoordinates } from '@/utils/extractKMLCoordinates';
+import ETLTagData from '@/components/forms/ETLTagData';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
@@ -311,7 +312,10 @@ export default function ProjectForm() {
           hasSelectAll={false}
         />
       </div>
-      <ETLTagData />
+      <ETLTagData
+        formData={projectFormData}
+        updateFormData={updateProjectFormData}
+      />
     </>
   );
 }

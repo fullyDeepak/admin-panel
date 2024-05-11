@@ -69,3 +69,51 @@ export interface GetProjectDetails {
   unit_pattern: string;
   localities: string[];
 }
+
+export interface FormETLTagDataType {
+  docId: string[];
+  rootDocs: string[];
+  apartmentContains: string[];
+  counterpartyContains: string[];
+  aptSurveyPlotDetails: boolean;
+  counterpartySurveyPlotDetails: boolean;
+  localityContains: string[];
+  wardBlock: string[];
+  localityPlot: string[];
+  surveyEquals: string[];
+  plotEquals: string[];
+  surveyContains: string[];
+  plotContains: string[];
+  doorNoStartWith: string[];
+  aptNameNotContains: string[];
+  singleUnit: boolean;
+  towerPattern: string;
+  floorPattern: string;
+  unitPattern: string;
+}
+
+export interface FormProjectTaggingType extends FormETLTagDataType {
+  projectName: string;
+  layoutName: string;
+  developer: string;
+  developerGroup: string;
+  towerTypeOptions:
+    | {
+        label: string;
+        value: string;
+      }[]
+    | undefined;
+  projectSubTypeOptions:
+    | {
+        label: string;
+        value: string;
+      }[]
+    | undefined;
+  projectDesc: string;
+  amenitiesTags: {
+    label: string;
+    value: string | number;
+    __isNew__?: boolean;
+  }[];
+  localities: { label: string; value: string }[];
+}

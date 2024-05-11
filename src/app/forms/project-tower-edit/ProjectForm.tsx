@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
-import ETLTagData from './ETLTagData';
+// import ETLTagData from './ETLTagData';
 import axiosClient from '@/utils/AxiosClient';
 import {
-  ProjectTaggingType,
+  EditProjectTaggingType,
   useEditProjectStore,
 } from '@/store/useEditProjectStore';
 import { editTowerDetail, useEditTowerStore } from '@/store/useEditTowerStore';
@@ -11,6 +11,7 @@ import Select, { Option } from 'rc-select';
 import 'rc-select/assets/index.css';
 import { MultiSelect } from 'react-multi-select-component';
 import { GetProjectDetails } from '@/types/types';
+import ETLTagData from '@/components/forms/ETLTagData';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
@@ -166,7 +167,7 @@ export default function ProjectForm() {
           );
           const localities: {
             label: string;
-            value: string | number;
+            value: string;
           }[] = projectData?.localities?.map((locality) => ({
             label: locality,
             value: locality,
@@ -184,7 +185,7 @@ export default function ProjectForm() {
                   ward_block: [],
                   locality_plot: [],
                 };
-          const projectFormData: Partial<ProjectTaggingType> = {
+          const projectFormData: Partial<EditProjectTaggingType> = {
             village_id: projectData.village_id,
             projectName: projectData.project_name,
             developerGroup: projectData.developer_group_name,
@@ -483,7 +484,11 @@ export default function ProjectForm() {
           hasSelectAll={false}
         />
       </div>
-      <ETLTagData />
+      {/* <ETLTagData /> */}
+      <ETLTagData
+        formData={editProjectFormData}
+        updateFormData={updateEditProjectFormData}
+      />
     </>
   );
 }
