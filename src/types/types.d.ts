@@ -129,8 +129,8 @@ export interface FormTowerDetailType {
   reraId: string;
   towerName: string;
   towerDoorNo: string;
-  minFloor: number;
-  maxFloor: number;
+  minFloor: number | string;
+  maxFloor: number | string;
   groundFloorName: string;
   groundFloorUnitNoMin: number | string;
   groundFloorUnitNoMax: number | string;
