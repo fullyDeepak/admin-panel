@@ -79,6 +79,10 @@ export default function PreviewProjectTower({
       accessorKey: 'towerDoorNo',
     },
     {
+      header: 'Min Floor',
+      accessorKey: 'minFloor',
+    },
+    {
       header: 'Max Floor',
       accessorKey: 'maxFloor',
     },
