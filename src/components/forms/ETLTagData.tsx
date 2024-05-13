@@ -244,6 +244,23 @@ export default function ETLTagData({
           updateKey='aptNameNotContains'
         />
       </label>
+      <label className='flex flex-wrap items-center justify-between gap-5 '>
+        <span className='flex flex-[2] items-center'>
+          <span>Doc ID doesn&apos;t contains:</span>
+          <span
+            className='tooltip'
+            data-tip='Should be formatted as DDDD-YYYY-N. eg:1525-2013-5211'
+          >
+            <BiInfoCircle size={20} />
+          </span>
+        </span>
+        <ChipInput
+          chips={formData.docIdNotContains}
+          updateFormData={updateFormData}
+          updateKey='docIdNotContains'
+          regexPattern={docIdPattern}
+        />
+      </label>
     </>
   );
 }

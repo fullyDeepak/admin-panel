@@ -72,6 +72,7 @@ export interface GetProjectDetails {
 
 export interface FormETLTagDataType {
   docId: string[];
+  docIdNotContains: string[];
   rootDocs: string[];
   apartmentContains: string[];
   counterpartyContains: string[];
@@ -141,3 +142,19 @@ export interface FormTowerDetailType {
   etlUnitConfigs: FormEtlUnitConfigType[];
   validTowerUnits: string[][] | null;
 }
+
+export type reraDMLVTableData = {
+  id: number;
+  project_name: string;
+  district_id: number;
+  clean_district_name: string;
+  mandal: string;
+  mandal_id: string;
+  clean_mandal_name: string;
+  locality: string;
+  village: string;
+  village_id: string;
+  clean_village_name: string;
+  clean_survey_number: string;
+  clean_plot_number: string;
+};

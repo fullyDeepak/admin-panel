@@ -54,6 +54,7 @@ const initialState: EditProjectTaggingType = {
   projectDesc: '',
   amenitiesTags: [],
   docId: [],
+  docIdNotContains: [],
   rootDocs: [],
   apartmentContains: [],
   counterpartyContains: [],

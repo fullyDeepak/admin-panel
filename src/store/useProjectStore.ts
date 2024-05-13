@@ -55,6 +55,7 @@ const initialState: ProjectTaggingType = {
   aptSurveyPlotDetails: false,
   counterpartySurveyPlotDetails: false,
   docId: [],
+  docIdNotContains: [],
   doorNoStartWith: [],
   localityContains: [],
   localityPlot: [],
