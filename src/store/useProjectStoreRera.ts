@@ -82,7 +82,7 @@ const initialState: ProjectTaggingTypeRera = {
   plotContains: [],
   doorNoStartWith: [],
   aptNameNotContains: [],
-  docIdNotContains: [],
+  docIdNotEquals: [],
   projectCoordinates: [],
   singleUnit: false,
   towerPattern: '',

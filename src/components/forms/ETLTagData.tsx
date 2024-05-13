@@ -246,7 +246,7 @@ export default function ETLTagData({
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex flex-[2] items-center'>
-          <span>Doc ID doesn&apos;t contains:</span>
+          <span>Doc ID doesn&apos;t equals:</span>
           <span
             className='tooltip'
             data-tip='Should be formatted as DDDD-YYYY-N. eg:1525-2013-5211'
@@ -255,7 +255,7 @@ export default function ETLTagData({
           </span>
         </span>
         <ChipInput
-          chips={formData.docIdNotContains}
+          chips={formData.docIdNotEquals}
           updateFormData={updateFormData}
           updateKey='docIdNotContains'
           regexPattern={docIdPattern}

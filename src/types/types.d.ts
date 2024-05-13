@@ -72,7 +72,7 @@ export interface GetProjectDetails {
 
 export interface FormETLTagDataType {
   docId: string[];
-  docIdNotContains: string[];
+  docIdNotEquals: string[];
   rootDocs: string[];
   apartmentContains: string[];
   counterpartyContains: string[];
