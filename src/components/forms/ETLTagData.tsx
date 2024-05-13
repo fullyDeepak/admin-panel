@@ -111,6 +111,7 @@ export default function ETLTagData({
             updateFormData={updateFormData}
             updateKey='apartmentContains'
             addTWClass='!ml-0'
+            allowTrim={false}
           />
           <div className='flex items-center gap-2'>
             <label
@@ -140,6 +141,7 @@ export default function ETLTagData({
             updateFormData={updateFormData}
             updateKey='counterpartyContains'
             addTWClass='!ml-0'
+            allowTrim={false}
           />
           <div className='flex items-center gap-2'>
             <label
