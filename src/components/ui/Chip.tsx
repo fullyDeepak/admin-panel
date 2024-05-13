@@ -11,6 +11,7 @@ type ChipInputProps =
       addTWClass?: string;
       enableGeneration?: true;
       generationKey: string;
+      allowTrim?: boolean;
     }
   | {
       chips: string[];
@@ -22,6 +23,7 @@ type ChipInputProps =
       addTWClass?: string;
       enableGeneration?: false;
       generationKey?: never;
+      allowTrim?: boolean;
     }
   | {
       chips: string[];
@@ -33,6 +35,7 @@ type ChipInputProps =
       addTWClass?: string;
       enableGeneration?: false;
       generationKey?: never;
+      allowTrim?: boolean;
     };
 
 const ChipInput = ({
@@ -45,6 +48,7 @@ const ChipInput = ({
   enableGeneration,
   generationKey,
   updateChipsFn,
+  allowTrim = true,
 }: ChipInputProps) => {
   const [inputValue, setInputValue] = useState('');
 
@@ -55,8 +59,10 @@ const ChipInput = ({
   const handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (
       (e.key === 'Enter' || e.key === ',') &&
-      inputValue.trim() !== '' &&
-      !chips.includes(inputValue.trim())
+      (allowTrim ? inputValue.trim() !== '' : true) &&
+      (allowTrim
+        ? !chips.includes(inputValue.trim())
+        : !chips.includes(inputValue))
     ) {
       if (enableGeneration && inputValue.includes(generationKey)) {
         const [start, stop] = inputValue.split(generationKey);
@@ -70,22 +76,35 @@ const ChipInput = ({
         setInputValue('');
       } else {
         if (regexPattern !== undefined) {
-          const value = inputValue.trim();
+          const value = allowTrim ? inputValue.trim() : inputValue;
           if (regexPattern.test(value) && updateFormData) {
             updateFormData({
-              [updateKey]: [...chips, inputValue.trim()],
+              [updateKey]: [
+                ...chips,
+                allowTrim ? inputValue.trim() : inputValue,
+              ],
             });
             setInputValue('');
           } else if (updateChipsFn) {
-            updateChipsFn([...chips, inputValue.trim()]);
+            updateChipsFn([
+              ...chips,
+              allowTrim ? inputValue.trim() : inputValue,
+            ]);
           }
         } else {
+          console.log({ inputValue });
           if (updateFormData) {
             updateFormData({
-              [updateKey]: [...chips, inputValue.trim()],
+              [updateKey]: [
+                ...chips,
+                allowTrim ? inputValue.trim() : inputValue,
+              ],
             });
           } else if (updateChipsFn) {
-            updateChipsFn([...chips, inputValue.trim()]);
+            updateChipsFn([
+              ...chips,
+              allowTrim ? inputValue.trim() : inputValue,
+            ]);
           }
           setInputValue('');
         }
@@ -125,7 +144,7 @@ const ChipInput = ({
       {chips?.map((chip, index) => (
         <div
           key={index}
-          className='badge h-auto max-h-60 border-rose-300 bg-rose-100'
+          className='badge h-auto max-h-60 whitespace-pre-wrap border-rose-300 bg-rose-100'
         >
           {chip}
           <span
