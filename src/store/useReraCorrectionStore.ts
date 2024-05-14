@@ -1,3 +1,4 @@
+import { reraDMLVTableData } from '@/types/types';
 import { create } from 'zustand';
 
 type ReraDocType =
@@ -10,22 +11,8 @@ type ReraDocType =
     }
   | {};
 
-type tableData = {
-  id: number;
-  project_name: string;
-  district: string;
-  district_id: number;
-  mandal: string;
-  mandal_id: number;
-  locality: string;
-  village: string;
-  village_id: number;
-  clean_survey_number: string;
-  clean_plot_number: string;
-};
-
 interface FormState {
-  reraTableDataStore: tableData[] | null;
+  reraTableDataStore: reraDMLVTableData[] | null;
   projectOption: {
     label: string;
     value: number;
@@ -37,7 +24,7 @@ interface FormState {
     }[]
   ) => void;
 
-  setRERATableDataStore: (tableData: tableData[]) => void;
+  setRERATableDataStore: (tableData: reraDMLVTableData[]) => void;
   selectedProjects: FormState['projectOption'];
   setSelectedProjects: (options: FormState['projectOption']) => void;
   reraDocsList: ReraDocType;
