@@ -15,6 +15,7 @@ export interface ProjectTaggingTypeRera extends FormProjectTaggingType {
     label: string;
     value: number;
   }>;
+  village_id: number | null;
   projects: {
     label: string;
     value: string;
@@ -48,6 +49,7 @@ const initialState: ProjectTaggingTypeRera = {
   district: null,
   mandal: null,
   village: null,
+  village_id: null,
   projects: [],
   projectName: '',
   projectIds: [],

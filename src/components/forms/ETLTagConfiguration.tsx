@@ -1,5 +1,5 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
-import { FormEtlUnitConfigType, FormTowerDetailType } from '@/types/types';
+import { FormTowerDetailType } from '@/types/types';
 import { useState } from 'react';
 import { FiCheckCircle, FiEdit } from 'react-icons/fi';
 import { TiDeleteOutline } from 'react-icons/ti';
@@ -37,106 +37,106 @@ export default function ETLTagConfiguration({
   const [isApartmentSingle, setIsApartmentSingle] = useState<boolean>(false);
   return (
     <>
-      <div>
-        ETL Unit tag configurations:
-        <div className='mx-auto my-5 flex w-[90%] flex-col gap-2'>
-          <div className='flex w-full justify-between '>
-            <span className='w-36 font-semibold'>Name</span>
-            <span className='w-36 font-semibold'>Min</span>
-            <span className='w-36 font-semibold'>Max</span>
-            <span className='w-36 font-semibold'>Edit</span>
-            <span className='w-36 font-semibold'>Remove</span>
-          </div>
-          {towerData.etlUnitConfigs.map(
-            (unit, i) =>
-              unit.configName && (
-                <div key={i} className='flex w-full justify-between '>
-                  <span className='w-36 p-1'>{unit.configName}</span>
-                  <span
-                    className='w-36 p-1'
-                    hidden={
-                      showInput.configName === unit.configName
-                        ? showInput.status
-                        : undefined
-                    }
-                  >
-                    {unit.minArea}
-                  </span>
-                  {showInput.configName === unit.configName &&
-                    showInput.status === true && (
-                      <input
-                        type='text'
-                        className={` ${inputBoxClass} flex-2 ml-0 !w-36 !flex-[0] !p-1`}
-                        value={unit.minArea}
-                        onChange={(e) =>
-                          updateETLUnitConfig(
-                            towerData.id,
-                            unit.configName,
-                            +e.target.value,
-                            unit.maxArea
-                          )
-                        }
-                      />
-                    )}
-                  <span
-                    className='w-36 p-1'
-                    hidden={
-                      showInput.configName === unit.configName
-                        ? showInput.status
-                        : undefined
-                    }
-                  >
-                    {unit.maxArea}
-                  </span>
-                  {showInput.configName === unit.configName &&
-                    showInput.status === true && (
-                      <input
-                        type='text'
-                        className={` ${inputBoxClass} flex-2 ml-0 !w-36 !flex-[0] !p-1`}
-                        value={unit.maxArea}
-                        onChange={(e) =>
-                          updateETLUnitConfig(
-                            towerData.id,
-                            unit.configName,
-                            unit.minArea,
-                            +e.target.value
-                          )
-                        }
-                      />
-                    )}
-                  <button
-                    className='w-36 p-1'
-                    type='button'
-                    onClick={() => {
-                      setShowInput({
-                        configName: unit.configName,
-                        status: !showInput.status,
-                      });
-                    }}
-                  >
-                    {showInput.configName === unit.configName &&
-                    showInput.status === true ? (
-                      <FiCheckCircle className='text-green-500' size={22} />
-                    ) : (
-                      <FiEdit className='text-indigo-500' size={22} />
-                    )}
-                  </button>
-                  <button
-                    className='w-36 cursor-pointer'
-                    type='button'
-                    onClick={() =>
-                      deleteEtlUnitConfig(towerData.id, unit.configName)
-                    }
-                  >
-                    <TiDeleteOutline size={25} className='text-red-500' />
-                  </button>
-                </div>
-              )
-          )}
+      <h3 className='my-4 text-2xl font-semibold'>
+        Section: ETL Unit Tag Configuration
+      </h3>
+      <div className='mx-auto my-5 flex w-[90%] flex-col gap-2'>
+        <div className='flex w-full justify-between '>
+          <span className='w-36 font-semibold'>Name</span>
+          <span className='w-36 font-semibold'>Min</span>
+          <span className='w-36 font-semibold'>Max</span>
+          <span className='w-36 font-semibold'>Edit</span>
+          <span className='w-36 font-semibold'>Remove</span>
         </div>
+        {towerData.etlUnitConfigs.map(
+          (unit, i) =>
+            unit.configName && (
+              <div key={i} className='flex w-full justify-between '>
+                <span className='w-36 p-1'>{unit.configName}</span>
+                <span
+                  className='w-36 p-1'
+                  hidden={
+                    showInput.configName === unit.configName
+                      ? showInput.status
+                      : undefined
+                  }
+                >
+                  {unit.minArea}
+                </span>
+                {showInput.configName === unit.configName &&
+                  showInput.status === true && (
+                    <input
+                      type='text'
+                      className={` ${inputBoxClass} flex-2 ml-0 !w-36 !flex-[0] !p-1`}
+                      value={unit.minArea}
+                      onChange={(e) =>
+                        updateETLUnitConfig(
+                          towerData.id,
+                          unit.configName,
+                          +e.target.value,
+                          unit.maxArea
+                        )
+                      }
+                    />
+                  )}
+                <span
+                  className='w-36 p-1'
+                  hidden={
+                    showInput.configName === unit.configName
+                      ? showInput.status
+                      : undefined
+                  }
+                >
+                  {unit.maxArea}
+                </span>
+                {showInput.configName === unit.configName &&
+                  showInput.status === true && (
+                    <input
+                      type='text'
+                      className={` ${inputBoxClass} flex-2 ml-0 !w-36 !flex-[0] !p-1`}
+                      value={unit.maxArea}
+                      onChange={(e) =>
+                        updateETLUnitConfig(
+                          towerData.id,
+                          unit.configName,
+                          unit.minArea,
+                          +e.target.value
+                        )
+                      }
+                    />
+                  )}
+                <button
+                  className='w-36 p-1'
+                  type='button'
+                  onClick={() => {
+                    setShowInput({
+                      configName: unit.configName,
+                      status: !showInput.status,
+                    });
+                  }}
+                >
+                  {showInput.configName === unit.configName &&
+                  showInput.status === true ? (
+                    <FiCheckCircle className='text-green-500' size={22} />
+                  ) : (
+                    <FiEdit className='text-indigo-500' size={22} />
+                  )}
+                </button>
+                <button
+                  className='w-36 cursor-pointer'
+                  type='button'
+                  onClick={() =>
+                    deleteEtlUnitConfig(towerData.id, unit.configName)
+                  }
+                >
+                  <TiDeleteOutline size={25} className='text-red-500' />
+                </button>
+              </div>
+            )
+        )}
       </div>
       <button
-        className='btn btn-outline btn-sm border-none  bg-rose-500 text-white hover:border-none hover:bg-rose-600'
+        className='btn  btn-outline btn-sm w-1/2 self-center border-none bg-rose-500 text-white hover:border-none hover:bg-rose-600'
         onClick={() =>
           (
             document.getElementById(

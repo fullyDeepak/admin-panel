@@ -40,7 +40,7 @@ export default function Page() {
   delete newProjectFormData.district;
   delete newProjectFormData.mandal;
   delete newProjectFormData.projects;
-  newProjectFormData.village_id = newProjectFormData.village?.value;
+  //   newProjectFormData.village_id = newProjectFormData.village?.value;
   delete newProjectFormData.village;
   newProjectFormData.projectType = newProjectFormData.projectType?.value;
   newProjectFormData.projectSubType = newProjectFormData.projectSubType?.value;
@@ -85,9 +85,9 @@ export default function Page() {
       id: loadingToastId,
     });
     e.preventDefault();
-    if (!newProjectFormData.projectName) {
+    if (!newProjectFormData.projectName || !newProjectFormData.village_id) {
       toast.dismiss(loadingToastId);
-      toast.error(`Project name is missing.`, {
+      toast.error(`Project name or Village id is missing.`, {
         id: loadingToastId,
         duration: 3000,
       });

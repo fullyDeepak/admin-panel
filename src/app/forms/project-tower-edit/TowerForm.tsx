@@ -7,6 +7,7 @@ import Select, { Option } from 'rc-select';
 import 'rc-select/assets/index.css';
 import TowerUnitDetails from '@/components/forms/TowerUnitDetails';
 import ETLTagConfiguration from '@/components/forms/ETLTagConfiguration';
+import TowerMatcherSection from '@/components/forms/TowerMatcherSection';
 
 export default function TowerForm() {
   const {
@@ -55,6 +56,9 @@ export default function TowerForm() {
           >
             ✕
           </button>
+          <h3 className='my-4 text-2xl font-semibold'>
+            Section: Tower Details
+          </h3>
           <label className='flex flex-wrap items-center justify-between gap-5 '>
             <span className='flex-[2] '>Project Phase:</span>
             <input
@@ -141,6 +145,10 @@ export default function TowerForm() {
             towerData={tower}
             towersFormData={editTowerFormData}
             updateTowerForm={updateEditTowerFormData}
+          />
+          <TowerMatcherSection
+            towerFormData={tower}
+            updateTowerFormData={updateEditTowerFormData}
           />
           {!isApartmentSingle && (
             <div className='absolute -bottom-6 -left-5 z-10 w-full '>

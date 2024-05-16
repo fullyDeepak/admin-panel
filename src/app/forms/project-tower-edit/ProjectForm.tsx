@@ -12,6 +12,7 @@ import { MultiSelect } from 'react-multi-select-component';
 import { GetProjectDetails } from '@/types/types';
 import ETLTagData from '@/components/forms/ETLTagData';
 import { inputBoxClass } from '@/app/constants/tw-class';
+import ProjectMatcherSection from '@/components/forms/ProjectMatcherSection';
 
 export default function ProjectForm() {
   const {
@@ -55,33 +56,6 @@ export default function ProjectForm() {
       return amenitiesOptions;
     },
     refetchOnWindowFocus: false,
-  });
-
-  //   populated localities options
-  const { data: localitiesOptions, isLoading: loadingLocalities } = useQuery({
-    queryKey: ['localitiesOptions'],
-    queryFn: async () => {
-      const response = await axiosClient.get<{
-        data: string[];
-      }>('/forms/localities');
-      const localities = response.data.data;
-      const localitiesOptions: {
-        label: string;
-        value: string;
-      }[] = [];
-      localities.map((item) => {
-        if (item.length > 2) {
-          localitiesOptions.push({
-            label: item,
-            value: item,
-          });
-        }
-      });
-      console.log({ localitiesOptions });
-      return localitiesOptions;
-    },
-    refetchOnWindowFocus: false,
-    staleTime: Infinity,
   });
 
   // populate village option
@@ -461,29 +435,11 @@ export default function ProjectForm() {
           hasSelectAll={false}
         />
       </div>
-      <div className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Localities:</span>
-        <MultiSelect
-          className='w-full flex-[5]'
-          options={localitiesOptions || []}
-          isLoading={loadingLocalities}
-          value={editProjectFormData.localities}
-          onChange={(
-            e: {
-              label: string;
-              value: string;
-            }[]
-          ) => {
-            updateEditProjectFormData({
-              localities: e,
-            });
-          }}
-          labelledBy={'amenitiesTags'}
-          isCreatable={false}
-          hasSelectAll={false}
-        />
-      </div>
       <ETLTagData
+        formData={editProjectFormData}
+        updateFormData={updateEditProjectFormData}
+      />
+      <ProjectMatcherSection
         formData={editProjectFormData}
         updateFormData={updateEditProjectFormData}
       />

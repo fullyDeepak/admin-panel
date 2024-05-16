@@ -149,19 +149,9 @@ export default function TowerUnitDetails({
   }
   return (
     <section className='flex flex-col gap-2 '>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex flex-[2] items-center  '>
-          <span>Tower Door No. String:</span>
-        </span>
-        <input
-          className={inputBoxClass}
-          name='towerDoorNo'
-          defaultValue={tower.towerDoorNo}
-          onChange={(e) =>
-            updateTowerForm(tower.id, 'towerDoorNo', e.target.value)
-          }
-        />
-      </label>
+      <h3 className='my-4 text-2xl font-semibold'>
+        Section: Unit Generator Data
+      </h3>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex flex-[2] items-center  '>
           <span>Min Floor:</span>
@@ -290,7 +280,7 @@ export default function TowerUnitDetails({
         />
       </label>
       <button
-        className='btn btn-outline btn-sm border-none  bg-violet-500 text-white hover:border-none hover:bg-violet-600'
+        className='btn btn-outline btn-sm w-1/2 self-center border-none bg-violet-500 text-white hover:border-none hover:bg-violet-600'
         type='button'
         onClick={() => generateTower(tower.id)}
       >

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import Select, { SingleValue } from 'react-select';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useProjectStoreRera } from '@/store/useProjectStoreRera';
 import axiosClient from '@/utils/AxiosClient';
 import { MultiSelect } from 'react-multi-select-component';
@@ -8,10 +8,10 @@ import { extractKMLCoordinates } from '@/utils/extractKMLCoordinates';
 import toast from 'react-hot-toast';
 import { uniq, startCase } from 'lodash';
 import { useTowerStoreRera } from '@/store/useTowerStoreRera';
-import ChipInput from '@/components/ui/Chip';
 import { useReraDocStore } from '@/store/useReraDocStore';
 import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
 import DocsETLTagData from './DocsETLTagData';
+import ProjectMatcherSection from '@/components/forms/ProjectMatcherSection';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
@@ -22,18 +22,12 @@ export default function ProjectForm() {
     updateProjectFormDataRera,
     resetProjectFormDataRera,
   } = useProjectStoreRera();
-  const {
-    addEtlUnitConfigRera,
-    addNewTowerDataRera,
-    deleteEtlUnitConfigRera,
-    deleteTowerFormDataRera,
-    resetTowerFormDataRera,
-    towerFormDataRera,
-    updateTowerFormDataRera,
-    setTowersDataRera,
-  } = useTowerStoreRera();
+  const { setTowersDataRera } = useTowerStoreRera();
   const { resetReraDocs } = useReraDocStore();
   const [mainProject, setMainProject] = useState<string>('');
+  const [projectOptions, setProjectOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
 
   const { data: amenitiesOptions, isLoading: loadingAmenities } = useQuery({
     queryKey: ['amenitiesOptions'],
@@ -46,32 +40,6 @@ export default function ProjectForm() {
       }));
       return amenitiesOptions;
     },
-  });
-
-  const { data: localitiesOptions, isLoading: loadingLocalities } = useQuery({
-    queryKey: ['localitiesOptions'],
-    queryFn: async () => {
-      const response = await axiosClient.get<{
-        data: string[];
-      }>('/forms/localities');
-      const localities = response.data.data;
-      const localitiesOptions: {
-        label: string;
-        value: string;
-      }[] = [];
-      localities.map((item) => {
-        if (item.length > 2) {
-          localitiesOptions.push({
-            label: item,
-            value: item,
-          });
-        }
-      });
-      console.log({ localitiesOptions });
-      return localitiesOptions;
-    },
-    refetchOnWindowFocus: false,
-    staleTime: Infinity,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,22 +61,38 @@ export default function ProjectForm() {
   });
 
   // mandal dropdown
-  const { isPending: loadingMandals, data: mandalOptions } = useQuery({
+  const { isPending: loadingMandalsData, data: mandalData } = useQuery({
     queryKey: ['mandal', projectFormDataRera.district],
     queryFn: async () => {
       if (
         projectFormDataRera.district !== undefined &&
         projectFormDataRera.district !== null
       ) {
-        const options = await fetchDropdownOption(
-          'mandals',
-          'district',
-          projectFormDataRera.district?.value
-        );
-        return options.map((item) => ({
+        const [optionsResponse, projectResponse] = await Promise.all([
+          await fetchDropdownOption(
+            'mandals',
+            'district',
+            projectFormDataRera.district?.value
+          ),
+          await axiosClient.get<{
+            data: { id: string; project_name: string }[];
+            message: string;
+            statusCode: number;
+          }>(`/forms/rera/getProjects`, {
+            params: { district_id: projectFormDataRera.district?.value },
+          }),
+        ]);
+        const mandalOptions = optionsResponse.map((item) => ({
           label: `${item.value}:${startCase(item.label.toLowerCase())}`,
           value: item.value,
         }));
+        const projectOptions = projectResponse?.data?.data;
+        const projectDropdownOptions = projectOptions.map((item) => ({
+          value: item.id,
+          label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
+        }));
+        setProjectOptions(projectDropdownOptions);
+        return { mandalOptions, projectDropdownOptions };
       }
     },
     staleTime: Infinity,
@@ -123,11 +107,30 @@ export default function ProjectForm() {
         projectFormDataRera.mandal !== null
       ) {
         console.log('fetching villages', projectFormDataRera.mandal);
-        const options = await fetchDropdownOption(
-          'villages',
-          'mandal',
-          projectFormDataRera.mandal?.value
-        );
+
+        const [options, projectResponse] = await Promise.all([
+          await fetchDropdownOption(
+            'villages',
+            'mandal',
+            projectFormDataRera.mandal?.value
+          ),
+          await axiosClient.get<{
+            data: { id: string; project_name: string }[];
+            message: string;
+            statusCode: number;
+          }>(`/forms/rera/getProjects`, {
+            params: {
+              district_id: projectFormDataRera.district?.value,
+              mandal_id: projectFormDataRera?.mandal?.value,
+            },
+          }),
+        ]);
+        const projectOptions = projectResponse?.data?.data;
+        const projectDropdownOptions = projectOptions.map((item) => ({
+          value: item.id,
+          label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
+        }));
+        setProjectOptions(projectDropdownOptions);
         return options.map((item) => ({
           label: `${item.value}:${startCase(item.label.toLowerCase())}`,
           value: item.value,
@@ -138,7 +141,7 @@ export default function ProjectForm() {
   });
 
   //   projects dropdown
-  const { isPending: loadingProjects, data: projectOptions } = useQuery({
+  const { isPending: loadingProjects, data: _ } = useQuery({
     queryKey: ['project', projectFormDataRera.village],
     queryFn: async () => {
       if (
@@ -161,7 +164,8 @@ export default function ProjectForm() {
             label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
           };
         });
-        return dropdownOptions;
+        setProjectOptions(dropdownOptions);
+        return true;
       }
     },
     staleTime: Infinity,
@@ -223,6 +227,7 @@ export default function ProjectForm() {
           developer_name: string;
           project_type: string;
           project_subtype: string;
+          village_id: number;
           survey_number: string;
           plot_number: string;
           rera_id: string;
@@ -242,6 +247,7 @@ export default function ProjectForm() {
     const data = response.data.data;
     const developers = uniq(data.map((item) => item.developer_name));
     updateProjectFormDataRera({
+      village_id: data[0].village_id,
       projectName: uniq(data.map((item) => item.project_name)).join(' || '),
       projectIds: uniq(data.map((item) => +item.project_id)),
       developer: developers.join(' || '),
@@ -308,8 +314,8 @@ export default function ProjectForm() {
         <Select
           className='w-full flex-[5]'
           key={'mandal'}
-          options={mandalOptions || undefined}
-          isLoading={loadingMandals}
+          options={mandalData?.mandalOptions || undefined}
+          isLoading={loadingMandalsData}
           value={projectFormDataRera.mandal}
           onChange={(e) => {
             updateProjectFormDataRera({ mandal: e, village: null });
@@ -352,7 +358,7 @@ export default function ProjectForm() {
                 labelledBy={'projects'}
                 isCreatable={false}
                 hasSelectAll={true}
-                disabled={Boolean(!projectFormDataRera.village)}
+                disabled={Boolean(!projectFormDataRera.district)}
                 valueRenderer={(selected, _options) => {
                   return selected.length
                     ? selected.map(({ label }) => label)
@@ -367,6 +373,11 @@ export default function ProjectForm() {
               >
                 Fetch
               </button>
+              <span
+                className={`badge aspect-square h-10 rounded-full bg-rose-200 ${projectOptions?.length > 100 ? 'text-base' : 'text-lg'} `}
+              >
+                {projectOptions?.length}
+              </span>
             </div>
           </div>
           <div className='flex items-center justify-between gap-5 '>
@@ -592,29 +603,11 @@ export default function ProjectForm() {
           onChange={(e) => {}}
         />
       </label>
-      <div className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Localities:</span>
-        <MultiSelect
-          className='w-full flex-[5]'
-          options={localitiesOptions || []}
-          isLoading={loadingLocalities}
-          value={projectFormDataRera.localities}
-          onChange={(
-            e: {
-              label: string;
-              value: string;
-            }[]
-          ) => {
-            updateProjectFormDataRera({
-              localities: e,
-            });
-          }}
-          labelledBy={'amenitiesTags'}
-          isCreatable={false}
-          hasSelectAll={false}
-        />
-      </div>
       <DocsETLTagData />
+      <ProjectMatcherSection
+        formData={projectFormDataRera}
+        updateFormData={updateProjectFormDataRera}
+      />
     </>
   );
 }
