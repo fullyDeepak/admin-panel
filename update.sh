@@ -15,7 +15,7 @@ cd $SCRIPT_DIR
 source .env
 
 # check node version
-node --version
+# node --version
 # pull
 git pull
 # install deps
