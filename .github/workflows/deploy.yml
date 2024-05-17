@@ -1,0 +1,21 @@
+name: 'Deploy'
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  deployment:
+    name: Deploy admin-panel to AWS
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push'}}
+    steps:
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: ${{ vars.SCRIPT_PATH }}
+          debug: true
