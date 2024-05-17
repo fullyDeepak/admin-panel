@@ -1,14 +1,15 @@
-import postgres from 'postgres';
+// export default pgSqlClient;
+import mongoose from 'mongoose';
 
-const pgSqlClient = postgres({
-  database: 'anchor',
-  host: process.env['PG_DB_HOST'],
-  user: 'postgres',
-  password: process.env['PG_DB_PASSWORD'],
-  port: 5432,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+export async function connectToMongoDB() {
+  const mongoUri = process.env['MONGO_URI'];
 
-export default pgSqlClient;
+  try {
+    if (mongoUri !== undefined) {
+      await mongoose.connect(mongoUri);
+    }
+    console.log('MongoDB Connected!!!');
+  } catch (error) {
+    console.log('Error while connecting to MongoDB:', error);
+  }
+}
