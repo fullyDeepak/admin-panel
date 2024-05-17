@@ -2,7 +2,6 @@
   "name": "rezy-admin-dashboard",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@9.0.6",
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
@@ -10,8 +9,7 @@
     "lint": "next lint",
     "format": "prettier --check src/**/*",
     "format:fix": "prettier --write src/**/*",
-    "clean": "rimraf node_modules/ .next/",
-    "pages:build": "exec @cloudflare/next-on-pages"
+    "clean": "rimraf node_modules/ .next/"
   },
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
@@ -30,6 +28,7 @@
     "next": "14.2.3",
     "next-auth": "^4.24.7",
     "pdfjs-dist": "3.11.174",
+    "pm2": "^5.3.1",
     "postgres": "^3.4.4",
     "primereact": "^9.6.4",
     "rc-select": "^14.13.2",
