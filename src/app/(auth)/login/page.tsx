@@ -5,7 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useForm, FieldValues } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
-export default function page() {
+export default function LoginPage() {
   const router = useRouter();
   const {
     register,

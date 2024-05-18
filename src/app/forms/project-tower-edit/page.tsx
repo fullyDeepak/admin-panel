@@ -12,7 +12,7 @@ import { useEditTowerStore } from '@/store/useEditTowerStore';
 import { usePathname } from 'next/navigation';
 import { CgInfo } from 'react-icons/cg';
 
-export default function page() {
+export default function ProjectTowerEditPage() {
   const [responseData, setResponseData] = useState<object | undefined>(
     undefined
   );

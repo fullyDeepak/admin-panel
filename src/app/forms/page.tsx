@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 
-export default function page() {
+export default function FormHomePage() {
   return (
     <div className='mx-auto my-10 flex w-[60%] flex-col'>
       <h1 className='mb-4 text-center text-3xl font-semibold underline'>

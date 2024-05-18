@@ -11,7 +11,7 @@ import { useProjectStore } from '@/store/useProjectStore';
 import { useTowerStore } from '@/store/useTowerStore';
 import { usePathname } from 'next/navigation';
 
-export default function page() {
+export default function ProjectTowerPage() {
   const [responseData, setResponseData] = useState<object | undefined>(
     undefined
   );

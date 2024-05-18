@@ -13,7 +13,7 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import '@/styles/customPrimeReact.css';
 import { formatISO } from 'date-fns';
 
-export default function page() {
+export default function VillageOnboardingPage() {
   const [selectedState, setSelectedState] = useState<{
     label: string;
     value: number;

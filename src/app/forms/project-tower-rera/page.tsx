@@ -12,7 +12,7 @@ import { useTowerStoreRera } from '@/store/useTowerStoreRera';
 import { usePathname } from 'next/navigation';
 import ProjectStatus from './ProjectStatus';
 
-export default function Page() {
+export default function ProjectTowerReraPage() {
   const [responseData, setResponseData] = useState<object | undefined>(
     undefined
   );

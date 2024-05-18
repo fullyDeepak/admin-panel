@@ -12,7 +12,7 @@ import { MultiSelect } from 'react-multi-select-component';
 import FetchDocs from './FetchDocs';
 import { useReraCorrectionStore } from '@/store/useReraCorrectionStore';
 import ChipInput from '@/components/ui/Chip';
-import { reraDMLVTableData } from '@/types/types';
+import { ReraDMLVTableData } from '@/types/types';
 
 type SroResponse = {
   district_id: number;
@@ -24,7 +24,7 @@ type SroResponse = {
 };
 const inputBoxClass =
   'w-full rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
-export default function page() {
+export default function ReraCorrectionPage() {
   const [pdfPreviewDivs, setPdfPreviewDivs] = useState<React.JSX.Element[]>([]);
   const {
     projectOption,
@@ -158,7 +158,7 @@ export default function page() {
     value: string;
   } | null>();
   const [reraTableData, setReraTableData] = useState<
-    reraDMLVTableData[] | null
+    ReraDMLVTableData[] | null
   >();
   const [sroTableData, setSroTableData] = useState<SroResponse[] | null>();
   const [districtIdValue, setDistrictIdValue] = useState<string | undefined>(
@@ -275,7 +275,7 @@ export default function page() {
     queryKey: ['rera-district', selectedReraDistrict],
     queryFn: async () => {
       if (selectedReraDistrict !== undefined && selectedReraDistrict !== null) {
-        const response = await axiosClient.get<{ data: reraDMLVTableData[] }>(
+        const response = await axiosClient.get<{ data: ReraDMLVTableData[] }>(
           '/forms/rera/getReraProjectsByDMLVId',
           {
             params: { district_id: selectedReraDistrict.value },
@@ -322,7 +322,7 @@ export default function page() {
           refetchReraMandalOptions();
           return null;
         }
-        const response = await axiosClient.get<{ data: reraDMLVTableData[] }>(
+        const response = await axiosClient.get<{ data: ReraDMLVTableData[] }>(
           '/forms/rera/getReraProjectsByDMLVId',
           {
             params: {
@@ -372,7 +372,7 @@ export default function page() {
           refetchReraLocalityOptions();
           return null;
         }
-        const response = await axiosClient.get<{ data: reraDMLVTableData[] }>(
+        const response = await axiosClient.get<{ data: ReraDMLVTableData[] }>(
           '/forms/rera/getReraProjectsByDMLVId',
           {
             params: {
@@ -420,7 +420,7 @@ export default function page() {
           refetchReraVillageOptions();
           return null;
         }
-        const response = await axiosClient.get<{ data: reraDMLVTableData[] }>(
+        const response = await axiosClient.get<{ data: ReraDMLVTableData[] }>(
           '/forms/rera/getReraProjectsByDMLVId',
           {
             params: {

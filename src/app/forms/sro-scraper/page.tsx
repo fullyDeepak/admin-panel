@@ -12,7 +12,7 @@ type SRO = {
   scrape_enabled: boolean;
 }[];
 
-export default function page() {
+export default function SroScraperPage() {
   const [switchValue, setSwitchValue] = useState<boolean>(false);
   const [selectedSro, setSelectedSro] = useState<{
     label: string;

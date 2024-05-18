@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from 'axios';
 import { FieldValues, useForm } from 'react-hook-form';
 import SignUpSuccess from './SignUpSuccess';
 
-export default function page() {
+export default function RegisterPage() {
   const {
     register,
     handleSubmit,

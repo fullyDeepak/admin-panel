@@ -143,7 +143,7 @@ export interface FormTowerDetailType {
   validTowerUnits: string[][] | null;
 }
 
-export type reraDMLVTableData = {
+export type ReraDMLVTableData = {
   id: number;
   project_name: string;
   district_id: number;

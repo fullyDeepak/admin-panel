@@ -1,11 +1,10 @@
 'use client';
 
 import axiosClient from '@/utils/AxiosClient';
-import { resolve } from 'path';
 import toast, { Toaster } from 'react-hot-toast';
 import { CgInfo } from 'react-icons/cg';
 
-export default function page() {
+export default function StartETLPage() {
   async function handleETLStart() {
     let toastId: string = toast.loading('Starting process...');
     const response = await axiosClient.post('/etl/startEtlProcess');

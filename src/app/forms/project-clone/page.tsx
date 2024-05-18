@@ -11,7 +11,7 @@ import 'rc-select/assets/index.css';
 import { usePathname } from 'next/navigation';
 import ChipInput from '@/components/ui/Chip';
 
-export default function page() {
+export default function ProjectClonePage() {
   const [responseData, setResponseData] = useState<object | undefined>(
     undefined
   );

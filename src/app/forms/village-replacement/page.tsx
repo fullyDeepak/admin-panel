@@ -24,7 +24,7 @@ interface RawVillageData {
   }[];
 }
 
-export default function page() {
+export default function VillageReplacementPage() {
   const [rawCsvData, setRawCSVData] = useState<string[][]>();
   const [cleanCsvData, setCleanCSVData] = useState<string[]>();
   const [cleanCsvFlag, setCleanCSVFlag] = useState<boolean>(false);
