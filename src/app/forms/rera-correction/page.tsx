@@ -28,11 +28,8 @@ export default function ReraCorrectionPage() {
   const [pdfPreviewDivs, setPdfPreviewDivs] = useState<React.JSX.Element[]>([]);
   const {
     projectOption,
-    reraDocsList,
-    resetReraDocsList,
     selectedProjects,
     setProjectOptions,
-    setReraDocList,
     setSelectedProjects,
     reraTableDataStore,
     setRERATableDataStore,
@@ -309,13 +306,13 @@ export default function ReraCorrectionPage() {
     // staleTime: Infinity,
   });
 
-  //  populate rera locality dropdown on rera mandal selection
+  //  populate rera village dropdown on rera mandal selection
   const {
-    isPending: loadingReraLocality,
-    data: reraLocalityOptions,
-    refetch: refetchReraLocalityOptions,
+    isPending: loadingReraVillages,
+    data: reraVillageOptions,
+    refetch: refetchReraVillageOptions,
   } = useQuery({
-    queryKey: ['rera-mandals', selectedReraMandal],
+    queryKey: ['rera-mandal', selectedReraMandal],
     queryFn: async () => {
       if (selectedReraMandal !== undefined && selectedReraMandal !== null) {
         if (selectedReraMandal?.value === '-1') {
@@ -327,59 +324,9 @@ export default function ReraCorrectionPage() {
           {
             params: {
               district_id: selectedReraDistrict?.value,
-              mandalId: selectedReraMandal.value.split(':')[0],
-              mandal: selectedReraMandal.value.split(':')[1],
-            },
-          }
-        );
-        const data = response.data?.data;
-        const options = [{ label: 'ALL', value: '-1' }];
-        const optionsForProjects: {
-          label: string;
-          value: number;
-        }[] = [];
-        data.map((item) => {
-          options.push({
-            label: item.locality,
-            value: item.locality,
-          });
-          optionsForProjects.push({
-            label: `${item.id}:${item.project_name}`,
-            value: item.id,
-          });
-        });
-        setReraTableData(data);
-        setRERATableDataStore(data);
-        setProjectOptions(optionsForProjects);
-        setSelectedProjects(optionsForProjects);
-        return uniqWith(options, isEqual);
-      }
-    },
-    refetchOnWindowFocus: false,
-    // staleTime: Infinity,
-  });
-
-  //  populate rera village dropdown on rera locality selection
-  const {
-    isPending: loadingReraVillages,
-    data: reraVillageOptions,
-    refetch: refetchReraVillageOptions,
-  } = useQuery({
-    queryKey: ['rera-locality', selectedReraLocality],
-    queryFn: async () => {
-      if (selectedReraMandal !== undefined && selectedReraMandal !== null) {
-        if (selectedReraLocality?.value === '-1') {
-          refetchReraLocalityOptions();
-          return null;
-        }
-        const response = await axiosClient.get<{ data: ReraDMLVTableData[] }>(
-          '/forms/rera/getReraProjectsByDMLVId',
-          {
-            params: {
-              district_id: selectedReraDistrict?.value,
               mandalId: selectedReraMandal?.value.split(':')[0],
               mandal: selectedReraMandal?.value.split(':')[1],
-              locality: selectedReraLocality?.value,
+              village: selectedReraVillage?.value.split(':')[1],
             },
           }
         );
@@ -411,13 +358,17 @@ export default function ReraCorrectionPage() {
     // staleTime: Infinity,
   });
 
-  //  filter rera table data on rera village selection
-  useQuery({
-    queryKey: ['rera-villages', selectedReraVillage],
+  //  populate rera locality dropdown on rera village selection
+  const {
+    isPending: loadingReraLocality,
+    data: reraLocalityOptions,
+    refetch: refetchReraLocalityOptions,
+  } = useQuery({
+    queryKey: ['rera-village', selectedReraVillage],
     queryFn: async () => {
-      if (selectedReraMandal !== undefined && selectedReraMandal !== null) {
+      if (selectedReraVillage !== undefined && selectedReraVillage !== null) {
         if (selectedReraVillage?.value === '-1') {
-          refetchReraVillageOptions();
+          refetchReraMandalOptions();
           return null;
         }
         const response = await axiosClient.get<{ data: ReraDMLVTableData[] }>(
@@ -427,9 +378,56 @@ export default function ReraCorrectionPage() {
               district_id: selectedReraDistrict?.value,
               mandalId: selectedReraMandal?.value.split(':')[0],
               mandal: selectedReraMandal?.value.split(':')[1],
-              locality: selectedReraLocality?.value,
+              village: selectedReraVillage?.value.split(':')[1],
+            },
+          }
+        );
+        const data = response.data?.data;
+        const options = [{ label: 'ALL', value: '-1' }];
+        const optionsForProjects: {
+          label: string;
+          value: number;
+        }[] = [];
+        data.map((item) => {
+          options.push({
+            label: item.locality,
+            value: item.locality,
+          });
+          optionsForProjects.push({
+            label: `${item.id}:${item.project_name}`,
+            value: item.id,
+          });
+        });
+        setReraTableData(data);
+        setRERATableDataStore(data);
+        setProjectOptions(optionsForProjects);
+        setSelectedProjects(optionsForProjects);
+        return uniqWith(options, isEqual);
+      }
+    },
+    refetchOnWindowFocus: false,
+    // staleTime: Infinity,
+  });
+
+  //  filter rera table data on rera locality selection
+  useQuery({
+    queryKey: ['rera-mandal', selectedReraLocality],
+    queryFn: async () => {
+      if (selectedReraMandal !== undefined && selectedReraMandal !== null) {
+        if (selectedReraLocality?.value === '-1') {
+          refetchReraLocalityOptions();
+          return null;
+        }
+        const response = await axiosClient.get<{ data: ReraDMLVTableData[] }>(
+          '/forms/rera/getReraProjectsByDMLVId',
+          {
+            params: {
+              district_id: selectedReraDistrict?.value,
+              mandalId: selectedReraMandal?.value.split(':')[0],
+              mandal: selectedReraMandal?.value.split(':')[1],
               villageId: selectedReraVillage?.value.split(':')[0],
               village: selectedReraVillage?.value.split(':')[1],
+              locality: selectedReraLocality?.value,
             },
           }
         );
@@ -460,8 +458,8 @@ export default function ReraCorrectionPage() {
   }, [selectedReraMandal?.value]);
 
   useEffect(() => {
-    setSelectedReraVillage(null);
-  }, [selectedReraLocality?.value]);
+    setSelectedReraLocality(null);
+  }, [selectedReraVillage?.value]);
 
   let loadingToastId: string;
 
@@ -714,27 +712,27 @@ export default function ReraCorrectionPage() {
             />
           </label>
           <label className='flex items-center justify-between gap-5 '>
-            <span className='flex-[2] text-xl'>Locality:</span>
-            <Select
-              className='w-full flex-[5]'
-              key={'locality'}
-              options={reraLocalityOptions || undefined}
-              isLoading={loadingReraLocality}
-              value={selectedReraMandal ? selectedReraLocality : null}
-              onChange={(e) => setSelectedReraLocality(e)}
-              isDisabled={Boolean(!selectedReraMandal)}
-            />
-          </label>
-          <label className='flex items-center justify-between gap-5 '>
             <span className='flex-[2] text-xl'>Village:</span>
             <Select
               className='w-full flex-[5]'
               key={'village'}
               options={reraVillageOptions || undefined}
               isLoading={loadingReraVillages}
-              value={selectedReraLocality ? selectedReraVillage : null}
+              value={selectedReraMandal ? selectedReraVillage : null}
               onChange={(e) => setSelectedReraVillage(e)}
-              isDisabled={Boolean(!selectedReraLocality)}
+              isDisabled={Boolean(!selectedReraMandal)}
+            />
+          </label>
+          <label className='flex items-center justify-between gap-5 '>
+            <span className='flex-[2] text-xl'>Locality:</span>
+            <Select
+              className='w-full flex-[5]'
+              key={'locality'}
+              options={reraLocalityOptions || undefined}
+              isLoading={loadingReraLocality}
+              value={selectedReraVillage ? selectedReraLocality : null}
+              onChange={(e) => setSelectedReraLocality(e)}
+              isDisabled={Boolean(!selectedReraVillage)}
             />
           </label>
           <div className='flex flex-wrap items-center justify-between gap-5 '>
