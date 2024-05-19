@@ -3,9 +3,10 @@ import React, { ChangeEvent, useState, KeyboardEvent } from 'react';
 type ChipInputProps =
   | {
       chips: string[];
-      updateFormData: (newDetails: Partial<object>) => void;
+      updateFormData: (id: number, key: string, value: any) => void;
       updateChipsFn?: never;
       updateKey: string;
+      updateId: number;
       regexPattern?: RegExp;
       placeholder?: string;
       addTWClass?: string;
@@ -15,9 +16,10 @@ type ChipInputProps =
     }
   | {
       chips: string[];
-      updateFormData: (newDetails: Partial<object>) => void;
+      updateFormData: (id: number, key: string, value: any) => void;
       updateChipsFn?: never;
       updateKey: string;
+      updateId: number;
       regexPattern?: RegExp;
       placeholder?: string;
       addTWClass?: string;
@@ -30,6 +32,7 @@ type ChipInputProps =
       updateChipsFn: React.Dispatch<React.SetStateAction<string[]>>;
       updateFormData?: never;
       updateKey?: never;
+      updateId?: number;
       regexPattern?: RegExp;
       placeholder?: string;
       addTWClass?: string;
@@ -48,6 +51,7 @@ const ChipInput = ({
   enableGeneration,
   generationKey,
   updateChipsFn,
+  updateId,
   allowTrim = true,
 }: ChipInputProps) => {
   const [inputValue, setInputValue] = useState('');
@@ -70,20 +74,16 @@ const ChipInput = ({
         for (let i = +start; i <= +stop; i++) {
           !chips.includes(String(i)) ? generatedChips.push(String(i)) : null;
         }
-        updateFormData({
-          [updateKey]: [...chips, ...generatedChips],
-        });
+        updateFormData(updateId, updateKey, [...chips, ...generatedChips]);
         setInputValue('');
       } else {
         if (regexPattern !== undefined) {
           const value = allowTrim ? inputValue.trim() : inputValue;
           if (regexPattern.test(value) && updateFormData) {
-            updateFormData({
-              [updateKey]: [
-                ...chips,
-                allowTrim ? inputValue.trim() : inputValue,
-              ],
-            });
+            updateFormData(updateId, updateKey, [
+              ...chips,
+              allowTrim ? inputValue.trim() : inputValue,
+            ]);
             setInputValue('');
           } else if (updateChipsFn) {
             updateChipsFn([
@@ -94,12 +94,10 @@ const ChipInput = ({
         } else {
           console.log({ inputValue });
           if (updateFormData) {
-            updateFormData({
-              [updateKey]: [
-                ...chips,
-                allowTrim ? inputValue.trim() : inputValue,
-              ],
-            });
+            updateFormData(updateId, updateKey, [
+              ...chips,
+              allowTrim ? inputValue.trim() : inputValue,
+            ]);
           } else if (updateChipsFn) {
             updateChipsFn([
               ...chips,
@@ -117,9 +115,7 @@ const ChipInput = ({
       const newChips = [...chips];
       newChips.pop();
       if (updateFormData) {
-        updateFormData({
-          [updateKey]: newChips,
-        });
+        updateFormData(updateId, updateKey, newChips);
       } else if (updateChipsFn) {
         updateChipsFn(newChips);
       }
@@ -129,9 +125,11 @@ const ChipInput = ({
 
   const handleChipRemove = (indexToRemove: number) => {
     if (updateFormData) {
-      updateFormData({
-        [updateKey]: chips.filter((_, index) => index !== indexToRemove),
-      });
+      updateFormData(
+        updateId,
+        updateKey,
+        chips.filter((_, index) => index !== indexToRemove)
+      );
     } else if (updateChipsFn) {
       updateChipsFn(chips.filter((_, index) => index !== indexToRemove));
     }
