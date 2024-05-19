@@ -70,7 +70,14 @@ export interface GetProjectDetails {
   localities: string;
 }
 
-export interface FormETLTagDataType {
+export interface ProjectFormETLTagDataType {
+  id: number;
+  village:
+    | {
+        label: string;
+        value: number;
+      }
+    | undefined;
   docId: string[];
   docIdNotEquals: string[];
   rootDocs: string[];
@@ -93,7 +100,7 @@ export interface FormETLTagDataType {
   unitPattern: string;
 }
 
-export interface FormProjectTaggingType extends FormETLTagDataType {
+export interface FormProjectDataType {
   projectName: string;
   layoutName: string;
   developer: string;

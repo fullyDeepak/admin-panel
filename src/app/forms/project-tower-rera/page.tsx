@@ -21,6 +21,7 @@ export default function ProjectTowerReraPage() {
     projectFormDataRera,
     resetProjectFormDataRera,
     updateProjectFormDataRera,
+    projectFormETLTagData,
   } = useProjectStoreRera();
   const { towerFormDataRera, resetTowerFormDataRera } = useTowerStoreRera();
 
@@ -59,12 +60,17 @@ export default function ProjectTowerReraPage() {
       (item) => item.configName !== ''
     ),
   }));
+  let newProjectFormETLTagData = projectFormETLTagData.map((item) => ({
+    ...item,
+    village: item.village?.value,
+  }));
   const nonReraFormSteps: ReactElement[] = [
     <ProjectForm key={1} />,
     <TowerForm key={2} />,
     <PreviewProjectTower
       key={3}
       projectFormData={newProjectFormData}
+      projectFormETLTagData={newProjectFormETLTagData}
       towerFormData={newTowerFormData}
     />,
   ];
@@ -76,6 +82,7 @@ export default function ProjectTowerReraPage() {
     <PreviewProjectTower
       key={4}
       projectFormData={newProjectFormData}
+      projectFormETLTagData={newProjectFormETLTagData}
       towerFormData={newTowerFormData}
     />,
   ];

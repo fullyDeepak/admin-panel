@@ -5,9 +5,28 @@ import { useProjectStoreRera } from '@/store/useProjectStoreRera';
 import { useReraDocStore } from '@/store/useReraDocStore';
 import React, { useState } from 'react';
 
-export default function DocsETLTagData() {
-  const { projectFormDataRera, updateProjectFormDataRera } =
-    useProjectStoreRera();
+type DocsETLTagDataProps = {
+  villageOptions:
+    | {
+        label: string;
+        value: number;
+      }[]
+    | undefined;
+  loadingVillages: boolean;
+};
+
+export default function DocsETLTagData({
+  loadingVillages,
+  villageOptions,
+}: DocsETLTagDataProps) {
+  const {
+    projectFormDataRera,
+    updateProjectFormDataRera,
+    projectFormETLTagData,
+    updateProjectETLTagData,
+    deleteProjectETLTagCard,
+    addProjectETLTagCard,
+  } = useProjectStoreRera();
   const [pdfPreviewDivs, setPdfPreviewDivs] = useState<React.JSX.Element[]>([]);
   const { fetchReraDocs, reraDocs, loadingReraDocs, resetReraDocs } =
     useReraDocStore();
@@ -110,8 +129,12 @@ export default function DocsETLTagData() {
         </>
       )}
       <ETLTagData
-        formData={projectFormDataRera}
-        updateFormData={updateProjectFormDataRera}
+        villageOptions={villageOptions}
+        loadingVillages={loadingVillages}
+        formProjectETLTagData={projectFormETLTagData}
+        updateProjectETLFormData={updateProjectETLTagData}
+        deleteProjectETLCard={deleteProjectETLTagCard}
+        addProjectETLCard={addProjectETLTagCard}
         showHeading={false}
       />
     </>

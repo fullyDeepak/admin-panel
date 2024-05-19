@@ -26,7 +26,17 @@ export default function ProjectForm() {
   const { resetReraDocs } = useReraDocStore();
   const [mainProject, setMainProject] = useState<string>('');
   const [projectOptions, setProjectOptions] = useState<
-    { value: string; label: string }[]
+    { value: number; label: string }[]
+  >([]);
+  const [projectMVDetails, setProjectMVDetails] = useState<
+    {
+      id: number;
+      project_name: string;
+      mandal_id: number;
+      mandal_name: string;
+      village_id: number;
+      village_name: string;
+    }[]
   >([]);
 
   const { data: amenitiesOptions, isLoading: loadingAmenities } = useQuery({
@@ -75,7 +85,14 @@ export default function ProjectForm() {
             projectFormDataRera.district?.value
           ),
           await axiosClient.get<{
-            data: { id: string; project_name: string }[];
+            data: {
+              id: number;
+              project_name: string;
+              mandal_id: number;
+              mandal_name: string;
+              village_id: number;
+              village_name: string;
+            }[];
             message: string;
             statusCode: number;
           }>(`/forms/rera/getProjects`, {
@@ -87,6 +104,7 @@ export default function ProjectForm() {
           value: item.value,
         }));
         const projectOptions = projectResponse?.data?.data;
+        setProjectMVDetails(projectOptions);
         const projectDropdownOptions = projectOptions.map((item) => ({
           value: item.id,
           label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
@@ -115,7 +133,14 @@ export default function ProjectForm() {
             projectFormDataRera.mandal?.value
           ),
           await axiosClient.get<{
-            data: { id: string; project_name: string }[];
+            data: {
+              id: number;
+              project_name: string;
+              mandal_id: number;
+              mandal_name: string;
+              village_id: number;
+              village_name: string;
+            }[];
             message: string;
             statusCode: number;
           }>(`/forms/rera/getProjects`, {
@@ -126,6 +151,7 @@ export default function ProjectForm() {
           }),
         ]);
         const projectOptions = projectResponse?.data?.data;
+        setProjectMVDetails(projectOptions);
         const projectDropdownOptions = projectOptions.map((item) => ({
           value: item.id,
           label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
@@ -151,13 +177,21 @@ export default function ProjectForm() {
         projectFormDataRera.village !== null
       ) {
         const res = await axiosClient.get<{
-          data: { id: string; project_name: string }[];
+          data: {
+            id: number;
+            project_name: string;
+            mandal_id: number;
+            mandal_name: string;
+            village_id: number;
+            village_name: string;
+          }[];
           message: string;
           statusCode: number;
         }>(`/forms/rera/getProjects`, {
           params: { village_id: projectFormDataRera.village.value },
         });
         const options = res?.data?.data;
+        setProjectMVDetails(options);
         const dropdownOptions = options.map((item) => {
           return {
             value: item.id,
@@ -288,6 +322,28 @@ export default function ProjectForm() {
     });
     setTowersDataRera(towersData);
   }
+  function setMandalVillageSuggestion(
+    e: {
+      label: string;
+      value: number;
+    }[]
+  ) {
+    const projectIds = e.map((item) => item.value);
+    const mandals: string[] = [];
+    const villages: string[] = [];
+    projectMVDetails.map((item) => {
+      if (projectIds.includes(item.id)) {
+        mandals.push(
+          `${item.mandal_id === -1 ? 'NULL' : item.mandal_id}:${item.mandal_name}`
+        );
+        villages.push(
+          `${item.village_id === -1 ? 'NULL' : item.village_id}:${item.village_name}`
+        );
+      }
+    });
+    updateProjectFormDataRera({ mandalSuggestion: mandals });
+    updateProjectFormDataRera({ villageSuggestion: villages });
+  }
   return (
     <>
       <h3 className='my-4 text-2xl font-semibold'>Section: Project Details</h3>
@@ -311,31 +367,41 @@ export default function ProjectForm() {
       </label>
       <label className='flex items-center justify-between gap-5 '>
         <span className='flex-[2] text-xl'>Mandal:</span>
-        <Select
-          className='w-full flex-[5]'
-          key={'mandal'}
-          options={mandalData?.mandalOptions || undefined}
-          isLoading={loadingMandalsData}
-          value={projectFormDataRera.mandal}
-          onChange={(e) => {
-            updateProjectFormDataRera({ mandal: e, village: null });
-          }}
-          isDisabled={Boolean(!projectFormDataRera.district)}
-        />
+        <div className='flex w-full flex-[5]'>
+          <Select
+            className='w-full flex-1'
+            key={'mandal'}
+            options={mandalData?.mandalOptions || undefined}
+            isLoading={loadingMandalsData}
+            value={projectFormDataRera.mandal}
+            onChange={(e) => {
+              updateProjectFormDataRera({ mandal: e, village: null });
+            }}
+            isDisabled={Boolean(!projectFormDataRera.district)}
+          />
+          <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
+            <span>{projectFormDataRera.mandalSuggestion.join(', ')}</span>
+          </span>
+        </div>
       </label>
       <label className='flex items-center justify-between gap-5 '>
         <span className='flex-[2] text-xl'>Village:</span>
-        <Select
-          className='w-full flex-[5]'
-          key={'village'}
-          options={villageOptions || undefined}
-          isLoading={loadingVillages}
-          value={projectFormDataRera.village}
-          onChange={(e) => {
-            updateProjectFormDataRera({ village: e });
-          }}
-          isDisabled={Boolean(!projectFormDataRera.mandal)}
-        />
+        <div className='flex w-full flex-[5]'>
+          <Select
+            className='w-full flex-1'
+            key={'village'}
+            options={villageOptions || undefined}
+            isLoading={loadingVillages}
+            value={projectFormDataRera.village}
+            onChange={(e) => {
+              updateProjectFormDataRera({ village: e });
+            }}
+            isDisabled={Boolean(!projectFormDataRera.mandal)}
+          />
+          <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
+            <span>{projectFormDataRera.villageSuggestion.join(', ')}</span>
+          </span>
+        </div>
       </label>
       {projectFormDataRera.isRERAProject && (
         <>
@@ -350,10 +416,11 @@ export default function ProjectForm() {
                 onChange={(
                   e: {
                     label: string;
-                    value: string;
+                    value: number;
                   }[]
                 ) => {
                   updateProjectFormDataRera({ projects: e });
+                  setMandalVillageSuggestion(e);
                 }}
                 labelledBy={'projects'}
                 isCreatable={false}
@@ -603,11 +670,14 @@ export default function ProjectForm() {
           onChange={(e) => {}}
         />
       </label>
-      <DocsETLTagData />
-      <ProjectMatcherSection
+      <DocsETLTagData
+        villageOptions={villageOptions}
+        loadingVillages={loadingVillages}
+      />
+      {/* <ProjectMatcherSection
         formData={projectFormDataRera}
         updateFormData={updateProjectFormDataRera}
-      />
+      /> */}
     </>
   );
 }

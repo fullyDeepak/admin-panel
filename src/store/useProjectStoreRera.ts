@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { SingleValue } from 'react-select';
-import { FormProjectTaggingType } from '@/types/types';
-export interface ProjectTaggingTypeRera extends FormProjectTaggingType {
+import { ProjectFormETLTagDataType, FormProjectDataType } from '@/types/types';
+export interface ProjectTaggingTypeRera extends FormProjectDataType {
   isRERAProject: boolean;
   district: SingleValue<{
     label: string;
@@ -11,14 +11,16 @@ export interface ProjectTaggingTypeRera extends FormProjectTaggingType {
     label: string;
     value: number;
   }>;
+  mandalSuggestion: string[];
   village: SingleValue<{
     label: string;
     value: number;
   }>;
   village_id: number | null;
+  villageSuggestion: string[];
   projects: {
     label: string;
-    value: string;
+    value: number;
   }[];
   projectIds: number[];
   projectType: SingleValue<{
@@ -38,16 +40,22 @@ export interface ProjectTaggingTypeRera extends FormProjectTaggingType {
 
 interface FormState {
   projectFormDataRera: ProjectTaggingTypeRera;
+  projectFormETLTagData: ProjectFormETLTagDataType[];
   updateProjectFormDataRera: (
     newDetails: Partial<ProjectTaggingTypeRera>
   ) => void;
+  updateProjectETLTagData: (etlCardId: number, key: string, value: any) => void;
+  addProjectETLTagCard: (newDetails: ProjectFormETLTagDataType) => void;
+  deleteProjectETLTagCard: (etlCardId: number) => void;
   resetProjectFormDataRera: () => void;
 }
 
-const initialState: ProjectTaggingTypeRera = {
+const initialStateProjectData: ProjectTaggingTypeRera = {
   isRERAProject: true,
   district: null,
   mandal: null,
+  mandalSuggestion: [],
+  villageSuggestion: [],
   village: null,
   village_id: null,
   projects: [],
@@ -70,41 +78,70 @@ const initialState: ProjectTaggingTypeRera = {
   projectSubTypeSuggestion: [],
   projectDesc: '',
   amenitiesTags: [],
-  surveyEquals: [],
   surveySuggestion: [],
   plotSuggestion: [],
-  docId: [],
-  rootDocs: [],
-  apartmentContains: [],
-  counterpartyContains: [],
-  aptSurveyPlotDetails: false,
-  counterpartySurveyPlotDetails: false,
-  plotEquals: [],
-  surveyContains: [],
-  plotContains: [],
-  doorNoStartWith: [],
-  aptNameNotContains: [],
-  docIdNotEquals: [],
   projectCoordinates: [],
-  singleUnit: false,
-  towerPattern: '',
-  floorPattern: '',
-  unitPattern: '',
   localities: [],
-  localityContains: [],
-  localityPlot: [],
-  wardBlock: [],
 };
+
+const initialStateProjectETLTagData: ProjectFormETLTagDataType[] = [
+  {
+    id: 1,
+    village: undefined,
+    surveyEquals: [],
+    docId: [],
+    rootDocs: [],
+    apartmentContains: [],
+    counterpartyContains: [],
+    aptSurveyPlotDetails: false,
+    counterpartySurveyPlotDetails: false,
+    plotEquals: [],
+    surveyContains: [],
+    plotContains: [],
+    doorNoStartWith: [],
+    aptNameNotContains: [],
+    docIdNotEquals: [],
+    singleUnit: false,
+    towerPattern: '',
+    floorPattern: '',
+    unitPattern: '',
+
+    localityContains: [],
+    localityPlot: [],
+    wardBlock: [],
+  },
+];
 
 export const useProjectStoreRera = create<FormState>((set) => ({
   // Initial state
-  projectFormDataRera: initialState,
+  projectFormDataRera: initialStateProjectData,
+  projectFormETLTagData: initialStateProjectETLTagData,
 
   // Update functions
   updateProjectFormDataRera: (newDetails) =>
     set((state) => ({
       projectFormDataRera: { ...state.projectFormDataRera, ...newDetails },
     })),
-
-  resetProjectFormDataRera: () => set({ projectFormDataRera: initialState }),
+  updateProjectETLTagData: (etlCardId, key, value) => {
+    set((state) => ({
+      projectFormETLTagData: state.projectFormETLTagData.map((data) =>
+        data.id === etlCardId ? { ...data, [key]: value } : data
+      ),
+    }));
+  },
+  addProjectETLTagCard: (newDetails) =>
+    set((state) => ({
+      projectFormETLTagData: [
+        ...state.projectFormETLTagData,
+        { ...newDetails },
+      ],
+    })),
+  deleteProjectETLTagCard: (etlCardId) =>
+    set((state) => ({
+      projectFormETLTagData: state.projectFormETLTagData.filter(
+        (item) => item.id !== etlCardId
+      ),
+    })),
+  resetProjectFormDataRera: () =>
+    set({ projectFormDataRera: initialStateProjectData }),
 }));

@@ -109,9 +109,18 @@ export default function TowerForm() {
               <span className='flex flex-[2] items-center  '>
                 <span>RERA Tower ID:</span>
               </span>
-              <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
-                <span>{tower.reraTowerId}</span>
-              </span>
+              <input
+                className={inputBoxClass}
+                name='towerName'
+                defaultValue={tower.reraTowerId}
+                onChange={(e) =>
+                  updateTowerFormDataRera(
+                    tower.id,
+                    'reraTowerId',
+                    e.target.value
+                  )
+                }
+              />
             </label>
           )}
           <label className='flex flex-wrap items-center justify-between gap-5 '>
@@ -159,6 +168,7 @@ export default function TowerForm() {
                     id:
                       Math.max(...towerFormDataRera.map((data) => data.id)) + 1,
                     towerName: '',
+                    reraTowerId: '',
                   };
                   addNewTowerDataRera(newData);
                 }}
