@@ -1,5 +1,4 @@
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
-import { ProjectFormETLTagDataType } from '@/types/types';
 
 type PreviewProjectTowerProps = {
   projectFormData: {

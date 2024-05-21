@@ -1,6 +1,6 @@
 import { SingleValue } from 'react-select';
 
-export interface GetProjectTowerUnitConfigDetails {
+export interface GetTowerUnitConfigDetails {
   id: number;
   config: string;
   tower_id: number;
@@ -9,7 +9,31 @@ export interface GetProjectTowerUnitConfigDetails {
   project_id: number;
 }
 
-export interface GetProjectTowerDetails {
+interface GetProjectETLTagDataType {
+  village: number;
+  doc_id: string[];
+  doc_id_not_equals: string[];
+  root_docs: string[];
+  apartment_contains: string[];
+  counterparty_contains: string[];
+  apt_survey_plot_details: boolean;
+  counterparty_survey_plot_details: boolean;
+  locality_contains: string[];
+  ward_block: string[];
+  locality_plot: string[];
+  survey_equals: string[];
+  plot_equals: string[];
+  survey_contains: string[];
+  plot_contains: string[];
+  door_no_start_with: string[];
+  apt_name_not_contains: string[];
+  single_unit: boolean;
+  tower_pattern: string;
+  floor_pattern: string;
+  unit_pattern: string;
+}
+
+export interface GetTowerDetails {
   name: string;
   type: string;
   phase: string;
@@ -17,7 +41,7 @@ export interface GetProjectTowerDetails {
   tower_id: number;
   max_floor: string;
   min_floor: string;
-  unit_configs: GetProjectTowerUnitConfigDetails[];
+  unit_configs: GetTowerUnitConfigDetails[];
   tower_door_no: string;
   ground_floor_name: string;
   exception_unit_nos: string;
@@ -40,37 +64,16 @@ export interface GetProjectDetails {
   village_id: number;
   st_asgeojson: string;
   project_description: string;
-  apartment_contains: string[];
-  counterparty_contains: string[];
-  plot_equals: string[];
-  survey_contains: string[];
-  survey_equals: string[];
-  doc_id: string[];
-  linked_doc: string[];
-  door_no_start: string[];
-  apt_name_not_contains: string[];
-  locality_wb_plot: string[];
+  localities: string;
   amenities: {
     id: number;
     amenity: string;
   }[];
-  surveys: string[];
-  plots: string[];
-  towers: GetProjectTowerDetails[];
-  aptsurveyplotdetails: boolean;
-  counterpartysurveyplotdetails: boolean;
-  locality_wb_plot: string[];
-  door_no_start: string[];
-  apt_name_not_contains: string[];
-  plot_contains: string[];
-  single_unit: boolean;
-  tower_pattern: string;
-  floor_pattern: string;
-  unit_pattern: string;
-  localities: string;
+  towers: GetTowerDetails[];
+  project_etl_tag_data: GetProjectETLTagDataType[];
 }
 
-export interface ProjectFormETLTagDataType {
+export interface FormProjectETLTagDataType {
   id: number;
   village:
     | {

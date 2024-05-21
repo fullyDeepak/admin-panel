@@ -1,7 +1,7 @@
-import { FormProjectTaggingType } from '@/types/types';
+import { FormProjectDataType, FormProjectETLTagDataType } from '@/types/types';
 import { create } from 'zustand';
 
-export interface EditProjectTaggingType extends FormProjectTaggingType {
+export interface EditProjectTaggingType extends FormProjectDataType {
   village_id: number;
   selectedProject: number | undefined;
   selectedProjectOption:
@@ -29,6 +29,10 @@ export interface EditProjectTaggingType extends FormProjectTaggingType {
 interface FormState {
   editProjectFormData: EditProjectTaggingType;
   oldProjectFormData: EditProjectTaggingType | null;
+  projectFormETLTagData: FormProjectETLTagDataType[];
+  updateProjectETLTagData: (etlCardId: number, key: string, value: any) => void;
+  addProjectETLTagCard: (newDetails: FormProjectETLTagDataType) => void;
+  deleteProjectETLTagCard: (etlCardId: number) => void;
   updateOldProjectFormData: (
     oldDetails: Partial<EditProjectTaggingType>
   ) => void;
@@ -39,7 +43,7 @@ interface FormState {
   resetEditProjectFormData: () => void;
 }
 
-const initialState: EditProjectTaggingType = {
+const initialStateProjectData: EditProjectTaggingType = {
   selectedProject: undefined,
   selectedProjectOption: [],
   village_id: 0,
@@ -53,45 +57,72 @@ const initialState: EditProjectTaggingType = {
   projectSubTypeOptions: [],
   projectDesc: '',
   amenitiesTags: [],
-  docId: [],
-  docIdNotEquals: [],
-  rootDocs: [],
-  apartmentContains: [],
-  counterpartyContains: [],
-  aptSurveyPlotDetails: false,
-  counterpartySurveyPlotDetails: false,
-  surveyEquals: [],
-  plotEquals: [],
-  surveyContains: [],
-  plotContains: [],
-  localityContains: [],
-  wardBlock: [],
-  localityPlot: [],
-  doorNoStartWith: [],
-  aptNameNotContains: [],
-  singleUnit: false,
-  towerPattern: '',
-  floorPattern: '',
-  unitPattern: '',
   localities: [],
 };
 
+const initialStateProjectETLTagData: FormProjectETLTagDataType[] = [
+  {
+    id: 1,
+    village: undefined,
+    surveyEquals: [],
+    docId: [],
+    rootDocs: [],
+    apartmentContains: [],
+    counterpartyContains: [],
+    aptSurveyPlotDetails: false,
+    counterpartySurveyPlotDetails: false,
+    plotEquals: [],
+    surveyContains: [],
+    plotContains: [],
+    doorNoStartWith: [],
+    aptNameNotContains: [],
+    docIdNotEquals: [],
+    singleUnit: false,
+    towerPattern: '',
+    floorPattern: '',
+    unitPattern: '',
+    localityContains: [],
+    localityPlot: [],
+    wardBlock: [],
+  },
+];
+
 export const useEditProjectStore = create<FormState>((set) => ({
   // Initial state
-  editProjectFormData: initialState,
+  editProjectFormData: initialStateProjectData,
+  projectFormETLTagData: initialStateProjectETLTagData,
   oldProjectFormData: null,
   updateOldProjectFormData: (oldDetails) =>
     set((state) => ({
       oldProjectFormData: { ...state.editProjectFormData, ...oldDetails },
     })),
+  updateProjectETLTagData: (etlCardId, key, value) => {
+    set((state) => ({
+      projectFormETLTagData: state.projectFormETLTagData.map((data) =>
+        data.id === etlCardId ? { ...data, [key]: value } : data
+      ),
+    }));
+  },
+  addProjectETLTagCard: (newDetails) =>
+    set((state) => ({
+      projectFormETLTagData: [
+        ...state.projectFormETLTagData,
+        { ...newDetails },
+      ],
+    })),
+  deleteProjectETLTagCard: (etlCardId) =>
+    set((state) => ({
+      projectFormETLTagData: state.projectFormETLTagData.filter(
+        (item) => item.id !== etlCardId
+      ),
+    })),
 
-  // Update functions
   updateEditProjectFormData: (newDetails) =>
     set((state) => ({
       editProjectFormData: { ...state.editProjectFormData, ...newDetails },
     })),
 
   resetEditProjectFormData: () => {
-    set({ editProjectFormData: initialState });
+    set({ editProjectFormData: initialStateProjectData });
   },
 }));

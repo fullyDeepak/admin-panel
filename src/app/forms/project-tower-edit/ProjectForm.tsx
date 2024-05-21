@@ -9,7 +9,7 @@ import { editTowerDetail, useEditTowerStore } from '@/store/useEditTowerStore';
 import Select, { Option } from 'rc-select';
 import 'rc-select/assets/index.css';
 import { MultiSelect } from 'react-multi-select-component';
-import { GetProjectDetails } from '@/types/types';
+import { FormProjectETLTagDataType, GetProjectDetails } from '@/types/types';
 import ETLTagData from '@/components/forms/ETLTagData';
 import { inputBoxClass } from '@/app/constants/tw-class';
 import ProjectMatcherSection from '@/components/forms/ProjectMatcherSection';
@@ -19,6 +19,10 @@ export default function ProjectForm() {
     editProjectFormData,
     updateEditProjectFormData,
     resetEditProjectFormData,
+    projectFormETLTagData,
+    addProjectETLTagCard,
+    updateProjectETLTagData,
+    deleteProjectETLTagCard,
     updateOldProjectFormData,
   } = useEditProjectStore();
   const { setNewTowerEditData, setOldTowerEditData } = useEditTowerStore();
@@ -98,6 +102,35 @@ export default function ProjectForm() {
           const projectData = res.data.data;
           console.log(projectData);
           const towerDataRes = projectData.towers;
+          const projectETLTagData: FormProjectETLTagDataType[] =
+            projectData.project_etl_tag_data.map((etlData, index) => ({
+              id: index,
+              village: {
+                label: '' + etlData.village,
+                value: etlData.village,
+              },
+              docId: etlData.doc_id,
+              docIdNotEquals: etlData.doc_id_not_equals,
+              rootDocs: etlData.root_docs,
+              apartmentContains: etlData.apartment_contains,
+              counterpartyContains: etlData.counterparty_contains,
+              aptSurveyPlotDetails: etlData.apt_survey_plot_details,
+              counterpartySurveyPlotDetails:
+                etlData.counterparty_survey_plot_details,
+              localityContains: etlData.locality_contains,
+              wardBlock: etlData.ward_block,
+              localityPlot: etlData.locality_plot,
+              surveyEquals: etlData.survey_equals,
+              plotEquals: etlData.plot_equals,
+              surveyContains: etlData.survey_contains,
+              plotContains: etlData.plot_contains,
+              doorNoStartWith: etlData.door_no_start_with,
+              aptNameNotContains: etlData.apt_name_not_contains,
+              singleUnit: etlData.single_unit,
+              towerPattern: etlData.tower_pattern,
+              floorPattern: etlData.floor_pattern,
+              unitPattern: etlData.unit_pattern,
+            }));
           const towerData: editTowerDetail[] = towerDataRes.map(
             (item, index) => ({
               id: index + 1,
@@ -127,9 +160,6 @@ export default function ProjectForm() {
           console.log(towerData);
           setNewTowerEditData(towerData);
           setOldTowerEditData(towerData);
-          const surveyEquals = projectData?.survey_equals;
-          const surveyContains = projectData?.survey_contains;
-          const plotEquals = projectData?.plot_equals;
           const amenities = projectData.amenities.map(
             (item: { id: number; amenity: string }) => ({
               label: item.amenity,
@@ -146,18 +176,18 @@ export default function ProjectForm() {
               value: locality,
             })
           );
-          const localityWbPlot: {
-            locality_contains: string[];
-            ward_block: string[];
-            locality_plot: string[];
-          } =
-            projectData.locality_wb_plot.length > 0
-              ? JSON.parse(projectData.locality_wb_plot[0])
-              : {
-                  locality_contains: [],
-                  ward_block: [],
-                  locality_plot: [],
-                };
+          //   const localityWbPlot: {
+          //     locality_contains: string[];
+          //     ward_block: string[];
+          //     locality_plot: string[];
+          //   } =
+          //     projectData.locality_wb_plot.length > 0
+          //       ? JSON.parse(projectData.locality_wb_plot[0])
+          //       : {
+          //           locality_contains: [],
+          //           ward_block: [],
+          //           locality_plot: [],
+          //         };
           const projectFormData: Partial<EditProjectTaggingType> = {
             village_id: projectData.village_id,
             projectName: projectData.project_name,
@@ -167,27 +197,7 @@ export default function ProjectForm() {
             projectDesc: projectData.project_description,
             projectType: projectData.project_category,
             projectSubType: projectData.project_subtype,
-            surveyContains: surveyContains || [],
-            surveyEquals: surveyEquals || [],
-            plotEquals: plotEquals || [],
             amenitiesTags: amenities,
-            apartmentContains: projectData.apartment_contains || [],
-            counterpartyContains: projectData.counterparty_contains || [],
-            aptSurveyPlotDetails: projectData.aptsurveyplotdetails,
-            aptNameNotContains: projectData.apt_name_not_contains,
-            counterpartySurveyPlotDetails:
-              projectData.counterpartysurveyplotdetails,
-            docId: projectData.doc_id,
-            doorNoStartWith: projectData.door_no_start,
-            rootDocs: projectData.linked_doc,
-            plotContains: projectData.plot_contains,
-            localityContains: localityWbPlot.locality_contains,
-            localityPlot: localityWbPlot.locality_plot,
-            wardBlock: localityWbPlot.ward_block,
-            singleUnit: projectData?.single_unit,
-            towerPattern: projectData?.tower_pattern || '',
-            floorPattern: projectData?.floor_pattern || '',
-            unitPattern: projectData?.unit_pattern || '',
             localities: localities || [],
           };
           updateEditProjectFormData(projectFormData);
@@ -436,8 +446,11 @@ export default function ProjectForm() {
         />
       </div>
       <ETLTagData
-        formData={editProjectFormData}
-        updateFormData={updateEditProjectFormData}
+        addProjectETLCard={addProjectETLTagCard}
+        deleteProjectETLCard={deleteProjectETLTagCard}
+        formProjectETLTagData={projectFormETLTagData}
+        updateProjectETLFormData={updateProjectETLTagData}
+        villageOptions={villageOptions}
       />
       <ProjectMatcherSection
         formData={editProjectFormData}

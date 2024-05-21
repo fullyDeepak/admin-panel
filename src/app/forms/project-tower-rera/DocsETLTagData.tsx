@@ -130,7 +130,6 @@ export default function DocsETLTagData({
       )}
       <ETLTagData
         villageOptions={villageOptions}
-        loadingVillages={loadingVillages}
         formProjectETLTagData={projectFormETLTagData}
         updateProjectETLFormData={updateProjectETLTagData}
         deleteProjectETLCard={deleteProjectETLTagCard}

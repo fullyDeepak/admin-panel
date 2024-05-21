@@ -281,29 +281,29 @@ export default function ProjectClonePage() {
             </label>{' '}
             <label className='flex flex-wrap items-center justify-between gap-5 '>
               <span className='flex-[2] '>Survey Equals:</span>
-              <ChipInput
+              {/* <ChipInput
                 chips={surveyEqual.surveyEqual}
                 updateFormData={setSurveyEqual as (newDetails: object) => void}
                 updateKey='surveyEqual'
-              />
+              /> */}
             </label>
             <label className='flex flex-wrap items-center justify-between gap-5 '>
               <span className='flex-[2] '>Survey Contains:</span>
-              <ChipInput
+              {/* <ChipInput
                 chips={surveyContains.surveyContains}
                 updateFormData={
                   setSurveyContains as (newDetails: object) => void
                 }
                 updateKey='surveyContains'
-              />
+              /> */}
             </label>
             <label className='flex flex-wrap items-center justify-between gap-5 '>
               <span className='flex-[2] '>Plot Equals:</span>
-              <ChipInput
+              {/* <ChipInput
                 chips={plotEqual.plotEqual}
                 updateFormData={setPlotEqual as (newDetails: object) => void}
                 updateKey='plotEqual'
-              />
+              /> */}
             </label>
             <button className='btn btn-info' onClick={submitForm}>
               Submit

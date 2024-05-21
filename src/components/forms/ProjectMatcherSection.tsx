@@ -1,11 +1,11 @@
-import { FormProjectTaggingType } from '@/types/types';
+import { FormProjectDataType } from '@/types/types';
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
 import { MultiSelect } from 'react-multi-select-component';
 
 type ProjectMatcherProps = {
-  formData: FormProjectTaggingType;
-  updateFormData: (newDetails: Partial<FormProjectTaggingType>) => void;
+  formData: FormProjectDataType;
+  updateFormData: (newDetails: Partial<FormProjectDataType>) => void;
 };
 
 export default function ProjectMatcherSection({

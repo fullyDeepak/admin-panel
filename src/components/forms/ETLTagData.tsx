@@ -1,14 +1,14 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import ChipInput from '@/components/ui/Chip';
-import { ProjectFormETLTagDataType } from '@/types/types';
+import { FormProjectETLTagDataType } from '@/types/types';
 import Select, { SingleValue } from 'react-select';
 import { BiInfoCircle, BiPlus } from 'react-icons/bi';
 
 interface ETLTagDataType {
-  formProjectETLTagData: ProjectFormETLTagDataType[];
+  formProjectETLTagData: FormProjectETLTagDataType[];
   updateProjectETLFormData: (id: number, key: string, value: any) => void;
   deleteProjectETLCard: (etlCardId: number) => void;
-  addProjectETLCard: (newDetails: ProjectFormETLTagDataType) => void;
+  addProjectETLCard: (newDetails: FormProjectETLTagDataType) => void;
   showHeading?: boolean;
   villageOptions:
     | {
@@ -16,7 +16,6 @@ interface ETLTagDataType {
         value: number;
       }[]
     | undefined;
-  loadingVillages: boolean;
 }
 
 export default function ETLTagData({
@@ -26,7 +25,6 @@ export default function ETLTagData({
   addProjectETLCard,
   showHeading = true,
   villageOptions,
-  loadingVillages,
 }: ETLTagDataType) {
   const docIdPattern: RegExp =
     /^(100\d|10[1-9]\d|1[1-9]\d{2}|[2-9]\d{3})-(19[0-9][0-9]|2[0][0-9]{2})-([1-9]\d{1,5}|[1-9])$/gm;
@@ -64,7 +62,6 @@ export default function ETLTagData({
               className='w-full flex-[5]'
               key={'village'}
               options={villageOptions || undefined}
-              isLoading={loadingVillages}
               value={etlTagData.village}
               onChange={(
                 e: SingleValue<{
@@ -350,7 +347,7 @@ export default function ETLTagData({
               chips={etlTagData.docIdNotEquals}
               updateFormData={updateProjectETLFormData}
               updateId={etlTagData.id}
-              updateKey='docIdNotContains'
+              updateKey='docIdNotEquals'
               regexPattern={docIdPattern}
             />
           </label>

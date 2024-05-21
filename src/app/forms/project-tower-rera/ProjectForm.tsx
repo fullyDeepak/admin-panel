@@ -188,7 +188,11 @@ export default function ProjectForm() {
           message: string;
           statusCode: number;
         }>(`/forms/rera/getProjects`, {
-          params: { village_id: projectFormDataRera.village.value },
+          params: {
+            district_id: projectFormDataRera.district?.value,
+            // mandal_id: projectFormDataRera?.mandal?.value,
+            village_id: projectFormDataRera.village.value,
+          },
         });
         const options = res?.data?.data;
         setProjectMVDetails(options);
@@ -674,10 +678,10 @@ export default function ProjectForm() {
         villageOptions={villageOptions}
         loadingVillages={loadingVillages}
       />
-      {/* <ProjectMatcherSection
+      <ProjectMatcherSection
         formData={projectFormDataRera}
         updateFormData={updateProjectFormDataRera}
-      /> */}
+      />
     </>
   );
 }

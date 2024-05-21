@@ -41,7 +41,7 @@ export default function ProjectTowerReraPage() {
   delete newProjectFormData.district;
   delete newProjectFormData.mandal;
   delete newProjectFormData.projects;
-  //   newProjectFormData.village_id = newProjectFormData.village?.value;
+  newProjectFormData.village_id = newProjectFormData.village?.value;
   delete newProjectFormData.village;
   newProjectFormData.projectType = newProjectFormData.projectType?.value;
   newProjectFormData.projectSubType = newProjectFormData.projectSubType?.value;
@@ -92,6 +92,7 @@ export default function ProjectTowerReraPage() {
       id: loadingToastId,
     });
     e.preventDefault();
+    console.log(newProjectFormData);
     if (!newProjectFormData.projectName || !newProjectFormData.village_id) {
       toast.dismiss(loadingToastId);
       toast.error(`Project name or Village id is missing.`, {
@@ -101,7 +102,10 @@ export default function ProjectTowerReraPage() {
       return null;
     }
     const data = {
-      projectData: newProjectFormData,
+      projectData: {
+        ...newProjectFormData,
+        ETLTagData: newProjectFormETLTagData,
+      },
       towerData: newTowerFormData,
     };
 

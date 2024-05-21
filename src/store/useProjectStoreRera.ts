@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { SingleValue } from 'react-select';
-import { ProjectFormETLTagDataType, FormProjectDataType } from '@/types/types';
+import { FormProjectETLTagDataType, FormProjectDataType } from '@/types/types';
 export interface ProjectTaggingTypeRera extends FormProjectDataType {
   isRERAProject: boolean;
   district: SingleValue<{
@@ -40,12 +40,12 @@ export interface ProjectTaggingTypeRera extends FormProjectDataType {
 
 interface FormState {
   projectFormDataRera: ProjectTaggingTypeRera;
-  projectFormETLTagData: ProjectFormETLTagDataType[];
+  projectFormETLTagData: FormProjectETLTagDataType[];
   updateProjectFormDataRera: (
     newDetails: Partial<ProjectTaggingTypeRera>
   ) => void;
   updateProjectETLTagData: (etlCardId: number, key: string, value: any) => void;
-  addProjectETLTagCard: (newDetails: ProjectFormETLTagDataType) => void;
+  addProjectETLTagCard: (newDetails: FormProjectETLTagDataType) => void;
   deleteProjectETLTagCard: (etlCardId: number) => void;
   resetProjectFormDataRera: () => void;
 }
@@ -84,7 +84,7 @@ const initialStateProjectData: ProjectTaggingTypeRera = {
   localities: [],
 };
 
-const initialStateProjectETLTagData: ProjectFormETLTagDataType[] = [
+const initialStateProjectETLTagData: FormProjectETLTagDataType[] = [
   {
     id: 1,
     village: undefined,
@@ -105,7 +105,6 @@ const initialStateProjectETLTagData: ProjectFormETLTagDataType[] = [
     towerPattern: '',
     floorPattern: '',
     unitPattern: '',
-
     localityContains: [],
     localityPlot: [],
     wardBlock: [],
