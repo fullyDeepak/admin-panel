@@ -3,9 +3,12 @@ import ChipInput from '@/components/ui/Chip';
 import { FormProjectETLTagDataType } from '@/types/types';
 import Select, { SingleValue } from 'react-select';
 import { BiInfoCircle, BiPlus } from 'react-icons/bi';
+import { FaRegCopy } from 'react-icons/fa';
+import { MdContentPaste } from 'react-icons/md';
 
 interface ETLTagDataType {
   formProjectETLTagData: FormProjectETLTagDataType[];
+  firstSelectedVillage: SingleValue<{ label: string; value: number }>;
   updateProjectETLFormData: (id: number, key: string, value: any) => void;
   deleteProjectETLCard: (etlCardId: number) => void;
   addProjectETLCard: (newDetails: FormProjectETLTagDataType) => void;
@@ -21,6 +24,7 @@ interface ETLTagDataType {
 export default function ETLTagData({
   formProjectETLTagData,
   updateProjectETLFormData,
+  firstSelectedVillage,
   deleteProjectETLCard,
   addProjectETLCard,
   showHeading = true,
@@ -62,7 +66,13 @@ export default function ETLTagData({
               className='w-full flex-[5]'
               key={'village'}
               options={villageOptions || undefined}
-              value={etlTagData.village}
+              value={
+                index === 0
+                  ? firstSelectedVillage
+                    ? firstSelectedVillage
+                    : etlTagData.village
+                  : null
+              }
               onChange={(
                 e: SingleValue<{
                   label: string;
@@ -71,7 +81,7 @@ export default function ETLTagData({
               ) => {
                 updateProjectETLFormData(etlTagData.id, 'village', e);
               }}
-              isDisabled={Boolean(!villageOptions?.length)}
+              //   isDisabled={Boolean(!villageOptions?.length) || index === 0}
             />
           </label>
           <label className='flex flex-wrap items-center justify-between gap-5 '>
@@ -141,7 +151,7 @@ export default function ETLTagData({
               />
             </div>
           </div>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
+          <div className='flex flex-wrap items-center justify-between gap-5 '>
             <span className='flex flex-[2] items-center'>
               <span>Doc ID:</span>
               <span
@@ -150,6 +160,16 @@ export default function ETLTagData({
               >
                 <BiInfoCircle size={20} />
               </span>
+              <button
+                type='button'
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    JSON.stringify(etlTagData.docId)
+                  )
+                }
+              >
+                <FaRegCopy />
+              </button>
             </span>
             <ChipInput
               chips={etlTagData.docId}
@@ -158,8 +178,8 @@ export default function ETLTagData({
               updateKey='docId'
               regexPattern={docIdPattern}
             />
-          </label>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
+          </div>
+          <div className='flex flex-wrap items-center justify-between gap-5 '>
             <span className='flex flex-[2] items-center  '>
               <span>Root Docs:</span>
               <span
@@ -167,7 +187,21 @@ export default function ETLTagData({
                 data-tip='Should be formatted as DDDD-YYYY-N. eg:1525-2013-5211'
               >
                 <BiInfoCircle size={20} />
-              </span>
+              </span>{' '}
+              <button
+                type='button'
+                onClick={async () =>
+                  updateProjectETLFormData(
+                    etlTagData.id,
+                    'rootDocs',
+                    etlTagData.rootDocs.concat(
+                      JSON.parse(await navigator.clipboard.readText())
+                    )
+                  )
+                }
+              >
+                <MdContentPaste />
+              </button>
             </span>
             <ChipInput
               chips={etlTagData.rootDocs}
@@ -176,7 +210,7 @@ export default function ETLTagData({
               updateKey='rootDocs'
               regexPattern={docIdPattern}
             />
-          </label>
+          </div>
           <label className='flex flex-wrap items-center justify-between gap-5 '>
             <span className='flex-[2] '>Apartment Contains:</span>
             <div className='flex flex-[5] gap-4'>
