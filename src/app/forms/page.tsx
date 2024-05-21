@@ -66,12 +66,6 @@ export default function FormHomePage() {
             Project Tower Forms
           </h2>
           <Link
-            href={'/forms/project-tower'}
-            className='btn  flex items-center line-through active:btn-success hover:text-black active:text-white'
-          >
-            Onboard Project
-          </Link>
-          <Link
             href={'/forms/project-tower-edit'}
             className='btn  flex items-center active:btn-success hover:text-black active:text-white'
           >
