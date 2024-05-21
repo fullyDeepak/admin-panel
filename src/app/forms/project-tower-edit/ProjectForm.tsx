@@ -103,34 +103,56 @@ export default function ProjectForm() {
           console.log(projectData);
           const towerDataRes = projectData.towers;
           const projectETLTagData: FormProjectETLTagDataType[] =
-            projectData.project_etl_tag_data.map((etlData, index) => ({
-              id: index,
-              village: {
-                label: '' + etlData.village,
-                value: etlData.village,
-              },
-              docId: etlData.doc_id,
-              docIdNotEquals: etlData.doc_id_not_equals,
-              rootDocs: etlData.root_docs,
-              apartmentContains: etlData.apartment_contains,
-              counterpartyContains: etlData.counterparty_contains,
-              aptSurveyPlotDetails: etlData.apt_survey_plot_details,
-              counterpartySurveyPlotDetails:
-                etlData.counterparty_survey_plot_details,
-              localityContains: etlData.locality_contains,
-              wardBlock: etlData.ward_block,
-              localityPlot: etlData.locality_plot,
-              surveyEquals: etlData.survey_equals,
-              plotEquals: etlData.plot_equals,
-              surveyContains: etlData.survey_contains,
-              plotContains: etlData.plot_contains,
-              doorNoStartWith: etlData.door_no_start_with,
-              aptNameNotContains: etlData.apt_name_not_contains,
-              singleUnit: etlData.single_unit,
-              towerPattern: etlData.tower_pattern,
-              floorPattern: etlData.floor_pattern,
-              unitPattern: etlData.unit_pattern,
-            }));
+            projectData.ProjectETLTagDataType.map((etlData, index) => {
+              console.log(etlData.locality_wb_plot[0]);
+              const localityWbPlot: {
+                locality_contains: string[];
+                ward_block: string[];
+                locality_plot: string[];
+              } =
+                etlData.locality_wb_plot.length > 0
+                  ? JSON.parse(etlData.locality_wb_plot[0])
+                  : {
+                      locality_contains: [],
+                      ward_block: [],
+                      locality_plot: [],
+                    };
+              console.log(localityWbPlot.locality_contains);
+              return {
+                id: index,
+                village: {
+                  label: '' + etlData.village_id,
+                  value: etlData.village_id,
+                },
+                docId: etlData.doc_id,
+                docIdNotEquals: etlData.doc_id_not_equals,
+                rootDocs: etlData.root_docs,
+                apartmentContains: etlData.apartment_contains,
+                counterpartyContains: etlData.counterparty_contains,
+                aptSurveyPlotDetails: etlData.aptSurveyPlotDetails,
+                counterpartySurveyPlotDetails:
+                  etlData.counterpartySurveyPlotDetails,
+                localityContains: localityWbPlot.locality_contains,
+                wardBlock: localityWbPlot.ward_block,
+                localityPlot: localityWbPlot.locality_plot,
+                surveyEquals: etlData.survey_equals,
+                plotEquals: etlData.plot_equals,
+                surveyContains: etlData.survey_contains,
+                plotContains: etlData.plot_contains,
+                doorNoStartWith: etlData.door_no_start,
+                aptNameNotContains: etlData.apt_name_not_contains,
+                singleUnit: etlData.single_unit,
+                towerPattern: etlData.tower_pattern,
+                floorPattern: etlData.floor_pattern,
+                unitPattern: etlData.unit_pattern,
+                localityWbPlot: '',
+              };
+            });
+          //reset project etl card before set
+          deleteProjectETLTagCard(1);
+          // set project ETL cards
+          projectETLTagData.map((etlData) => addProjectETLTagCard(etlData));
+          //   map tower data
           const towerData: editTowerDetail[] = towerDataRes.map(
             (item, index) => ({
               id: index + 1,
@@ -451,6 +473,7 @@ export default function ProjectForm() {
         formProjectETLTagData={projectFormETLTagData}
         updateProjectETLFormData={updateProjectETLTagData}
         villageOptions={villageOptions}
+        isUpdateForm={true}
       />
       <ProjectMatcherSection
         formData={editProjectFormData}

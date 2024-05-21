@@ -55,6 +55,7 @@ export default function ProjectTowerReraPage() {
   let newTowerFormData: any;
   newTowerFormData = towerFormDataRera.map((item) => ({
     ...item,
+    validTowerUnits: null,
     towerType: item.towerType?.value,
     etlUnitConfigs: item.etlUnitConfigs.filter(
       (item) => item.configName !== ''

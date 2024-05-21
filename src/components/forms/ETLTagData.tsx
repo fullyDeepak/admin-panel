@@ -1,6 +1,7 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import ChipInput from '@/components/ui/Chip';
 import { FormProjectETLTagDataType } from '@/types/types';
+import RcSelect, { Option } from 'rc-select';
 import Select, { SingleValue } from 'react-select';
 import { BiInfoCircle, BiPlus } from 'react-icons/bi';
 import { FaRegCopy } from 'react-icons/fa';
@@ -19,6 +20,7 @@ interface ETLTagDataType {
         value: number;
       }[]
     | undefined;
+  isUpdateForm?: boolean;
 }
 
 export default function ETLTagData({
@@ -26,6 +28,7 @@ export default function ETLTagData({
   updateProjectETLFormData,
   //   firstSelectedVillage,
   deleteProjectETLCard,
+  isUpdateForm,
   addProjectETLCard,
   showHeading = true,
   villageOptions,
@@ -62,28 +65,44 @@ export default function ETLTagData({
             <span className='flex flex-[2] items-center  '>
               <span>Village:</span>
             </span>
-            <Select
-              className='w-full flex-[5]'
-              key={'village'}
-              options={villageOptions || undefined}
-              //   value={
-              //     index === 0
-              //       ? firstSelectedVillage
-              //         ? firstSelectedVillage
-              //         : etlTagData.village
-              //       : null
-              //   }
-              value={etlTagData.village}
-              onChange={(
-                e: SingleValue<{
-                  label: string;
-                  value: number;
-                }>
-              ) => {
-                updateProjectETLFormData(etlTagData.id, 'village', e);
-              }}
-              //   isDisabled={Boolean(!villageOptions?.length) || index === 0}
-            />
+            {isUpdateForm ? (
+              <RcSelect
+                showSearch
+                animation='slide-up'
+                optionFilterProp='desc'
+                value={etlTagData.village?.value || undefined}
+                onChange={(e) =>
+                  updateProjectETLFormData(etlTagData.id, 'village', e)
+                }
+                placeholder='Select Village'
+              >
+                {villageOptions?.map((item, i) => (
+                  <Option
+                    key={i}
+                    value={item.value}
+                    className='cursor-pointer'
+                    desc={item.label}
+                  >
+                    {item.label}
+                  </Option>
+                ))}
+              </RcSelect>
+            ) : (
+              <Select
+                className='w-full flex-[5]'
+                key={'village'}
+                options={villageOptions || undefined}
+                value={etlTagData.village}
+                onChange={(
+                  e: SingleValue<{
+                    label: string;
+                    value: number;
+                  }>
+                ) => {
+                  updateProjectETLFormData(etlTagData.id, 'village', e);
+                }}
+              />
+            )}
           </label>
           <label className='flex flex-wrap items-center justify-between gap-5 '>
             <span className='flex flex-[2] items-center  '>

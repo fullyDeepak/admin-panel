@@ -10,14 +10,14 @@ export interface GetTowerUnitConfigDetails {
 }
 
 interface GetProjectETLTagDataType {
-  village: number;
+  village_id: number;
   doc_id: string[];
   doc_id_not_equals: string[];
   root_docs: string[];
   apartment_contains: string[];
   counterparty_contains: string[];
-  apt_survey_plot_details: boolean;
-  counterparty_survey_plot_details: boolean;
+  aptSurveyPlotDetails: boolean;
+  counterpartySurveyPlotDetails: boolean;
   locality_contains: string[];
   ward_block: string[];
   locality_plot: string[];
@@ -25,12 +25,13 @@ interface GetProjectETLTagDataType {
   plot_equals: string[];
   survey_contains: string[];
   plot_contains: string[];
-  door_no_start_with: string[];
+  door_no_start: string[];
   apt_name_not_contains: string[];
   single_unit: boolean;
   tower_pattern: string;
   floor_pattern: string;
   unit_pattern: string;
+  locality_wb_plot: string;
 }
 
 export interface GetTowerDetails {
@@ -70,7 +71,7 @@ export interface GetProjectDetails {
     amenity: string;
   }[];
   towers: GetTowerDetails[];
-  project_etl_tag_data: GetProjectETLTagDataType[];
+  ProjectETLTagDataType: GetProjectETLTagDataType[];
 }
 
 export interface FormProjectETLTagDataType {
