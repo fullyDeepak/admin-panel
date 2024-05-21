@@ -8,7 +8,7 @@ import { MdContentPaste } from 'react-icons/md';
 
 interface ETLTagDataType {
   formProjectETLTagData: FormProjectETLTagDataType[];
-  firstSelectedVillage: SingleValue<{ label: string; value: number }>;
+  //   firstSelectedVillage: SingleValue<{ label: string; value: number }>;
   updateProjectETLFormData: (id: number, key: string, value: any) => void;
   deleteProjectETLCard: (etlCardId: number) => void;
   addProjectETLCard: (newDetails: FormProjectETLTagDataType) => void;
@@ -24,7 +24,7 @@ interface ETLTagDataType {
 export default function ETLTagData({
   formProjectETLTagData,
   updateProjectETLFormData,
-  firstSelectedVillage,
+  //   firstSelectedVillage,
   deleteProjectETLCard,
   addProjectETLCard,
   showHeading = true,
@@ -66,13 +66,14 @@ export default function ETLTagData({
               className='w-full flex-[5]'
               key={'village'}
               options={villageOptions || undefined}
-              value={
-                index === 0
-                  ? firstSelectedVillage
-                    ? firstSelectedVillage
-                    : etlTagData.village
-                  : null
-              }
+              //   value={
+              //     index === 0
+              //       ? firstSelectedVillage
+              //         ? firstSelectedVillage
+              //         : etlTagData.village
+              //       : null
+              //   }
+              value={etlTagData.village}
               onChange={(
                 e: SingleValue<{
                   label: string;
