@@ -101,6 +101,37 @@ export default function ProjectTowerReraPage() {
       });
       return null;
     }
+
+    const ifVillageNull: boolean[] = [];
+    newProjectFormETLTagData.map((item) => {
+      if (item.village) {
+        ifVillageNull.push(true);
+      }
+    });
+    if (newProjectFormETLTagData.length !== ifVillageNull.length) {
+      toast.dismiss(loadingToastId);
+      toast.error(`You forgot to select Project ETL Village.`, {
+        id: loadingToastId,
+        duration: 5000,
+      });
+      return null;
+    }
+
+    const ifTowerNameNull: boolean[] = [];
+    newTowerFormData.map((item: any) => {
+      if (item.towerName) {
+        ifTowerNameNull.push(true);
+      }
+    });
+    if (newTowerFormData.length !== ifTowerNameNull.length) {
+      toast.dismiss(loadingToastId);
+      toast.error(`You forget to write tower name.`, {
+        id: loadingToastId,
+        duration: 5000,
+      });
+      return null;
+    }
+
     const data = {
       projectData: {
         ...newProjectFormData,
