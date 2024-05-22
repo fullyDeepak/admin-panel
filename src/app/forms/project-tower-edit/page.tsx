@@ -17,8 +17,13 @@ export default function ProjectTowerEditPage() {
     undefined
   );
   const [formCount, setFormCount] = useState<number>(0);
-  const { editProjectFormData, resetEditProjectFormData, oldProjectFormData } =
-    useEditProjectStore();
+  const {
+    editProjectFormData,
+    resetEditProjectFormData,
+    oldProjectFormETLTagData,
+    oldProjectFormData,
+    projectFormETLTagData,
+  } = useEditProjectStore();
   const { editTowerFormData, resetEditTowerFormData, oldTowerFormData } =
     useEditTowerStore();
   useEffect(() => {
@@ -46,11 +51,16 @@ export default function ProjectTowerEditPage() {
       (item) => item.configName !== ''
     ),
   }));
+  let newProjectFormETLTagData = projectFormETLTagData.map((item) => ({
+    ...item,
+    village: item.village?.value,
+  }));
   const formsStep: ReactElement[] = [
     <ProjectForm key={1} />,
     <TowerForm key={2} />,
     <PreviewProjectTower
       key={3}
+      projectFormETLTagData={newProjectFormETLTagData}
       projectFormData={newProjectFormData}
       towerFormData={newTowerFormData}
     />,
@@ -71,6 +81,36 @@ export default function ProjectTowerEditPage() {
         });
         return null;
       }
+      const ifVillageNull: boolean[] = [];
+      newProjectFormETLTagData.map((item) => {
+        if (item.village) {
+          ifVillageNull.push(true);
+        }
+      });
+      if (newProjectFormETLTagData.length !== ifVillageNull.length) {
+        toast.dismiss(loadingToastId);
+        toast.error(`You forgot to select Project ETL Village.`, {
+          id: loadingToastId,
+          duration: 5000,
+        });
+        return null;
+      }
+
+      const ifTowerNameNull: boolean[] = [];
+      newTowerFormData.map((item: any) => {
+        if (item.towerName) {
+          ifTowerNameNull.push(true);
+        }
+      });
+      if (newTowerFormData.length !== ifTowerNameNull.length) {
+        toast.dismiss(loadingToastId);
+        toast.error(`You forget to write tower name.`, {
+          id: loadingToastId,
+          duration: 5000,
+        });
+        return null;
+      }
+
       let modifiedOldProjectFormData = JSON.parse(
         JSON.stringify(oldProjectFormData)
       );
@@ -79,11 +119,17 @@ export default function ProjectTowerEditPage() {
       delete modifiedOldProjectFormData?.towerTypeOptions;
       const data = {
         new: {
-          projectData: newProjectFormData,
+          projectData: {
+            ...newProjectFormData,
+            ETLTagData: newProjectFormETLTagData,
+          },
           towerData: newTowerFormData,
         },
         old: {
-          projectData: modifiedOldProjectFormData,
+          projectData: {
+            ...modifiedOldProjectFormData,
+            ETLTagData: oldProjectFormETLTagData,
+          },
           towerData: oldTowerFormData,
         },
       };
@@ -121,6 +167,12 @@ export default function ProjectTowerEditPage() {
         });
         toast.dismiss(loadingToastId);
         toast.error(`Error: ${errMsg}`, {
+          id: loadingToastId,
+          duration: 3000,
+        });
+      } else {
+        toast.dismiss(loadingToastId);
+        toast.error("Couldn't send data to server.", {
           id: loadingToastId,
           duration: 3000,
         });
@@ -254,12 +306,7 @@ export default function ProjectTowerEditPage() {
           {formsStep.length - 1 === formCount && (
             <button
               className='btn btn-sm w-32 border-none bg-rose-500 text-white md:btn-md hover:bg-red-600'
-              disabled={
-                editProjectFormData.village_id &&
-                editProjectFormData.projectName
-                  ? false
-                  : true
-              }
+              disabled={editProjectFormData.projectName ? false : true}
             >
               Submit
             </button>

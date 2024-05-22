@@ -18,10 +18,10 @@ export default function ProjectForm() {
   const {
     editProjectFormData,
     updateEditProjectFormData,
-    resetEditProjectFormData,
     projectFormETLTagData,
     addProjectETLTagCard,
     updateProjectETLTagData,
+    updateOldProjectFormETLTagData,
     deleteProjectETLTagCard,
     updateOldProjectFormData,
   } = useEditProjectStore();
@@ -150,6 +150,9 @@ export default function ProjectForm() {
             });
           //reset project etl card before set
           deleteProjectETLTagCard(1);
+          // set old project etl data
+          updateOldProjectFormETLTagData(projectETLTagData);
+
           // set project ETL cards
           projectETLTagData.map((etlData) => addProjectETLTagCard(etlData));
           //   map tower data
@@ -327,7 +330,7 @@ export default function ProjectForm() {
           )}
         </span>
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
+      {/* <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Select Village:</span>
         <span className='w-full flex-[5]'>
           <Select
@@ -350,7 +353,7 @@ export default function ProjectForm() {
             ))}
           </Select>
         </span>
-      </label>
+      </label> */}
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Project Name:</span>
         <input

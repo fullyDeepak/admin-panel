@@ -20,6 +20,30 @@ type PreviewProjectTowerProps = {
     aptSurveyPlotDetails: boolean;
     counterpartySurveyPlotDetails: boolean;
   };
+  projectFormETLTagData: {
+    id: number;
+    village: number | undefined;
+    docId: string[];
+    docIdNotEquals: string[];
+    rootDocs: string[];
+    apartmentContains: string[];
+    counterpartyContains: string[];
+    aptSurveyPlotDetails: boolean;
+    counterpartySurveyPlotDetails: boolean;
+    localityContains: string[];
+    wardBlock: string[];
+    localityPlot: string[];
+    surveyEquals: string[];
+    plotEquals: string[];
+    surveyContains: string[];
+    plotContains: string[];
+    doorNoStartWith: string[];
+    aptNameNotContains: string[];
+    singleUnit: boolean;
+    towerPattern: string;
+    floorPattern: string;
+    unitPattern: string;
+  }[];
   towerFormData: {
     id: number;
     projectPhase: number;
@@ -48,6 +72,7 @@ const camelToFlat = (c: string) => (
 export default function PreviewProjectTower({
   projectFormData,
   towerFormData,
+  projectFormETLTagData,
 }: PreviewProjectTowerProps) {
   const towerColumns = [
     {
@@ -133,6 +158,34 @@ export default function PreviewProjectTower({
       accessorKey: 'maxArea',
     },
   ];
+  const projectFormETLTagDataCol = [
+    { header: 'Card ID', accessorKey: 'id' },
+    { header: 'Village', accessorKey: 'village' },
+    { header: 'Doc IDs', accessorKey: 'docId' },
+    { header: 'Doc ID Not Equal', accessorKey: 'docIdNotEquals' },
+    { header: 'Root Docs', accessorKey: 'rootDocs' },
+    { header: 'Apartment Contains', accessorKey: 'apartmentContains' },
+    { header: 'Counterparty Contains', accessorKey: 'counterpartyContains' },
+    { header: 'Apt Survey Plot Details', accessorKey: 'aptSurveyPlotDetails' },
+    {
+      header: 'Counterparty Survey PlotDetails',
+      accessorKey: 'counterpartySurveyPlotDetails',
+    },
+    { header: 'Locality Contains', accessorKey: 'localityContains' },
+    { header: 'Ward Block', accessorKey: 'wardBlock' },
+    { header: 'Locality Plot', accessorKey: 'localityPlot' },
+    { header: 'Survey Equals', accessorKey: 'surveyEquals' },
+    { header: 'Plot Equals', accessorKey: 'plotEquals' },
+    { header: 'Survey Contains', accessorKey: 'surveyContains' },
+    { header: 'Plot Contains', accessorKey: 'plotContains' },
+    { header: 'Door No Start With', accessorKey: 'doorNoStartWith' },
+    { header: 'Apt Name Not Contains', accessorKey: 'aptNameNotContains' },
+    { header: 'Single Unit', accessorKey: 'singleUnit' },
+    { header: 'Tower Pattern', accessorKey: 'towerPattern' },
+    { header: 'Floor Pattern', accessorKey: 'floorPattern' },
+    { header: 'Unit Pattern', accessorKey: 'unitPattern' },
+  ];
+
   let etlUnitConfigs: {
     id: number;
     configName: string;
@@ -151,9 +204,9 @@ export default function PreviewProjectTower({
   return (
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-5'>
-        <p className='text-center text-3xl font-semibold'>Project Data</p>
+        <p className='text-center text-3xl font-semibold'>Project Details</p>
         <div className='flex flex-col rounded-lg border-4 p-3 '>
-          <div className='mb-3 flex items-center justify-between gap-5 border-b-2 bg-slate-100'>
+          <div className='mb-3 flex items-center justify-between gap-5 border-b-2 bg-slate-100 text-center'>
             <span className='flex-[4] p-2 font-semibold'>Field Name</span>
             <span className='flex-[5] font-semibold '>Value</span>
           </div>
@@ -187,6 +240,19 @@ export default function PreviewProjectTower({
               )}
             </div>
           ))}
+        </div>
+      </div>
+      <div className='flex flex-col gap-5'>
+        <p className='text-center text-3xl font-semibold'>
+          Project ETL Tag Data
+        </p>
+        <div className='overflow-auto'>
+          <TanstackReactTable
+            columns={projectFormETLTagDataCol}
+            data={projectFormETLTagData}
+            enableSearch={false}
+            showPagination={false}
+          />
         </div>
       </div>
       <div className='flex flex-col gap-5'>

@@ -30,11 +30,15 @@ interface FormState {
   editProjectFormData: EditProjectTaggingType;
   oldProjectFormData: EditProjectTaggingType | null;
   projectFormETLTagData: FormProjectETLTagDataType[];
+  oldProjectFormETLTagData: FormProjectETLTagDataType[] | null;
   updateProjectETLTagData: (etlCardId: number, key: string, value: any) => void;
   addProjectETLTagCard: (newDetails: FormProjectETLTagDataType) => void;
   deleteProjectETLTagCard: (etlCardId: number) => void;
   updateOldProjectFormData: (
     oldDetails: Partial<EditProjectTaggingType>
+  ) => void;
+  updateOldProjectFormETLTagData: (
+    oldDetails: FormProjectETLTagDataType[]
   ) => void;
   updateEditProjectFormData: (
     newDetails: Partial<EditProjectTaggingType>
@@ -92,9 +96,14 @@ export const useEditProjectStore = create<FormState>((set) => ({
   editProjectFormData: initialStateProjectData,
   projectFormETLTagData: initialStateProjectETLTagData,
   oldProjectFormData: null,
+  oldProjectFormETLTagData: null,
   updateOldProjectFormData: (oldDetails) =>
     set((state) => ({
       oldProjectFormData: { ...state.editProjectFormData, ...oldDetails },
+    })),
+  updateOldProjectFormETLTagData: (oldDetails) =>
+    set((state) => ({
+      oldProjectFormETLTagData: oldDetails,
     })),
   updateProjectETLTagData: (etlCardId, key, value) => {
     set((state) => ({
