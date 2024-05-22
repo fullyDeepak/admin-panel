@@ -73,9 +73,12 @@ export default function ETLTagData({
                   animation='slide-up'
                   optionFilterProp='desc'
                   value={etlTagData.village?.value || undefined}
-                  onChange={(e) =>
-                    updateProjectETLFormData(etlTagData.id, 'village', e)
-                  }
+                  onChange={(e) => {
+                    updateProjectETLFormData(etlTagData.id, 'village', {
+                      label: '',
+                      value: e,
+                    });
+                  }}
                   placeholder='Select Village'
                 >
                   {villageOptions?.map((item, i) => (
@@ -418,7 +421,7 @@ export default function ETLTagData({
                   id:
                     Math.max(...formProjectETLTagData.map((data) => data.id)) +
                     1,
-                  towerName: '',
+                  village: undefined,
                 };
                 addProjectETLCard(newData);
               }}
