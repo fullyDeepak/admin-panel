@@ -23,6 +23,7 @@ export default function ProjectForm() {
     updateProjectETLTagData,
     updateOldProjectFormETLTagData,
     deleteProjectETLTagCard,
+    resetProjectETLTagCard,
     updateOldProjectFormData,
   } = useEditProjectStore();
   const { setNewTowerEditData, setOldTowerEditData } = useEditTowerStore();
@@ -149,13 +150,14 @@ export default function ProjectForm() {
               };
             });
           //reset project etl card before set
-          deleteProjectETLTagCard(1);
+          resetProjectETLTagCard();
           // set old project etl data
           updateOldProjectFormETLTagData(projectETLTagData);
-
           // set project ETL cards
-          projectETLTagData.map((etlData) => addProjectETLTagCard(etlData));
-          //   map tower data
+          projectETLTagData.map((etlData, index) =>
+            addProjectETLTagCard({ ...etlData, id: index + 1 })
+          );
+          // map tower data
           const towerData: editTowerDetail[] = towerDataRes.map(
             (item, index) => ({
               id: index + 1,
@@ -470,18 +472,22 @@ export default function ProjectForm() {
           hasSelectAll={false}
         />
       </div>
-      <ETLTagData
-        addProjectETLCard={addProjectETLTagCard}
-        deleteProjectETLCard={deleteProjectETLTagCard}
-        formProjectETLTagData={projectFormETLTagData}
-        updateProjectETLFormData={updateProjectETLTagData}
-        villageOptions={villageOptions}
-        isUpdateForm={true}
-      />
-      <ProjectMatcherSection
-        formData={editProjectFormData}
-        updateFormData={updateEditProjectFormData}
-      />
+      {projectFormETLTagData && projectFormETLTagData.length > 0 && (
+        <>
+          <ETLTagData
+            addProjectETLCard={addProjectETLTagCard}
+            deleteProjectETLCard={deleteProjectETLTagCard}
+            formProjectETLTagData={projectFormETLTagData}
+            updateProjectETLFormData={updateProjectETLTagData}
+            villageOptions={villageOptions}
+            isUpdateForm={true}
+          />
+          <ProjectMatcherSection
+            formData={editProjectFormData}
+            updateFormData={updateEditProjectFormData}
+          />
+        </>
+      )}
     </>
   );
 }

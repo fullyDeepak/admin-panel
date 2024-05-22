@@ -20,30 +20,32 @@ type PreviewProjectTowerProps = {
     aptSurveyPlotDetails: boolean;
     counterpartySurveyPlotDetails: boolean;
   };
-  projectFormETLTagData: {
-    id: number;
-    village: number | undefined;
-    docId: string[];
-    docIdNotEquals: string[];
-    rootDocs: string[];
-    apartmentContains: string[];
-    counterpartyContains: string[];
-    aptSurveyPlotDetails: boolean;
-    counterpartySurveyPlotDetails: boolean;
-    localityContains: string[];
-    wardBlock: string[];
-    localityPlot: string[];
-    surveyEquals: string[];
-    plotEquals: string[];
-    surveyContains: string[];
-    plotContains: string[];
-    doorNoStartWith: string[];
-    aptNameNotContains: string[];
-    singleUnit: boolean;
-    towerPattern: string;
-    floorPattern: string;
-    unitPattern: string;
-  }[];
+  projectFormETLTagData:
+    | {
+        id: number;
+        village: number | undefined;
+        docId: string[];
+        docIdNotEquals: string[];
+        rootDocs: string[];
+        apartmentContains: string[];
+        counterpartyContains: string[];
+        aptSurveyPlotDetails: boolean;
+        counterpartySurveyPlotDetails: boolean;
+        localityContains: string[];
+        wardBlock: string[];
+        localityPlot: string[];
+        surveyEquals: string[];
+        plotEquals: string[];
+        surveyContains: string[];
+        plotContains: string[];
+        doorNoStartWith: string[];
+        aptNameNotContains: string[];
+        singleUnit: boolean;
+        towerPattern: string;
+        floorPattern: string;
+        unitPattern: string;
+      }[]
+    | undefined;
   towerFormData: {
     id: number;
     projectPhase: number;
@@ -242,19 +244,21 @@ export default function PreviewProjectTower({
           ))}
         </div>
       </div>
-      <div className='flex flex-col gap-5'>
-        <p className='text-center text-3xl font-semibold'>
-          Project ETL Tag Data
-        </p>
-        <div className='overflow-auto'>
-          <TanstackReactTable
-            columns={projectFormETLTagDataCol}
-            data={projectFormETLTagData}
-            enableSearch={false}
-            showPagination={false}
-          />
+      {projectFormETLTagData && (
+        <div className='flex flex-col gap-5'>
+          <p className='text-center text-3xl font-semibold'>
+            Project ETL Tag Data
+          </p>
+          <div className='overflow-auto'>
+            <TanstackReactTable
+              columns={projectFormETLTagDataCol}
+              data={projectFormETLTagData}
+              enableSearch={false}
+              showPagination={false}
+            />
+          </div>
         </div>
-      </div>
+      )}
       <div className='flex flex-col gap-5'>
         <p className='text-center text-3xl font-semibold'>Tower Data</p>
         <div className='overflow-auto'>

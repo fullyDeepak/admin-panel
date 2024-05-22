@@ -51,7 +51,7 @@ export default function ProjectTowerEditPage() {
       (item) => item.configName !== ''
     ),
   }));
-  let newProjectFormETLTagData = projectFormETLTagData.map((item) => ({
+  let newProjectFormETLTagData = projectFormETLTagData?.map((item) => ({
     ...item,
     village: item.village?.value,
   }));
@@ -82,12 +82,12 @@ export default function ProjectTowerEditPage() {
         return null;
       }
       const ifVillageNull: boolean[] = [];
-      newProjectFormETLTagData.map((item) => {
+      newProjectFormETLTagData?.map((item) => {
         if (item.village) {
           ifVillageNull.push(true);
         }
       });
-      if (newProjectFormETLTagData.length !== ifVillageNull.length) {
+      if (newProjectFormETLTagData?.length !== ifVillageNull.length) {
         toast.dismiss(loadingToastId);
         toast.error(`You forgot to select Project ETL Village.`, {
           id: loadingToastId,

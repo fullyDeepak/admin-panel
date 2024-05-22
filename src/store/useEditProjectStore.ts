@@ -29,11 +29,12 @@ export interface EditProjectTaggingType extends FormProjectDataType {
 interface FormState {
   editProjectFormData: EditProjectTaggingType;
   oldProjectFormData: EditProjectTaggingType | null;
-  projectFormETLTagData: FormProjectETLTagDataType[];
+  projectFormETLTagData: FormProjectETLTagDataType[] | null;
   oldProjectFormETLTagData: FormProjectETLTagDataType[] | null;
   updateProjectETLTagData: (etlCardId: number, key: string, value: any) => void;
   addProjectETLTagCard: (newDetails: FormProjectETLTagDataType) => void;
   deleteProjectETLTagCard: (etlCardId: number) => void;
+  resetProjectETLTagCard: () => void;
   updateOldProjectFormData: (
     oldDetails: Partial<EditProjectTaggingType>
   ) => void;
@@ -64,37 +65,10 @@ const initialStateProjectData: EditProjectTaggingType = {
   localities: [],
 };
 
-const initialStateProjectETLTagData: FormProjectETLTagDataType[] = [
-  {
-    id: 1,
-    village: undefined,
-    surveyEquals: [],
-    docId: [],
-    rootDocs: [],
-    apartmentContains: [],
-    counterpartyContains: [],
-    aptSurveyPlotDetails: false,
-    counterpartySurveyPlotDetails: false,
-    plotEquals: [],
-    surveyContains: [],
-    plotContains: [],
-    doorNoStartWith: [],
-    aptNameNotContains: [],
-    docIdNotEquals: [],
-    singleUnit: false,
-    towerPattern: '',
-    floorPattern: '',
-    unitPattern: '',
-    localityContains: [],
-    localityPlot: [],
-    wardBlock: [],
-  },
-];
-
 export const useEditProjectStore = create<FormState>((set) => ({
   // Initial state
   editProjectFormData: initialStateProjectData,
-  projectFormETLTagData: initialStateProjectETLTagData,
+  projectFormETLTagData: null,
   oldProjectFormData: null,
   oldProjectFormETLTagData: null,
   updateOldProjectFormData: (oldDetails) =>
@@ -107,7 +81,7 @@ export const useEditProjectStore = create<FormState>((set) => ({
     })),
   updateProjectETLTagData: (etlCardId, key, value) => {
     set((state) => ({
-      projectFormETLTagData: state.projectFormETLTagData.map((data) =>
+      projectFormETLTagData: state.projectFormETLTagData?.map((data) =>
         data.id === etlCardId ? { ...data, [key]: value } : data
       ),
     }));
@@ -115,16 +89,19 @@ export const useEditProjectStore = create<FormState>((set) => ({
   addProjectETLTagCard: (newDetails) =>
     set((state) => ({
       projectFormETLTagData: [
-        ...state.projectFormETLTagData,
+        ...(state.projectFormETLTagData ?? []),
         { ...newDetails },
       ],
     })),
   deleteProjectETLTagCard: (etlCardId) =>
     set((state) => ({
-      projectFormETLTagData: state.projectFormETLTagData.filter(
+      projectFormETLTagData: state.projectFormETLTagData?.filter(
         (item) => item.id !== etlCardId
       ),
     })),
+  resetProjectETLTagCard: () => {
+    set({ projectFormETLTagData: null });
+  },
 
   updateEditProjectFormData: (newDetails) =>
     set((state) => ({
