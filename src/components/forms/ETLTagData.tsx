@@ -65,44 +65,47 @@ export default function ETLTagData({
             <span className='flex flex-[2] items-center  '>
               <span>Village:</span>
             </span>
-            {isUpdateForm ? (
-              <RcSelect
-                showSearch
-                animation='slide-up'
-                optionFilterProp='desc'
-                value={etlTagData.village?.value || undefined}
-                onChange={(e) =>
-                  updateProjectETLFormData(etlTagData.id, 'village', e)
-                }
-                placeholder='Select Village'
-              >
-                {villageOptions?.map((item, i) => (
-                  <Option
-                    key={i}
-                    value={item.value}
-                    className='cursor-pointer'
-                    desc={item.label}
-                  >
-                    {item.label}
-                  </Option>
-                ))}
-              </RcSelect>
-            ) : (
-              <Select
-                className='w-full flex-[5]'
-                key={'village'}
-                options={villageOptions || undefined}
-                value={etlTagData.village}
-                onChange={(
-                  e: SingleValue<{
-                    label: string;
-                    value: number;
-                  }>
-                ) => {
-                  updateProjectETLFormData(etlTagData.id, 'village', e);
-                }}
-              />
-            )}
+            <div className='flex-[5]'>
+              {isUpdateForm ? (
+                <RcSelect
+                  showSearch
+                  className='w-full'
+                  animation='slide-up'
+                  optionFilterProp='desc'
+                  value={etlTagData.village?.value || undefined}
+                  onChange={(e) =>
+                    updateProjectETLFormData(etlTagData.id, 'village', e)
+                  }
+                  placeholder='Select Village'
+                >
+                  {villageOptions?.map((item, i) => (
+                    <Option
+                      key={i}
+                      value={item.value}
+                      className='cursor-pointer'
+                      desc={item.label}
+                    >
+                      {item.label}
+                    </Option>
+                  ))}
+                </RcSelect>
+              ) : (
+                <Select
+                  className='w-full'
+                  key={'village'}
+                  options={villageOptions || undefined}
+                  value={etlTagData.village}
+                  onChange={(
+                    e: SingleValue<{
+                      label: string;
+                      value: number;
+                    }>
+                  ) => {
+                    updateProjectETLFormData(etlTagData.id, 'village', e);
+                  }}
+                />
+              )}
+            </div>
           </label>
           <label className='flex flex-wrap items-center justify-between gap-5 '>
             <span className='flex flex-[2] items-center  '>
