@@ -16,6 +16,7 @@ export default function ProjectTowerReraPage() {
   const [responseData, setResponseData] = useState<object | undefined>(
     undefined
   );
+  const [sentData, setSentData] = useState<object | undefined>(undefined);
   const [formCount, setFormCount] = useState<number>(0);
   const {
     projectFormDataRera,
@@ -140,7 +141,7 @@ export default function ProjectTowerReraPage() {
       },
       towerData: newTowerFormData,
     };
-
+    setSentData(data);
     try {
       const projectRes = await axiosClient.post('/projects', data);
       if (projectRes.status === 200) {
@@ -272,13 +273,23 @@ export default function ProjectTowerReraPage() {
           )}
         </div>
       </form>
+      {sentData && (
+        <div className='flex flex-col items-center justify-between'>
+          <p className='mt-10 text-center text-2xl font-semibold'>Sent Data</p>
+          <pre className='my-10 max-h-[500px] min-w-[80%] overflow-y-auto border bg-gray-100 font-mono text-sm'>
+            {JSON.stringify(sentData, null, 2)}
+          </pre>
+        </div>
+      )}
       {responseData && (
-        <textarea
-          rows={8}
-          className='my-10 max-w-[80%] text-wrap text-center text-xl'
-        >
-          {JSON.stringify(responseData)}
-        </textarea>
+        <div className='flex flex-col items-center justify-between'>
+          <p className='mt-10 text-center text-2xl font-semibold'>
+            Response from server
+          </p>
+          <pre className='my-10 max-h-[500px] min-w-[80%] overflow-y-auto border bg-gray-100 font-mono text-sm'>
+            {JSON.stringify(responseData, null, 2)}
+          </pre>
+        </div>
       )}
       <div className='mt-40'></div>
     </div>
