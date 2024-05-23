@@ -35,6 +35,8 @@ export default function ETLTagData({
 }: ETLTagDataType) {
   const docIdPattern: RegExp =
     /^(100\d|10[1-9]\d|1[1-9]\d{2}|[2-9]\d{3})-(19[0-9][0-9]|2[0][0-9]{2})-([1-9]\d{1,5}|[1-9])$/gm;
+  const notDocIdPattern: RegExp =
+    /^(100\d|10[1-9]\d|1[1-9]\d{2}|[2-9]\d{3})-(19[0-9][0-9]|2[0][0-9]{2})-([1-9]\d{1,5}|[1-9])-([1-9]\d{1,5}|[1-9])$/gm;
   console.log({ villageOptions });
 
   return (
@@ -398,7 +400,7 @@ export default function ETLTagData({
               <span>Doc ID doesn&apos;t equals:</span>
               <span
                 className='tooltip'
-                data-tip='Should be formatted as DDDD-YYYY-N. eg:1525-2013-5211'
+                data-tip='Should be formatted as DDDD-YYYY-N. eg:1525-2013-5211-8'
               >
                 <BiInfoCircle size={20} />
               </span>
@@ -408,7 +410,7 @@ export default function ETLTagData({
               updateFormData={updateProjectETLFormData}
               updateId={etlTagData.id}
               updateKey='docIdNotEquals'
-              regexPattern={docIdPattern}
+              regexPattern={notDocIdPattern}
             />
           </label>
           <div className='absolute -bottom-6 -left-5 z-10 w-full '>
