@@ -128,7 +128,13 @@ export default function ProjectTowerEditPage() {
         old: {
           projectData: {
             ...modifiedOldProjectFormData,
-            ETLTagData: oldProjectFormETLTagData,
+            localities: modifiedOldProjectFormData?.localities?.map(
+              (item: any) => item?.value
+            ),
+            ETLTagData: oldProjectFormETLTagData?.map((item) => ({
+              ...item,
+              village: item.village?.value,
+            })),
           },
           towerData: oldTowerFormData,
         },
