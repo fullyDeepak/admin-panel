@@ -286,7 +286,7 @@ export default function ProjectTowerReraPage() {
           <p className='mt-10 text-center text-2xl font-semibold'>
             Response from server
           </p>
-          <pre className='my-10 max-h-[500px] min-w-[80%] overflow-y-auto border bg-gray-100 font-mono text-sm'>
+          <pre className='my-10 max-h-[500px] min-w-[80%] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
             {JSON.stringify(responseData, null, 2)}
           </pre>
         </div>
