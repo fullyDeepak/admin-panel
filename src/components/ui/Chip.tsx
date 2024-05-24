@@ -57,12 +57,12 @@ const ChipInput = ({
   const [inputValue, setInputValue] = useState('');
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value.replace(',', ''));
+    setInputValue(e.target.value);
   };
 
   const handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (
-      (e.key === 'Enter' || e.key === ',') &&
+      e.key === 'Enter' &&
       (allowTrim ? inputValue.trim() !== '' : true) &&
       (allowTrim
         ? !chips.includes(inputValue.trim())
@@ -78,17 +78,23 @@ const ChipInput = ({
         setInputValue('');
       } else {
         if (regexPattern !== undefined) {
-          const value = allowTrim ? inputValue.trim() : inputValue;
+          const value = allowTrim
+            ? inputValue.trim().split(',').join(' ')
+            : inputValue.split(',').join(' ');
           if (regexPattern.test(value) && updateFormData) {
             updateFormData(updateId, updateKey, [
               ...chips,
-              allowTrim ? inputValue.trim() : inputValue,
+              allowTrim
+                ? inputValue.trim().split(',').join(' ')
+                : inputValue.split(',').join(' '),
             ]);
             setInputValue('');
           } else if (updateChipsFn) {
             updateChipsFn([
               ...chips,
-              allowTrim ? inputValue.trim() : inputValue,
+              allowTrim
+                ? inputValue.trim().split(',').join(' ')
+                : inputValue.split(',').join(' '),
             ]);
           }
         } else {
@@ -96,12 +102,16 @@ const ChipInput = ({
           if (updateFormData) {
             updateFormData(updateId, updateKey, [
               ...chips,
-              allowTrim ? inputValue.trim() : inputValue,
+              allowTrim
+                ? inputValue.trim().split(',').join(' ')
+                : inputValue.split(',').join(' '),
             ]);
           } else if (updateChipsFn) {
             updateChipsFn([
               ...chips,
-              allowTrim ? inputValue.trim() : inputValue,
+              allowTrim
+                ? inputValue.trim().split(',').join(' ')
+                : inputValue.split(',').join(' '),
             ]);
           }
           setInputValue('');
@@ -142,11 +152,11 @@ const ChipInput = ({
       {chips?.map((chip, index) => (
         <div
           key={index}
-          className='badge h-auto max-h-60 whitespace-pre-wrap border-rose-300 bg-rose-100'
+          className='badge relative h-auto max-h-60 whitespace-pre-wrap border-rose-300 bg-rose-100 pr-7'
         >
           {chip}
           <span
-            className='cursor-pointer pl-1'
+            className='absolute right-0 cursor-pointer rounded-r-full bg-rose-500 px-1.5 text-white'
             onClick={() => handleChipRemove(index)}
           >
             &times;
