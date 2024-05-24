@@ -314,6 +314,8 @@ export default function ETLTagData({
                 updateId={etlTagData.id}
                 updateKey='surveyEquals'
                 addTWClass='!ml-0'
+                enableGeneration
+                generationKey='-'
               />
               <ChipInput
                 chips={etlTagData.plotEquals}
@@ -321,6 +323,8 @@ export default function ETLTagData({
                 updateId={etlTagData.id}
                 updateKey='plotEquals'
                 addTWClass='ml-0'
+                enableGeneration
+                generationKey='-'
               />
             </div>
           </label>
@@ -333,6 +337,8 @@ export default function ETLTagData({
                 updateId={etlTagData.id}
                 updateKey='surveyContains'
                 addTWClass='!ml-0'
+                enableGeneration
+                generationKey='-'
               />
               <ChipInput
                 chips={etlTagData.plotContains}
@@ -340,6 +346,8 @@ export default function ETLTagData({
                 updateId={etlTagData.id}
                 updateKey='plotContains'
                 addTWClass='ml-0'
+                enableGeneration
+                generationKey='-'
               />
             </div>
           </label>
