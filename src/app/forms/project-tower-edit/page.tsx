@@ -11,6 +11,7 @@ import { useEditProjectStore } from '@/store/useEditProjectStore';
 import { useEditTowerStore } from '@/store/useEditTowerStore';
 import { usePathname } from 'next/navigation';
 import { CgInfo } from 'react-icons/cg';
+import { MdContentCopy } from 'react-icons/md';
 
 export default function ProjectTowerEditPage() {
   const [responseData, setResponseData] = useState<object | undefined>(
@@ -323,9 +324,18 @@ export default function ProjectTowerEditPage() {
       {sentData && (
         <div className='flex flex-col items-center justify-between'>
           <p className='mt-10 text-center text-2xl font-semibold'>Sent Data</p>
-          <pre className='my-10 max-h-[500px] min-w-[80%] overflow-y-auto border bg-gray-100 font-mono text-sm'>
-            {JSON.stringify(sentData, null, 2)}
-          </pre>
+          <div className='relative my-10 max-h-[500px] min-w-[80%] overflow-y-auto border bg-gray-100 font-mono text-sm'>
+            <button
+              className='btn btn-circle absolute right-0 top-2 border-none bg-rose-500 text-white hover:bg-rose-700'
+              type='button'
+              onClick={() =>
+                navigator.clipboard.writeText(JSON.stringify(sentData, null, 2))
+              }
+            >
+              <MdContentCopy size={25} />
+            </button>
+            <pre className=''>{JSON.stringify(sentData, null, 2)}</pre>
+          </div>
         </div>
       )}
       {responseData && (
