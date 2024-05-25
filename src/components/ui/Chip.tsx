@@ -72,9 +72,12 @@ const ChipInput = ({
         const [start, stop] = inputValue.split(generationKey);
         const generatedChips = [];
         for (let i = +start; i <= +stop; i++) {
-          !chips.includes(String(i)) ? generatedChips.push(String(i)) : null;
+          generatedChips.push(String(i));
         }
-        updateFormData(updateId, updateKey, [...chips, ...generatedChips]);
+        updateFormData(updateId, updateKey, [
+          ...chips,
+          generatedChips.join(' '),
+        ]);
         setInputValue('');
       } else {
         if (regexPattern !== undefined) {
