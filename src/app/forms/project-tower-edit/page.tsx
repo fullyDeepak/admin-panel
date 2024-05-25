@@ -142,7 +142,6 @@ export default function ProjectTowerEditPage() {
         },
       };
       setSentData(data);
-      console.log(data);
       const projectRes = await axiosClient.put('/projects', data);
       if (projectRes.status === 200) {
         toast.dismiss(loadingToastId);

@@ -202,7 +202,7 @@ export default function PreviewProjectTower({
   projectFormData.amenitiesTags.map((item) => item.label);
   const amenitiesLabels: string[] = [];
   projectFormData.amenitiesTags.map((item) => amenitiesLabels.push(item.label));
-  console.log(projectFormData);
+  console.log({ projectFormData });
   return (
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-5'>

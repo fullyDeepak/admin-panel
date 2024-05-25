@@ -31,7 +31,6 @@ export default function ProjectMatcherSection({
           });
         }
       });
-      console.log({ localitiesOptions });
       return localitiesOptions;
     },
     refetchOnWindowFocus: false,

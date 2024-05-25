@@ -222,7 +222,6 @@ export default function ReraCorrectionPage() {
             value: item.mandal_id,
           });
         });
-        console.log({ mandals: uniqWith(options, isEqual) });
         setSroTableData(data);
         return uniqWith(options, isEqual);
       }
@@ -254,7 +253,6 @@ export default function ReraCorrectionPage() {
           label: `${item.mandal_id}:${item.mandal_name}`,
           value: item.mandal_id,
         }));
-        console.log({ mandals: uniqWith(options, isEqual) });
         setSroTableData(data);
         return uniqWith(options, isEqual);
       }
@@ -294,7 +292,6 @@ export default function ReraCorrectionPage() {
             value: item.id,
           });
         });
-        console.log({ mandals: uniqWith(options, isEqual) });
         setReraTableData(data);
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
@@ -346,7 +343,6 @@ export default function ReraCorrectionPage() {
             value: item.id,
           });
         });
-        console.log({ mandals: uniqWith(options, isEqual) });
         setReraTableData(data);
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
@@ -662,11 +658,9 @@ export default function ReraCorrectionPage() {
                 ) => {
                   setSelectedProjects(e);
                   const selectedProjectId = e.map((item) => item.value);
-                  console.log({ selectedProjectId });
                   const filteredTableData = reraTableDataStore?.filter((item) =>
                     selectedProjectId.includes(item.id)
                   );
-                  console.log({ filteredTableData });
                   setReraTableData(filteredTableData);
                 }}
               />

@@ -448,30 +448,6 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      {/* <div className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Amenities Tags:</span>
-        <MultiSelect
-          className='w-full flex-[5]'
-          options={amenitiesOptions || []}
-          isLoading={loadingAmenities}
-          value={editProjectFormData.amenitiesTags}
-          onChange={(
-            e: {
-              label: string;
-              value: string;
-              __isNew__?: boolean | undefined;
-            }[]
-          ) => {
-            updateEditProjectFormData({
-              amenitiesTags: e,
-            });
-            console.log(e);
-          }}
-          labelledBy={'amenitiesTags'}
-          isCreatable={true}
-          hasSelectAll={false}
-        />
-      </div> */}
       <div className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Amenities Tags:</span>
         <CreatableSelect
@@ -492,7 +468,6 @@ export default function ProjectForm() {
             updateEditProjectFormData({
               amenitiesTags: e,
             });
-            console.log(e);
           }}
         />
       </div>
