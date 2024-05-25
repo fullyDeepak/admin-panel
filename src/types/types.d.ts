@@ -122,7 +122,7 @@ export interface FormProjectDataType {
       }[]
     | undefined;
   projectDesc: string;
-  amenitiesTags: {
+  amenitiesTags: readonly {
     label: string;
     value: string | number;
     __isNew__?: boolean;

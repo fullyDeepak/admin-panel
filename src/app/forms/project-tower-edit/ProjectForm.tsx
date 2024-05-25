@@ -7,12 +7,14 @@ import {
 } from '@/store/useEditProjectStore';
 import { editTowerDetail, useEditTowerStore } from '@/store/useEditTowerStore';
 import Select, { Option } from 'rc-select';
+import CreatableSelect from 'react-select/creatable';
 import 'rc-select/assets/index.css';
-import { MultiSelect } from 'react-multi-select-component';
 import { FormProjectETLTagDataType, GetProjectDetails } from '@/types/types';
 import ETLTagData from '@/components/forms/ETLTagData';
 import { inputBoxClass } from '@/app/constants/tw-class';
 import ProjectMatcherSection from '@/components/forms/ProjectMatcherSection';
+import { MultiValue } from 'react-select';
+import { useId } from 'react';
 
 export default function ProjectForm() {
   const {
@@ -101,11 +103,10 @@ export default function ProjectForm() {
             `/projects/${editProjectFormData.selectedProject}`
           );
           const projectData = res.data.data;
-          console.log(projectData);
+          console.log({ projectData });
           const towerDataRes = projectData.towers;
           const projectETLTagData: FormProjectETLTagDataType[] =
             projectData.ProjectETLTagDataType.map((etlData, index) => {
-              console.log(etlData.locality_wb_plot[0]);
               const localityWbPlot: {
                 locality_contains: string[];
                 ward_block: string[];
@@ -118,7 +119,6 @@ export default function ProjectForm() {
                       ward_block: [],
                       locality_plot: [],
                     };
-              console.log(localityWbPlot.locality_contains);
               return {
                 id: index,
                 village: {
@@ -184,7 +184,7 @@ export default function ProjectForm() {
               validTowerUnits: null,
             })
           );
-          console.log(towerData);
+          console.log({ towerData });
           setNewTowerEditData(towerData);
           setOldTowerEditData(towerData);
           const amenities = projectData.amenities.map(
@@ -448,7 +448,7 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      <div className='flex flex-wrap items-center justify-between gap-5 '>
+      {/* <div className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Amenities Tags:</span>
         <MultiSelect
           className='w-full flex-[5]'
@@ -470,6 +470,30 @@ export default function ProjectForm() {
           labelledBy={'amenitiesTags'}
           isCreatable={true}
           hasSelectAll={false}
+        />
+      </div> */}
+      <div className='flex flex-wrap items-center justify-between gap-5 '>
+        <span className='flex-[2] '>Amenities Tags:</span>
+        <CreatableSelect
+          className='w-full flex-[5]'
+          options={amenitiesOptions || []}
+          isLoading={loadingAmenities}
+          value={editProjectFormData.amenitiesTags}
+          isClearable
+          isMulti
+          instanceId={useId()}
+          onChange={(
+            e: MultiValue<{
+              label: string;
+              value: string | number;
+              __isNew__?: boolean | undefined;
+            }>
+          ) => {
+            updateEditProjectFormData({
+              amenitiesTags: e,
+            });
+            console.log(e);
+          }}
         />
       </div>
       {projectFormETLTagData && projectFormETLTagData.length > 0 && (
