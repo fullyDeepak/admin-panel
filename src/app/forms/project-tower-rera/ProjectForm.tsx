@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import Select, { SingleValue } from 'react-select';
-import React, { useState } from 'react';
+import Select, { MultiValue, SingleValue } from 'react-select';
+import CreatableSelect from 'react-select/creatable';
+import React, { useId, useState } from 'react';
 import { useProjectStoreRera } from '@/store/useProjectStoreRera';
 import axiosClient from '@/utils/AxiosClient';
 import { MultiSelect } from 'react-multi-select-component';
@@ -628,28 +629,26 @@ export default function ProjectForm() {
       </label>
       <div className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Amenities Tags:</span>
-        {amenitiesOptions && amenitiesOptions.length > 0 && (
-          <MultiSelect
-            className='w-full flex-[5]'
-            options={amenitiesOptions}
-            isLoading={loadingAmenities}
-            value={projectFormDataRera.amenitiesTags}
-            onChange={(
-              e: {
-                label: string;
-                value: string;
-                __isNew__?: boolean | undefined;
-              }[]
-            ) => {
-              updateProjectFormDataRera({
-                amenitiesTags: e,
-              });
-            }}
-            labelledBy={'amenitiesTags'}
-            isCreatable={true}
-            hasSelectAll={false}
-          />
-        )}
+        <CreatableSelect
+          className='w-full flex-[5]'
+          options={amenitiesOptions || []}
+          isLoading={loadingAmenities}
+          value={projectFormDataRera.amenitiesTags}
+          isClearable
+          isMulti
+          instanceId={useId()}
+          onChange={(
+            e: MultiValue<{
+              label: string;
+              value: string | number;
+              __isNew__?: boolean | undefined;
+            }>
+          ) => {
+            updateProjectFormDataRera({
+              amenitiesTags: e,
+            });
+          }}
+        />
       </div>
       <label className='flex flex-wrap items-center justify-between gap-5 '>
         <span className='flex-[2] '>Upload KML File:</span>
