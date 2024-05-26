@@ -1,6 +1,6 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { useTowerStoreRera } from '@/store/useTowerStoreRera';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { BiInfoCircle, BiPlus } from 'react-icons/bi';
 import Select, { SingleValue } from 'react-select';
 import { useProjectStoreRera } from '@/store/useProjectStoreRera';
@@ -93,6 +93,7 @@ export default function TowerForm() {
               <Select
                 className='w-full flex-1'
                 name='projectSubType1'
+                instanceId={useId()}
                 options={projectFormDataRera.towerTypeOptions}
                 defaultValue={tower.towerType}
                 onChange={(e: SingleValue<{ label: string; value: string }>) =>

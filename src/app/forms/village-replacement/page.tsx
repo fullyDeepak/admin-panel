@@ -1,5 +1,5 @@
 'use client';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useId, useState } from 'react';
 import Select, { SingleValue } from 'react-select';
 import CSVReader from 'react-csv-reader';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -311,6 +311,7 @@ export default function VillageReplacementPage() {
           <Select
             className='w-full flex-[5]'
             key={'state'}
+            instanceId={useId()}
             options={stateOptions}
             isLoading={loadingStates}
             value={selectedState}
@@ -332,6 +333,7 @@ export default function VillageReplacementPage() {
           <Select
             className='w-full flex-[5]'
             key={'district'}
+            instanceId={useId()}
             options={districtOptions || undefined}
             isLoading={loadingDistricts}
             value={selectedDistrict}
@@ -352,6 +354,7 @@ export default function VillageReplacementPage() {
           <Select
             className='w-full flex-[5]'
             key={'mandal'}
+            instanceId={useId()}
             options={mandalOptions || undefined}
             isLoading={loadingMandals}
             value={selectedMandal}
@@ -372,6 +375,7 @@ export default function VillageReplacementPage() {
           <Select
             className='w-full flex-[5]'
             key={'village'}
+            instanceId={useId()}
             options={villageOptions || undefined}
             isLoading={loadingVillages}
             value={selectedMandal ? selectedVillage : null}

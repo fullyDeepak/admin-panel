@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import Select from 'react-select';
 import { useQuery } from '@tanstack/react-query';
 import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
@@ -193,6 +193,7 @@ export default function VillageOnboardingPage() {
           <Select
             className='w-full flex-[5]'
             key={'state'}
+            instanceId={useId()}
             options={stateOptions}
             isLoading={loadingStates}
             value={selectedState}
@@ -209,6 +210,7 @@ export default function VillageOnboardingPage() {
           <Select
             className='w-full flex-[5]'
             key={'district'}
+            instanceId={useId()}
             options={districtOptions || undefined}
             isLoading={loadingDistricts}
             value={selectedDistrict}
@@ -224,6 +226,7 @@ export default function VillageOnboardingPage() {
           <Select
             className='w-full flex-[5]'
             key={'mandal'}
+            instanceId={useId()}
             options={mandalOptions || undefined}
             isLoading={loadingMandals}
             value={selectedMandal}
@@ -239,6 +242,7 @@ export default function VillageOnboardingPage() {
           <Select
             className='w-full flex-[5]'
             key={'village'}
+            instanceId={useId()}
             options={villageOptions || undefined}
             isLoading={loadingVillages}
             value={selectedMandal ? selectedVillage : null}

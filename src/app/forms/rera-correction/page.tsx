@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useState } from 'react';
 import Select, { SingleValue } from 'react-select';
 import { useQuery } from '@tanstack/react-query';
 import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
@@ -613,6 +613,7 @@ export default function ReraCorrectionPage() {
               options={sroDistrictOptions || undefined}
               isLoading={loadingSroDistricts}
               value={selectedSroDistrict}
+              instanceId={useId()}
               onChange={(
                 e: SingleValue<{
                   label: string;
@@ -631,6 +632,7 @@ export default function ReraCorrectionPage() {
               options={sroMandalOptions || undefined}
               isLoading={loadingSroMandals}
               value={selectedSroMandal}
+              instanceId={useId()}
               onChange={(e) => {
                 setSelectedSroMandal(e);
                 // setSelectedSroVillage(null);
@@ -679,6 +681,7 @@ export default function ReraCorrectionPage() {
               options={reraDistrictOptions || undefined}
               isLoading={loadingReraDistricts}
               value={selectedReraDistrict}
+              instanceId={useId()}
               onChange={(
                 e: SingleValue<{
                   label: string;
@@ -698,6 +701,7 @@ export default function ReraCorrectionPage() {
               options={reraMandalOptions || undefined}
               isLoading={loadingReraMandals}
               value={selectedReraMandal}
+              instanceId={useId()}
               onChange={(e) => {
                 setSelectedReraMandal(e);
                 setSelectedReraVillage(null);
@@ -710,6 +714,7 @@ export default function ReraCorrectionPage() {
             <Select
               className='w-full flex-[5]'
               key={'village'}
+              instanceId={useId()}
               options={reraVillageOptions || undefined}
               isLoading={loadingReraVillages}
               value={selectedReraMandal ? selectedReraVillage : null}
@@ -721,6 +726,7 @@ export default function ReraCorrectionPage() {
             <span className='flex-[2] text-xl'>Locality:</span>
             <Select
               className='w-full flex-[5]'
+              instanceId={useId()}
               key={'locality'}
               options={reraLocalityOptions || undefined}
               isLoading={loadingReraLocality}

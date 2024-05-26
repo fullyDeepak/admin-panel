@@ -53,10 +53,10 @@ const NavBar = () => {
       label: 'Forms',
       href: '/forms',
     },
-    // {
-    //   label: 'SQL Editor',
-    //   href: '/sql-editor',
-    // },
+    {
+      label: 'Process Controller',
+      href: '/process-controllers',
+    },
   ];
 
   return (

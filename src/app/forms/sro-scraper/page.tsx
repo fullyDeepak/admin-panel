@@ -2,7 +2,7 @@
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import Select, { SingleValue } from 'react-select';
 import type { ColumnDef } from '@tanstack/react-table';
 import toast, { Toaster } from 'react-hot-toast';
@@ -121,6 +121,7 @@ export default function SroScraperPage() {
           <Select
             className='w-full flex-[5]'
             key={'sros'}
+            instanceId={useId()}
             options={sroOptions}
             isLoading={loadingSros}
             controlShouldRenderValue
