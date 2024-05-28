@@ -1,6 +1,7 @@
 'use client';
 
 import axiosClient from '@/utils/AxiosClient';
+import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { CgInfo } from 'react-icons/cg';
 
@@ -26,15 +27,34 @@ export default function UMGenerator() {
         ).close();
       }
     } catch (error) {
-      toast.error('Something went wrong', { id: toastId, duration: 3000 });
-      (
-        document.getElementById(
-          'um-generate-confirm-modal'
-        ) as HTMLDialogElement
-      ).close();
-      (
-        document.getElementById('um-generate-modal') as HTMLDialogElement
-      ).close();
+      if (
+        axios.isAxiosError(error) &&
+        error.response?.status &&
+        error.response?.status >= 400
+      ) {
+        const errMsg =
+          error.response.data?.message || error.response.data?.error;
+        toast.error(`Error: ${errMsg}`, {
+          id: toastId,
+          duration: 3000,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+      } else {
+        toast.dismiss(toastId);
+        toast.error("Couldn't send data to server.", {
+          id: toastId,
+          duration: 3000,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        (
+          document.getElementById(
+            'um-generate-confirm-modal'
+          ) as HTMLDialogElement
+        ).close();
+        (
+          document.getElementById('um-generate-modal') as HTMLDialogElement
+        ).close();
+      }
     }
   }
   return (
