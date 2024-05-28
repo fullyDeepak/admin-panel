@@ -62,6 +62,12 @@ export default function FormHomePage() {
           >
             Update Project
           </Link>
+          <Link
+            href={'/forms/image-tagging'}
+            className='btn  flex items-center active:btn-success hover:text-black active:text-white'
+          >
+            Image Tagging
+          </Link>
         </div>
       </div>
     </div>
