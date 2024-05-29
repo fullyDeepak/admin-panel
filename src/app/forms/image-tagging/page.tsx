@@ -1,14 +1,24 @@
 'use client';
 
 import Select, { SingleValue } from 'react-select';
-import { inputBoxClass } from '@/app/constants/tw-class';
 import { useId, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
-import { HiOutlineSelector } from 'react-icons/hi';
-import { nanoid } from 'nanoid';
 import LoadingCircle from '@/components/ui/LoadingCircle';
-import { produce } from 'immer';
+import UnitFP from './UnitFP';
+import TowerFP from './TowerFP';
+import { startCase } from 'lodash';
+
+export type TowerFloorDataType = {
+  towerId: number;
+  towerName: string;
+  towerType: string;
+  floorsUnits: {
+    floorId: number;
+    units: string[];
+    selectedUnits: string[];
+  }[];
+};
 
 export default function ImageTaggingPage() {
   const [selectedProject, setSelectedProject] = useState<SingleValue<{
@@ -24,16 +34,7 @@ export default function ImageTaggingPage() {
   >(null);
 
   const [towerFloorFormData, setTowerFloorFormData] = useState<
-    | {
-        tower_id: number;
-        tower_name: string;
-        floorsUnits: {
-          floorId: number;
-          units: string[];
-          selectedUnits: string[];
-        }[];
-      }[]
-    | []
+    TowerFloorDataType[] | []
   >([]);
 
   const [loadingTowerFloorData, setLoadingTowerFloorData] = useState<
@@ -77,7 +78,8 @@ export default function ImageTaggingPage() {
     ],
     queryFn: async () => {
       if (
-        selectedImageTaggingType?.value === 'tower-fp' &&
+        (selectedImageTaggingType?.value === 'tower-fp' ||
+          selectedImageTaggingType?.value === 'unit-fp') &&
         selectedProject?.value
       ) {
         try {
@@ -89,6 +91,7 @@ export default function ImageTaggingPage() {
               project_name: string;
               tower_id: number;
               tower_name: string;
+              type: 'apartment' | 'villa' | 'apartmentSingle';
               floors_units: {
                 floor_id: number;
                 unit_names: string[];
@@ -98,23 +101,18 @@ export default function ImageTaggingPage() {
             params: { project_id: selectedProject.value },
           });
           const towersFloorData = res.data.data;
-          const units: {
-            tower_id: number;
-            tower_name: string;
-            floorsUnits: {
-              floorId: number;
-              units: string[];
-              selectedUnits: string[];
-            }[];
-          }[] = towersFloorData?.map((towerFloorData) => ({
-            tower_id: towerFloorData.tower_id,
-            tower_name: towerFloorData.tower_name,
-            floorsUnits: towerFloorData.floors_units.map((floorUnits) => ({
-              floorId: floorUnits.floor_id,
-              units: floorUnits.unit_names,
-              selectedUnits: [],
-            })),
-          }));
+          const units: TowerFloorDataType[] = towersFloorData?.map(
+            (towerFloorData) => ({
+              towerId: towerFloorData.tower_id,
+              towerName: towerFloorData.tower_name,
+              towerType: startCase(towerFloorData.type),
+              floorsUnits: towerFloorData.floors_units.map((floorUnits) => ({
+                floorId: floorUnits.floor_id,
+                units: floorUnits.unit_names,
+                selectedUnits: [],
+              })),
+            })
+          );
           setTowerFloorFormData(units);
           setLoadingTowerFloorData('complete');
           return units;
@@ -133,7 +131,7 @@ export default function ImageTaggingPage() {
         Form: Project Image Tagging
       </h1>
       <form
-        className='mt-5 flex w-full max-w-full  flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[60%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
+        className='my-60 mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[60%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
         id='projectTowerImageTagging'
         // onSubmit={submitForm}
       >
@@ -174,181 +172,32 @@ export default function ImageTaggingPage() {
           </span>
         )}
         {loadingTowerFloorData === 'complete' &&
+          selectedImageTaggingType?.value === 'unit-fp' &&
           towerFloorData &&
-          towerFloorData?.length > 0 &&
-          towerFloorData?.map((tower, towerIndex) => (
-            <div
-              className='tower-card relative mb-14 flex flex-col gap-3 rounded-2xl p-10 shadow-[0_0px_8px_rgb(0,60,255,0.5)]'
-              key={nanoid()}
-              id={nanoid()}
-            >
-              <p className='flex justify-evenly text-center font-semibold'>
-                <span>Tower ID: {tower.tower_id}</span>{' '}
-                <span>Tower Name:{tower.tower_name}</span>
-              </p>
-              <div className='flex flex-col justify-between gap-2 overflow-x-auto p-5'>
-                {tower.floorsUnits?.slice(0, 1).map((floorUnits, index) => (
-                  <div
-                    key={nanoid()}
-                    className='flex flex-row items-start gap-2 tabular-nums'
-                  >
-                    {floorUnits.units.map((unit_name, towerIndex) => (
-                      <button
-                        key={nanoid()}
-                        className='btn btn-error btn-xs min-w-32 rounded-full text-white'
-                        onClick={() => {
-                          console.log(`clicked ${towerIndex}`);
-                          setTowerFloorFormData(
-                            produce((draft) => {
-                              const towerData = draft?.find(
-                                (towerFloorData) =>
-                                  towerFloorData.tower_id === tower.tower_id
-                              );
-                              towerData?.floorsUnits.map((item) => {
-                                item.selectedUnits.push(item.units[towerIndex]);
-                              });
-                            })
-                          );
-                        }}
-                        type='button'
-                      >
-                        <HiOutlineSelector size={25} />
-                      </button>
-                    ))}
-                  </div>
-                ))}
-                {tower.floorsUnits?.map((floorUnits, floorsUnitsIndex) => (
-                  <div
-                    key={nanoid()}
-                    className='flex flex-row items-start gap-2 tabular-nums'
-                  >
-                    {floorUnits.units.map((unitName, unitNameIndex) => (
-                      <label key={nanoid()} className='swap'>
-                        <input
-                          type='checkbox'
-                          key={nanoid()}
-                          checked={Boolean(
-                            towerFloorFormData[towerIndex]?.floorsUnits[
-                              floorsUnitsIndex
-                            ]?.selectedUnits.includes(unitName)
-                          )}
-                          onChange={(e) => {
-                            console.log(
-                              towerFloorFormData[towerIndex]?.floorsUnits[
-                                floorsUnitsIndex
-                              ],
-                              { checked: e.target.checked }
-                            );
-                            setTowerFloorFormData(
-                              produce((draft) => {
-                                const towerData = draft?.find(
-                                  (towerFloorData) =>
-                                    towerFloorData.tower_id === tower.tower_id
-                                );
-                                const floorUnitsData =
-                                  towerData?.floorsUnits.find(
-                                    (flrUnit) =>
-                                      flrUnit.floorId === floorUnits.floorId
-                                  );
-                                console.log(
-                                  'if avail->',
-                                  floorUnitsData?.selectedUnits.includes(
-                                    unitName
-                                  ),
-                                  unitName,
-                                  floorUnitsData?.selectedUnits.indexOf(
-                                    unitName
-                                  )
-                                );
-                                if (
-                                  floorUnitsData?.selectedUnits.includes(
-                                    unitName
-                                  )
-                                ) {
-                                  const unitNameIndex =
-                                    floorUnitsData?.selectedUnits.indexOf(
-                                      unitName
-                                    );
-                                  floorUnitsData?.selectedUnits?.splice(
-                                    unitNameIndex,
-                                    1
-                                  );
-                                } else {
-                                  floorUnitsData?.selectedUnits.push(unitName);
-                                }
-                              })
-                            );
-                          }}
-                        />
-                        <p
-                          key={nanoid()}
-                          className='swap-on min-w-32 rounded-full border bg-green-200 px-4 py-2 text-center'
-                        >
-                          {floorUnits.floorId}-{unitName}
-                        </p>
-                        <p
-                          key={nanoid()}
-                          className='swap-off min-w-32 rounded-full border px-4 py-2 text-center'
-                        >
-                          {floorUnits.floorId}-{unitName}
-                        </p>
-                      </label>
-                    ))}
-                  </div>
-                ))}
-              </div>
-              <label className='relative flex flex-wrap items-center justify-between gap-5 '>
-                <span className='flex-[3] text-xl'>Select File:</span>
-                <input
-                  type='file'
-                  className='file-input file-input-bordered flex-[5]'
-                />
-              </label>
-              <button
-                className='btn btn-warning max-w-32 rounded-full text-white'
-                type='button'
-                onClick={() => {
-                  const tempSelectedUnits: {
-                    floorId: number;
-                    selectedUnits: string[];
-                  }[] = [];
-                  towerFloorFormData[towerIndex].floorsUnits.map((ele) => {
-                    let temp: {
-                      floorId: number;
-                      selectedUnits: string[];
-                    } = { floorId: ele.floorId, selectedUnits: [] };
-                    ele.selectedUnits.map((unit) => {
-                      temp.selectedUnits.push(unit);
-                    });
-                    temp.selectedUnits.length > 0
-                      ? tempSelectedUnits.push(temp)
-                      : null;
-                  });
-                  console.log(tempSelectedUnits);
-                  setSelectedUnits(tempSelectedUnits);
-                  towerFloorFormData[towerIndex].floorsUnits.map(
-                    (ele) => ele.selectedUnits
-                  );
-                }}
-              >
-                Preview
-              </button>
-              <pre className='max-h-60 resize-none overflow-y-auto bg-slate-100 p-5 font-mono text-sm'>
-                {JSON.stringify(selectedUnits, null, 2)}
-              </pre>
-            </div>
-          ))}
+          towerFloorData?.length > 0 && (
+            <UnitFP
+              setTowerFloorFormData={setTowerFloorFormData}
+              towerFloorData={towerFloorData}
+              towerFloorFormData={towerFloorFormData}
+            />
+          )}
         {towerFloorData &&
           towerFloorData.length === 0 &&
           selectedProject?.value &&
-          selectedImageTaggingType?.value === 'tower-fp' && (
+          selectedImageTaggingType?.value === 'unit-fp' && (
             <span className='text-center font-semibold text-error'>
               Error: Units not available.
             </span>
           )}
-
+        {loadingTowerFloorData === 'complete' &&
+          selectedImageTaggingType?.value === 'tower-fp' &&
+          towerFloorData &&
+          towerFloorData?.length > 0 && (
+            <TowerFP towerFloorData={towerFloorData} />
+          )}
         {selectedImageTaggingType &&
-          selectedImageTaggingType.value !== 'tower-fp' && (
+          selectedImageTaggingType?.value !== 'unit-fp' &&
+          selectedImageTaggingType?.value !== 'tower-fp' && (
             <label className='relative flex flex-wrap items-center justify-between gap-5 '>
               <span className='flex-[3] text-xl'>Select File:</span>
               <input
@@ -357,6 +206,9 @@ export default function ImageTaggingPage() {
               />
             </label>
           )}
+        {selectedImageTaggingType && selectedImageTaggingType?.value && (
+          <button className='btn-rezy btn mx-auto min-w-40'>Submit</button>
+        )}
       </form>
     </div>
   );
