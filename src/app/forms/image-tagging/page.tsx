@@ -8,6 +8,7 @@ import LoadingCircle from '@/components/ui/LoadingCircle';
 import UnitFP from './UnitFP';
 import TowerFP from './TowerFP';
 import { startCase } from 'lodash';
+import { useImageFormStore } from '@/store/useImageFormStore';
 
 export type TowerFloorDataType = {
   towerId: number;
@@ -21,6 +22,16 @@ export type TowerFloorDataType = {
 };
 
 export default function ImageTaggingPage() {
+  const {
+    fetchTowerFloorData,
+    loadingTowerFloorData,
+    resetTowerFloorData,
+    setLoadingTowerFloorData,
+    towerFloorFormData,
+    setTowerFloorFormData,
+    setSelectedUnit,
+  } = useImageFormStore();
+
   const [selectedProject, setSelectedProject] = useState<SingleValue<{
     value: Number;
     label: string;
@@ -32,14 +43,6 @@ export default function ImageTaggingPage() {
       value: 'brochure' | 'project-mp' | 'project-img' | 'tower-fp' | 'unit-fp';
     } | null>
   >(null);
-
-  const [towerFloorFormData, setTowerFloorFormData] = useState<
-    TowerFloorDataType[] | []
-  >([]);
-
-  const [loadingTowerFloorData, setLoadingTowerFloorData] = useState<
-    'idle' | 'loading' | 'complete' | 'error'
-  >('idle');
 
   const [selectedUnits, setSelectedUnits] = useState<
     {
@@ -176,7 +179,7 @@ export default function ImageTaggingPage() {
           towerFloorData &&
           towerFloorData?.length > 0 && (
             <UnitFP
-              setTowerFloorFormData={setTowerFloorFormData}
+              setSelectedUnit={setSelectedUnit}
               towerFloorData={towerFloorData}
               towerFloorFormData={towerFloorFormData}
             />

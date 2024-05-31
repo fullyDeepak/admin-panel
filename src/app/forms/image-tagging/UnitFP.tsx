@@ -1,21 +1,33 @@
 import { nanoid } from 'nanoid';
-import { produce } from 'immer';
 import { TowerFloorDataType } from './page';
-import { Dispatch, SetStateAction, useEffect, useId, useState } from 'react';
-import { HiOutlineSelector } from 'react-icons/hi';
-import Select, { SingleValue } from 'react-select';
+import { useState } from 'react';
 import { MultiSelect } from 'react-multi-select-component';
 import { BiPlus } from 'react-icons/bi';
+import { MdNotInterested, MdSelectAll } from 'react-icons/md';
 
 type UnitFPProps = {
   towerFloorData: TowerFloorDataType[];
-  setTowerFloorFormData: Dispatch<SetStateAction<TowerFloorDataType[] | []>>;
+  setSelectedUnit: (
+    payload:
+      | {
+          towerId: number;
+          floorId: number;
+          unitName: string;
+          selectColumn?: boolean;
+        }
+      | {
+          towerId: number;
+          floorId: number;
+          unitName: number;
+          selectColumn: boolean;
+        }
+  ) => void;
   towerFloorFormData: TowerFloorDataType[];
 };
 
 export default function UnitFP({
   towerFloorData,
-  setTowerFloorFormData,
+  setSelectedUnit,
   towerFloorFormData,
 }: UnitFPProps) {
   const towerOptions = towerFloorData.map((item) => ({
@@ -31,6 +43,7 @@ export default function UnitFP({
       value: number;
     }[]
   >([]);
+
   return (
     <div className='tower-card relative mb-14 flex flex-col gap-3 rounded-2xl p-10 shadow-[0_0px_8px_rgb(0,60,255,0.5)]'>
       <div className='flex flex-wrap items-center justify-between gap-5 '>
@@ -87,27 +100,43 @@ export default function UnitFP({
                 className='flex flex-row items-start gap-2 tabular-nums'
               >
                 {floorUnits.units.map((unit_name, towerIndex) => (
-                  <button
+                  <div
+                    className='flex w-full min-w-32 justify-around'
                     key={nanoid()}
-                    className='btn btn-error btn-xs min-w-32 rounded-full text-white'
-                    onClick={() => {
-                      console.log(`clicked ${towerIndex}`);
-                      setTowerFloorFormData(
-                        produce((draft) => {
-                          const towerData = draft?.find(
-                            (towerFloorData) =>
-                              towerFloorData.towerId === tower.towerId
-                          );
-                          towerData?.floorsUnits.map((item) => {
-                            item.selectedUnits.push(item.units[towerIndex]);
-                          });
-                        })
-                      );
-                    }}
-                    type='button'
                   >
-                    <HiOutlineSelector size={25} />
-                  </button>
+                    <button
+                      key={nanoid()}
+                      className='btn btn-xs min-w-12 rounded-full border-none bg-green-300 hover:bg-green-400'
+                      onClick={() => {
+                        console.log(`clicked ${towerIndex}`);
+                        setSelectedUnit({
+                          towerId: tower.towerId,
+                          floorId: floorUnits.floorId,
+                          unitName: towerIndex,
+                          selectColumn: true,
+                        });
+                      }}
+                      type='button'
+                    >
+                      <MdSelectAll size={25} />
+                    </button>
+                    <button
+                      key={nanoid()}
+                      className='btn btn-xs min-w-12 rounded-full border-none bg-red-200 hover:bg-red-300'
+                      onClick={() => {
+                        console.log(`clicked ${towerIndex}`);
+                        setSelectedUnit({
+                          towerId: tower.towerId,
+                          floorId: floorUnits.floorId,
+                          unitName: towerIndex,
+                          selectColumn: false,
+                        });
+                      }}
+                      type='button'
+                    >
+                      <MdNotInterested size={25} />
+                    </button>
+                  </div>
                 ))}
               </div>
             ))}
@@ -133,36 +162,11 @@ export default function UnitFP({
                           ],
                           { checked: e.target.checked }
                         );
-                        setTowerFloorFormData(
-                          produce((draft) => {
-                            const towerData = draft?.find(
-                              (towerFloorData) =>
-                                towerFloorData.towerId === tower.towerId
-                            );
-                            const floorUnitsData = towerData?.floorsUnits.find(
-                              (flrUnit) =>
-                                flrUnit.floorId === floorUnits.floorId
-                            );
-                            console.log(
-                              'if avail->',
-                              floorUnitsData?.selectedUnits.includes(unitName),
-                              unitName,
-                              floorUnitsData?.selectedUnits.indexOf(unitName)
-                            );
-                            if (
-                              floorUnitsData?.selectedUnits.includes(unitName)
-                            ) {
-                              const unitNameIndex =
-                                floorUnitsData?.selectedUnits.indexOf(unitName);
-                              floorUnitsData?.selectedUnits?.splice(
-                                unitNameIndex,
-                                1
-                              );
-                            } else {
-                              floorUnitsData?.selectedUnits.push(unitName);
-                            }
-                          })
-                        );
+                        setSelectedUnit({
+                          towerId: tower.towerId,
+                          floorId: floorUnits.floorId,
+                          unitName: unitName,
+                        });
                       }}
                     />
                     <p
@@ -223,7 +227,7 @@ export default function UnitFP({
       >
         Preview
       </button>
-      <div className='absolute -bottom-6 -left-5 z-10 w-full '>
+      <div className='absolute -bottom-6 -left-5 w-full '>
         <button
           type='button'
           className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400 '
