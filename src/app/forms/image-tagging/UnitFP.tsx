@@ -5,24 +5,11 @@ import { MultiSelect } from 'react-multi-select-component';
 import { BiPlus } from 'react-icons/bi';
 import { MdNotInterested, MdSelectAll } from 'react-icons/md';
 import UnitCell from './UnitCell';
+import { SetSelectedUnitProps } from '@/store/useImageFormStore';
 
 type UnitFPProps = {
   towerFloorData: TowerFloorDataType[];
-  setSelectedUnit: (
-    payload:
-      | {
-          towerId: number;
-          floorId: number;
-          unitName: string;
-          selectColumn?: boolean;
-        }
-      | {
-          towerId: number;
-          floorId: number;
-          unitName: number;
-          selectColumn: boolean;
-        }
-  ) => void;
+  setSelectedUnit: (payload: SetSelectedUnitProps) => void;
   towerFloorFormData: TowerFloorDataType[];
 };
 
@@ -85,23 +72,19 @@ export default function UnitFP({
         />
       </div>
       {selectedTowerFloorData?.map((tower, towerIndex) => (
-        <div
-          className='my-5 rounded-2xl border-4 p-5'
-          key={nanoid()}
-          id={nanoid()}
-        >
+        <div className='my-5 rounded-2xl border-4 p-5' key={towerIndex}>
           <p className='flex justify-evenly text-center font-semibold'>
             <span>Tower ID: {tower.towerId}</span>{' '}
             <span>Tower Name: {tower.towerName}</span>
             <span>Tower Type: {tower.towerType}</span>
           </p>
           <div className='relative flex flex-col justify-between gap-2 overflow-x-auto p-5'>
-            {tower.floorsUnits?.slice(0, 1).map((floorUnits, index) => (
+            {tower.floorsUnits?.slice(0, 1).map((floorUnits) => (
               <div
                 key={nanoid()}
                 className='flex flex-row items-start gap-2 tabular-nums'
               >
-                {floorUnits.units.map((_, towerIndex) => (
+                {floorUnits.units.map((_, unitIndex) => (
                   <div
                     className='flex w-full min-w-32 justify-around'
                     key={nanoid()}
@@ -113,8 +96,9 @@ export default function UnitFP({
                         setSelectedUnit({
                           towerId: tower.towerId,
                           floorId: floorUnits.floorId,
-                          unitName: towerIndex,
+                          unitName: unitIndex,
                           selectColumn: true,
+                          unitType: towerIndex,
                         });
                       }}
                       type='button'
@@ -128,8 +112,9 @@ export default function UnitFP({
                         setSelectedUnit({
                           towerId: tower.towerId,
                           floorId: floorUnits.floorId,
-                          unitName: towerIndex,
+                          unitName: unitIndex,
                           selectColumn: false,
+                          unitType: towerIndex,
                         });
                       }}
                       type='button'
@@ -140,21 +125,16 @@ export default function UnitFP({
                 ))}
               </div>
             ))}
-            {tower.floorsUnits?.map((floorUnits, floorsUnitsIndex) => (
+            {tower.floorsUnits?.map((floorUnits) => (
               <div
                 key={nanoid()}
                 className={`flex  ${tower.towerType === 'Villa' ? 'flex-col' : 'flex-row'} items-start gap-2 tabular-nums`}
               >
                 {floorUnits.units.map((unitName, unitNameIndex) => (
                   <UnitCell
-                    floorId={floorUnits.floorId}
-                    selectedUnits={
-                      towerFloorFormData[towerIndex]?.floorsUnits[
-                        floorsUnitsIndex
-                      ]?.selectedUnits
-                    }
                     towerId={tower.towerId}
                     unitName={unitName}
+                    unitType={towerIndex}
                     key={unitNameIndex}
                   />
                 ))}

@@ -3,45 +3,54 @@ import { nanoid } from 'nanoid';
 
 type UnitCellProps = {
   towerId: number;
-  floorId: number;
   unitName: string;
-  selectedUnits: string[];
+  unitType: number;
 };
 
 export default function UnitCell({
-  floorId,
   towerId,
   unitName,
-  selectedUnits,
+  unitType,
 }: UnitCellProps) {
-  console.log('UnitCell.tsx re-renders...');
-  const { setSelectedUnit } = useImageFormStore();
+  //   console.log('UnitCell.tsx re-renders...');
+  const { setSelectedUnit, selectedTFUData } = useImageFormStore();
+  const existingUnitType = selectedTFUData[towerId]['selectedUnits'][unitName];
   return (
     <label className='swap'>
       <input
         type='checkbox'
         key={nanoid()}
-        checked={Boolean(selectedUnits.includes(unitName))}
+        checked={existingUnitType === null ? false : true}
         onChange={(e) => {
           setSelectedUnit({
             towerId: towerId,
-            floorId: floorId,
             unitName: unitName,
+            unitType: unitType,
           });
         }}
       />
-      <p
+      <div
         key={nanoid()}
         className='swap-on min-w-32 rounded-full border bg-green-200 px-4 py-2 text-center text-sm'
       >
-        {unitName}
-      </p>
-      <p
+        <p className='flex flex-col'>
+          <span>{unitName}</span>
+          <span className='text-[10px]'>
+            Unit Type:{existingUnitType ? existingUnitType : 'NULL'}
+          </span>
+        </p>
+      </div>
+      <div
         key={nanoid()}
         className='swap-off min-w-32 rounded-full border px-4 py-2 text-center text-sm'
       >
-        {unitName}
-      </p>
+        <p className='flex flex-col'>
+          <span>{unitName}</span>
+          <span className='text-[10px]'>
+            Unit Type:{existingUnitType ? existingUnitType : 'NULL'}
+          </span>
+        </p>
+      </div>
     </label>
   );
 }

@@ -1,13 +1,12 @@
 'use client';
 
 import Select, { SingleValue } from 'react-select';
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
 import LoadingCircle from '@/components/ui/LoadingCircle';
 import UnitFP from './UnitFP';
 import TowerFP from './TowerFP';
-import { startCase } from 'lodash';
 import { useImageFormStore } from '@/store/useImageFormStore';
 
 export type TowerFloorDataType = {
@@ -17,7 +16,6 @@ export type TowerFloorDataType = {
   floorsUnits: {
     floorId: number;
     units: string[];
-    selectedUnits: string[];
   }[];
 };
 
@@ -25,15 +23,17 @@ export default function ImageTaggingPage() {
   const {
     fetchTowerFloorData,
     loadingTowerFloorData,
-    resetTowerFloorData,
-    setLoadingTowerFloorData,
     towerFloorFormData,
-    setTowerFloorFormData,
+    selectedTFUData,
     setSelectedUnit,
   } = useImageFormStore();
 
+  useEffect(() => {
+    console.log({ selectedTFUData });
+  }, [selectedTFUData]);
+
   const [selectedProject, setSelectedProject] = useState<SingleValue<{
-    value: Number;
+    value: number;
     label: string;
   }> | null>(null);
 
@@ -44,20 +44,13 @@ export default function ImageTaggingPage() {
     } | null>
   >(null);
 
-  const [selectedUnits, setSelectedUnits] = useState<
-    {
-      floorId: number;
-      selectedUnits: string[];
-    }[]
-  >([]);
-
   // populate project dropdown
   const { data: projectOptions, isLoading: loadingProjectOptions } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
       try {
         const res = await axiosClient.get<{
-          data: { id: Number; project_name: String }[];
+          data: { id: number; project_name: string }[];
         }>('/projects');
         const options = res.data.data.map((item) => ({
           value: item.id,
@@ -73,7 +66,7 @@ export default function ImageTaggingPage() {
   });
 
   // populate tower floor dropdown
-  const { data: towerFloorData } = useQuery({
+  useQuery({
     queryKey: [
       'getUMUnitNames',
       selectedProject?.value,
@@ -85,43 +78,7 @@ export default function ImageTaggingPage() {
           selectedImageTaggingType?.value === 'unit-fp') &&
         selectedProject?.value
       ) {
-        try {
-          setLoadingTowerFloorData('loading');
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          const res = await axiosClient.get<{
-            data: {
-              project_id: number;
-              project_name: string;
-              tower_id: number;
-              tower_name: string;
-              type: 'apartment' | 'villa' | 'apartmentSingle';
-              floors_units: {
-                floor_id: number;
-                unit_names: string[];
-              }[];
-            }[];
-          }>('/forms/getUMUnitNames', {
-            params: { project_id: selectedProject.value },
-          });
-          const towersFloorData = res.data.data;
-          const units: TowerFloorDataType[] = towersFloorData?.map(
-            (towerFloorData) => ({
-              towerId: towerFloorData.tower_id,
-              towerName: towerFloorData.tower_name,
-              towerType: startCase(towerFloorData.type),
-              floorsUnits: towerFloorData.floors_units.map((floorUnits) => ({
-                floorId: floorUnits.floor_id,
-                units: floorUnits.unit_names,
-                selectedUnits: [],
-              })),
-            })
-          );
-          setTowerFloorFormData(units);
-          setLoadingTowerFloorData('complete');
-          return units;
-        } catch (error) {
-          console.log(error);
-        }
+        fetchTowerFloorData(selectedProject.value);
       }
       return [];
     },
@@ -176,27 +133,33 @@ export default function ImageTaggingPage() {
         )}
         {loadingTowerFloorData === 'complete' &&
           selectedImageTaggingType?.value === 'unit-fp' &&
-          towerFloorData &&
-          towerFloorData?.length > 0 && (
+          towerFloorFormData &&
+          towerFloorFormData?.length > 0 && (
             <UnitFP
               setSelectedUnit={setSelectedUnit}
-              towerFloorData={towerFloorData}
+              towerFloorData={towerFloorFormData}
               towerFloorFormData={towerFloorFormData}
             />
           )}
-        {towerFloorData &&
-          towerFloorData.length === 0 &&
+        {loadingTowerFloorData === 'complete' &&
+          towerFloorFormData &&
+          towerFloorFormData.length === 0 &&
           selectedProject?.value &&
           selectedImageTaggingType?.value === 'unit-fp' && (
             <span className='text-center font-semibold text-error'>
-              Error: Units not available.
+              Units not available.
             </span>
           )}
+        {loadingTowerFloorData === 'error' && (
+          <span className='text-center font-semibold text-error'>
+            Something went wrong
+          </span>
+        )}
         {loadingTowerFloorData === 'complete' &&
           selectedImageTaggingType?.value === 'tower-fp' &&
-          towerFloorData &&
-          towerFloorData?.length > 0 && (
-            <TowerFP towerFloorData={towerFloorData} />
+          towerFloorFormData &&
+          towerFloorFormData?.length > 0 && (
+            <TowerFP towerFloorData={towerFloorFormData} />
           )}
         {selectedImageTaggingType &&
           selectedImageTaggingType?.value !== 'unit-fp' &&

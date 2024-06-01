@@ -10,12 +10,35 @@ export type TowerFloorDataType = {
   floorsUnits: {
     floorId: number;
     units: string[];
-    selectedUnits: string[];
   }[];
 };
 
+export type SetSelectedUnitProps =
+  | {
+      towerId: number;
+      floorId: number;
+      unitName: string;
+      unitType: number;
+      selectColumn?: boolean;
+    }
+  | {
+      towerId: number;
+      floorId: number;
+      unitName: number;
+      unitType: number;
+      selectColumn: boolean;
+    };
+
+export type SelectedTowerFloorUnitDataType = {
+  [towerId: number]: {
+    selectedUnits: {
+      [unitName: string]: null | number;
+    };
+  };
+};
 interface State {
   towerFloorFormData: TowerFloorDataType[];
+  selectedTFUData: SelectedTowerFloorUnitDataType;
   loadingTowerFloorData: 'idle' | 'loading' | 'complete' | 'error';
 }
 
@@ -25,19 +48,18 @@ type Actions = {
     payload:
       | {
           towerId: number;
-          floorId: number;
           unitName: string;
+          unitType: number;
           selectColumn?: boolean;
         }
       | {
           towerId: number;
-          floorId: number;
           unitName: number;
+          unitType: number;
           selectColumn: boolean;
         }
   ) => void;
-  setLoadingTowerFloorData: (status: State['loadingTowerFloorData']) => void;
-  fetchTowerFloorData: (projectIds: number[]) => void;
+  fetchTowerFloorData: (projectId: number) => void;
   resetTowerFloorData: () => void;
 };
 
@@ -54,46 +76,40 @@ interface Response {
 }
 
 export const useImageFormStore = create<State & Actions>()(
-  immer((set) => ({
+  immer((set, get) => ({
     // Initial state
     towerFloorFormData: [] as TowerFloorDataType[],
+    selectedTFUData: {} as SelectedTowerFloorUnitDataType,
     setTowerFloorFormData: (newData) => set({ towerFloorFormData: newData }),
     setSelectedUnit: (payload) =>
-      set(({ towerFloorFormData }) => {
+      set(({ towerFloorFormData, selectedTFUData }) => {
+        const unitType = payload.unitType;
+        const unitName = payload.unitName;
         if (typeof payload.unitName === 'number') {
           const unitIndex = payload.unitName;
-          const towerData = towerFloorFormData.find(
+          const ogTowerData = towerFloorFormData.find(
             (towerFloorData) => towerFloorData.towerId === payload.towerId
           );
-          towerData?.floorsUnits.map((item) => {
-            const tempUnitName = item.units[unitIndex];
-            const tempUnitIndex = item.selectedUnits.indexOf(tempUnitName);
-            if (payload.selectColumn === true && tempUnitIndex === -1) {
-              item.selectedUnits.push(item.units[unitIndex]);
-            } else if (payload.selectColumn === false && tempUnitIndex !== -1) {
-              item.selectedUnits.splice(tempUnitIndex, 1);
+          ogTowerData?.floorsUnits.map((item) => {
+            if (payload.selectColumn === true) {
+              console.log('Updating TFU....', unitType);
+              selectedTFUData[payload.towerId]['selectedUnits'][
+                item.units[unitIndex]
+              ] = unitType !== null ? unitType + 1 : null;
+            } else if (payload.selectColumn === false) {
+              selectedTFUData[payload.towerId]['selectedUnits'][
+                item.units[unitIndex]
+              ] = null;
             }
           });
         } else {
-          const towerData = towerFloorFormData.find(
-            (towerFloorData) => towerFloorData.towerId === payload.towerId
-          );
-          const floorUnitsData = towerData?.floorsUnits.find(
-            (flrUnit) => flrUnit.floorId === payload.floorId
-          );
-          if (floorUnitsData?.selectedUnits.includes(payload.unitName)) {
-            const unitNameIndex = floorUnitsData?.selectedUnits.indexOf(
-              payload.unitName
-            );
-            floorUnitsData?.selectedUnits?.splice(unitNameIndex, 1);
-          } else {
-            floorUnitsData?.selectedUnits.push(payload.unitName);
-          }
+          const prevValue =
+            selectedTFUData[payload.towerId]['selectedUnits'][unitName];
+          selectedTFUData[payload.towerId]['selectedUnits'][unitName] =
+            prevValue === null ? unitType + 1 : null;
         }
       }),
     loadingTowerFloorData: 'idle',
-    setLoadingTowerFloorData: (status) =>
-      set({ loadingTowerFloorData: status }),
     fetchTowerFloorData: async (projectId) => {
       set({ loadingTowerFloorData: 'loading' });
       try {
@@ -102,8 +118,11 @@ export const useImageFormStore = create<State & Actions>()(
         }>('/forms/getUMUnitNames', {
           params: { project_id: projectId },
         });
-        const units: TowerFloorDataType[] = response.data.data?.map(
-          (towerFloorData) => ({
+        const units: TowerFloorDataType[] = [];
+        const selectedUnits: SelectedTowerFloorUnitDataType = {};
+        response.data.data?.map((towerFloorData) => {
+          selectedUnits[towerFloorData.tower_id] = { selectedUnits: {} };
+          units.push({
             towerId: towerFloorData.tower_id,
             towerName: towerFloorData.tower_name,
             towerType: startCase(towerFloorData.type),
@@ -112,12 +131,20 @@ export const useImageFormStore = create<State & Actions>()(
               units: floorUnits.unit_names,
               selectedUnits: [],
             })),
-          })
-        );
-        set({ loadingTowerFloorData: 'complete' });
+          });
+          towerFloorData.floors_units.map((floorUnits) => {
+            floorUnits.unit_names.map((item) => {
+              selectedUnits[towerFloorData.tower_id]['selectedUnits'][item] =
+                null;
+            });
+          });
+        });
         set({ towerFloorFormData: units });
+        set({ selectedTFUData: selectedUnits });
+        set({ loadingTowerFloorData: 'complete' });
       } catch (error) {
         set({ loadingTowerFloorData: 'error' });
+        console.log(error);
       }
     },
     resetTowerFloorData: () =>
