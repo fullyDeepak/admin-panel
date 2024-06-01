@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { MultiSelect } from 'react-multi-select-component';
 import { BiPlus } from 'react-icons/bi';
 import { MdNotInterested, MdSelectAll } from 'react-icons/md';
+import UnitCell from './UnitCell';
 
 type UnitFPProps = {
   towerFloorData: TowerFloorDataType[];
@@ -30,6 +31,7 @@ export default function UnitFP({
   setSelectedUnit,
   towerFloorFormData,
 }: UnitFPProps) {
+  console.log('UnitFP.tsx re-renders...');
   const towerOptions = towerFloorData.map((item) => ({
     value: item.towerId,
     label: `${item.towerId}: ${item.towerName}`,
@@ -99,7 +101,7 @@ export default function UnitFP({
                 key={nanoid()}
                 className='flex flex-row items-start gap-2 tabular-nums'
               >
-                {floorUnits.units.map((unit_name, towerIndex) => (
+                {floorUnits.units.map((_, towerIndex) => (
                   <div
                     className='flex w-full min-w-32 justify-around'
                     key={nanoid()}
@@ -108,7 +110,6 @@ export default function UnitFP({
                       key={nanoid()}
                       className='btn btn-xs min-w-12 rounded-full border-none bg-green-300 hover:bg-green-400'
                       onClick={() => {
-                        console.log(`clicked ${towerIndex}`);
                         setSelectedUnit({
                           towerId: tower.towerId,
                           floorId: floorUnits.floorId,
@@ -124,7 +125,6 @@ export default function UnitFP({
                       key={nanoid()}
                       className='btn btn-xs min-w-12 rounded-full border-none bg-red-200 hover:bg-red-300'
                       onClick={() => {
-                        console.log(`clicked ${towerIndex}`);
                         setSelectedUnit({
                           towerId: tower.towerId,
                           floorId: floorUnits.floorId,
@@ -143,45 +143,20 @@ export default function UnitFP({
             {tower.floorsUnits?.map((floorUnits, floorsUnitsIndex) => (
               <div
                 key={nanoid()}
-                className='flex flex-row items-start gap-2 tabular-nums'
+                className={`flex  ${tower.towerType === 'Villa' ? 'flex-col' : 'flex-row'} items-start gap-2 tabular-nums`}
               >
                 {floorUnits.units.map((unitName, unitNameIndex) => (
-                  <label key={nanoid()} className='swap'>
-                    <input
-                      type='checkbox'
-                      key={nanoid()}
-                      checked={Boolean(
-                        towerFloorFormData[towerIndex]?.floorsUnits[
-                          floorsUnitsIndex
-                        ]?.selectedUnits.includes(unitName)
-                      )}
-                      onChange={(e) => {
-                        console.log(
-                          towerFloorFormData[towerIndex]?.floorsUnits[
-                            floorsUnitsIndex
-                          ],
-                          { checked: e.target.checked }
-                        );
-                        setSelectedUnit({
-                          towerId: tower.towerId,
-                          floorId: floorUnits.floorId,
-                          unitName: unitName,
-                        });
-                      }}
-                    />
-                    <p
-                      key={nanoid()}
-                      className='swap-on min-w-32 rounded-full border bg-green-200 px-4 py-2 text-center text-sm'
-                    >
-                      {floorUnits.floorId}-{unitName}
-                    </p>
-                    <p
-                      key={nanoid()}
-                      className='swap-off min-w-32 rounded-full border px-4 py-2 text-center text-sm'
-                    >
-                      {floorUnits.floorId}-{unitName}
-                    </p>
-                  </label>
+                  <UnitCell
+                    floorId={floorUnits.floorId}
+                    selectedUnits={
+                      towerFloorFormData[towerIndex]?.floorsUnits[
+                        floorsUnitsIndex
+                      ]?.selectedUnits
+                    }
+                    towerId={tower.towerId}
+                    unitName={unitName}
+                    key={unitNameIndex}
+                  />
                 ))}
               </div>
             ))}
