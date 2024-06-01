@@ -56,7 +56,7 @@ interface Response {
 export const useImageFormStore = create<State & Actions>()(
   immer((set) => ({
     // Initial state
-    towerFloorFormData: [],
+    towerFloorFormData: [] as TowerFloorDataType[],
     setTowerFloorFormData: (newData) => set({ towerFloorFormData: newData }),
     setSelectedUnit: (payload) =>
       set(({ towerFloorFormData }) => {
@@ -65,17 +65,15 @@ export const useImageFormStore = create<State & Actions>()(
           const towerData = towerFloorFormData.find(
             (towerFloorData) => towerFloorData.towerId === payload.towerId
           );
-          if (payload.selectColumn === true) {
-            towerData?.floorsUnits.map((item) => {
+          towerData?.floorsUnits.map((item) => {
+            const tempUnitName = item.units[unitIndex];
+            const tempUnitIndex = item.selectedUnits.indexOf(tempUnitName);
+            if (payload.selectColumn === true && tempUnitIndex === -1) {
               item.selectedUnits.push(item.units[unitIndex]);
-            });
-          } else if (payload.selectColumn === false) {
-            towerData?.floorsUnits.map((item) => {
-              const tempUnitName = item.units[unitIndex];
-              const tempUnitIndex = item.selectedUnits.indexOf(tempUnitName);
+            } else if (payload.selectColumn === false && tempUnitIndex !== -1) {
               item.selectedUnits.splice(tempUnitIndex, 1);
-            });
-          }
+            }
+          });
         } else {
           const towerData = towerFloorFormData.find(
             (towerFloorData) => towerFloorData.towerId === payload.towerId
