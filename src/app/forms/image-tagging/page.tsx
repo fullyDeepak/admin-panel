@@ -139,7 +139,7 @@ export default function ImageTaggingPage() {
           onUploadProgress: (progressEvent: any) => {
             const percentage =
               (progressEvent.loaded * 100) / progressEvent.total;
-            setProgress(+percentage.toFixed(2));
+            setProgress(+percentage.toFixed(0));
           },
         });
         setResultData(response.data?.data);
