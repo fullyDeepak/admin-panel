@@ -5,24 +5,15 @@ import { MultiSelect } from 'react-multi-select-component';
 import { BiPlus } from 'react-icons/bi';
 import { MdNotInterested, MdSelectAll } from 'react-icons/md';
 import UnitCell from './UnitCell';
-import { SetSelectedUnitProps } from '@/store/useImageFormStore';
+import { useImageFormStore } from '@/store/useImageFormStore';
 
 type UnitFPProps = {
   towerFloorData: TowerFloorDataType[];
-  setSelectedUnit: (payload: SetSelectedUnitProps) => void;
-  towerFloorFormData: TowerFloorDataType[];
 };
 
-export default function UnitFP({
-  towerFloorData,
-  setSelectedUnit,
-  towerFloorFormData,
-}: UnitFPProps) {
+export default function UnitFP({ towerFloorData }: UnitFPProps) {
   console.log('UnitFP.tsx re-renders...');
-  const towerOptions = towerFloorData.map((item) => ({
-    value: item.towerId,
-    label: `${item.towerId}: ${item.towerName}`,
-  }));
+  const { setSelectedUnit, towerOptions } = useImageFormStore();
   const [selectedTowerFloorData, setSelectedTowerFloorData] = useState<
     TowerFloorDataType[]
   >([]);
@@ -95,10 +86,9 @@ export default function UnitFP({
                       onClick={() => {
                         setSelectedUnit({
                           towerId: tower.towerId,
-                          floorId: floorUnits.floorId,
                           unitName: unitIndex,
                           selectColumn: true,
-                          unitType: towerIndex,
+                          unitType: 0,
                         });
                       }}
                       type='button'
@@ -111,10 +101,9 @@ export default function UnitFP({
                       onClick={() => {
                         setSelectedUnit({
                           towerId: tower.towerId,
-                          floorId: floorUnits.floorId,
                           unitName: unitIndex,
                           selectColumn: false,
-                          unitType: towerIndex,
+                          unitType: 0,
                         });
                       }}
                       type='button'
@@ -134,7 +123,7 @@ export default function UnitFP({
                   <UnitCell
                     towerId={tower.towerId}
                     unitName={unitName}
-                    unitType={towerIndex}
+                    unitType={0}
                     key={unitNameIndex}
                   />
                 ))}
