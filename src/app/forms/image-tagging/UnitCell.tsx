@@ -19,7 +19,6 @@ export default function UnitCell({
     <label className='swap'>
       <input
         type='checkbox'
-        key={nanoid()}
         checked={existingUnitType === null ? false : true}
         onChange={(e) => {
           setSelectedUnit({
