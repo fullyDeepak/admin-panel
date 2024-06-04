@@ -38,8 +38,13 @@ export type SelectedTowerFloorUnitDataType = {
 };
 interface State {
   towerFloorFormData: TowerFloorDataType[];
+  towerOptions: {
+    value: number;
+    label: string;
+  }[];
   selectedTFUData: SelectedTowerFloorUnitDataType;
   loadingTowerFloorData: 'idle' | 'loading' | 'complete' | 'error';
+  uploadingStatus: 'idle' | 'running' | 'complete' | 'error';
 }
 
 type Actions = {
@@ -59,6 +64,7 @@ type Actions = {
           selectColumn: boolean;
         }
   ) => void;
+  setUploadingStatus: (newStatus: State['uploadingStatus']) => void;
   fetchTowerFloorData: (projectId: number) => void;
   resetTowerFloorData: () => void;
 };
@@ -79,12 +85,18 @@ export const useImageFormStore = create<State & Actions>()(
   immer((set, get) => ({
     // Initial state
     towerFloorFormData: [] as TowerFloorDataType[],
+
+    towerOptions: [],
+
     selectedTFUData: {} as SelectedTowerFloorUnitDataType,
+
     setTowerFloorFormData: (newData) => set({ towerFloorFormData: newData }),
+
     setSelectedUnit: (payload) =>
-      set(({ towerFloorFormData, selectedTFUData }) => {
+      set(({ selectedTFUData }) => {
         const unitType = payload.unitType;
         const unitName = payload.unitName;
+        const towerFloorFormData = get().towerFloorFormData;
         if (typeof payload.unitName === 'number') {
           const unitIndex = payload.unitName;
           const ogTowerData = towerFloorFormData.find(
@@ -92,7 +104,6 @@ export const useImageFormStore = create<State & Actions>()(
           );
           ogTowerData?.floorsUnits.map((item) => {
             if (payload.selectColumn === true) {
-              console.log('Updating TFU....', unitType);
               selectedTFUData[payload.towerId]['selectedUnits'][
                 item.units[unitIndex]
               ] = unitType !== null ? unitType + 1 : null;
@@ -109,7 +120,13 @@ export const useImageFormStore = create<State & Actions>()(
             prevValue === null ? unitType + 1 : null;
         }
       }),
+
     loadingTowerFloorData: 'idle',
+
+    uploadingStatus: 'idle',
+
+    setUploadingStatus: (newStatus) => set({ uploadingStatus: newStatus }),
+
     fetchTowerFloorData: async (projectId) => {
       set({ loadingTowerFloorData: 'loading' });
       try {
@@ -120,6 +137,10 @@ export const useImageFormStore = create<State & Actions>()(
         });
         const units: TowerFloorDataType[] = [];
         const selectedUnits: SelectedTowerFloorUnitDataType = {};
+        let options: {
+          value: number;
+          label: string;
+        }[] = [];
         response.data.data?.map((towerFloorData) => {
           selectedUnits[towerFloorData.tower_id] = { selectedUnits: {} };
           units.push({
@@ -138,8 +159,13 @@ export const useImageFormStore = create<State & Actions>()(
                 null;
             });
           });
+          options = units.map((item) => ({
+            value: item.towerId,
+            label: `${item.towerId}: ${item.towerName}`,
+          }));
         });
         set({ towerFloorFormData: units });
+        set({ towerOptions: options });
         set({ selectedTFUData: selectedUnits });
         set({ loadingTowerFloorData: 'complete' });
       } catch (error) {
@@ -147,6 +173,7 @@ export const useImageFormStore = create<State & Actions>()(
         console.log(error);
       }
     },
+
     resetTowerFloorData: () =>
       set({ towerFloorFormData: [], loadingTowerFloorData: 'idle' }),
   }))
