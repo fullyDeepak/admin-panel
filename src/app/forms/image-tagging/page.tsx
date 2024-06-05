@@ -111,7 +111,7 @@ export default function ImageTaggingPage() {
             fileName: string;
             uploadStatus: 'Success' | 'Failure';
           }[];
-        }>('/upload/project', formData, {
+        }>('/forms/imgTag/project', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
           onUploadProgress: (progressEvent: any) => {
             const percentage =
@@ -150,7 +150,7 @@ export default function ImageTaggingPage() {
           fileName: string;
           uploadStatus: 'Success' | 'Failure';
         }[];
-      }>('/upload/tower', formData, {
+      }>('/forms/imgTag/tower', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (progressEvent: any) => {
           const percentage = (progressEvent.loaded * 100) / progressEvent.total;
