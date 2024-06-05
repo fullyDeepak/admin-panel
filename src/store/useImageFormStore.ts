@@ -1,5 +1,6 @@
 import axiosClient from '@/utils/AxiosClient';
 import { startCase } from 'lodash';
+import { SingleValue } from 'react-select';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
@@ -37,18 +38,43 @@ export type SelectedTowerFloorUnitDataType = {
   };
 };
 interface State {
+  selectedProject:
+    | SingleValue<{
+        value: number;
+        label: string;
+      }>
+    | undefined;
   towerFloorFormData: TowerFloorDataType[];
   towerOptions: {
     value: number;
     label: string;
   }[];
+  selectedImageTaggingType: SingleValue<{
+    label: string;
+    value:
+      | 'brochure'
+      | 'project_master_plan'
+      | 'project_image'
+      | 'tower-fp'
+      | 'unit-fp';
+  } | null>;
   selectedTFUData: SelectedTowerFloorUnitDataType;
   loadingTowerFloorData: 'idle' | 'loading' | 'complete' | 'error';
   uploadingStatus: 'idle' | 'running' | 'complete' | 'error';
+  resultData:
+    | {
+        fileName: string;
+        uploadStatus: 'Success' | 'Failure';
+      }[]
+    | null;
 }
 
 type Actions = {
+  setSelectedProject: (selection: State['selectedProject']) => void;
   setTowerFloorFormData: (newData: TowerFloorDataType[]) => void;
+  setSelectedImageTaggingType: (
+    select: State['selectedImageTaggingType']
+  ) => void;
   setSelectedUnit: (
     payload:
       | {
@@ -64,6 +90,7 @@ type Actions = {
           selectColumn: boolean;
         }
   ) => void;
+  setResultData: (newData: State['resultData']) => void;
   setUploadingStatus: (newStatus: State['uploadingStatus']) => void;
   fetchTowerFloorData: (projectId: number) => void;
   resetTowerFloorData: () => void;
@@ -84,9 +111,21 @@ interface Response {
 export const useImageFormStore = create<State & Actions>()(
   immer((set, get) => ({
     // Initial state
+
+    selectedProject: undefined,
+
+    setSelectedProject: (select) => set({ selectedProject: select }),
+
     towerFloorFormData: [] as TowerFloorDataType[],
 
     towerOptions: [],
+
+    selectedImageTaggingType: null,
+
+    resultData: null,
+
+    setSelectedImageTaggingType: (select) =>
+      set({ selectedImageTaggingType: select }),
 
     selectedTFUData: {} as SelectedTowerFloorUnitDataType,
 
@@ -124,6 +163,8 @@ export const useImageFormStore = create<State & Actions>()(
     loadingTowerFloorData: 'idle',
 
     uploadingStatus: 'idle',
+
+    setResultData: (newData) => set({ resultData: newData }),
 
     setUploadingStatus: (newStatus) => set({ uploadingStatus: newStatus }),
 

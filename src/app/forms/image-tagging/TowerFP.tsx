@@ -19,11 +19,14 @@ export default function TowerFP({ towerFloorData }: TowerFPProps) {
             <span>Tower Name: {tower.towerName}</span>
             <span>Tower Type: {tower.towerType}</span>
           </p>
-          <label className='relative flex flex-wrap items-center justify-between gap-5 '>
+          <label className='relative flex flex-wrap items-center justify-between gap-5'>
             <span className='flex-[3] text-xl'>Select File:</span>
             <input
               type='file'
-              className='file-input file-input-bordered flex-[5]'
+              multiple
+              accept='image/*,.pdf'
+              name={tower.towerId.toString()}
+              className='file-input file-input-bordered h-10 flex-[5]'
             />
           </label>
         </div>

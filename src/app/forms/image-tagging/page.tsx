@@ -1,15 +1,11 @@
 'use client';
 
-import Select, { SingleValue } from 'react-select';
-import { FormEvent, useId, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
-import LoadingCircle from '@/components/ui/LoadingCircle';
-import UnitFP from './UnitFP';
-import TowerFP from './TowerFP';
 import { useImageFormStore } from '@/store/useImageFormStore';
-import ProgressBar from '@/components/ui/ProgressBar';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
+import Form from './Form';
 
 export type TowerFloorDataType = {
   towerId: number;
@@ -25,34 +21,15 @@ export default function ImageTaggingPage() {
   //   console.log('Whole page re-renders.....');
   const {
     fetchTowerFloorData,
-    loadingTowerFloorData,
-    towerFloorFormData,
-    uploadingStatus,
     setUploadingStatus,
+    selectedProject,
+    selectedImageTaggingType,
+    resultData,
+    setResultData,
   } = useImageFormStore();
-
-  const [selectedProject, setSelectedProject] = useState<SingleValue<{
-    value: number;
-    label: string;
-  }> | null>(null);
-
-  const [selectedImageTaggingType, setSelectedImageTaggingType] = useState<
-    SingleValue<{
-      label: string;
-      value:
-        | 'brochure'
-        | 'project_master_plan'
-        | 'project_image'
-        | 'tower-fp'
-        | 'unit-fp';
-    } | null>
-  >(null);
 
   const [projectFiles, setProjectFiles] = useState<FileList | null>(null);
   const [progress, setProgress] = useState(0);
-  const [resultData, setResultData] = useState<
-    { fileName: string; uploadStatus: 'Success' | 'Failure' }[] | null
-  >(null);
 
   const resultColumn = [
     {
@@ -151,6 +128,38 @@ export default function ImageTaggingPage() {
       } catch (error) {
         console.log(error);
       }
+    } else if (
+      selectedProject?.value &&
+      selectedImageTaggingType &&
+      selectedImageTaggingType?.value === 'tower-fp'
+    ) {
+      // const formData = new FormData(document.forms.ok)
+      setResultData(null);
+      setUploadingStatus('running');
+      const form = document.getElementById(
+        'projectTowerImageTagging'
+      ) as HTMLFormElement;
+      const formData = new FormData(form);
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ', ' + pair[1]);
+      }
+      formData.append('project_id', selectedProject.value.toString());
+      const response = await axiosClient.post<{
+        status: string;
+        data: {
+          fileName: string;
+          uploadStatus: 'Success' | 'Failure';
+        }[];
+      }>('/upload/tower', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (progressEvent: any) => {
+          const percentage = (progressEvent.loaded * 100) / progressEvent.total;
+          setProgress(+percentage.toFixed(0));
+        },
+      });
+      setResultData(response.data?.data);
+      setUploadingStatus('complete');
+      form.reset();
     } else {
       alert('Project, Tagging type or files selection are missing.');
     }
@@ -161,116 +170,14 @@ export default function ImageTaggingPage() {
       <h1 className='self-center text-2xl md:text-3xl'>
         Form: Project Image Tagging
       </h1>
-      <form
-        className='mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[60%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
-        id='projectTowerImageTagging'
-        onSubmit={submitForm}
-      >
-        {/* <p>{Date.now()}</p> */}
-        <label className='flex flex-wrap items-center justify-between gap-5'>
-          <span className='flex-[3] text-base md:text-xl'>Select Project:</span>
-          <Select
-            className='w-full flex-[5]'
-            key={'projectOptions'}
-            isClearable
-            instanceId={useId()}
-            value={selectedProject}
-            onChange={(e) => setSelectedProject(e)}
-            options={projectOptions}
-            isLoading={loadingProjectOptions}
-          />
-        </label>
-        <label className='flex flex-wrap items-center justify-between gap-5'>
-          <span className='flex-[3] text-base md:text-xl'>Tagging Type:</span>
-          <Select
-            className='w-full flex-[5]'
-            key={'district'}
-            isClearable
-            instanceId={useId()}
-            value={selectedImageTaggingType}
-            onChange={(e) => setSelectedImageTaggingType(e)}
-            options={[
-              { label: 'Brochure', value: 'brochure' },
-              { label: 'Project Master Plan', value: 'project_master_plan' },
-              { label: 'Project Images', value: 'project_image' },
-              { label: 'Tower Floor Plan', value: 'tower-fp' },
-              { label: 'Unit Floor Plan', value: 'unit-fp' },
-            ]}
-          />
-        </label>
-        {loadingTowerFloorData === 'loading' && (
-          <span className='text-center'>
-            <LoadingCircle circleColor='black' size='large' />
-          </span>
-        )}
-        {loadingTowerFloorData === 'complete' &&
-          selectedImageTaggingType?.value === 'unit-fp' &&
-          towerFloorFormData &&
-          towerFloorFormData?.length > 0 && (
-            <UnitFP towerFloorData={towerFloorFormData} />
-          )}
-        {loadingTowerFloorData === 'complete' &&
-          towerFloorFormData &&
-          towerFloorFormData.length === 0 &&
-          selectedProject?.value &&
-          selectedImageTaggingType?.value === 'unit-fp' && (
-            <span className='text-center font-semibold text-error'>
-              Units not available.
-            </span>
-          )}
-        {loadingTowerFloorData === 'error' && (
-          <span className='text-center font-semibold text-error'>
-            Something went wrong
-          </span>
-        )}
-        {loadingTowerFloorData === 'complete' &&
-          selectedImageTaggingType?.value === 'tower-fp' &&
-          towerFloorFormData &&
-          towerFloorFormData?.length > 0 && (
-            <TowerFP towerFloorData={towerFloorFormData} />
-          )}
-        {selectedImageTaggingType &&
-          selectedImageTaggingType?.value !== 'unit-fp' &&
-          selectedImageTaggingType?.value !== 'tower-fp' && (
-            <label className='relative flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[3] text-base md:text-xl'>
-                Select File:
-              </span>
-              <input
-                type='file'
-                className='file-input file-input-bordered flex-[5]'
-                multiple
-                id='project-input-file'
-                accept='image/*,.pdf'
-                onChange={(e) => {
-                  setResultData(null);
-                  setUploadingStatus('idle');
-                  setProjectFiles(e.target.files);
-                }}
-              />
-            </label>
-          )}
-        {selectedImageTaggingType && selectedImageTaggingType?.value && (
-          <>
-            <button
-              className='btn-rezy btn mx-auto min-w-40 disabled:text-gray-600'
-              disabled={uploadingStatus === 'running' ? true : false}
-            >
-              {uploadingStatus === 'idle' || uploadingStatus === 'complete'
-                ? 'Submit'
-                : 'Uploading...'}
-            </button>
-            {uploadingStatus === 'idle' ? (
-              <></>
-            ) : uploadingStatus === 'running' ||
-              uploadingStatus === 'complete' ? (
-              <ProgressBar progress={progress} />
-            ) : (
-              <></>
-            )}
-          </>
-        )}
-      </form>
+      <Form
+        projectOptions={projectOptions}
+        loadingProjectOptions={loadingProjectOptions}
+        progress={progress}
+        setProjectFiles={setProjectFiles}
+        setResultData={setResultData}
+        submitForm={submitForm}
+      />
       {resultData && resultData?.length > 0 && (
         <div className='mx-auto my-10 max-w-[60%]'>
           <h3 className='text-center text-2xl font-semibold'>Upload Status</h3>
