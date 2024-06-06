@@ -1,7 +1,7 @@
 import LoadingCircle from '@/components/ui/LoadingCircle';
 import { useImageFormStore } from '@/store/useImageFormStore';
 import { Dispatch, FormEventHandler, SetStateAction, useId } from 'react';
-import Select from 'react-select';
+import Select, { SingleValue } from 'react-select';
 import UnitFP from './UnitFP';
 import TowerFP from './TowerFP';
 import ProgressBar from '@/components/ui/ProgressBar';
@@ -59,7 +59,12 @@ export default function Form({
           isClearable
           instanceId={useId()}
           value={selectedProject}
-          onChange={(e) => {
+          onChange={(
+            e: SingleValue<{
+              value: number;
+              label: string;
+            }>
+          ) => {
             setSelectedProject(e);
             setResultData(null);
           }}
@@ -76,7 +81,17 @@ export default function Form({
           isSearchable={false}
           instanceId={useId()}
           value={selectedImageTaggingType}
-          onChange={(e) => {
+          onChange={(
+            e: SingleValue<{
+              value:
+                | 'brochure'
+                | 'project_master_plan'
+                | 'project_image'
+                | 'tower-fp'
+                | 'unit-fp';
+              label: string;
+            }>
+          ) => {
             setSelectedImageTaggingType(e);
             setResultData(null);
           }}
