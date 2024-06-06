@@ -51,7 +51,7 @@ export default function ETLTagConfiguration({
         {towerData.etlUnitConfigs.map(
           (unit, i) =>
             unit.configName && (
-              <div key={i} className='flex w-full justify-between '>
+              <div key={i} className='flex w-full justify-between tabular-nums'>
                 <span className='w-36 p-1'>{unit.configName}</span>
                 <span
                   className='w-36 p-1'
