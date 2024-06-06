@@ -49,6 +49,16 @@ interface State {
     value: number;
     label: string;
   }[];
+  availableProjectData:
+    | {
+        project_id: number;
+        tower_id?: number;
+        doc_type: string;
+        s3_path: string;
+        preview_url: string;
+        file_type: 'image' | 'pdf';
+      }[]
+    | [];
   selectedImageTaggingType: SingleValue<{
     label: string;
     value:
@@ -90,6 +100,9 @@ type Actions = {
           selectColumn: boolean;
         }
   ) => void;
+  setAvailableProjectData: (
+    newData: State['availableProjectData'] | []
+  ) => void;
   setResultData: (newData: State['resultData']) => void;
   setUploadingStatus: (newStatus: State['uploadingStatus']) => void;
   fetchTowerFloorData: (projectId: number) => void;
@@ -122,12 +135,17 @@ export const useImageFormStore = create<State & Actions>()(
 
     selectedImageTaggingType: null,
 
+    availableProjectData: [],
+
     resultData: null,
 
     setSelectedImageTaggingType: (select) =>
       set({ selectedImageTaggingType: select }),
 
     selectedTFUData: {} as SelectedTowerFloorUnitDataType,
+
+    setAvailableProjectData: (newData) =>
+      set({ availableProjectData: newData }),
 
     setTowerFloorFormData: (newData) => set({ towerFloorFormData: newData }),
 

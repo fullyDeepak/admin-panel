@@ -4,6 +4,14 @@ const nextConfig = {
     config.resolve.alias.canvas = false;
     return config;
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.amazonaws.com',
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

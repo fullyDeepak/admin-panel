@@ -1,11 +1,13 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
 import { useImageFormStore } from '@/store/useImageFormStore';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import Form from './Form';
+import PreviewDocs from './PreviewDocs';
+import { nanoid } from 'nanoid';
 
 export type TowerFloorDataType = {
   towerId: number;
@@ -24,13 +26,64 @@ export default function ImageTaggingPage() {
     setUploadingStatus,
     selectedProject,
     selectedImageTaggingType,
+    availableProjectData,
+    setAvailableProjectData,
     resultData,
     setResultData,
   } = useImageFormStore();
 
   const [projectFiles, setProjectFiles] = useState<FileList | null>(null);
   const [progress, setProgress] = useState(0);
+  const [rowDataProjectTower, setRowDataProjectTower] = useState<{
+    project_id: number;
+    doc_type: string;
+    s3_path: string;
+    preview_url: string;
+    file_type: 'image' | 'pdf';
+  } | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
+  useEffect(() => {
+    if (showModal === true) {
+      (
+        document.getElementById('preview-modal') as HTMLDialogElement
+      ).showModal();
+    }
+  }, [showModal]);
+
+  const availableProjectDataColumns = [
+    {
+      header: 'Project Id',
+      accessorKey: 'project_id',
+    },
+    {
+      header: 'Tagging Type',
+      accessorKey: 'doc_type',
+    },
+    {
+      header: 'AWS S3 Path',
+      accessorKey: 's3_path',
+      cell: ({ row }: any) => (
+        <p className='max-w-[300px] text-wrap'>{row.original.s3_path}</p>
+      ),
+    },
+    {
+      header: 'Delete',
+      cell: ({ row }: any) => (
+        <button
+          className='btn btn-xs'
+          type='button'
+          onClick={() => {
+            setRowDataProjectTower(row.original);
+            const newDialogId = nanoid(3);
+            setShowModal(true);
+          }}
+        >
+          Preview
+        </button>
+      ),
+    },
+  ];
   const resultColumn = [
     {
       header: 'S3 Location',
@@ -72,11 +125,66 @@ export default function ImageTaggingPage() {
     ],
     queryFn: async () => {
       if (
-        (selectedImageTaggingType?.value === 'tower-fp' ||
-          selectedImageTaggingType?.value === 'unit-fp') &&
+        selectedImageTaggingType?.value === 'unit-fp' &&
         selectedProject?.value
       ) {
         fetchTowerFloorData(selectedProject.value);
+      } else if (
+        (selectedImageTaggingType?.value === 'brochure' ||
+          selectedImageTaggingType?.value === 'project_master_plan' ||
+          selectedImageTaggingType?.value === 'project_image') &&
+        selectedProject?.value
+      ) {
+        const response = await axiosClient.get<{
+          data: {
+            project_id: number;
+            doc_type: string;
+            s3_path: string;
+            preview_url: string;
+          }[];
+          status: 'success';
+        }>('/forms/imgTag/project', {
+          params: { project_id: selectedProject.value },
+        });
+        const projectData = response.data.data.map((item) => {
+          const newItem = {
+            ...item,
+            file_type: 'image' as 'image' | 'pdf',
+          };
+          if (item.s3_path.endsWith('pdf')) {
+            newItem.file_type = 'pdf';
+          }
+          return newItem;
+        });
+        setAvailableProjectData(projectData);
+      } else if (
+        selectedImageTaggingType?.value === 'tower-fp' &&
+        selectedProject?.value
+      ) {
+        fetchTowerFloorData(selectedProject.value);
+        const response = await axiosClient.get<{
+          data: {
+            project_id: number;
+            tower_id: number;
+            doc_type: string;
+            s3_path: string;
+            preview_url: string;
+          }[];
+          status: 'success';
+        }>('/forms/imgTag/tower', {
+          params: { project_id: selectedProject.value },
+        });
+        const projectData = response.data.data.map((item) => {
+          const newItem = {
+            ...item,
+            file_type: 'image' as 'image' | 'pdf',
+          };
+          if (item.s3_path.endsWith('pdf')) {
+            newItem.file_type = 'pdf';
+          }
+          return newItem;
+        });
+        setAvailableProjectData(projectData);
       }
       return [];
     },
@@ -103,7 +211,6 @@ export default function ImageTaggingPage() {
       for (let i = 0; i < projectFiles.length; i++) {
         formData.append('docs', projectFiles[i]);
       }
-      //   await new Promise((resolve) => setTimeout(resolve, 10000));
       try {
         const response = await axiosClient.post<{
           status: string;
@@ -133,16 +240,12 @@ export default function ImageTaggingPage() {
       selectedImageTaggingType &&
       selectedImageTaggingType?.value === 'tower-fp'
     ) {
-      // const formData = new FormData(document.forms.ok)
       setResultData(null);
       setUploadingStatus('running');
       const form = document.getElementById(
         'projectTowerImageTagging'
       ) as HTMLFormElement;
       const formData = new FormData(form);
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ', ' + pair[1]);
-      }
       formData.append('project_id', selectedProject.value.toString());
       const response = await axiosClient.post<{
         status: string;
@@ -166,7 +269,7 @@ export default function ImageTaggingPage() {
   }
 
   return (
-    <div className='mx-auto mt-10 flex w-full flex-col'>
+    <div className='mx-auto mb-60 mt-10 flex w-full flex-col'>
       <h1 className='self-center text-2xl md:text-3xl'>
         Form: Project Image Tagging
       </h1>
@@ -178,6 +281,28 @@ export default function ImageTaggingPage() {
         setResultData={setResultData}
         submitForm={submitForm}
       />
+      {selectedImageTaggingType?.value !== 'tower-fp' &&
+        selectedImageTaggingType?.value !== 'unit-fp' &&
+        availableProjectData &&
+        availableProjectData?.length > 0 && (
+          <div className='mx-auto my-10 max-w-[60%]'>
+            <h3 className='text-center text-2xl font-semibold'>
+              Available Project Data
+            </h3>
+            <TanstackReactTable
+              columns={availableProjectDataColumns}
+              data={availableProjectData}
+              showPagination={false}
+              enableSearch={false}
+            />
+            {rowDataProjectTower && (
+              <PreviewDocs
+                previewDocsData={rowDataProjectTower}
+                setShowModal={setShowModal}
+              />
+            )}
+          </div>
+        )}
       {resultData && resultData?.length > 0 && (
         <div className='mx-auto my-10 max-w-[60%]'>
           <h3 className='text-center text-2xl font-semibold'>Upload Status</h3>
