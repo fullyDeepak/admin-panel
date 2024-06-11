@@ -95,16 +95,14 @@ export const useUMCorrectionFormStore = create<State & Actions>()(
           }>('/unitmaster/manualdata', {
             params: { project_id: project_id },
           });
-          set({ umManualDataStore: res.data.data });
-          set({ tableData: res.data.data });
+          const resData = uniqWith(res.data.data, isEqual);
+          set({ umManualDataStore: resData });
+          set({ tableData: resData });
           //filter for tower dropdown option
-          const towerOptions = uniqWith(
-            res.data.data.map((item) => ({
-              value: item.tower_id,
-              label: `${item.tower_id}:${item.tower_name}`,
-            })),
-            isEqual
-          );
+          const towerOptions = resData.map((item) => ({
+            value: item.tower_id,
+            label: `${item.tower_id}:${item.tower_name}`,
+          }));
           const towerCount = countBy(res.data.data, 'tower_id');
           const towerOptionCount = towerOptions.map((item) => ({
             ...item,

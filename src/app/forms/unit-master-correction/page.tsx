@@ -4,8 +4,8 @@ import axiosClient from '@/utils/AxiosClient';
 import Form from './Form';
 import { useQuery } from '@tanstack/react-query';
 import { useUMCorrectionFormStore } from '@/store/useUMCorrectionStore';
-import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import { useEffect } from 'react';
+import TanstackReactTable from './Table';
 
 export default function UMCorrectionPage() {
   const {
@@ -25,11 +25,16 @@ export default function UMCorrectionPage() {
     queryFn: async () => {
       try {
         const res = await axiosClient.get<{
-          data: { project_id: number; name: string; count: number }[];
+          data: {
+            project_id: number;
+            name: string;
+            total_count: number;
+            uniq_count: number;
+          }[];
         }>('/unitmaster/projects');
         const options = res.data.data.map((item) => ({
           value: item.project_id,
-          label: `${item.project_id}:${item.name}-(${item.count})`,
+          label: `${item.project_id}:${item.name}-(${item.total_count})-(${item.uniq_count})`,
         }));
         return options;
       } catch (error) {
@@ -113,7 +118,7 @@ export default function UMCorrectionPage() {
         loadingProjectOptions={loadingProjectOptions}
       />
       {tableData && tableData.length > 0 && (
-        <div className='mx-auto my-10 max-w-[60%]'>
+        <div className='mx-auto my-10 max-w-[80%]'>
           <h3 className='my-5 text-center text-3xl font-semibold underline underline-offset-8'>{`UM Manual Table Data(${tableData.length})`}</h3>
           <TanstackReactTable columns={tableColumn} data={tableData} />
         </div>
