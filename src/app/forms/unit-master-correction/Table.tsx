@@ -8,6 +8,7 @@ import {
   SortingState,
   getFilteredRowModel,
   RowSelectionState,
+  OnChangeFn,
 } from '@tanstack/react-table';
 import { HTMLProps, useEffect, useRef, useState } from 'react';
 import { GoArrowDown, GoArrowUp, GoArrowSwitch } from 'react-icons/go';
@@ -24,6 +25,8 @@ interface TableProps {
   showPagination?: boolean;
   enableSearch?: boolean;
   setSelectedRows: (data: any) => void;
+  rowSelection: { [id: string]: boolean };
+  setRowSelection: OnChangeFn<RowSelectionState>;
 }
 
 function IndeterminateCheckbox({
@@ -55,10 +58,12 @@ export default function TanstackReactTable({
   showPagination = true,
   enableSearch = true,
   setSelectedRows,
+  rowSelection,
+  setRowSelection,
 }: TableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filtering, setFiltering] = useState('');
-  const [rowSelection, setRowSelection] = useState({});
+  //   const [rowSelection, setRowSelection] = useState({});
   const newColumn: ColumnDef<object, any>[] = [
     {
       id: 'select',

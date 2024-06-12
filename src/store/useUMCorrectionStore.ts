@@ -132,6 +132,13 @@ export const useUMCorrectionFormStore = create<State & Actions>()(
             label: `${item.label}-(${towerCount[item.value]})`,
           }));
           set({ towerOptions: towerOptionCount });
+          const prevSelectedTower = get().selectedTower;
+          if (prevSelectedTower && prevSelectedTower.value) {
+            const newSelectedTower = towerOptionCount.find(
+              (item) => item.value === prevSelectedTower.value
+            );
+            set({ selectedTower: newSelectedTower });
+          }
           set({ loadingErrOneTableData: 'complete' });
         } catch (error) {
           console.log(error);

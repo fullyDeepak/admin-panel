@@ -7,7 +7,9 @@ import {
 import TanstackReactTable from './Table';
 import axiosClient from '@/utils/AxiosClient';
 import LoadingCircle from '@/components/ui/LoadingCircle';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function UMCorrectionPage() {
   const {
@@ -16,12 +18,15 @@ export default function UMCorrectionPage() {
     matchedData,
     unMatchedData,
     loadingErrOneTableData,
+    fetchUMManualData,
+    selectedProject,
     selectedTableData,
     setMatchedData,
     setUnMatchedData,
     setTableData,
   } = useUMCorrectionFormStore();
-  // populate project dropdown
+  const [rowSelection, setRowSelection] = useState({});
+  const queryClient = useQueryClient();
 
   const tableColumn = [
     {
@@ -82,8 +87,14 @@ export default function UMCorrectionPage() {
       accessorKey: 'master_door_number',
     },
   ];
+
+  // submit form here
   async function submitForm() {
-    if (matchedData.length === 0 && unMatchedData.length === 0) {
+    if (
+      matchedData.length === 0 &&
+      unMatchedData.length === 0 &&
+      selectedProject?.value != null
+    ) {
       return null;
     }
     const data = {
@@ -106,7 +117,7 @@ export default function UMCorrectionPage() {
         unmatched: string;
       };
     }>('/unitmaster/errorTypeOne', data);
-    toast.promise(
+    await toast.promise(
       responsePromise,
       {
         loading: 'Updating database...',
@@ -120,6 +131,8 @@ export default function UMCorrectionPage() {
         },
       }
     );
+    await queryClient.refetchQueries({ queryKey: ['projects'], type: 'all' });
+    fetchUMManualData();
     setMatchedData([]);
     setUnMatchedData([]);
   }
@@ -200,6 +213,8 @@ export default function UMCorrectionPage() {
               columns={tableColumn}
               data={tableData}
               setSelectedRows={setSelectedTableData}
+              rowSelection={rowSelection}
+              setRowSelection={setRowSelection}
             />
           </div>
         )}
@@ -220,14 +235,20 @@ export default function UMCorrectionPage() {
               <button
                 className='btn btn-success text-white'
                 type='button'
-                onClick={() => handleDataMarking('Matched')}
+                onClick={() => {
+                  handleDataMarking('Matched');
+                  setRowSelection({});
+                }}
               >
                 Mark as matched
               </button>
               <button
                 className='btn btn-error text-white'
                 type='button'
-                onClick={() => handleDataMarking('Unmatched')}
+                onClick={() => {
+                  handleDataMarking('Unmatched');
+                  setRowSelection({});
+                }}
               >
                 Mark as unmatched
               </button>
