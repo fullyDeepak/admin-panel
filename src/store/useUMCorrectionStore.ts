@@ -1,5 +1,5 @@
 import axiosClient from '@/utils/AxiosClient';
-import { countBy, isEqual, startCase, uniq, uniqWith } from 'lodash';
+import { countBy, isEqual, uniqWith } from 'lodash';
 import { SingleValue } from 'react-select';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
@@ -57,9 +57,22 @@ interface State {
         label: string;
       }[]
     | null;
-  loadingTowerFloorData: 'idle' | 'loading' | 'complete' | 'error';
+  selectedTableData: Partial<State['tableData']>;
+  loadingErrOneTableData: 'idle' | 'loading' | 'complete' | 'error';
   umManualDataStore: UMManualDataType[] | null;
   tableData: UMManualDataType[] | null;
+  matchedData:
+    | Pick<
+        UMManualDataType,
+        'project_id' | 'tower_id' | 'floor' | 'unit_number'
+      >[]
+    | [];
+  unMatchedData:
+    | Pick<
+        UMManualDataType,
+        'project_id' | 'tower_id' | 'floor' | 'unit_number'
+      >[]
+    | [];
 }
 
 type Actions = {
@@ -70,6 +83,9 @@ type Actions = {
   setErrorType: (selection: State['selectedErrorType']) => void;
   setTableData: (newData: UMManualDataType[]) => void;
   setFloorOption: (newData: State['floorOptions']) => void;
+  setSelectedTableData: (newData: State['selectedTableData']) => void;
+  setMatchedData: (newData: State['matchedData']) => void;
+  setUnMatchedData: (newData: State['matchedData']) => void;
 };
 
 export const useUMCorrectionFormStore = create<State & Actions>()(
@@ -84,11 +100,15 @@ export const useUMCorrectionFormStore = create<State & Actions>()(
     tableData: null,
     towerOptions: undefined,
     floorOptions: null,
+    selectedTableData: [],
+    matchedData: [],
+    unMatchedData: [],
 
-    loadingTowerFloorData: 'idle',
+    loadingErrOneTableData: 'idle',
     fetchUMManualData: async () => {
       const project_id = get().selectedProject?.value;
       if (project_id) {
+        set({ loadingErrOneTableData: 'loading' });
         try {
           const res = await axiosClient.get<{
             data: UMManualDataType[];
@@ -99,20 +119,23 @@ export const useUMCorrectionFormStore = create<State & Actions>()(
           set({ umManualDataStore: resData });
           set({ tableData: resData });
           //filter for tower dropdown option
-          const towerOptions = resData.map((item) => ({
-            value: item.tower_id,
-            label: `${item.tower_id}:${item.tower_name}`,
-          }));
+          const towerOptions = uniqWith(
+            resData.map((item) => ({
+              value: item.tower_id,
+              label: `${item.tower_id}:${item.tower_name}`,
+            })),
+            isEqual
+          );
           const towerCount = countBy(res.data.data, 'tower_id');
           const towerOptionCount = towerOptions.map((item) => ({
             ...item,
             label: `${item.label}-(${towerCount[item.value]})`,
           }));
           set({ towerOptions: towerOptionCount });
-
-          //filter
+          set({ loadingErrOneTableData: 'complete' });
         } catch (error) {
           console.log(error);
+          set({ loadingErrOneTableData: 'error' });
         }
       }
     },
@@ -123,5 +146,8 @@ export const useUMCorrectionFormStore = create<State & Actions>()(
     setSelectedFloor: (select) => set({ selectedFloor: select }),
     setErrorType: (select) => set({ selectedErrorType: select }),
     setTableData: (select) => set({ tableData: select }),
+    setSelectedTableData: (data) => set({ selectedTableData: data }),
+    setMatchedData: (data) => set({ matchedData: data }),
+    setUnMatchedData: (data) => set({ unMatchedData: data }),
   }))
 );

@@ -1,5 +1,3 @@
-'use client';
-
 import {
   useReactTable,
   getCoreRowModel,
@@ -9,6 +7,7 @@ import {
   getSortedRowModel,
   SortingState,
   getFilteredRowModel,
+  RowSelectionState,
 } from '@tanstack/react-table';
 import { HTMLProps, useEffect, useRef, useState } from 'react';
 import { GoArrowDown, GoArrowUp, GoArrowSwitch } from 'react-icons/go';
@@ -24,6 +23,7 @@ interface TableProps {
   columns: ColumnDef<object, any>[];
   showPagination?: boolean;
   enableSearch?: boolean;
+  setSelectedRows: (data: any) => void;
 }
 
 function IndeterminateCheckbox({
@@ -54,6 +54,7 @@ export default function TanstackReactTable({
   columns,
   showPagination = true,
   enableSearch = true,
+  setSelectedRows,
 }: TableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filtering, setFiltering] = useState('');
@@ -103,6 +104,14 @@ export default function TanstackReactTable({
     onSortingChange: setSorting,
     onGlobalFilterChange: setFiltering,
   });
+  table.getSelectedRowModel;
+
+  useEffect(() => {
+    const ogData: TableProps['data'] = table
+      .getSelectedRowModel()
+      ?.rows?.map((item) => item.original);
+    setSelectedRows(ogData);
+  }, [rowSelection]);
   return (
     <div className='mx-auto flex flex-col'>
       {enableSearch && (
@@ -134,7 +143,7 @@ export default function TanstackReactTable({
       )}
       <div className='m-5 max-h-screen overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
         <table className='relative w-full border-collapse bg-white text-sm text-gray-700'>
-          <thead className='sticky top-0 z-10 text-nowrap bg-gray-50'>
+          <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50'>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -177,7 +186,7 @@ export default function TanstackReactTable({
               <tr
                 key={row.id}
                 className={`cursor-pointer border-b ${row.getIsSelected() ? 'bg-sky-100 hover:bg-opacity-50' : 'bg-none hover:bg-gray-100'}`}
-                onClick={() => console.log(row.toggleSelected())}
+                onClick={() => row.toggleSelected()}
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className='px-4 py-3'>
@@ -240,13 +249,6 @@ export default function TanstackReactTable({
           </div>
         </div>
       )}
-      <pre>
-        {JSON.stringify(
-          table.getSelectedRowModel()?.rows?.map((item) => item.original),
-          null,
-          2
-        )}
-      </pre>
     </div>
   );
 }

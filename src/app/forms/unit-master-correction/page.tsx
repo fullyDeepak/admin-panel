@@ -1,53 +1,27 @@
 'use client';
-
-import axiosClient from '@/utils/AxiosClient';
 import Form from './Form';
-import { useQuery } from '@tanstack/react-query';
-import { useUMCorrectionFormStore } from '@/store/useUMCorrectionStore';
-import { useEffect } from 'react';
+import {
+  UMManualDataType,
+  useUMCorrectionFormStore,
+} from '@/store/useUMCorrectionStore';
 import TanstackReactTable from './Table';
+import axiosClient from '@/utils/AxiosClient';
+import LoadingCircle from '@/components/ui/LoadingCircle';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function UMCorrectionPage() {
   const {
-    selectedProject,
-    selectedFloor,
-    selectedTower,
-    setSelectedProject,
-    setSelectedTower,
-    setSelectedFloor,
     tableData,
-    fetchUMManualData,
+    setSelectedTableData,
+    matchedData,
+    unMatchedData,
+    loadingErrOneTableData,
+    selectedTableData,
+    setMatchedData,
+    setUnMatchedData,
     setTableData,
   } = useUMCorrectionFormStore();
   // populate project dropdown
-  const { data: projectOptions, isLoading: loadingProjectOptions } = useQuery({
-    queryKey: ['projects'],
-    queryFn: async () => {
-      try {
-        const res = await axiosClient.get<{
-          data: {
-            project_id: number;
-            name: string;
-            total_count: number;
-            uniq_count: number;
-          }[];
-        }>('/unitmaster/projects');
-        const options = res.data.data.map((item) => ({
-          value: item.project_id,
-          label: `${item.project_id}:${item.name}-(${item.total_count})-(${item.uniq_count})`,
-        }));
-        return options;
-      } catch (error) {
-        console.log(error);
-      }
-      return [];
-    },
-    refetchOnWindowFocus: false,
-  });
-
-  useEffect(() => {
-    fetchUMManualData();
-  }, [selectedProject?.value]);
 
   const tableColumn = [
     {
@@ -108,19 +82,197 @@ export default function UMCorrectionPage() {
       accessorKey: 'master_door_number',
     },
   ];
+  async function submitForm() {
+    if (matchedData.length === 0 && unMatchedData.length === 0) {
+      return null;
+    }
+    const data = {
+      matchedData: matchedData.map((item) => ({
+        project_id: item.project_id,
+        tower_id: item.tower_id,
+        floor: item.floor,
+        unit_number: item.unit_number,
+      })),
+      unMatchedData: unMatchedData.map((item) => ({
+        project_id: item.project_id,
+        tower_id: item.tower_id,
+        floor: item.floor,
+        unit_number: item.unit_number,
+      })),
+    };
+    const responsePromise = axiosClient.put<{
+      data: {
+        matched: string;
+        unmatched: string;
+      };
+    }>('/unitmaster/errorTypeOne', data);
+    toast.promise(
+      responsePromise,
+      {
+        loading: 'Updating database...',
+        success: (data) =>
+          `Matched: ${data.data.data.matched} Unmatched: ${data.data.data.unmatched}`,
+        error: 'Something went wrong',
+      },
+      {
+        success: {
+          duration: 10000,
+        },
+      }
+    );
+    setMatchedData([]);
+    setUnMatchedData([]);
+  }
+
+  function handleDataMarking(markType: 'Matched' | 'Unmatched') {
+    if (markType === 'Matched') {
+      const matchedDataTemp: Pick<
+        UMManualDataType,
+        'project_id' | 'tower_id' | 'floor' | 'unit_number'
+      >[] = [];
+      const newTableDataTemp: UMManualDataType[] = [];
+      tableData?.map((tData) => {
+        let match = false;
+        selectedTableData?.map((sTData) => {
+          if (
+            sTData &&
+            sTData.project_id === tData.project_id &&
+            sTData.tower_id === tData.tower_id &&
+            sTData.floor === tData.floor &&
+            sTData.unit_number === tData.unit_number
+          ) {
+            match = true;
+            matchedDataTemp.push(tData);
+          }
+        });
+        if (match === false) {
+          newTableDataTemp.push(tData);
+        }
+      });
+      // remove marked data from table
+      setTableData(newTableDataTemp);
+      //reset selectedTableData variable
+      setSelectedTableData([]);
+      setMatchedData([...matchedData, ...matchedDataTemp]);
+    } else if (markType === 'Unmatched') {
+      const unMatchedDataTemp: Pick<
+        UMManualDataType,
+        'project_id' | 'tower_id' | 'floor' | 'unit_number'
+      >[] = [];
+      const newTableDataTemp: UMManualDataType[] = [];
+      tableData?.map((tData) => {
+        let match = false;
+        selectedTableData?.map((sTData) => {
+          if (
+            sTData &&
+            sTData.project_id === tData.project_id &&
+            sTData.tower_id === tData.tower_id &&
+            sTData.floor === tData.floor &&
+            sTData.unit_number === tData.unit_number
+          ) {
+            match = true;
+            unMatchedDataTemp.push(sTData);
+          }
+        });
+        if (match === false) {
+          newTableDataTemp.push(tData);
+        }
+      });
+      // remove marked data from table
+      setTableData(newTableDataTemp);
+      //reset selectedTableData variable
+      setSelectedTableData([]);
+      setUnMatchedData([...unMatchedData, ...unMatchedDataTemp]);
+    }
+  }
   return (
     <div className='mx-auto mb-60 mt-10 flex w-full flex-col'>
       <h1 className='self-center text-2xl md:text-3xl'>
         Form: Unit Master Correction Form
       </h1>
-      <Form
-        projectOptions={projectOptions}
-        loadingProjectOptions={loadingProjectOptions}
-      />
-      {tableData && tableData.length > 0 && (
-        <div className='mx-auto my-10 max-w-[80%]'>
-          <h3 className='my-5 text-center text-3xl font-semibold underline underline-offset-8'>{`UM Manual Table Data(${tableData.length})`}</h3>
-          <TanstackReactTable columns={tableColumn} data={tableData} />
+      <Form />
+      {tableData &&
+        tableData.length > 0 &&
+        loadingErrOneTableData === 'complete' && (
+          <div className='mx-auto my-10 max-w-[80%]'>
+            <h3 className='my-5 text-center text-3xl font-semibold underline underline-offset-8'>{`UM Manual Table Data(${tableData.length})`}</h3>
+            <TanstackReactTable
+              columns={tableColumn}
+              data={tableData}
+              setSelectedRows={setSelectedTableData}
+            />
+          </div>
+        )}
+
+      {loadingErrOneTableData === 'loading' && (
+        <span className='text-center'>
+          <LoadingCircle circleColor='black' size='large' />
+        </span>
+      )}
+
+      {(matchedData.length > 0 ||
+        unMatchedData.length > 0 ||
+        (tableData && tableData?.length > 0)) &&
+        loadingErrOneTableData === 'complete' && (
+          <>
+            {' '}
+            <div className='mt-20 flex items-center justify-center gap-5'>
+              <button
+                className='btn btn-success text-white'
+                type='button'
+                onClick={() => handleDataMarking('Matched')}
+              >
+                Mark as matched
+              </button>
+              <button
+                className='btn btn-error text-white'
+                type='button'
+                onClick={() => handleDataMarking('Unmatched')}
+              >
+                Mark as unmatched
+              </button>
+            </div>
+            <button
+              className='btn mx-auto my-16 w-40 border-none bg-violet-600 text-white hover:bg-violet-700'
+              onClick={submitForm}
+              type='button'
+            >
+              Submit
+            </button>
+          </>
+        )}
+      {(matchedData.length > 0 || unMatchedData.length > 0) && (
+        <div className='mx-auto flex w-2/3 flex-col gap-5 md:flex-row'>
+          <span className='my-10 flex-1'>
+            <h3 className='text-center font-semibold'>Matched Data</h3>
+            <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
+              {JSON.stringify(
+                matchedData.map((item) => ({
+                  project_id: item.project_id,
+                  tower_id: item.tower_id,
+                  floor: item.floor,
+                  unit_number: item.unit_number,
+                })),
+                null,
+                2
+              )}
+            </pre>
+          </span>
+          <span className='my-10 flex-1'>
+            <h3 className='text-center font-semibold'>Unmatched Data</h3>
+            <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
+              {JSON.stringify(
+                unMatchedData.map((item) => ({
+                  project_id: item.project_id,
+                  tower_id: item.tower_id,
+                  floor: item.floor,
+                  unit_number: item.unit_number,
+                })),
+                null,
+                2
+              )}
+            </pre>
+          </span>
         </div>
       )}
     </div>
