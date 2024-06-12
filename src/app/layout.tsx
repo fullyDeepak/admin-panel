@@ -6,6 +6,7 @@ import NavBar from '@/components/ui/Navbar';
 import localFont from 'next/font/local';
 import { getServerSession } from 'next-auth';
 import NextAuthProvider from '@/components/providers/NextAuthProvider';
+import DismissibleToast from '@/components/ui/DismissibleToast';
 
 const gsans = localFont({
   src: [
@@ -30,7 +31,8 @@ export default async function RootLayout({
 
   return (
     <html lang='en' className={`${gsans.variable}`}>
-      <body className={' font-gsans'}>
+      <body className={'font-gsans'}>
+        <DismissibleToast />
         <NextAuthProvider session={session}>
           {!!session && <NavBar />}
         </NextAuthProvider>
