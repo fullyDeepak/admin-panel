@@ -99,7 +99,7 @@ export default function UMCorrectionPage() {
     if (
       matchedData.length === 0 &&
       unMatchedData.length === 0 &&
-      matchedStaleData.length > 0 &&
+      matchedStaleData.length === 0 &&
       selectedProject?.value != null
     ) {
       return null;
