@@ -39,6 +39,13 @@ export default function ErrorTypeOne() {
           value: item.project_id,
           label: `${item.project_id}:${item.name}-(${item.total_count})-(${item.uniq_count})`,
         }));
+        if (selectedProject && selectedProject.value) {
+          const selectedProjectTemp = selectedProject.value;
+          const newSelectedProject = options.find(
+            (item) => item.value === selectedProjectTemp
+          );
+          setSelectedProject(newSelectedProject);
+        }
         return options;
       } catch (error) {
         console.log(error);

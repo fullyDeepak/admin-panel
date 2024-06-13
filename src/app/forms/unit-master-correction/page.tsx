@@ -21,6 +21,8 @@ export default function UMCorrectionPage() {
     fetchUMManualData,
     selectedProject,
     selectedTableData,
+    matchedStaleData,
+    setMatchedStaleData,
     setMatchedData,
     setUnMatchedData,
     setTableData,
@@ -86,6 +88,10 @@ export default function UMCorrectionPage() {
       header: 'Master Door Number',
       accessorKey: 'master_door_number',
     },
+    {
+      header: 'Transaction HM Match Type',
+      accessorKey: 'transaction_hm_match_type',
+    },
   ];
 
   // submit form here
@@ -93,6 +99,7 @@ export default function UMCorrectionPage() {
     if (
       matchedData.length === 0 &&
       unMatchedData.length === 0 &&
+      matchedStaleData.length > 0 &&
       selectedProject?.value != null
     ) {
       return null;
@@ -110,11 +117,18 @@ export default function UMCorrectionPage() {
         floor: item.floor,
         unit_number: item.unit_number,
       })),
+      matchedStaleData: matchedStaleData.map((item) => ({
+        project_id: item.project_id,
+        tower_id: item.tower_id,
+        floor: item.floor,
+        unit_number: item.unit_number,
+      })),
     };
     const responsePromise = axiosClient.put<{
       data: {
         matched: string;
         unmatched: string;
+        matchStale: string;
       };
     }>('/unitmaster/errorTypeOne', data);
     await toast.promise(
@@ -122,7 +136,7 @@ export default function UMCorrectionPage() {
       {
         loading: 'Updating database...',
         success: (data) =>
-          `Matched: ${data.data.data.matched} Unmatched: ${data.data.data.unmatched}`,
+          `Matched: ${data.data.data.matched} Match Stale: ${data.data.data.matchStale} Unmatched: ${data.data.data.unmatched}`,
         error: 'Something went wrong',
       },
       {
@@ -134,10 +148,11 @@ export default function UMCorrectionPage() {
     await queryClient.refetchQueries({ queryKey: ['projects'], type: 'all' });
     fetchUMManualData();
     setMatchedData([]);
+    setMatchedStaleData([]);
     setUnMatchedData([]);
   }
 
-  function handleDataMarking(markType: 'Matched' | 'Unmatched') {
+  function handleDataMarking(markType: 'Matched' | 'Unmatched' | 'Stale') {
     if (markType === 'Matched') {
       const matchedDataTemp: Pick<
         UMManualDataType,
@@ -196,6 +211,35 @@ export default function UMCorrectionPage() {
       //reset selectedTableData variable
       setSelectedTableData([]);
       setUnMatchedData([...unMatchedData, ...unMatchedDataTemp]);
+    } else if (markType === 'Stale') {
+      const matchedStaleDataTemp: Pick<
+        UMManualDataType,
+        'project_id' | 'tower_id' | 'floor' | 'unit_number'
+      >[] = [];
+      const newTableDataTemp: UMManualDataType[] = [];
+      tableData?.map((tData) => {
+        let match = false;
+        selectedTableData?.map((sTData) => {
+          if (
+            sTData &&
+            sTData.project_id === tData.project_id &&
+            sTData.tower_id === tData.tower_id &&
+            sTData.floor === tData.floor &&
+            sTData.unit_number === tData.unit_number
+          ) {
+            match = true;
+            matchedStaleDataTemp.push(sTData);
+          }
+        });
+        if (match === false) {
+          newTableDataTemp.push(tData);
+        }
+      });
+      // remove marked data from table
+      setTableData(newTableDataTemp);
+      //reset selectedTableData variable
+      setSelectedTableData([]);
+      setMatchedStaleData([...matchedStaleData, ...matchedStaleDataTemp]);
     }
   }
   return (
@@ -243,6 +287,16 @@ export default function UMCorrectionPage() {
                 Mark as matched
               </button>
               <button
+                className='btn btn-info text-white'
+                type='button'
+                onClick={() => {
+                  handleDataMarking('Stale');
+                  setRowSelection({});
+                }}
+              >
+                Mark as matched stale
+              </button>
+              <button
                 className='btn btn-error text-white'
                 type='button'
                 onClick={() => {
@@ -262,13 +316,30 @@ export default function UMCorrectionPage() {
             </button>
           </>
         )}
-      {(matchedData.length > 0 || unMatchedData.length > 0) && (
+      {(matchedData.length > 0 ||
+        unMatchedData.length > 0 ||
+        matchedStaleData.length > 0) && (
         <div className='mx-auto flex w-2/3 flex-col gap-5 md:flex-row'>
           <span className='my-10 flex-1'>
             <h3 className='text-center font-semibold'>Matched Data</h3>
             <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
               {JSON.stringify(
                 matchedData.map((item) => ({
+                  project_id: item.project_id,
+                  tower_id: item.tower_id,
+                  floor: item.floor,
+                  unit_number: item.unit_number,
+                })),
+                null,
+                2
+              )}
+            </pre>
+          </span>
+          <span className='my-10 flex-1'>
+            <h3 className='text-center font-semibold'>Matched Stale Data</h3>
+            <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
+              {JSON.stringify(
+                matchedStaleData.map((item) => ({
                   project_id: item.project_id,
                   tower_id: item.tower_id,
                   floor: item.floor,

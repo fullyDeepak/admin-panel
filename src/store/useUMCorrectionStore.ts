@@ -15,6 +15,7 @@ export type UMManualDataType = {
   owner_list: string;
   ptin: string;
   current_owner_hm: string;
+  transaction_hm_match_type: string;
   transaction_types: string;
   master_door_number: string;
   verified: null;
@@ -73,6 +74,12 @@ interface State {
         'project_id' | 'tower_id' | 'floor' | 'unit_number'
       >[]
     | [];
+  matchedStaleData:
+    | Pick<
+        UMManualDataType,
+        'project_id' | 'tower_id' | 'floor' | 'unit_number'
+      >[]
+    | [];
 }
 
 type Actions = {
@@ -86,12 +93,12 @@ type Actions = {
   setSelectedTableData: (newData: State['selectedTableData']) => void;
   setMatchedData: (newData: State['matchedData']) => void;
   setUnMatchedData: (newData: State['matchedData']) => void;
+  setMatchedStaleData: (newData: State['matchedData']) => void;
 };
 
 export const useUMCorrectionFormStore = create<State & Actions>()(
   immer((set, get) => ({
     // Initial state
-
     selectedProject: undefined,
     selectedTower: undefined,
     selectedFloor: [],
@@ -103,6 +110,7 @@ export const useUMCorrectionFormStore = create<State & Actions>()(
     selectedTableData: [],
     matchedData: [],
     unMatchedData: [],
+    matchedStaleData: [],
 
     loadingErrOneTableData: 'idle',
     fetchUMManualData: async () => {
@@ -156,5 +164,6 @@ export const useUMCorrectionFormStore = create<State & Actions>()(
     setSelectedTableData: (data) => set({ selectedTableData: data }),
     setMatchedData: (data) => set({ matchedData: data }),
     setUnMatchedData: (data) => set({ unMatchedData: data }),
+    setMatchedStaleData: (data) => set({ matchedStaleData: data }),
   }))
 );
