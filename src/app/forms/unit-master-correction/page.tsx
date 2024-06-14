@@ -271,6 +271,7 @@ export default function UMCorrectionPage() {
 
       {(matchedData.length > 0 ||
         unMatchedData.length > 0 ||
+        matchedStaleData.length > 0 ||
         (tableData && tableData?.length > 0)) &&
         loadingErrOneTableData === 'complete' && (
           <>
