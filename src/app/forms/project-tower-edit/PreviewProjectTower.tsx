@@ -41,9 +41,7 @@ type PreviewProjectTowerProps = {
         doorNoStartWith: string[];
         aptNameNotContains: string[];
         singleUnit: boolean;
-        towerPattern: string;
-        floorPattern: string;
-        unitPattern: string;
+        etlPattern: string;
       }[]
     | undefined;
   towerFormData: {
@@ -183,9 +181,7 @@ export default function PreviewProjectTower({
     { header: 'Door No Start With', accessorKey: 'doorNoStartWith' },
     { header: 'Apt Name Not Contains', accessorKey: 'aptNameNotContains' },
     { header: 'Single Unit', accessorKey: 'singleUnit' },
-    { header: 'Tower Pattern', accessorKey: 'towerPattern' },
-    { header: 'Floor Pattern', accessorKey: 'floorPattern' },
-    { header: 'Unit Pattern', accessorKey: 'unitPattern' },
+    { header: 'ETL Pattern', accessorKey: 'etlPattern' },
   ];
 
   let etlUnitConfigs: {
@@ -207,14 +203,14 @@ export default function PreviewProjectTower({
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-5'>
         <p className='text-center text-3xl font-semibold'>Project Details</p>
-        <div className='flex flex-col rounded-lg border-4 p-3 '>
+        <div className='flex flex-col rounded-lg border-4 p-3'>
           <div className='mb-3 flex items-center justify-between gap-5 border-b-2 bg-slate-100 text-center'>
             <span className='flex-[4] p-2 font-semibold'>Field Name</span>
-            <span className='flex-[5] font-semibold '>Value</span>
+            <span className='flex-[5] font-semibold'>Value</span>
           </div>
           {Object.entries(projectFormData).map(([key, value]) => (
             <div
-              className='flex justify-end gap-5 border-b-2 p-3  hover:bg-slate-50'
+              className='flex justify-end gap-5 border-b-2 p-3 hover:bg-slate-50'
               key={key}
             >
               <span className='flex-[1] self-center border-r-2 font-semibold'>
@@ -224,7 +220,7 @@ export default function PreviewProjectTower({
               Array.isArray(value) &&
               value.length > 0 &&
               value[0]?.constructor === Object ? (
-                <span className='flex-[1] '>
+                <span className='flex-[1]'>
                   {value
                     .map((item) => {
                       if (typeof item !== 'string') {
@@ -234,7 +230,7 @@ export default function PreviewProjectTower({
                     .join(', ')}
                 </span>
               ) : (
-                <span className='flex-[1] '>
+                <span className='flex-[1]'>
                   {typeof value === 'boolean'
                     ? JSON.stringify(value)
                     : (value as string)}

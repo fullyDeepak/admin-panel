@@ -7,6 +7,7 @@ import { BiInfoCircle, BiPlus } from 'react-icons/bi';
 import { FaRegCopy } from 'react-icons/fa';
 import { MdContentPaste } from 'react-icons/md';
 import { useId } from 'react';
+import { BiReset } from 'react-icons/bi';
 
 interface ETLTagDataType {
   formProjectETLTagData: FormProjectETLTagDataType[];
@@ -63,8 +64,8 @@ export default function ETLTagData({
           <span className='text-center font-semibold'>
             ETL Card id: {etlTagData.id}
           </span>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex flex-[2] items-center  '>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex flex-[2] items-center'>
               <span>Village:</span>
             </span>
             <div className='flex-[5]'>
@@ -113,8 +114,8 @@ export default function ETLTagData({
               )}
             </div>
           </label>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex flex-[2] items-center  '>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex flex-[2] items-center'>
               <span>Single Unit?:</span>
             </span>
             <div className='flex flex-[5] items-center gap-5'>
@@ -134,53 +135,41 @@ export default function ETLTagData({
               <span>{etlTagData.singleUnit ? 'True' : 'False'}</span>
             </div>
           </label>
-          <div className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex flex-[2] items-center  '>
+          <div className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex flex-[2] items-center'>
               <span>Pattern:</span>
             </span>
-            <div className='flex w-full flex-[5]'>
+            <div className='flex w-full flex-[5] items-center gap-5'>
               <input
                 className={`${inputBoxClass} !ml-0`}
                 name='towerPattern'
-                defaultValue={etlTagData.towerPattern}
+                value={etlTagData.etlPattern}
                 onChange={(e) =>
                   updateProjectETLFormData(
                     etlTagData.id,
-                    'towerPattern',
+                    'etlPattern',
                     e.target.value
                   )
                 }
-                placeholder='Tower Pattern'
+                placeholder='Tower, Floor, Unit Pattern'
               />
-              <input
-                className={inputBoxClass}
-                name='floorPattern'
-                defaultValue={etlTagData.floorPattern}
-                onChange={(e) =>
+              <button
+                className='btn btn-warning flex max-h-11 items-center text-base font-medium'
+                type='button'
+                onClick={() =>
                   updateProjectETLFormData(
                     etlTagData.id,
-                    'floorPattern',
-                    e.target.value
+                    'etlPattern',
+                    '(?<tower>)(?<floor>)(?<unit_number>)'
                   )
                 }
-                placeholder='Floor Pattern'
-              />
-              <input
-                className={inputBoxClass}
-                name='unitPattern'
-                defaultValue={etlTagData.unitPattern}
-                onChange={(e) =>
-                  updateProjectETLFormData(
-                    etlTagData.id,
-                    'unitPattern',
-                    e.target.value
-                  )
-                }
-                placeholder='Unit Pattern'
-              />
+              >
+                <BiReset size={20} />
+                Reset
+              </button>
             </div>
           </div>
-          <div className='flex flex-wrap items-center justify-between gap-5 '>
+          <div className='flex flex-wrap items-center justify-between gap-5'>
             <span className='flex flex-[2] items-center'>
               <span>Doc ID:</span>
               <span
@@ -208,8 +197,8 @@ export default function ETLTagData({
               regexPattern={docIdPattern}
             />
           </div>
-          <div className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex flex-[2] items-center  '>
+          <div className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex flex-[2] items-center'>
               <span>Root Docs:</span>
               <span
                 className='tooltip'
@@ -240,8 +229,8 @@ export default function ETLTagData({
               regexPattern={docIdPattern}
             />
           </div>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex-[2] '>Apartment Contains:</span>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex-[2]'>Apartment Contains:</span>
             <div className='flex flex-[5] gap-4'>
               <ChipInput
                 chips={etlTagData.apartmentContains}
@@ -253,7 +242,7 @@ export default function ETLTagData({
               />
               <div className='flex items-center gap-2'>
                 <label
-                  className={`swap rounded  p-1 ${etlTagData.aptSurveyPlotDetails ? 'bg-green-200' : 'bg-rose-200'}`}
+                  className={`swap rounded p-1 ${etlTagData.aptSurveyPlotDetails ? 'bg-green-200' : 'bg-rose-200'}`}
                 >
                   <input
                     type='checkbox'
@@ -273,8 +262,8 @@ export default function ETLTagData({
               </div>
             </div>
           </label>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex-[2] '>Counterparty Contains:</span>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex-[2]'>Counterparty Contains:</span>
             <div className='flex flex-[5] gap-4'>
               <ChipInput
                 chips={etlTagData.counterpartyContains}
@@ -286,7 +275,7 @@ export default function ETLTagData({
               />
               <div className='flex items-center gap-2'>
                 <label
-                  className={`swap rounded  p-1 ${etlTagData.counterpartySurveyPlotDetails ? 'bg-green-200' : 'bg-rose-200'}`}
+                  className={`swap rounded p-1 ${etlTagData.counterpartySurveyPlotDetails ? 'bg-green-200' : 'bg-rose-200'}`}
                 >
                   <input
                     type='checkbox'
@@ -306,8 +295,8 @@ export default function ETLTagData({
               </div>
             </div>
           </label>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex-[2] '>Survey & Plot Equals:</span>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex-[2]'>Survey & Plot Equals:</span>
             <div className='flex flex-[5] gap-2'>
               <ChipInput
                 chips={etlTagData.surveyEquals}
@@ -329,8 +318,8 @@ export default function ETLTagData({
               />
             </div>
           </label>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex-[2] '>Survey & Plot Contains:</span>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex-[2]'>Survey & Plot Contains:</span>
             <div className='flex flex-[5] gap-2'>
               <ChipInput
                 chips={etlTagData.surveyContains}
@@ -352,8 +341,8 @@ export default function ETLTagData({
               />
             </div>
           </label>
-          <div className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex-[2] '>Locality contains, W-B, Plot:</span>
+          <div className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex-[2]'>Locality contains, W-B, Plot:</span>
             <div className='flex flex-[5] gap-2'>
               <ChipInput
                 chips={etlTagData.localityContains}
@@ -382,8 +371,8 @@ export default function ETLTagData({
               />
             </div>
           </div>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex flex-[2] items-center  '>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex flex-[2] items-center'>
               <span>Door no. start with:</span>
             </span>
             <ChipInput
@@ -393,8 +382,8 @@ export default function ETLTagData({
               updateKey='doorNoStartWith'
             />
           </label>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex flex-[2] items-center  '>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex flex-[2] items-center'>
               <span>Apartment name doesn&apos;t contains:</span>
             </span>
             <ChipInput
@@ -404,7 +393,7 @@ export default function ETLTagData({
               updateKey='aptNameNotContains'
             />
           </label>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
             <span className='flex flex-[2] items-center'>
               <span>Doc ID doesn&apos;t equals:</span>
               <span
@@ -422,10 +411,10 @@ export default function ETLTagData({
               regexPattern={notDocIdPattern}
             />
           </label>
-          <div className='absolute -bottom-6 -left-5 z-10 w-full '>
+          <div className='absolute -bottom-6 -left-5 z-10 w-full'>
             <button
               type='button'
-              className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400 '
+              className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400'
               onClick={() => {
                 const newData = {
                   ...etlTagData,

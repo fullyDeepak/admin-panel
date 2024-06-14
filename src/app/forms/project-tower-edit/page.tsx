@@ -3,7 +3,7 @@
 import axiosClient from '@/utils/AxiosClient';
 import axios from 'axios';
 import { FormEvent, ReactElement, useEffect, useState } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import ProjectForm from './ProjectForm';
 import TowerForm from './TowerForm';
 import PreviewProjectTower from './PreviewProjectTower';
@@ -36,7 +36,6 @@ export default function ProjectTowerEditPage() {
     ).reset();
   }, [usePathname]);
 
-  let loadingToastId: string;
   let newProjectFormData: any;
   newProjectFormData = { ...editProjectFormData };
   delete newProjectFormData.selectedProjectOption;
@@ -69,18 +68,11 @@ export default function ProjectTowerEditPage() {
   ];
 
   const submitForm = async (e: FormEvent<HTMLFormElement>) => {
-    toast.loading(`Saving to database.`, {
-      id: loadingToastId,
-    });
     e.preventDefault();
 
     try {
       if (!newProjectFormData.projectName) {
-        toast.dismiss(loadingToastId);
-        toast.error(`Project name is missing.`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
+        alert(`Project name is missing.`);
         return null;
       }
       const ifVillageNull: boolean[] = [];
@@ -90,11 +82,7 @@ export default function ProjectTowerEditPage() {
         }
       });
       if (newProjectFormETLTagData?.length !== ifVillageNull.length) {
-        toast.dismiss(loadingToastId);
-        toast.error(`You forgot to select Project ETL Village.`, {
-          id: loadingToastId,
-          duration: 5000,
-        });
+        alert(`You forgot to select Project ETL Village.`);
         return null;
       }
 
@@ -105,11 +93,7 @@ export default function ProjectTowerEditPage() {
         }
       });
       if (newTowerFormData.length !== ifTowerNameNull.length) {
-        toast.dismiss(loadingToastId);
-        toast.error(`You forget to write tower name.`, {
-          id: loadingToastId,
-          duration: 5000,
-        });
+        alert(`You forget to write tower name.`);
         return null;
       }
 
@@ -142,22 +126,26 @@ export default function ProjectTowerEditPage() {
         },
       };
       setSentData(data);
-      const projectRes = await axiosClient.put('/projects', data);
+      const projectResPromise = axiosClient.put('/projects', data);
+
+      const projectRes = await toast.promise(
+        projectResPromise,
+        {
+          loading: 'Updating database...',
+          success: 'Project update saved to database.',
+          error: 'Something went wrong',
+        },
+        {
+          success: {
+            duration: 10000,
+          },
+        }
+      );
       if (projectRes.status === 200) {
-        toast.dismiss(loadingToastId);
-        toast.success(`Project update saved to database.`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
         setResponseData(projectRes.data);
         resetEditProjectFormData();
         resetEditTowerFormData();
       } else {
-        toast.dismiss(loadingToastId);
-        toast.error(`Couldn't get the Project ID.`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
         setResponseData(projectRes.data);
         return null;
       }
@@ -172,34 +160,33 @@ export default function ProjectTowerEditPage() {
         setResponseData((prev) => {
           return JSON.stringify(prev) + JSON.stringify(errMsg);
         });
-        toast.dismiss(loadingToastId);
-        toast.error(`Error: ${errMsg}`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
+        toast.error(`Error: ${errMsg}`);
       } else {
-        toast.dismiss(loadingToastId);
-        toast.error("Couldn't send data to server.", {
-          id: loadingToastId,
-          duration: 3000,
-        });
+        toast.error("Couldn't send data to server.");
       }
     }
   };
 
   async function projectDelete() {
-    toast.loading(`Deleting...`, {
-      id: loadingToastId,
-    });
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const projectId = editProjectFormData.selectedProject;
-    const res = await axiosClient.delete(`/projects/${projectId}`);
-    if (res.status === 200) {
-      toast.dismiss(loadingToastId);
-      toast.success('Successfully deleted!', {
-        id: loadingToastId,
-        duration: 3000,
-      });
+    const resPromise = axiosClient.delete(`/projects/${projectId}`);
+
+    const response = await toast.promise(
+      resPromise,
+      {
+        loading: 'Deleting...',
+        success: 'Successfully deleted.',
+        error: 'Something went wrong',
+      },
+      {
+        success: {
+          duration: 10000,
+        },
+      }
+    );
+
+    if (response.status === 200) {
       resetEditProjectFormData();
       resetEditTowerFormData();
       (
@@ -209,30 +196,24 @@ export default function ProjectTowerEditPage() {
         document.getElementById('project-delete-modal') as HTMLDialogElement
       ).close();
     } else {
-      toast.dismiss(loadingToastId);
-      toast.error('Something went wrong!', {
-        id: loadingToastId,
-        duration: 3000,
-      });
+      toast.error('Something went wrong!');
     }
   }
 
   return (
     <div className='mx-auto mt-10 flex w-full flex-col'>
-      <Toaster />
       <h1 className='self-center text-2xl md:text-3xl'>
         Form: Update Project Tower Tagging Data
       </h1>
       <dialog id='project-delete-modal' className='modal backdrop-blur-sm'>
-        <Toaster />
         <div className='modal-box h-[50%]'>
-          <div className='flex flex-col items-center  justify-center text-red-500'>
+          <div className='flex flex-col items-center justify-center text-red-500'>
             <CgInfo size={60} />
-            <h3 className='text-3xl font-bold '>Danger</h3>
+            <h3 className='text-3xl font-bold'>Danger</h3>
           </div>
           <p className='py-4'>Do you want to delete selected project?</p>
           <div className='flex flex-col gap-3'>
-            <div className='flex '>
+            <div className='flex'>
               <span className='flex-1 font-semibold'>Project ID</span>
               <span className='flex-[2]'>
                 {editProjectFormData.selectedProject}
@@ -292,7 +273,7 @@ export default function ProjectTowerEditPage() {
           </li>
         </ul>
         {formsStep[formCount]}
-        <div className='mx-auto flex w-full items-center justify-center gap-10 md:w-[80%] md:gap-40 '>
+        <div className='mx-auto flex w-full items-center justify-center gap-10 md:w-[80%] md:gap-40'>
           <button
             type='button'
             className='btn btn-info btn-sm w-32 text-white md:btn-md'
@@ -342,7 +323,7 @@ export default function ProjectTowerEditPage() {
           <p className='mt-10 text-center text-2xl font-semibold'>
             Response from server
           </p>
-          <pre className='my-10 max-h-[500px] min-w-[80%] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
+          <pre className='my-10 max-h-[500px] w-[80%] min-w-[80%] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
             {JSON.stringify(responseData, null, 2)}
           </pre>
         </div>

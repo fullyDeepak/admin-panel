@@ -16,12 +16,10 @@ type DocsETLTagDataProps = {
 };
 
 export default function DocsETLTagData({
-  loadingVillages,
   villageOptions,
 }: DocsETLTagDataProps) {
   const {
     projectFormDataRera,
-    updateProjectFormDataRera,
     projectFormETLTagData,
     updateProjectETLTagData,
     deleteProjectETLTagCard,
@@ -36,8 +34,8 @@ export default function DocsETLTagData({
       <h3 className='my-4 text-2xl font-semibold'>Section: ETL Tag Data</h3>{' '}
       {projectFormDataRera.isRERAProject && (
         <>
-          <div className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex flex-[2] items-center  '>
+          <div className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex flex-[2] items-center'>
               <span>Preview RERA Documents:</span>
             </span>
             <div className='dropdown flex-[5]'>
@@ -70,7 +68,7 @@ export default function DocsETLTagData({
                   </button>
                   <ul
                     tabIndex={0}
-                    className='menu dropdown-content z-[1]  rounded-box bg-base-100 p-2 shadow-c'
+                    className='menu dropdown-content z-[1] rounded-box bg-base-100 p-2 shadow-c'
                   >
                     {reraDocs.map((doc, index) => (
                       <li key={index}>
@@ -110,19 +108,19 @@ export default function DocsETLTagData({
               )}
             </div>
           </div>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex flex-[2] items-center  '>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex flex-[2] items-center'>
               <span>Suggested Survey:</span>
             </span>
-            <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
+            <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
               <span>{projectFormDataRera.surveySuggestion.join(', ')}</span>
             </span>
           </label>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex flex-[2] items-center  '>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex flex-[2] items-center'>
               <span>Suggested Plot:</span>
             </span>
-            <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
+            <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
               <span>{projectFormDataRera.plotSuggestion.join(', ')}</span>
             </span>
           </label>

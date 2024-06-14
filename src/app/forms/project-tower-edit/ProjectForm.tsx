@@ -66,7 +66,7 @@ export default function ProjectForm() {
   });
 
   // populate village option
-  const { isPending: loadingVillages, data: villageOptions } = useQuery({
+  const { data: villageOptions } = useQuery({
     queryKey: ['village'],
     queryFn: async () => {
       try {
@@ -143,9 +143,7 @@ export default function ProjectForm() {
                 doorNoStartWith: etlData.door_no_start,
                 aptNameNotContains: etlData.apt_name_not_contains,
                 singleUnit: etlData.single_unit,
-                towerPattern: etlData.tower_pattern,
-                floorPattern: etlData.floor_pattern,
-                unitPattern: etlData.unit_pattern,
+                etlPattern: etlData.etl_pattern,
                 localityWbPlot: '',
               };
             });
@@ -292,8 +290,8 @@ export default function ProjectForm() {
   return (
     <>
       <h3 className='my-4 text-2xl font-semibold'>Section: Project Details</h3>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Select Project to Edit:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Select Project to Edit:</span>
         <span className='flex w-full flex-[5] items-center gap-5'>
           <Select
             showSearch
@@ -318,7 +316,7 @@ export default function ProjectForm() {
           {editProjectFormData.projectName && (
             <button
               type='button'
-              className='btn btn-error  btn-xs rounded-full text-white'
+              className='btn btn-error btn-xs rounded-full text-white'
               onClick={() =>
                 (
                   document.getElementById(
@@ -356,8 +354,8 @@ export default function ProjectForm() {
           </Select>
         </span>
       </label> */}
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Project Name:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Project Name:</span>
         <input
           className={inputBoxClass}
           name='projectName'
@@ -365,8 +363,8 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Layout Name:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Layout Name:</span>
         <input
           type='text'
           className={inputBoxClass}
@@ -375,8 +373,8 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Developer:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Developer:</span>
         <input
           className={inputBoxClass}
           name='developer'
@@ -384,8 +382,8 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Developer Group:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Developer Group:</span>
         <input
           className={inputBoxClass}
           name='developerGroup'
@@ -393,8 +391,8 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Project Type:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Project Type:</span>
         <span className='w-full flex-[5] pl-2'>
           <Select
             value={editProjectFormData.projectType}
@@ -418,8 +416,8 @@ export default function ProjectForm() {
           </Select>
         </span>
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Project Sub Type:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Project Sub Type:</span>
         <span className='w-full flex-[5] pl-2'>
           <Select
             onChange={(e) => updateEditProjectFormData({ projectSubType: e })}
@@ -438,8 +436,8 @@ export default function ProjectForm() {
           </Select>
         </span>
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Project Description:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Project Description:</span>
         <input
           type='text'
           className={inputBoxClass}
@@ -448,8 +446,8 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      <div className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Amenities Tags:</span>
+      <div className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Amenities Tags:</span>
         <CreatableSelect
           className='w-full flex-[5]'
           options={amenitiesOptions || []}

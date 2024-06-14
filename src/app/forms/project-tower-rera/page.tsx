@@ -3,7 +3,7 @@
 import axiosClient from '@/utils/AxiosClient';
 import axios from 'axios';
 import { FormEvent, ReactElement, useEffect, useState } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import ProjectForm from './ProjectForm';
 import TowerForm from './TowerForm';
 import PreviewProjectTower from './PreviewProjectTower';
@@ -32,8 +32,6 @@ export default function ProjectTowerReraPage() {
     resetTowerFormDataRera();
     (document.getElementById('projectTowerForm') as HTMLFormElement).reset();
   }, [usePathname]);
-
-  let loadingToastId: string;
 
   let newProjectFormData: any;
   newProjectFormData = { ...projectFormDataRera };
@@ -91,17 +89,10 @@ export default function ProjectTowerReraPage() {
   ];
 
   const submitForm = async (e: FormEvent<HTMLFormElement>) => {
-    toast.loading(`Saving to database.`, {
-      id: loadingToastId,
-    });
     e.preventDefault();
     console.log(newProjectFormData);
     if (!newProjectFormData.projectName || !newProjectFormData.village_id) {
-      toast.dismiss(loadingToastId);
-      toast.error(`Project name or Village id is missing.`, {
-        id: loadingToastId,
-        duration: 3000,
-      });
+      alert(`Project name or Village id is missing.`);
       return null;
     }
 
@@ -112,11 +103,7 @@ export default function ProjectTowerReraPage() {
       }
     });
     if (newProjectFormETLTagData.length !== ifVillageNull.length) {
-      toast.dismiss(loadingToastId);
-      toast.error(`You forgot to select Project ETL Village.`, {
-        id: loadingToastId,
-        duration: 5000,
-      });
+      alert(`You forgot to select Project ETL Village.`);
       return null;
     }
 
@@ -127,11 +114,7 @@ export default function ProjectTowerReraPage() {
       }
     });
     if (newTowerFormData.length !== ifTowerNameNull.length) {
-      toast.dismiss(loadingToastId);
-      toast.error(`You forget to write tower name.`, {
-        id: loadingToastId,
-        duration: 5000,
-      });
+      alert(`You forget to write tower name.`);
       return null;
     }
 
@@ -144,13 +127,21 @@ export default function ProjectTowerReraPage() {
     };
     setSentData(data);
     try {
-      const projectRes = await axiosClient.post('/projects', data);
+      const projectResPromise = axiosClient.post('/projects', data);
+      const projectRes = await toast.promise(
+        projectResPromise,
+        {
+          loading: 'Saving to database...',
+          success: 'Project and Tower data added to database.',
+          error: 'Something went wrong',
+        },
+        {
+          success: {
+            duration: 10000,
+          },
+        }
+      );
       if (projectRes.status === 200) {
-        toast.dismiss(loadingToastId);
-        toast.success(`Project and Tower data added to database.`, {
-          id: loadingToastId,
-          duration: 3000,
-        });
         setResponseData(projectRes.data);
         resetProjectFormDataRera();
         resetTowerFormDataRera();
@@ -166,15 +157,11 @@ export default function ProjectTowerReraPage() {
         setResponseData((prev) => {
           return JSON.stringify(prev) + JSON.stringify(errMsg);
         });
-        toast.dismiss(loadingToastId);
         toast.error(`Error: ${errMsg}`, {
-          id: loadingToastId,
           duration: 3000,
         });
       } else {
-        toast.dismiss(loadingToastId);
         toast.error("Couldn't send data to server.", {
-          id: loadingToastId,
           duration: 3000,
         });
       }
@@ -183,12 +170,11 @@ export default function ProjectTowerReraPage() {
 
   return (
     <div className='mx-auto mt-10 flex w-full flex-col'>
-      <Toaster />
       <h1 className='self-center text-2xl md:text-3xl'>
         Form: Project Tower Tagging v2.0
       </h1>
       <form
-        className='mt-5 flex w-full max-w-full  flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
+        className='mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
         id='projectTowerForm'
         onSubmit={submitForm}
       >
@@ -215,7 +201,7 @@ export default function ProjectTowerReraPage() {
           )}
         </ul>
 
-        <div className='mx-auto flex flex-wrap items-center justify-between gap-5 rounded-full bg-rose-100 p-2 px-6 text-2xl transition-all '>
+        <div className='mx-auto flex flex-wrap items-center justify-between gap-5 rounded-full bg-rose-100 p-2 px-6 text-2xl transition-all'>
           <div className='flex items-center gap-5 transition-all duration-1000'>
             <span>Is RERA project?:</span>
             <input
@@ -238,7 +224,7 @@ export default function ProjectTowerReraPage() {
         {projectFormDataRera.isRERAProject
           ? reraFormSteps[formCount]
           : nonReraFormSteps[formCount]}
-        <div className='mx-auto flex w-full items-center justify-center gap-10 md:w-[80%] md:gap-40 '>
+        <div className='mx-auto flex w-full items-center justify-center gap-10 md:w-[80%] md:gap-40'>
           <button
             type='button'
             className='btn btn-info btn-sm w-32 text-white md:btn-md'
