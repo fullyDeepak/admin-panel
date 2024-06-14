@@ -1,5 +1,3 @@
-import { SingleValue } from 'react-select';
-
 export interface GetTowerUnitConfigDetails {
   id: number;
   config: string;
@@ -28,9 +26,7 @@ interface GetProjectETLTagDataType {
   door_no_start: string[];
   apt_name_not_contains: string[];
   single_unit: boolean;
-  tower_pattern: string;
-  floor_pattern: string;
-  unit_pattern: string;
+  etl_pattern: string;
   locality_wb_plot: string;
 }
 
@@ -99,9 +95,7 @@ export interface FormProjectETLTagDataType {
   doorNoStartWith: string[];
   aptNameNotContains: string[];
   singleUnit: boolean;
-  towerPattern: string;
-  floorPattern: string;
-  unitPattern: string;
+  etlPattern: string;
 }
 
 export interface FormProjectDataType {
