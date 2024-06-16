@@ -10,6 +10,7 @@ import LoadingCircle from '@/components/ui/LoadingCircle';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import SimpleTable from '@/components/tables/SimpleTable';
 
 export default function UMCorrectionPage() {
   const {
@@ -17,8 +18,18 @@ export default function UMCorrectionPage() {
     setSelectedTableData,
     matchedData,
     unMatchedData,
-    loadingErrOneTableData,
-    fetchUMManualData,
+    errorType,
+    loadingErrData,
+    setErrTwoMatchedData,
+    errTwoMatchedData,
+    selectedErrTwoData,
+    setSelectedErrTwoData,
+    errTwoLeftData,
+    errTwoRightData,
+    fetchUMMErrData,
+    selectedTower,
+    selectedErrTwoFloor,
+    errTwoSelectedUnit,
     selectedProject,
     selectedTableData,
     matchedStaleData,
@@ -30,7 +41,7 @@ export default function UMCorrectionPage() {
   const [rowSelection, setRowSelection] = useState({});
   const queryClient = useQueryClient();
 
-  const tableColumn = [
+  const tableColumnErrOne = [
     {
       header: 'Project Id',
       accessorKey: 'project_id',
@@ -93,66 +104,158 @@ export default function UMCorrectionPage() {
       accessorKey: 'transaction_hm_match_type',
     },
   ];
+  const tableColumnErrTwoLeft = [
+    'Generated Door Number',
+    'Latest Owner',
+    'Doc Id List',
+    'Transaction Types',
+    'Owner List',
+  ];
+  const tableColumnErrTwoRight = [
+    {
+      header: 'Master Door Number',
+      accessorKey: 'master_door_number',
+    },
+    {
+      header: 'PTIN',
+      accessorKey: 'ptin',
+    },
+    {
+      header: 'Current Owner HM',
+      accessorKey: 'current_owner_hm',
+      cell: ({ row }: any) => (
+        <p className='font-semibold text-violet-600'>
+          {row.original.current_owner_hm}
+        </p>
+      ),
+    },
+    {
+      header: 'mobile_number',
+      accessorKey: 'mobile_number',
+    },
+
+    {
+      header: 'Transaction HM Match Type',
+      accessorKey: 'transaction_hm_match_type',
+    },
+  ];
 
   // submit form here
-  async function submitForm() {
-    if (
-      matchedData.length === 0 &&
-      unMatchedData.length === 0 &&
-      matchedStaleData.length === 0 &&
-      selectedProject?.value != null
-    ) {
-      return null;
-    }
-    const data = {
-      matchedData: matchedData.map((item) => ({
-        project_id: item.project_id,
-        tower_id: item.tower_id,
-        floor: item.floor,
-        unit_number: item.unit_number,
-      })),
-      unMatchedData: unMatchedData.map((item) => ({
-        project_id: item.project_id,
-        tower_id: item.tower_id,
-        floor: item.floor,
-        unit_number: item.unit_number,
-      })),
-      matchedStaleData: matchedStaleData.map((item) => ({
-        project_id: item.project_id,
-        tower_id: item.tower_id,
-        floor: item.floor,
-        unit_number: item.unit_number,
-      })),
-    };
-    const responsePromise = axiosClient.put<{
-      data: {
-        matched: string;
-        unmatched: string;
-        matchStale: string;
-      };
-    }>('/unitmaster/errorTypeOne', data);
-    await toast.promise(
-      responsePromise,
-      {
-        loading: 'Updating database...',
-        success: (data) =>
-          `Matched: ${data.data.data.matched} Match Stale: ${data.data.data.matchStale} Unmatched: ${data.data.data.unmatched}`,
-        error: 'Something went wrong',
-      },
-      {
-        success: {
-          duration: 10000,
-        },
+  async function submitForm(errType: 'err-1' | 'err-2') {
+    if (errType === 'err-1') {
+      if (
+        matchedData.length === 0 &&
+        unMatchedData.length === 0 &&
+        matchedStaleData.length === 0 &&
+        selectedProject?.value != null
+      ) {
+        return null;
       }
-    );
-    await queryClient.refetchQueries({ queryKey: ['projects'], type: 'all' });
-    fetchUMManualData();
-    setMatchedData([]);
-    setMatchedStaleData([]);
-    setUnMatchedData([]);
+      const data = {
+        matchedData: matchedData.map((item) => ({
+          project_id: item.project_id,
+          tower_id: item.tower_id,
+          floor: item.floor,
+          unit_number: item.unit_number,
+        })),
+        unMatchedData: unMatchedData.map((item) => ({
+          project_id: item.project_id,
+          tower_id: item.tower_id,
+          floor: item.floor,
+          unit_number: item.unit_number,
+        })),
+        matchedStaleData: matchedStaleData.map((item) => ({
+          project_id: item.project_id,
+          tower_id: item.tower_id,
+          floor: item.floor,
+          unit_number: item.unit_number,
+        })),
+      };
+      const responsePromise = axiosClient.put<{
+        data: {
+          matched: string;
+          deleted: string;
+        };
+      }>('/unitmaster/errOne', data);
+      await toast.promise(
+        responsePromise,
+        {
+          loading: 'Updating database...',
+          success: (data) =>
+            `Updated: ${data.data.data.matched} Deleted: ${data.data.data.deleted}`,
+          error: 'Something went wrong',
+        },
+        {
+          success: {
+            duration: 10000,
+          },
+        }
+      );
+      await queryClient.refetchQueries({ queryKey: ['projects'], type: 'all' });
+      fetchUMMErrData();
+      setMatchedData([]);
+      setMatchedStaleData([]);
+      setUnMatchedData([]);
+    } else if (errType === 'err-2') {
+      const project_id = selectedProject?.value;
+      const tower_id = selectedTower?.value;
+      const floor = selectedErrTwoFloor?.value;
+      const unit_number = errTwoSelectedUnit?.value;
+      if (
+        errTwoMatchedData?.matchedData?.length === 0 &&
+        errTwoMatchedData?.unmatchedData?.length === 0 &&
+        (project_id != null ||
+          tower_id != null ||
+          floor != null ||
+          unit_number != null)
+      ) {
+        return null;
+      }
+      const data = {
+        project_id,
+        tower_id,
+        floor,
+        unit_number,
+        matchedData: errTwoMatchedData.matchedData,
+        unMatchedData: errTwoMatchedData.unmatchedData,
+        matchType: errTwoMatchedData.matchType,
+      };
+
+      const responsePromise = axiosClient.put<{
+        data: {
+          matched: string;
+          deleted: string;
+        };
+      }>('/unitmaster/errTwo', data);
+      await toast.promise(
+        responsePromise,
+        {
+          loading: 'Updating database...',
+          success: (data) =>
+            `Matched: ${data.data.data.matched} Deleted: ${data.data.data.deleted}`,
+          error: 'Something went wrong',
+        },
+        {
+          success: {
+            duration: 10000,
+          },
+        }
+      );
+      fetchUMMErrData();
+      setMatchedData([]);
+      setMatchedStaleData([]);
+      setUnMatchedData([]);
+      setErrTwoMatchedData({
+        matchedData: null,
+        unmatchedData: null,
+        matchType: null,
+      });
+    }
   }
 
-  function handleDataMarking(markType: 'Matched' | 'Unmatched' | 'Stale') {
+  function handleErrOneDataMarking(
+    markType: 'Matched' | 'Unmatched' | 'Stale'
+  ) {
     if (markType === 'Matched') {
       const matchedDataTemp: Pick<
         UMManualDataType,
@@ -242,19 +345,44 @@ export default function UMCorrectionPage() {
       setMatchedStaleData([...matchedStaleData, ...matchedStaleDataTemp]);
     }
   }
+
+  function handleErrTwoDataMarking(
+    markType: 'Matched' | 'Unmatched' | 'Stale'
+  ) {
+    let unmatchedData: {
+      master_door_number: string;
+      ptin: string;
+      current_owner_hm: string;
+      mobile_number: string;
+      transaction_hm_match_type: string;
+    }[] = [];
+
+    if (setSelectedErrTwoData && setSelectedErrTwoData.length === 1) {
+      unmatchedData = errTwoRightData?.filter(
+        (item) => item.ptin !== selectedErrTwoData[0]?.ptin
+      );
+    }
+    setErrTwoMatchedData({
+      matchedData: selectedErrTwoData,
+      unmatchedData: unmatchedData,
+      matchType: markType,
+    });
+  }
+
   return (
     <div className='mx-auto mb-60 mt-10 flex w-full flex-col'>
       <h1 className='self-center text-2xl md:text-3xl'>
         Form: Unit Master Correction Form
       </h1>
       <Form />
-      {tableData &&
+      {errorType?.value === 'err-type-1' &&
+        tableData &&
         tableData.length > 0 &&
-        loadingErrOneTableData === 'complete' && (
+        loadingErrData === 'complete' && (
           <div className='mx-auto my-10 max-w-[80%]'>
-            <h3 className='my-5 text-center text-3xl font-semibold underline underline-offset-8'>{`UM Manual Table Data(${tableData.length})`}</h3>
+            <h3 className='my-5 text-center text-3xl font-semibold underline underline-offset-8'>{`UM Manual Error-1 Table Data(${tableData.length})`}</h3>
             <TanstackReactTable
-              columns={tableColumn}
+              columns={tableColumnErrOne}
               data={tableData}
               setSelectedRows={setSelectedTableData}
               rowSelection={rowSelection}
@@ -262,26 +390,57 @@ export default function UMCorrectionPage() {
             />
           </div>
         )}
+      {errorType?.value === 'err-type-2' && loadingErrData === 'complete' && (
+        <div className='mx-auto my-10 max-w-[80%]'>
+          <h3 className='my-5 text-center text-3xl font-semibold underline underline-offset-8'>{`UM Manual Error-2 Table Data`}</h3>
+          {(errTwoLeftData.length !== 0 || errTwoRightData.length !== 0) && (
+            <div className='flex w-full max-w-full flex-col'>
+              <div className='sticky top-0 z-10 mx-auto flex-1'>
+                <SimpleTable
+                  columns={tableColumnErrTwoLeft}
+                  tableData={errTwoLeftData.map((item) => [
+                    item.generated_door_number,
+                    item.latest_owner,
+                    item.doc_id_list,
+                    item.transaction_types,
+                    item.owner_list,
+                  ])}
+                />
+              </div>
+              <div className='flex-1 overflow-x-auto'>
+                <TanstackReactTable
+                  columns={tableColumnErrTwoRight}
+                  data={errTwoRightData}
+                  setSelectedRows={setSelectedErrTwoData}
+                  rowSelection={rowSelection}
+                  setRowSelection={setRowSelection}
+                  isMultiSelection={false}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
-      {loadingErrOneTableData === 'loading' && (
+      {loadingErrData === 'loading' && (
         <span className='text-center'>
           <LoadingCircle circleColor='black' size='large' />
         </span>
       )}
-
-      {(matchedData.length > 0 ||
-        unMatchedData.length > 0 ||
-        matchedStaleData.length > 0 ||
-        (tableData && tableData?.length > 0)) &&
-        loadingErrOneTableData === 'complete' && (
+      {/* Err-1 controls here */}
+      {errorType?.value === 'err-type-1' &&
+        (matchedData.length > 0 ||
+          unMatchedData.length > 0 ||
+          matchedStaleData.length > 0 ||
+          (tableData && tableData?.length > 0)) &&
+        loadingErrData === 'complete' && (
           <>
-            {' '}
             <div className='mt-20 flex items-center justify-center gap-5'>
               <button
                 className='btn btn-success text-white'
                 type='button'
                 onClick={() => {
-                  handleDataMarking('Matched');
+                  handleErrOneDataMarking('Matched');
                   setRowSelection({});
                 }}
               >
@@ -291,7 +450,7 @@ export default function UMCorrectionPage() {
                 className='btn btn-info text-white'
                 type='button'
                 onClick={() => {
-                  handleDataMarking('Stale');
+                  handleErrOneDataMarking('Stale');
                   setRowSelection({});
                 }}
               >
@@ -301,7 +460,7 @@ export default function UMCorrectionPage() {
                 className='btn btn-error text-white'
                 type='button'
                 onClick={() => {
-                  handleDataMarking('Unmatched');
+                  handleErrOneDataMarking('Unmatched');
                   setRowSelection({});
                 }}
               >
@@ -310,64 +469,146 @@ export default function UMCorrectionPage() {
             </div>
             <button
               className='btn mx-auto my-16 w-40 border-none bg-violet-600 text-white hover:bg-violet-700'
-              onClick={submitForm}
+              onClick={() => submitForm('err-1')}
               type='button'
             >
               Submit
             </button>
           </>
         )}
-      {(matchedData.length > 0 ||
-        unMatchedData.length > 0 ||
-        matchedStaleData.length > 0) && (
-        <div className='mx-auto flex w-2/3 flex-col gap-5 md:flex-row'>
-          <span className='my-10 flex-1'>
-            <h3 className='text-center font-semibold'>Matched Data</h3>
-            <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
-              {JSON.stringify(
-                matchedData.map((item) => ({
-                  project_id: item.project_id,
-                  tower_id: item.tower_id,
-                  floor: item.floor,
-                  unit_number: item.unit_number,
-                })),
-                null,
-                2
-              )}
-            </pre>
-          </span>
-          <span className='my-10 flex-1'>
-            <h3 className='text-center font-semibold'>Matched Stale Data</h3>
-            <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
-              {JSON.stringify(
-                matchedStaleData.map((item) => ({
-                  project_id: item.project_id,
-                  tower_id: item.tower_id,
-                  floor: item.floor,
-                  unit_number: item.unit_number,
-                })),
-                null,
-                2
-              )}
-            </pre>
-          </span>
-          <span className='my-10 flex-1'>
-            <h3 className='text-center font-semibold'>Unmatched Data</h3>
-            <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
-              {JSON.stringify(
-                unMatchedData.map((item) => ({
-                  project_id: item.project_id,
-                  tower_id: item.tower_id,
-                  floor: item.floor,
-                  unit_number: item.unit_number,
-                })),
-                null,
-                2
-              )}
-            </pre>
-          </span>
-        </div>
+
+      {/* Err-2 controls here */}
+      {errorType?.value === 'err-type-2' && loadingErrData === 'complete' && (
+        <>
+          <div className='mt-20 flex items-center justify-center gap-5'>
+            <button
+              className='btn btn-success text-white'
+              type='button'
+              onClick={() => {
+                handleErrTwoDataMarking('Matched');
+              }}
+            >
+              Mark as matched
+            </button>
+            <button
+              className='btn btn-info text-white'
+              type='button'
+              onClick={() => {
+                handleErrTwoDataMarking('Stale');
+              }}
+            >
+              Mark as matched stale
+            </button>
+            <button
+              className='btn btn-error text-white'
+              type='button'
+              onClick={() => {
+                handleErrTwoDataMarking('Unmatched');
+              }}
+            >
+              Marks as unmatched
+            </button>
+          </div>
+          <button
+            className='btn mx-auto my-16 w-40 border-none bg-violet-600 text-white hover:bg-violet-700'
+            onClick={() => submitForm('err-2')}
+            type='button'
+          >
+            Submit
+          </button>
+        </>
       )}
+      {/* Error-1 preview */}
+      {errorType?.value === 'err-type-1' &&
+        (matchedData.length > 0 ||
+          unMatchedData.length > 0 ||
+          matchedStaleData.length > 0) && (
+          <div className='mx-auto flex w-2/3 flex-col gap-5 md:flex-row'>
+            <span className='my-10 flex-1'>
+              <h3 className='text-center font-semibold'>Matched Data</h3>
+              <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
+                {JSON.stringify(
+                  matchedData.map((item) => ({
+                    project_id: item.project_id,
+                    tower_id: item.tower_id,
+                    floor: item.floor,
+                    unit_number: item.unit_number,
+                  })),
+                  null,
+                  2
+                )}
+              </pre>
+            </span>
+            <span className='my-10 flex-1'>
+              <h3 className='text-center font-semibold'>Matched Stale Data</h3>
+              <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
+                {JSON.stringify(
+                  matchedStaleData.map((item) => ({
+                    project_id: item.project_id,
+                    tower_id: item.tower_id,
+                    floor: item.floor,
+                    unit_number: item.unit_number,
+                  })),
+                  null,
+                  2
+                )}
+              </pre>
+            </span>
+            <span className='my-10 flex-1'>
+              <h3 className='text-center font-semibold'>Unmatched Data</h3>
+              <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
+                {JSON.stringify(
+                  unMatchedData.map((item) => ({
+                    project_id: item.project_id,
+                    tower_id: item.tower_id,
+                    floor: item.floor,
+                    unit_number: item.unit_number,
+                  })),
+                  null,
+                  2
+                )}
+              </pre>
+            </span>
+          </div>
+        )}
+      {/* Error-2 preview */}
+      {errorType?.value === 'err-type-2' &&
+        ((errTwoMatchedData.matchedData &&
+          errTwoMatchedData.matchedData.length > 0) ||
+          (errTwoMatchedData.unmatchedData &&
+            errTwoMatchedData.unmatchedData.length > 0)) && (
+          <div className='mx-auto flex w-2/3 flex-col gap-5 md:flex-row'>
+            <span className='my-10 flex-1'>
+              <h3 className='text-center font-semibold'>
+                Selected Data({errTwoMatchedData.matchType})
+              </h3>
+              <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
+                {JSON.stringify(
+                  errTwoMatchedData.matchedData?.map((item) => ({
+                    ...item,
+                  })),
+                  null,
+                  2
+                )}
+              </pre>
+            </span>
+            <span className='my-10 flex-1'>
+              <h3 className='text-center font-semibold'>
+                Unselected Data(Will be deleted) -{' '}
+                {errTwoMatchedData.unmatchedData?.length}
+              </h3>
+              <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
+                {JSON.stringify(
+                  errTwoMatchedData.unmatchedData?.map((item) => ({
+                    ...item,
+                  })),
+                  null,
+                  2
+                )}
+              </pre>
+            </span>
+          </div>
+        )}
     </div>
   );
 }

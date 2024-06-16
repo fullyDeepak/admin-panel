@@ -5,32 +5,41 @@ import axiosClient from '@/utils/AxiosClient';
 import { useUMCorrectionFormStore } from '@/store/useUMCorrectionStore';
 import { isEqual, uniqWith } from 'lodash';
 import { MultiSelect } from 'react-multi-select-component';
+import { nanoid } from 'nanoid';
 
 export default function Form() {
-  const [errorType, setErrorType] = useState<SingleValue<{
-    value: string;
-    label: string;
-  }> | null>(null);
-
   const {
+    errorType,
+    setErrorType,
     selectedProject,
     selectedFloor,
+    selectedErrTwoFloor,
     selectedTower,
     towerOptions,
     setFloorOption,
     floorOptions,
     setTableData,
     umManualDataStore,
-    loadingErrOneTableData,
+    errTwoTFU,
+    loadingErrData,
     setSelectedProject,
-    fetchUMManualData,
+    fetchUMMErrData,
     setSelectedTower,
+    errTwoSelectedUnit,
+    setErrTwoSelectedUnit,
+    fetchUMMErrTwoData,
+    setSelectedErrTwoFloor,
+    resetErrTwoLeftRightData,
     setSelectedFloor,
   } = useUMCorrectionFormStore();
 
   useEffect(() => {
-    fetchUMManualData();
+    fetchUMMErrData();
   }, [selectedProject?.value]);
+
+  useEffect(() => {
+    fetchUMMErrTwoData();
+  }, [errTwoSelectedUnit?.value]);
 
   const { data: projectOptions, isLoading: loadingProjectOptions } = useQuery({
     queryKey: ['projects', errorType?.value],
@@ -84,9 +93,17 @@ export default function Form() {
     refetchOnWindowFocus: false,
   });
 
+  const [unitOptions, setUnitOptions] = useState<
+    | {
+        value: string;
+        label: string;
+      }[]
+    | undefined
+  >(undefined);
+
   return (
     <form
-      className='z-10 mb-16 mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[50%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
+      className='z-20 mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[50%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
       id='UMCorrectionForm'
     >
       <label className='flex flex-wrap items-start justify-between gap-5'>
@@ -114,13 +131,13 @@ export default function Form() {
             ]}
           />
           {errorType?.value === 'err-type-1' && (
-            <span className='m-0 p-0 text-xs'>
+            <span className='m-0 mt-2 block p-0 text-xs'>
               Applied Filter: is_in_transactions = TRUE AND door_number_matched
               = TRUE AND verified IS NULL
             </span>
           )}
           {errorType?.value === 'err-type-2' && (
-            <span className='m-0 p-0 text-xs'>
+            <span className='m-0 mt-2 block p-0 text-xs'>
               Applied Filter: ( is_in_transactions = TRUE AND is_in_hm = TRUE
               AND door_number_matched = FALSE ) OR ( is_in_transactions = TRUE
               AND door_number_matched = TRUE AND verified = FALSE )
@@ -134,6 +151,7 @@ export default function Form() {
           className='w-full flex-[5]'
           key={'projectOptions'}
           isClearable
+          isDisabled={Boolean(!errorType?.value)}
           placeholder='Select Project Id and Name'
           instanceId={useId()}
           value={selectedProject}
@@ -147,17 +165,21 @@ export default function Form() {
             setSelectedTower(null);
             setFloorOption(null);
             setSelectedFloor([]);
+            setSelectedErrTwoFloor(null);
+            setErrTwoSelectedUnit(null);
+            resetErrTwoLeftRightData();
           }}
           options={projectOptions}
           isLoading={loadingProjectOptions}
         />
       </label>
+
       <label className='flex flex-wrap items-center justify-between gap-5'>
         <span className='flex-[3] text-base md:text-xl'>Select Tower:</span>
         <Select
           className='w-full flex-[5]'
           key={'tower'}
-          isLoading={loadingErrOneTableData === 'loading'}
+          isLoading={loadingErrData === 'loading'}
           isClearable
           isDisabled={Boolean(!selectedProject?.value)}
           instanceId={useId()}
@@ -170,58 +192,132 @@ export default function Form() {
           ) => {
             setSelectedTower(e);
             setSelectedFloor([]);
-            if (e === null && umManualDataStore) {
-              setTableData(umManualDataStore);
-              setFloorOption(null);
-            } else if (umManualDataStore) {
-              const newTableData = umManualDataStore?.filter(
+            if (errorType?.value === 'err-type-1') {
+              if (e === null && umManualDataStore) {
+                setTableData(umManualDataStore);
+                setFloorOption(null);
+              } else if (umManualDataStore) {
+                const newTableData = umManualDataStore?.filter(
+                  (item) => item.tower_id === e?.value
+                );
+                const floorOptions = uniqWith(
+                  newTableData.map((item) => ({
+                    value: item.floor,
+                    label: item.floor.toString(),
+                  })),
+                  isEqual
+                );
+                setTableData(newTableData);
+                setFloorOption(floorOptions);
+                setSelectedFloor(floorOptions);
+                resetErrTwoLeftRightData();
+              }
+            } else if (errorType?.value === 'err-type-2') {
+              const newTowerTFU = errTwoTFU?.filter(
                 (item) => item.tower_id === e?.value
               );
               const floorOptions = uniqWith(
-                newTableData.map((item) => ({
+                newTowerTFU.map((item) => ({
                   value: item.floor,
                   label: item.floor.toString(),
                 })),
                 isEqual
               );
-              setTableData(newTableData);
               setFloorOption(floorOptions);
               setSelectedFloor(floorOptions);
+              setSelectedErrTwoFloor(null);
+              setErrTwoSelectedUnit(null);
             }
           }}
           options={towerOptions}
         />
       </label>
-      <div className='flex flex-wrap items-center justify-between gap-5'>
-        <span className='flex-[3] text-base md:text-xl'>Select Floor:</span>
-        <MultiSelect
-          className='w-full flex-[5]'
-          key={'floor'}
-          labelledBy='floor-MultiSelect'
-          options={floorOptions || []}
-          isLoading={loadingErrOneTableData === 'loading'}
-          value={selectedFloor}
-          disabled={Boolean(!selectedTower?.value)}
-          onChange={(
-            e: {
-              value: number;
-              label: string;
-            }[]
-          ) => {
-            setSelectedFloor(e);
-            const selectedFloorIds = e.map((item) => item.value);
-            if (selectedTower?.value && umManualDataStore) {
-              const newTableData = umManualDataStore.filter(
-                (item) =>
-                  selectedFloorIds.includes(item.floor) &&
-                  item.tower_id === selectedTower.value
-              );
-              setTableData(newTableData);
-            }
-          }}
-        />
-      </div>
-      {/* <ErrorTypeOne /> */}
+
+      {errorType && (
+        <div className='flex flex-wrap items-center justify-between gap-5'>
+          <span className='flex-[3] text-base md:text-xl'>Select Floor:</span>
+          {errorType?.value === 'err-type-1' && (
+            <MultiSelect
+              className='w-full flex-[5]'
+              key={'floor'}
+              labelledBy='floor-MultiSelect'
+              options={floorOptions || []}
+              isLoading={loadingErrData === 'loading'}
+              value={selectedFloor}
+              disabled={Boolean(!selectedTower?.value)}
+              onChange={(
+                e: {
+                  value: number;
+                  label: string;
+                }[]
+              ) => {
+                setSelectedFloor(e);
+                const selectedFloorIds = e.map((item) => item.value);
+                if (selectedTower?.value && umManualDataStore) {
+                  const newTableData = umManualDataStore.filter(
+                    (item) =>
+                      selectedFloorIds.includes(item.floor) &&
+                      item.tower_id === selectedTower.value
+                  );
+                  setTableData(newTableData);
+                }
+              }}
+            />
+          )}
+          {errorType?.value === 'err-type-2' && (
+            <Select
+              className='w-full flex-[5]'
+              key={'tower'}
+              instanceId={nanoid()}
+              options={floorOptions || []}
+              value={selectedErrTwoFloor}
+              isDisabled={Boolean(!selectedTower?.value)}
+              onChange={(e) => {
+                setSelectedErrTwoFloor(e);
+                setErrTwoSelectedUnit(null);
+                const selectedTowerFU = errTwoTFU?.find(
+                  (item) =>
+                    item.tower_id === selectedTower?.value &&
+                    item.floor === e?.value
+                );
+
+                const unitOptions = selectedTowerFU!.unit_numbers.map(
+                  (unit) => ({
+                    value: unit,
+                    label: unit.toString(),
+                  })
+                );
+                setUnitOptions(unitOptions);
+                resetErrTwoLeftRightData();
+              }}
+            />
+          )}
+        </div>
+      )}
+      {errorType?.value === 'err-type-2' && (
+        <label className='flex flex-wrap items-center justify-between gap-5'>
+          <span className='flex-[3] text-base md:text-xl'>Select Unit:</span>
+          <Select
+            className='w-full flex-[5]'
+            key={'units'}
+            isLoading={loadingErrData === 'loading'}
+            isClearable
+            isDisabled={selectedErrTwoFloor?.value == null}
+            instanceId={nanoid()}
+            value={errTwoSelectedUnit || null}
+            onChange={(
+              e: SingleValue<{
+                value: string;
+                label: string;
+              }>
+            ) => {
+              resetErrTwoLeftRightData();
+              setErrTwoSelectedUnit(e);
+            }}
+            options={unitOptions || []}
+          />
+        </label>
+      )}
     </form>
   );
 }

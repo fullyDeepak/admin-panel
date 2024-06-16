@@ -19,21 +19,25 @@ import {
   MdOutlineNavigateNext,
 } from 'react-icons/md';
 
-interface TableProps {
-  data: object[];
-  columns: ColumnDef<object, any>[];
+interface TableProps<TData> {
+  data: TData[];
+  columns: ColumnDef<TData, any>[];
   showPagination?: boolean;
   enableSearch?: boolean;
-  setSelectedRows: (data: any) => void;
+  setSelectedRows: (data: TData[]) => void;
   rowSelection: { [id: string]: boolean };
   setRowSelection: OnChangeFn<RowSelectionState>;
+  isMultiSelection?: boolean;
 }
 
 function IndeterminateCheckbox({
   indeterminate,
-  className = '',
+  isRadio = false,
   ...rest
-}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
+}: {
+  indeterminate?: boolean;
+  isRadio?: boolean;
+} & HTMLProps<HTMLInputElement>) {
   const ref = useRef<HTMLInputElement>(null!);
 
   useEffect(() => {
@@ -43,16 +47,27 @@ function IndeterminateCheckbox({
   }, [ref, indeterminate]);
 
   return (
-    <input
-      type='checkbox'
-      ref={ref}
-      className='checkbox cursor-pointer'
-      {...rest}
-    />
+    <>
+      {isRadio ? (
+        <input
+          type='radio'
+          ref={ref}
+          className='radio cursor-pointer'
+          {...rest}
+        />
+      ) : (
+        <input
+          type='checkbox'
+          ref={ref}
+          className='checkbox cursor-pointer'
+          {...rest}
+        />
+      )}
+    </>
   );
 }
 
-export default function TanstackReactTable({
+export default function TanstackReactTable<TData>({
   data,
   columns,
   showPagination = true,
@@ -60,33 +75,54 @@ export default function TanstackReactTable({
   setSelectedRows,
   rowSelection,
   setRowSelection,
-}: TableProps) {
+  isMultiSelection = true,
+}: TableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filtering, setFiltering] = useState('');
   //   const [rowSelection, setRowSelection] = useState({});
-  const newColumn: ColumnDef<object, any>[] = [
+  const newColumn: ColumnDef<TData, any>[] = [
     {
       id: 'select',
       header: ({ table }) => (
-        <IndeterminateCheckbox
-          {...{
-            checked: table.getIsAllRowsSelected(),
-            indeterminate: table.getIsSomeRowsSelected(),
-            onChange: table.getToggleAllRowsSelectedHandler(),
-          }}
-        />
+        <>
+          {isMultiSelection ? (
+            <IndeterminateCheckbox
+              {...{
+                checked: table.getIsAllRowsSelected(),
+                indeterminate: table.getIsSomeRowsSelected(),
+                onChange: table.getToggleAllRowsSelectedHandler(),
+              }}
+            />
+          ) : (
+            <>Choose</>
+          )}
+        </>
       ),
       cell: ({ row }) => (
-        <div className='px-1'>
-          <IndeterminateCheckbox
-            {...{
-              checked: row.getIsSelected(),
-              disabled: !row.getCanSelect(),
-              indeterminate: row.getIsSomeSelected(),
-              onChange: row.getToggleSelectedHandler(),
-            }}
-          />
-        </div>
+        <>
+          <div className='px-1'>
+            {isMultiSelection ? (
+              <IndeterminateCheckbox
+                {...{
+                  checked: row.getIsSelected(),
+                  disabled: !row.getCanSelect(),
+                  indeterminate: row.getIsSomeSelected(),
+                  onChange: row.getToggleSelectedHandler(),
+                }}
+              />
+            ) : (
+              <IndeterminateCheckbox
+                isRadio={true}
+                {...{
+                  checked: row.getIsSelected(),
+                  disabled: !row.getCanSelect(),
+                  indeterminate: row.getIsSomeSelected(),
+                  onChange: row.getToggleSelectedHandler(),
+                }}
+              />
+            )}
+          </div>
+        </>
       ),
     },
     ...columns,
@@ -101,6 +137,7 @@ export default function TanstackReactTable({
     getFilteredRowModel: getFilteredRowModel(),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
+    enableMultiRowSelection: isMultiSelection,
     state: {
       sorting: sorting,
       globalFilter: filtering,
@@ -112,7 +149,7 @@ export default function TanstackReactTable({
   table.getSelectedRowModel;
 
   useEffect(() => {
-    const ogData: TableProps['data'] = table
+    const ogData = table
       .getSelectedRowModel()
       ?.rows?.map((item) => item.original);
     setSelectedRows(ogData);
@@ -191,7 +228,11 @@ export default function TanstackReactTable({
               <tr
                 key={row.id}
                 className={`cursor-pointer border-b ${row.getIsSelected() ? 'bg-sky-100 hover:bg-opacity-50' : 'bg-none hover:bg-gray-100'}`}
-                onClick={() => row.toggleSelected()}
+                onClick={() => {
+                  isMultiSelection
+                    ? row.toggleSelected()
+                    : row.toggleSelected(true);
+                }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className='px-4 py-3'>
