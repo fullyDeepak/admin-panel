@@ -21,6 +21,8 @@ export default function UMCorrectionPage() {
     errorType,
     loadingErrData,
     setErrTwoMatchedData,
+    setErrTwoSelectedUnit,
+    setLoadingErrData,
     errTwoMatchedData,
     selectedErrTwoData,
     setSelectedErrTwoData,
@@ -216,8 +218,8 @@ export default function UMCorrectionPage() {
         tower_id,
         floor,
         unit_number,
-        matchedData: errTwoMatchedData.matchedData,
-        unMatchedData: errTwoMatchedData.unmatchedData,
+        matchedData: errTwoMatchedData.matchedData?.map((item) => item.id),
+        unMatchedData: errTwoMatchedData.unmatchedData?.map((item) => item.id),
         matchType: errTwoMatchedData.matchType,
       };
 
@@ -250,6 +252,8 @@ export default function UMCorrectionPage() {
         unmatchedData: null,
         matchType: null,
       });
+      setErrTwoSelectedUnit(null);
+      setLoadingErrData('idle');
     }
   }
 
@@ -350,6 +354,7 @@ export default function UMCorrectionPage() {
     markType: 'Matched' | 'Unmatched' | 'Stale'
   ) {
     let unmatchedData: {
+      id: number;
       master_door_number: string;
       ptin: string;
       current_owner_hm: string;
@@ -428,12 +433,12 @@ export default function UMCorrectionPage() {
         </span>
       )}
       {/* Err-1 controls here */}
-      {errorType?.value === 'err-type-1' &&
+      {loadingErrData === 'complete' &&
+        errorType?.value === 'err-type-1' &&
         (matchedData.length > 0 ||
           unMatchedData.length > 0 ||
           matchedStaleData.length > 0 ||
-          (tableData && tableData?.length > 0)) &&
-        loadingErrData === 'complete' && (
+          (tableData && tableData?.length > 0)) && (
           <>
             <div className='mt-20 flex items-center justify-center gap-5'>
               <button

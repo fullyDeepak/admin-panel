@@ -17,6 +17,7 @@ export default function Form() {
     selectedTower,
     towerOptions,
     setFloorOption,
+    setLoadingErrData,
     floorOptions,
     setTableData,
     umManualDataStore,
@@ -124,6 +125,7 @@ export default function Form() {
               }>
             ) => {
               setErrorType(e);
+              setLoadingErrData('idle');
             }}
             options={[
               { label: 'Error Type-1', value: 'err-type-1' },
@@ -168,6 +170,7 @@ export default function Form() {
             setSelectedErrTwoFloor(null);
             setErrTwoSelectedUnit(null);
             resetErrTwoLeftRightData();
+            setLoadingErrData('idle');
           }}
           options={projectOptions}
           isLoading={loadingProjectOptions}
@@ -190,6 +193,7 @@ export default function Form() {
               label: string;
             }>
           ) => {
+            setLoadingErrData('idle');
             setSelectedTower(e);
             setSelectedFloor([]);
             if (errorType?.value === 'err-type-1') {
@@ -273,6 +277,7 @@ export default function Form() {
               value={selectedErrTwoFloor}
               isDisabled={Boolean(!selectedTower?.value)}
               onChange={(e) => {
+                setLoadingErrData('idle');
                 setSelectedErrTwoFloor(e);
                 setErrTwoSelectedUnit(null);
                 const selectedTowerFU = errTwoTFU?.find(
@@ -311,6 +316,7 @@ export default function Form() {
                 label: string;
               }>
             ) => {
+              setLoadingErrData('idle');
               resetErrTwoLeftRightData();
               setErrTwoSelectedUnit(e);
             }}

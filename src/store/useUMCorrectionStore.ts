@@ -77,6 +77,7 @@ interface State {
   umManualDataStore: UMManualDataType[] | null;
   tableData: UMManualDataType[] | null;
   errTwoLeftData: {
+    id: number;
     generated_door_number: string;
     latest_owner: string;
     doc_id_list: string;
@@ -84,6 +85,7 @@ interface State {
     owner_list: string;
   }[];
   errTwoRightData: {
+    id: number;
     master_door_number: string;
     ptin: string;
     current_owner_hm: string;
@@ -129,6 +131,7 @@ type Actions = {
   setSelectedErrTwoFloor: (newData: State['selectedErrTwoFloor']) => void;
   resetErrTwoLeftRightData: () => void;
   setErrTwoMatchedData: (data: State['errTwoMatchedData']) => void;
+  setLoadingErrData: (data: State['loadingErrData']) => void;
 };
 
 export const useUMCorrectionFormStore = create<State & Actions>((set, get) => ({
@@ -266,4 +269,5 @@ export const useUMCorrectionFormStore = create<State & Actions>((set, get) => ({
     set({ errTwoLeftData: [], errTwoRightData: [] }),
   setErrTwoMatchedData: (newData) => set({ errTwoMatchedData: newData }),
   setSelectedErrTwoData: (newData) => set({ selectedErrTwoData: newData }),
+  setLoadingErrData: (newData) => set({ loadingErrData: newData }),
 }));
