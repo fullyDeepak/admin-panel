@@ -4,6 +4,7 @@ import { SingleValue } from 'react-select';
 import { create } from 'zustand';
 
 export type UMManualDataType = {
+  id: number;
   project_id: number;
   tower_id: number;
   tower_name: string;
@@ -25,6 +26,7 @@ interface State {
     value: string;
     label: string;
   }> | null;
+  errTwoType: 'type-a' | 'type-b' | null;
   errTwoTFU: {
     tower_id: number;
     tower_name: string;
@@ -96,19 +98,19 @@ interface State {
   matchedData:
     | Pick<
         UMManualDataType,
-        'project_id' | 'tower_id' | 'floor' | 'unit_number'
+        'id' | 'project_id' | 'tower_id' | 'floor' | 'unit_number'
       >[]
     | [];
   unMatchedData:
     | Pick<
         UMManualDataType,
-        'project_id' | 'tower_id' | 'floor' | 'unit_number'
+        'id' | 'project_id' | 'tower_id' | 'floor' | 'unit_number'
       >[]
     | [];
   matchedStaleData:
     | Pick<
         UMManualDataType,
-        'project_id' | 'tower_id' | 'floor' | 'unit_number'
+        'id' | 'project_id' | 'tower_id' | 'floor' | 'unit_number'
       >[]
     | [];
 }
@@ -120,6 +122,7 @@ type Actions = {
   setSelectedTower: (selection: State['selectedTower']) => void;
   setSelectedFloor: (selection: State['selectedFloor']) => void;
   setErrorType: (selection: State['errorType']) => void;
+  setErrTwoType: (selection: State['errTwoType']) => void;
   setTableData: (newData: UMManualDataType[]) => void;
   setFloorOption: (newData: State['floorOptions']) => void;
   setSelectedTableData: (newData: State['selectedTableData']) => void;
@@ -159,6 +162,7 @@ export const useUMCorrectionFormStore = create<State & Actions>((set, get) => ({
     matchType: null,
   },
   selectedErrTwoData: [],
+  errTwoType: null,
 
   loadingErrData: 'idle' as State['loadingErrData'],
   fetchUMMErrData: async () => {
@@ -200,7 +204,7 @@ export const useUMCorrectionFormStore = create<State & Actions>((set, get) => ({
         console.log(error);
         set({ loadingErrData: 'error' });
       }
-    } else if (project_id && get().errorType?.value === 'err-type-2') {
+    } else if (project_id && get().errTwoType) {
       const res = await axiosClient.get<{
         data: {
           tower_id: number;
@@ -209,7 +213,7 @@ export const useUMCorrectionFormStore = create<State & Actions>((set, get) => ({
           unit_numbers: string[];
         }[];
       }>('/unitmaster/errTwoTFU', {
-        params: { project_id: project_id },
+        params: { project_id: project_id, type: get().errTwoType },
       });
       const towerOptions = uniqWith(
         res.data.data.map((item) => ({
@@ -242,7 +246,13 @@ export const useUMCorrectionFormStore = create<State & Actions>((set, get) => ({
             rightData: State['errTwoRightData'];
           };
         }>('/unitmaster/errTwoData', {
-          params: { project_id, tower_id, floor, unit_number },
+          params: {
+            project_id,
+            tower_id,
+            floor,
+            unit_number,
+            type: get().errTwoType,
+          },
         });
         set({ errTwoLeftData: res.data.data.leftData });
         set({ errTwoRightData: res.data.data.rightData });
@@ -258,6 +268,7 @@ export const useUMCorrectionFormStore = create<State & Actions>((set, get) => ({
   setSelectedTower: (select) => set({ selectedTower: select }),
   setSelectedFloor: (select) => set({ selectedFloor: select }),
   setErrorType: (select) => set({ errorType: select }),
+  setErrTwoType: (select) => set({ errTwoType: select }),
   setTableData: (select) => set({ tableData: select }),
   setSelectedTableData: (data) => set({ selectedTableData: data }),
   setMatchedData: (data) => set({ matchedData: data }),

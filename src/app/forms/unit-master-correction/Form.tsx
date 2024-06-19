@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Select, { SingleValue } from 'react-select';
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
@@ -17,6 +17,8 @@ export default function Form() {
     selectedTower,
     towerOptions,
     setFloorOption,
+    errTwoType,
+    setErrTwoType,
     setLoadingErrData,
     floorOptions,
     setTableData,
@@ -35,15 +37,17 @@ export default function Form() {
   } = useUMCorrectionFormStore();
 
   useEffect(() => {
-    fetchUMMErrData();
-  }, [selectedProject?.value]);
+    if (errorType?.value === 'err-type-1' || errTwoType) {
+      fetchUMMErrData();
+    }
+  }, [selectedProject?.value, errTwoType]);
 
   useEffect(() => {
     fetchUMMErrTwoData();
   }, [errTwoSelectedUnit?.value]);
 
   const { data: projectOptions, isLoading: loadingProjectOptions } = useQuery({
-    queryKey: ['projects', errorType?.value],
+    queryKey: ['projects', errorType?.value, errTwoType],
     queryFn: async () => {
       try {
         let options: { value: number; label: string }[] = [];
@@ -62,14 +66,14 @@ export default function Form() {
               label: `${item.project_id}:${item.name}-(${item.total_count})-(${item.uniq_count})`,
             });
           });
-        } else if (errorType?.value === 'err-type-2') {
+        } else if (errorType?.value === 'err-type-2' && errTwoType) {
           const res = await axiosClient.get<{
             data: {
               project_id: number;
               name: string;
               total_count: number;
             }[];
-          }>('/unitmaster/errTwoProjects');
+          }>('/unitmaster/errTwoProjects', { params: { type: errTwoType } });
           res.data.data.map((item) => {
             options.push({
               value: item.project_id,
@@ -117,7 +121,7 @@ export default function Form() {
             key={'projectOptions'}
             isClearable
             value={errorType}
-            instanceId={useId()}
+            instanceId={nanoid()}
             onChange={(
               e: SingleValue<{
                 value: string;
@@ -126,6 +130,7 @@ export default function Form() {
             ) => {
               setErrorType(e);
               setLoadingErrData('idle');
+              setErrTwoType(null);
             }}
             options={[
               { label: 'Error Type-1', value: 'err-type-1' },
@@ -134,19 +139,67 @@ export default function Form() {
           />
           {errorType?.value === 'err-type-1' && (
             <span className='m-0 mt-2 block p-0 text-xs'>
-              Applied Filter: is_in_transactions = TRUE AND door_number_matched
-              = TRUE AND verified IS NULL
-            </span>
-          )}
-          {errorType?.value === 'err-type-2' && (
-            <span className='m-0 mt-2 block p-0 text-xs'>
-              Applied Filter: ( is_in_transactions = TRUE AND is_in_hm = TRUE
-              AND door_number_matched = FALSE ) OR ( is_in_transactions = TRUE
-              AND door_number_matched = TRUE AND verified = FALSE )
+              Applied Filter: <br />
+              is_in_transactions = TRUE <br /> AND door_number_matched = TRUE{' '}
+              <br />
+              AND verified = False
             </span>
           )}
         </div>
       </label>
+      {errorType?.value === 'err-type-2' && (
+        <div className='flex flex-wrap items-center justify-between gap-5'>
+          <span className='flex-[3] text-base md:text-xl'>
+            Choose Project Sub-Type:
+          </span>
+          <div className='flex w-full flex-[5] items-center gap-5'>
+            <label className='flex items-center justify-evenly gap-2 rounded border px-3 py-2'>
+              <input
+                type='radio'
+                name='err-type-2-subtype'
+                checked={errTwoType === 'type-a'}
+                className='radio'
+                onChange={() => setErrTwoType('type-a')}
+              />
+              <span>Type A</span>
+            </label>
+            <label className='flex items-center gap-2 rounded border px-3 py-2'>
+              <input
+                type='radio'
+                name='err-type-2-subtype'
+                className='radio'
+                checked={errTwoType === 'type-b'}
+                onChange={() => setErrTwoType('type-b')}
+              />
+              <span>Type B</span>
+            </label>
+          </div>
+        </div>
+      )}
+      {errTwoType === 'type-a' && (
+        <div className='flex gap-5'>
+          <span className='w-full flex-[3]'></span>
+          <span className='m-0 -my-3 block w-full flex-[5] p-0 text-xs'>
+            Applied Filter: is_in_transactions = true <br />
+            AND door_number_matched = FALSE <br />
+            AND is_in_hm= true <br />
+            AND transaction_hm_match_confidence = &apos;HIGH&apos; <br />
+            AND verified = FALSE
+          </span>
+        </div>
+      )}
+      {errTwoType === 'type-b' && (
+        <div className='flex gap-5'>
+          <span className='w-full flex-[3]'></span>
+          <span className='m-0 -my-3 block w-full flex-[5] p-0 text-xs'>
+            Applied Filter: is_in_transactions = true <br />
+            AND door_number_matched = FALSE <br />
+            AND is_in_hm= true <br />
+            AND transaction_hm_match_confidence = &apos;HIGH STALE&apos; <br />
+            AND verified = FALSE
+          </span>
+        </div>
+      )}
       <label className='flex flex-wrap items-center justify-between gap-5'>
         <span className='flex-[3] text-base md:text-xl'>Select Project:</span>
         <Select
@@ -155,7 +208,7 @@ export default function Form() {
           isClearable
           isDisabled={Boolean(!errorType?.value)}
           placeholder='Select Project Id and Name'
-          instanceId={useId()}
+          instanceId={nanoid()}
           value={selectedProject}
           onChange={(
             e: SingleValue<{
@@ -185,7 +238,7 @@ export default function Form() {
           isLoading={loadingErrData === 'loading'}
           isClearable
           isDisabled={Boolean(!selectedProject?.value)}
-          instanceId={useId()}
+          instanceId={nanoid()}
           value={selectedTower || null}
           onChange={(
             e: SingleValue<{

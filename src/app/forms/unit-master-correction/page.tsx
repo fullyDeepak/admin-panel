@@ -263,19 +263,13 @@ export default function UMCorrectionPage() {
     if (markType === 'Matched') {
       const matchedDataTemp: Pick<
         UMManualDataType,
-        'project_id' | 'tower_id' | 'floor' | 'unit_number'
+        'id' | 'project_id' | 'tower_id' | 'floor' | 'unit_number'
       >[] = [];
       const newTableDataTemp: UMManualDataType[] = [];
       tableData?.map((tData) => {
         let match = false;
         selectedTableData?.map((sTData) => {
-          if (
-            sTData &&
-            sTData.project_id === tData.project_id &&
-            sTData.tower_id === tData.tower_id &&
-            sTData.floor === tData.floor &&
-            sTData.unit_number === tData.unit_number
-          ) {
+          if (sTData && sTData.id === tData.id) {
             match = true;
             matchedDataTemp.push(tData);
           }
@@ -292,19 +286,13 @@ export default function UMCorrectionPage() {
     } else if (markType === 'Unmatched') {
       const unMatchedDataTemp: Pick<
         UMManualDataType,
-        'project_id' | 'tower_id' | 'floor' | 'unit_number'
+        'id' | 'project_id' | 'tower_id' | 'floor' | 'unit_number'
       >[] = [];
       const newTableDataTemp: UMManualDataType[] = [];
       tableData?.map((tData) => {
         let match = false;
         selectedTableData?.map((sTData) => {
-          if (
-            sTData &&
-            sTData.project_id === tData.project_id &&
-            sTData.tower_id === tData.tower_id &&
-            sTData.floor === tData.floor &&
-            sTData.unit_number === tData.unit_number
-          ) {
+          if (sTData && sTData.id === tData.id) {
             match = true;
             unMatchedDataTemp.push(sTData);
           }
@@ -321,19 +309,13 @@ export default function UMCorrectionPage() {
     } else if (markType === 'Stale') {
       const matchedStaleDataTemp: Pick<
         UMManualDataType,
-        'project_id' | 'tower_id' | 'floor' | 'unit_number'
+        'id' | 'project_id' | 'tower_id' | 'floor' | 'unit_number'
       >[] = [];
       const newTableDataTemp: UMManualDataType[] = [];
       tableData?.map((tData) => {
         let match = false;
         selectedTableData?.map((sTData) => {
-          if (
-            sTData &&
-            sTData.project_id === tData.project_id &&
-            sTData.tower_id === tData.tower_id &&
-            sTData.floor === tData.floor &&
-            sTData.unit_number === tData.unit_number
-          ) {
+          if (sTData && sTData.id === tData.id) {
             match = true;
             matchedStaleDataTemp.push(sTData);
           }
@@ -530,10 +512,13 @@ export default function UMCorrectionPage() {
           matchedStaleData.length > 0) && (
           <div className='mx-auto flex w-2/3 flex-col gap-5 md:flex-row'>
             <span className='my-10 flex-1'>
-              <h3 className='text-center font-semibold'>Matched Data</h3>
+              <h3 className='text-center font-semibold'>
+                Matched Data - {matchedData.length}
+              </h3>
               <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
                 {JSON.stringify(
                   matchedData.map((item) => ({
+                    id: item.id,
                     project_id: item.project_id,
                     tower_id: item.tower_id,
                     floor: item.floor,
@@ -545,10 +530,13 @@ export default function UMCorrectionPage() {
               </pre>
             </span>
             <span className='my-10 flex-1'>
-              <h3 className='text-center font-semibold'>Matched Stale Data</h3>
+              <h3 className='text-center font-semibold'>
+                Matched Stale Data - {matchedStaleData.length}
+              </h3>
               <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
                 {JSON.stringify(
                   matchedStaleData.map((item) => ({
+                    id: item.id,
                     project_id: item.project_id,
                     tower_id: item.tower_id,
                     floor: item.floor,
@@ -560,10 +548,13 @@ export default function UMCorrectionPage() {
               </pre>
             </span>
             <span className='my-10 flex-1'>
-              <h3 className='text-center font-semibold'>Unmatched Data</h3>
+              <h3 className='text-center font-semibold'>
+                Unmatched Data - {unMatchedData.length}
+              </h3>
               <pre className='mx-auto max-h-[500px] overflow-y-auto text-wrap border bg-gray-100 font-mono text-sm'>
                 {JSON.stringify(
                   unMatchedData.map((item) => ({
+                    id: item.id,
                     project_id: item.project_id,
                     tower_id: item.tower_id,
                     floor: item.floor,
