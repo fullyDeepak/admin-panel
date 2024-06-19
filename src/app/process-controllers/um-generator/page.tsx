@@ -67,12 +67,12 @@ export default function UMGenerator() {
         >
           <Toaster />
           <div className='modal-box h-[40%]'>
-            <div className='flex flex-col items-center  justify-center text-red-500'>
+            <div className='flex flex-col items-center justify-center text-red-500'>
               <CgInfo size={60} />
-              <h3 className='text-3xl font-bold '>Please Confirm again</h3>
+              <h3 className='text-3xl font-bold'>Please Confirm again</h3>
             </div>
             <div className='mt-5 flex flex-col gap-3'>
-              <div className='flex '>
+              <div className='flex'>
                 <span className='font-semibold'>
                   This will start UM generator.
                 </span>
@@ -106,10 +106,10 @@ export default function UMGenerator() {
         </dialog>
         <dialog id='um-generate-modal' className='modal backdrop-blur-sm'>
           <div className='modal-box h-[50%]'>
-            <div className='flex flex-col items-center  justify-center text-red-500'>
+            <div className='flex flex-col items-center justify-center text-red-500'>
               <CgInfo size={60} />
-              <h3 className='text-3xl font-bold '>Attention Please !!!</h3>
-              <h2 className='text-xl font-bold '>
+              <h3 className='text-3xl font-bold'>Attention Please !!!</h3>
+              <h2 className='text-xl font-bold'>
                 You have entered the danger area.
               </h2>
             </div>
@@ -118,7 +118,7 @@ export default function UMGenerator() {
               <span className='font-semibold'>UM Generator</span>?
             </p>
             <div className='flex flex-col gap-3'>
-              <div className='flex '>
+              <div className='flex'>
                 <span className='font-semibold'>
                   This action can&apos;t be undone.
                 </span>
@@ -156,6 +156,7 @@ export default function UMGenerator() {
         </dialog>
         <button
           className='btn btn-error btn-lg btn-wide text-white'
+          disabled
           onClick={() =>
             (
               document.getElementById('um-generate-modal') as HTMLDialogElement
