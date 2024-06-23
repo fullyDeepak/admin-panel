@@ -156,7 +156,6 @@ export default function UMGenerator() {
         </dialog>
         <button
           className='btn btn-error btn-lg btn-wide text-white'
-          disabled
           onClick={() =>
             (
               document.getElementById('um-generate-modal') as HTMLDialogElement
