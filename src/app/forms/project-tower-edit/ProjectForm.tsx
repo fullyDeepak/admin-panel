@@ -163,7 +163,8 @@ export default function ProjectForm() {
               projectPhase: +item.phase,
               reraId: item.rera_id,
               towerType: item.type,
-              towerName: item.name,
+              etlTowerName: item.etlTowerName,
+              towerNameAlias: item.towerNameAlias,
               etlUnitConfigs: item.unit_configs.map((unit) => ({
                 configName: unit.config,
                 minArea: unit.min_built,

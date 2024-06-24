@@ -31,7 +31,8 @@ interface GetProjectETLTagDataType {
 }
 
 export interface GetTowerDetails {
-  name: string;
+  etlTowerName: string;
+  towerNameAlias: string;
   type: string;
   phase: string;
   rera_id: string;
@@ -133,7 +134,8 @@ export interface FormTowerDetailType {
   id: number;
   projectPhase: number;
   reraId: string;
-  towerName: string;
+  etlTowerName: string;
+  towerNameAlias;
   towerDoorNo: string;
   minFloor: number | string;
   maxFloor: number | string;

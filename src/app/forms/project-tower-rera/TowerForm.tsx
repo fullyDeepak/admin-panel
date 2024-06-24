@@ -60,8 +60,8 @@ export default function TowerForm() {
           <h3 className='my-4 text-2xl font-semibold'>
             Section: Tower Details
           </h3>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex-[2] '>Project Phase:</span>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex-[2]'>Project Phase:</span>
             <input
               className={inputBoxClass}
               name='projectPhase'
@@ -77,8 +77,8 @@ export default function TowerForm() {
               }
             />
           </label>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex-[2] '>Rera ID:</span>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex-[2]'>Rera ID:</span>
             <input
               className={inputBoxClass}
               name='reraId'
@@ -88,9 +88,9 @@ export default function TowerForm() {
               }
             />
           </label>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex-[2] '>Tower Type:</span>
-            <div className='flex flex-[5] '>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex-[2]'>Tower Type:</span>
+            <div className='flex flex-[5]'>
               <Select
                 className='w-full flex-1'
                 name='projectSubType1'
@@ -101,14 +101,14 @@ export default function TowerForm() {
                   updateTowerFormDataRera(tower.id, 'towerType', e)
                 }
               />
-              <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
+              <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
                 <span>{tower.towerTypeSuggestion}</span>
               </span>
             </div>
           </label>
           {projectFormDataRera.isRERAProject && (
-            <label className='flex flex-wrap items-center justify-between gap-5 '>
-              <span className='flex flex-[2] items-center  '>
+            <label className='flex flex-wrap items-center justify-between gap-5'>
+              <span className='flex flex-[2] items-center'>
                 <span>RERA Tower ID:</span>
               </span>
               <input
@@ -125,22 +125,20 @@ export default function TowerForm() {
               />
             </label>
           )}
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex flex-[2] items-center  '>
-              <span>Tower Name:</span>
-              <span
-                className='tooltip'
-                data-tip='All alternate tower names separated by &#39;-&#39;, eg., A-ALPHA'
-              >
-                <BiInfoCircle size={20} />
-              </span>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex flex-[2] items-center'>
+              <span>Tower Name Alias:</span>
             </span>
             <input
               className={inputBoxClass}
-              name='towerName'
-              defaultValue={tower.towerName}
+              name='towerNameAlias'
+              defaultValue={tower.towerNameAlias}
               onChange={(e) =>
-                updateTowerFormDataRera(tower.id, 'towerName', e.target.value)
+                updateTowerFormDataRera(
+                  tower.id,
+                  'towerNameAlias',
+                  e.target.value
+                )
               }
             />
           </label>
@@ -148,6 +146,7 @@ export default function TowerForm() {
             addEtlUnitConfig={addEtlUnitConfigRera}
             deleteEtlUnitConfig={deleteEtlUnitConfigRera}
             towerData={tower}
+            updateTowerData={updateTowerFormDataRera}
             updateETLUnitConfig={updateEtlUnitConfigRera}
           />
           <TowerUnitDetails
@@ -160,10 +159,10 @@ export default function TowerForm() {
             updateTowerFormData={updateTowerFormDataRera}
           />
           {!isApartmentSingle && (
-            <div className='absolute -bottom-6 -left-5 z-10 w-full '>
+            <div className='absolute -bottom-6 -left-5 z-10 w-full'>
               <button
                 type='button'
-                className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400 '
+                className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400'
                 onClick={() => {
                   const newData = {
                     ...tower,

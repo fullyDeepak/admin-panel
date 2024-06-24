@@ -47,7 +47,8 @@ type PreviewProjectTowerProps = {
     projectPhase: number;
     reraId: string;
     towerType: string;
-    towerName: string;
+    etlTowerName: string;
+    towerNameAlias: string;
     etlUnitConfigs: { configName: string; minArea: number; maxArea: number }[];
     minFloor: number;
     maxFloor: number;

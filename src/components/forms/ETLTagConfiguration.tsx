@@ -1,6 +1,7 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { FormTowerDetailType } from '@/types/types';
 import { useState } from 'react';
+import { BiInfoCircle } from 'react-icons/bi';
 import { FiCheckCircle, FiEdit } from 'react-icons/fi';
 import { TiDeleteOutline } from 'react-icons/ti';
 
@@ -19,6 +20,11 @@ interface ETLTagConfigurationProps {
     minArea: number,
     maxArea: number
   ) => void;
+  updateTowerData: (
+    id: number,
+    key: keyof FormTowerDetailType,
+    value: any
+  ) => void;
 }
 
 export default function ETLTagConfiguration({
@@ -26,6 +32,7 @@ export default function ETLTagConfiguration({
   towerData,
   deleteEtlUnitConfig,
   addEtlUnitConfig,
+  updateTowerData,
 }: ETLTagConfigurationProps) {
   const [configName, setConfigName] = useState('');
   const [configMin, setConfigMin] = useState(0);
@@ -40,8 +47,27 @@ export default function ETLTagConfiguration({
       <h3 className='my-4 text-2xl font-semibold'>
         Section: ETL Unit Tag Configuration
       </h3>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex flex-[2] items-center'>
+          <span>ETL Tower Name:</span>
+          <span
+            className='tooltip'
+            data-tip='All alternate tower names separated by &#39;-&#39;, eg., A-ALPHA'
+          >
+            <BiInfoCircle size={20} />
+          </span>
+        </span>
+        <input
+          className={inputBoxClass}
+          name='etlTowerName'
+          defaultValue={towerData.etlTowerName ? towerData.etlTowerName : ''}
+          onChange={(e) =>
+            updateTowerData(towerData.id, 'etlTowerName', e.target.value)
+          }
+        />
+      </label>
       <div className='mx-auto my-5 flex w-[90%] flex-col gap-2'>
-        <div className='flex w-full justify-between '>
+        <div className='flex w-full justify-between'>
           <span className='w-36 font-semibold'>Name</span>
           <span className='w-36 font-semibold'>Min</span>
           <span className='w-36 font-semibold'>Max</span>
@@ -136,7 +162,7 @@ export default function ETLTagConfiguration({
         )}
       </div>
       <button
-        className='btn  btn-outline btn-sm w-1/2 self-center border-none bg-rose-500 text-white hover:border-none hover:bg-rose-600'
+        className='btn btn-outline btn-sm w-1/2 self-center border-none bg-rose-500 text-white hover:border-none hover:bg-rose-600'
         onClick={() =>
           (
             document.getElementById(
@@ -165,8 +191,8 @@ export default function ETLTagConfiguration({
           </button>
           <h3 className='text-lg font-bold'>Add configuration for each</h3>
           <div className='flex items-center justify-between py-10'>
-            <label className='flex flex-col flex-wrap items-center justify-between gap-5 '>
-              <span className='flex-[2] '>Configuration Name:</span>
+            <label className='flex flex-col flex-wrap items-center justify-between gap-5'>
+              <span className='flex-[2]'>Configuration Name:</span>
               <input
                 type='text'
                 className={inputBoxClass}
@@ -175,8 +201,8 @@ export default function ETLTagConfiguration({
                 onChange={(e) => setConfigName(e.target.value)}
               />
             </label>
-            <label className='flex flex-col flex-wrap items-center justify-between gap-5 '>
-              <span className='flex-[2] '>Min Area:</span>
+            <label className='flex flex-col flex-wrap items-center justify-between gap-5'>
+              <span className='flex-[2]'>Min Area:</span>
               <input
                 min={0}
                 type='number'
@@ -186,8 +212,8 @@ export default function ETLTagConfiguration({
                 onChange={(e) => setConfigMin(+e.target.value)}
               />
             </label>
-            <label className='flex flex-col flex-wrap items-center justify-between gap-5 '>
-              <span className='flex-[2] '>Max Area:</span>
+            <label className='flex flex-col flex-wrap items-center justify-between gap-5'>
+              <span className='flex-[2]'>Max Area:</span>
               <input
                 min={0}
                 type='number'

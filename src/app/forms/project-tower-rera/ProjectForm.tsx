@@ -310,7 +310,8 @@ export default function ProjectForm() {
           label: '',
           value: '',
         },
-        towerName: item.tower_name,
+        etlTowerName: item.tower_name,
+        towerNameAlias: item.tower_name,
         etlUnitConfigs: item.etl_unit_configs,
         towerDoorNo: '',
         minFloor: 0,
@@ -352,7 +353,7 @@ export default function ProjectForm() {
   return (
     <>
       <h3 className='my-4 text-2xl font-semibold'>Section: Project Details</h3>
-      <label className='flex items-center justify-between gap-5 '>
+      <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-xl'>District:</span>
         <Select
           className='w-full flex-[5]'
@@ -370,7 +371,7 @@ export default function ProjectForm() {
           }}
         />
       </label>
-      <label className='flex items-center justify-between gap-5 '>
+      <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-xl'>Mandal:</span>
         <div className='flex w-full flex-[5]'>
           <Select
@@ -384,12 +385,12 @@ export default function ProjectForm() {
             }}
             isDisabled={Boolean(!projectFormDataRera.district)}
           />
-          <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
+          <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
             <span>{projectFormDataRera.mandalSuggestion.join(', ')}</span>
           </span>
         </div>
       </label>
-      <label className='flex items-center justify-between gap-5 '>
+      <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-xl'>Village:</span>
         <div className='flex w-full flex-[5]'>
           <Select
@@ -403,14 +404,14 @@ export default function ProjectForm() {
             }}
             isDisabled={Boolean(!projectFormDataRera.mandal)}
           />
-          <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
+          <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
             <span>{projectFormDataRera.villageSuggestion.join(', ')}</span>
           </span>
         </div>
       </label>
       {projectFormDataRera.isRERAProject && (
         <>
-          <div className='flex items-center justify-between gap-5 '>
+          <div className='flex items-center justify-between gap-5'>
             <span className='flex-[2] text-xl'>Select Projects:</span>
             <div className='flex flex-[5] items-center gap-5'>
               <MultiSelect
@@ -452,7 +453,7 @@ export default function ProjectForm() {
               </span>
             </div>
           </div>
-          <div className='flex items-center justify-between gap-5 '>
+          <div className='flex items-center justify-between gap-5'>
             <span className='flex-[2] text-xl'>Assign Main Project Name:</span>
             <div className='flex w-full flex-[5] items-center gap-5'>
               <input
@@ -473,18 +474,18 @@ export default function ProjectForm() {
               </button>
             </div>
           </div>
-          <label className='flex flex-wrap items-center justify-between gap-5 '>
-            <span className='flex flex-[2] items-center  '>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex flex-[2] items-center'>
               <span>Project IDs:</span>
             </span>
-            <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
+            <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
               <span>{projectFormDataRera.projectIds.join(', ')}</span>
             </span>
           </label>
         </>
       )}
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Project Name:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Project Name:</span>
         <input
           className={inputBoxClass}
           name='projectName'
@@ -492,8 +493,8 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Layout Name:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Layout Name:</span>
         <input
           className={inputBoxClass}
           name='layoutName'
@@ -501,8 +502,8 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Developers:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Developers:</span>
         <input
           className={inputBoxClass}
           name='developer'
@@ -510,8 +511,8 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Developer Group:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Developer Group:</span>
         <input
           className={inputBoxClass}
           name='developerGroup'
@@ -519,8 +520,8 @@ export default function ProjectForm() {
           onChange={handleChange}
         />
       </label>
-      <div className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Project Type:</span>
+      <div className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Project Type:</span>
         <div className='flex w-full flex-[5]'>
           <Select
             className='w-full flex-1'
@@ -587,13 +588,13 @@ export default function ProjectForm() {
             }}
             name='projectType'
           />
-          <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
+          <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
             <span>{projectFormDataRera.projectTypeSuggestion.join(', ')}</span>
           </span>
         </div>
       </div>
-      <div className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Project Sub-Type:</span>
+      <div className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Project Sub-Type:</span>
         <div className='flex w-full flex-[5]'>
           <Select
             className='w-full flex-1'
@@ -607,15 +608,15 @@ export default function ProjectForm() {
               }>
             ) => updateProjectFormDataRera({ projectSubType: e })}
           />
-          <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 '>
+          <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
             <span>
               {projectFormDataRera.projectSubTypeSuggestion.join(', ')}
             </span>
           </span>
         </div>
       </div>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Project Description:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Project Description:</span>
         <textarea
           rows={6}
           className={inputBoxClass}
@@ -627,8 +628,8 @@ export default function ProjectForm() {
           placeholder='Add description here...'
         ></textarea>
       </label>
-      <div className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Amenities Tags:</span>
+      <div className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Amenities Tags:</span>
         <CreatableSelect
           className='w-full flex-[5]'
           options={amenitiesOptions || []}
@@ -650,8 +651,8 @@ export default function ProjectForm() {
           }}
         />
       </div>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Upload KML File:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Upload KML File:</span>
         <input
           type='file'
           name='kmlFile'
@@ -663,14 +664,14 @@ export default function ProjectForm() {
           }}
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Project Coordinates:</span>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Project Coordinates:</span>
         <input
           type='text'
           className={inputBoxClass}
           name='projectCoordinates'
           value={projectFormDataRera.projectCoordinates}
-          onChange={(e) => {}}
+          onChange={() => {}}
         />
       </label>
       <DocsETLTagData

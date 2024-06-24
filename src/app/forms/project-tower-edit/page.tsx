@@ -88,7 +88,7 @@ export default function ProjectTowerEditPage() {
 
       const ifTowerNameNull: boolean[] = [];
       newTowerFormData.map((item: any) => {
-        if (item.towerName) {
+        if (item.etlTowerName) {
           ifTowerNameNull.push(true);
         }
       });

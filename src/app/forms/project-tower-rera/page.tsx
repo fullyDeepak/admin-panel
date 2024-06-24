@@ -109,12 +109,12 @@ export default function ProjectTowerReraPage() {
 
     const ifTowerNameNull: boolean[] = [];
     newTowerFormData.map((item: any) => {
-      if (item.towerName) {
+      if (item.etlTowerName) {
         ifTowerNameNull.push(true);
       }
     });
     if (newTowerFormData.length !== ifTowerNameNull.length) {
-      alert(`You forget to write tower name.`);
+      alert(`You forget to write ETL Tower name.`);
       return null;
     }
 
