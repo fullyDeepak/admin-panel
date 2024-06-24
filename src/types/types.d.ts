@@ -31,8 +31,8 @@ interface GetProjectETLTagDataType {
 }
 
 export interface GetTowerDetails {
-  etlTowerName: string;
-  towerNameAlias: string;
+  etl_tower_name: string;
+  tower_name_alias: string;
   type: string;
   phase: string;
   rera_id: string;
