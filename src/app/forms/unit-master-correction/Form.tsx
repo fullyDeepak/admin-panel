@@ -153,21 +153,25 @@ export default function Form() {
             Choose Project Sub-Type:
           </span>
           <div className='flex w-full flex-[5] items-center gap-5'>
-            <label className='flex items-center justify-evenly gap-2 rounded border px-3 py-2'>
+            <label
+              className={`${errTwoType === 'type-a' ? 'border-violet-600' : ''} flex items-center justify-evenly gap-2 rounded border-2 px-3 py-2`}
+            >
               <input
                 type='radio'
                 name='err-type-2-subtype'
                 checked={errTwoType === 'type-a'}
-                className='radio'
+                className='radio checked:bg-violet-600'
                 onChange={() => setErrTwoType('type-a')}
               />
               <span>Type A</span>
             </label>
-            <label className='flex items-center gap-2 rounded border px-3 py-2'>
+            <label
+              className={`${errTwoType === 'type-b' ? 'border-violet-600' : ''} flex items-center gap-2 rounded border-2 px-3 py-2`}
+            >
               <input
                 type='radio'
                 name='err-type-2-subtype'
-                className='radio'
+                className='radio checked:bg-violet-600'
                 checked={errTwoType === 'type-b'}
                 onChange={() => setErrTwoType('type-b')}
               />
@@ -180,9 +184,9 @@ export default function Form() {
         <div className='flex gap-5'>
           <span className='w-full flex-[3]'></span>
           <span className='m-0 -my-3 block w-full flex-[5] p-0 text-xs'>
-            Applied Filter: is_in_transactions = true <br />
+            Applied Filter: <br />
+            is_in_transactions = true <br />
             AND door_number_matched = FALSE <br />
-            AND is_in_hm= true <br />
             AND transaction_hm_match_confidence = &apos;HIGH&apos; <br />
             AND verified = FALSE
           </span>
@@ -192,10 +196,10 @@ export default function Form() {
         <div className='flex gap-5'>
           <span className='w-full flex-[3]'></span>
           <span className='m-0 -my-3 block w-full flex-[5] p-0 text-xs'>
-            Applied Filter: is_in_transactions = true <br />
+            Applied Filter: <br />
+            is_in_transactions = true <br />
             AND door_number_matched = FALSE <br />
-            AND is_in_hm= true <br />
-            AND transaction_hm_match_confidence = &apos;HIGH STALE&apos; <br />
+            AND transaction_hm_match_confidence != &apos;HIGH&apos; <br />
             AND verified = FALSE
           </span>
         </div>
@@ -246,17 +250,19 @@ export default function Form() {
               label: string;
             }>
           ) => {
-            setLoadingErrData('idle');
+            setLoadingErrData('loading');
             setSelectedTower(e);
             setSelectedFloor([]);
             if (errorType?.value === 'err-type-1') {
               if (e === null && umManualDataStore) {
                 setTableData(umManualDataStore);
                 setFloorOption(null);
+                setLoadingErrData('complete');
               } else if (umManualDataStore) {
                 const newTableData = umManualDataStore?.filter(
                   (item) => item.tower_id === e?.value
                 );
+                console.log({ newTableData });
                 const floorOptions = uniqWith(
                   newTableData.map((item) => ({
                     value: item.floor,
@@ -264,6 +270,7 @@ export default function Form() {
                   })),
                   isEqual
                 );
+                setLoadingErrData('complete');
                 setTableData(newTableData);
                 setFloorOption(floorOptions);
                 setSelectedFloor(floorOptions);

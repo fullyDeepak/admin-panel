@@ -155,18 +155,21 @@ export default function UMCorrectionPage() {
       }
       const data = {
         matchedData: matchedData.map((item) => ({
+          id: item.id,
           project_id: item.project_id,
           tower_id: item.tower_id,
           floor: item.floor,
           unit_number: item.unit_number,
         })),
         unMatchedData: unMatchedData.map((item) => ({
+          id: item.id,
           project_id: item.project_id,
           tower_id: item.tower_id,
           floor: item.floor,
           unit_number: item.unit_number,
         })),
         matchedStaleData: matchedStaleData.map((item) => ({
+          id: item.id,
           project_id: item.project_id,
           tower_id: item.tower_id,
           floor: item.floor,
