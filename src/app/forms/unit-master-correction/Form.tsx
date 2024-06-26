@@ -262,7 +262,6 @@ export default function Form() {
                 const newTableData = umManualDataStore?.filter(
                   (item) => item.tower_id === e?.value
                 );
-                console.log({ newTableData });
                 const floorOptions = uniqWith(
                   newTableData.map((item) => ({
                     value: item.floor,
