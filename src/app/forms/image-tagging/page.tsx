@@ -1,13 +1,12 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
 import { useImageFormStore } from '@/store/useImageFormStore';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import Form from './Form';
 import PreviewDocs from './PreviewDocs';
-import { nanoid } from 'nanoid';
 
 export type TowerFloorDataType = {
   towerId: number;
@@ -75,7 +74,6 @@ export default function ImageTaggingPage() {
           type='button'
           onClick={() => {
             setRowDataProjectTower(row.original);
-            const newDialogId = nanoid(3);
             setShowModal(true);
           }}
         >
@@ -156,6 +154,7 @@ export default function ImageTaggingPage() {
           }
           return newItem;
         });
+        console.log({ projectData });
         setAvailableProjectData(projectData);
       } else if (
         selectedImageTaggingType?.value === 'tower-fp' &&
@@ -292,7 +291,7 @@ export default function ImageTaggingPage() {
             <TanstackReactTable
               columns={availableProjectDataColumns}
               data={availableProjectData}
-              showPagination={false}
+              showPagination={true}
               enableSearch={false}
             />
             {rowDataProjectTower && (
