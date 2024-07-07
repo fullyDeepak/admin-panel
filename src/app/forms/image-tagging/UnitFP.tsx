@@ -1,185 +1,161 @@
-import { nanoid } from 'nanoid';
-import { TowerFloorDataType } from './page';
+import { inputBoxClass } from '@/app/constants/tw-class';
 import { useState } from 'react';
-import { MultiSelect } from 'react-multi-select-component';
-import { BiPlus } from 'react-icons/bi';
-import { MdNotInterested, MdSelectAll } from 'react-icons/md';
+import { nanoid } from 'nanoid';
+import { TowerFloorDataType } from './useImageFormStore';
+import { produce } from 'immer';
+import { getRandomColor } from '@/lib/utils';
 import UnitCell from './UnitCell';
-import { useImageFormStore } from '@/store/useImageFormStore';
 
 type UnitFPProps = {
   towerFloorData: TowerFloorDataType[];
+  setTowerFloorData: (newData: TowerFloorDataType[]) => void;
 };
 
-export default function UnitFP({ towerFloorData }: UnitFPProps) {
-  console.log('UnitFP.tsx re-renders...');
-  const { setSelectedUnit, towerOptions } = useImageFormStore();
-  const [selectedTowerFloorData, setSelectedTowerFloorData] = useState<
-    TowerFloorDataType[]
-  >([]);
-  const [selectedTower, setSelectedTower] = useState<
-    {
-      label: string;
-      value: number;
-    }[]
-  >([]);
-
+export default function UnitFP({
+  towerFloorData,
+  setTowerFloorData,
+}: UnitFPProps) {
+  const [fileInputEleCount, setFileInputEleCount] = useState<number | null>(
+    null
+  );
+  const [showFileInputs, setShowFileInputs] = useState(false);
+  function generateTFU(str: string) {
+    let listOfStr: string[] = [];
+    str.split(',').map((item) => {
+      if (item.includes('-')) {
+        const [start, stop] = item.split('-');
+        for (let i = parseInt(start); i <= parseInt(stop); i++) {
+          listOfStr.push(i.toString());
+        }
+      } else {
+        listOfStr = listOfStr.concat(item.split('-'));
+      }
+    });
+    return listOfStr;
+  }
+  function handleFileChange(filename: string, unitType: number) {
+    const pattern: RegExp =
+      /^\[(?<towers>[\d,-]+)\]-\[(?<floors>[\d,-]+)\]-\[(?<units>[\d,-]+)\]/gm;
+    const match = pattern.exec(filename);
+    let towerList: string[] = [];
+    let floorList: string[] = [];
+    let unitList: string[] = [];
+    if (match && match.groups) {
+      const towers = match.groups.towers;
+      const floors = match.groups.floors;
+      const units = match.groups.units;
+      towerList = generateTFU(towers);
+      floorList = generateTFU(floors);
+      unitList = generateTFU(units);
+      console.log({ towerList, floorList, unitList });
+    }
+    const color = getRandomColor(unitType);
+    const newTowerFloorData = produce(towerFloorData, (draft) => {
+      draft.forEach((tfuData) => {
+        if (towerList.includes(tfuData.towerId.toString())) {
+          tfuData.floorsUnits.forEach((fuData) => {
+            if (floorList.includes(fuData.floorId.toString())) {
+              fuData.units.forEach((unitItem) => {
+                unitItem.color = color;
+                unitItem.unitType = unitType.toString();
+              });
+            }
+          });
+        }
+      });
+    });
+    setTowerFloorData(newTowerFloorData);
+    console.log({ newTowerFloorData });
+  }
   return (
-    <div className='tower-card relative mb-14 flex flex-col gap-3 rounded-2xl p-10 shadow-[0_0px_8px_rgb(0,60,255,0.5)]'>
-      <div className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[3] text-xl'>Select Towers:</span>
-        <MultiSelect
-          className='w-full flex-[5]'
-          labelledBy='select-tower'
-          value={selectedTower}
-          key={'projectOptions'}
-          options={towerOptions}
-          onChange={(
-            e: {
-              label: string;
-              value: number;
-            }[]
-          ) => {
-            setSelectedTower(e);
-            const tempData: TowerFloorDataType[] = [];
-            towerFloorData?.map((item) => {
-              let option: {
-                label: string;
-                value: number;
-              } = {
-                value: item.towerId,
-                label: `${item.towerId}: ${item.towerName}`,
-              };
-              if (
-                e.some(
-                  (ele) => ele.label === option.label && ele.value === ele.value
-                )
-              ) {
-                tempData.push(item);
-              }
-            });
-            setSelectedTowerFloorData(tempData);
-          }}
-        />
-      </div>
-      {selectedTowerFloorData?.map((tower, towerIndex) => (
-        <div className='my-5 rounded-2xl border-4 p-5' key={towerIndex}>
-          <p className='flex justify-evenly text-center font-semibold'>
-            <span>Tower ID: {tower.towerId}</span>{' '}
-            <span>Tower Name: {tower.towerName}</span>
-            <span>Tower Type: {tower.towerType}</span>
-          </p>
-          <div className='relative flex flex-col justify-between gap-2 overflow-x-auto p-5'>
-            {tower.floorsUnits?.slice(0, 1).map((floorUnits) => (
-              <div
-                key={nanoid()}
-                className='flex flex-row items-start gap-2 tabular-nums'
-              >
-                {floorUnits.units.map((_, unitIndex) => (
-                  <div
-                    className='flex w-full min-w-32 justify-around'
-                    key={nanoid()}
-                  >
-                    <button
-                      key={nanoid()}
-                      className='btn btn-xs min-w-12 rounded-full border-none bg-green-300 hover:bg-green-400'
-                      onClick={() => {
-                        setSelectedUnit({
-                          towerId: tower.towerId,
-                          unitName: unitIndex,
-                          selectColumn: true,
-                          unitType: 0,
-                        });
-                      }}
-                      type='button'
-                    >
-                      <MdSelectAll size={25} />
-                    </button>
-                    <button
-                      key={nanoid()}
-                      className='btn btn-xs min-w-12 rounded-full border-none bg-red-200 hover:bg-red-300'
-                      onClick={() => {
-                        setSelectedUnit({
-                          towerId: tower.towerId,
-                          unitName: unitIndex,
-                          selectColumn: false,
-                          unitType: 0,
-                        });
-                      }}
-                      type='button'
-                    >
-                      <MdNotInterested size={25} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ))}
-            {tower.floorsUnits?.map((floorUnits) => (
-              <div
-                key={nanoid()}
-                className={`flex  ${tower.towerType === 'Villa' ? 'flex-col' : 'flex-row'} items-start gap-2 tabular-nums`}
-              >
-                {floorUnits.units.map((unitName, unitNameIndex) => (
-                  <UnitCell
-                    towerId={tower.towerId}
-                    unitName={unitName}
-                    unitType={0}
-                    key={unitNameIndex}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-          {/* <pre className='max-h-60 resize-none overflow-y-auto bg-slate-100 p-5 font-mono text-sm'>
-            {JSON.stringify(selectedUnits, null, 2)}
-        </pre> */}
-        </div>
-      ))}
-      <label className='relative flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[3] text-xl'>Select File:</span>
+    <>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[3]'>Count of distinct FP:</span>
         <input
-          type='file'
-          className='file-input file-input-bordered flex-[5]'
+          className={inputBoxClass}
+          name='distinctUnitFPCount'
+          disabled={showFileInputs}
+          value={fileInputEleCount ? fileInputEleCount : ''}
+          onChange={(e) => setFileInputEleCount(+e.target.value)}
+          placeholder='Enter number only'
+          type='number'
         />
       </label>
-      <button
-        className='btn btn-warning max-w-32 rounded-full text-white'
-        type='button'
-        //   onClick={() => {
-        //     const tempSelectedUnits: {
-        //       floorId: number;
-        //       selectedUnits: string[];
-        //     }[] = [];
-        //     towerFloorFormData[towerIndex].floorsUnits.map((ele) => {
-        //       let temp: {
-        //         floorId: number;
-        //         selectedUnits: string[];
-        //       } = { floorId: ele.floorId, selectedUnits: [] };
-        //       ele.selectedUnits.map((unit) => {
-        //         temp.selectedUnits.push(unit);
-        //       });
-        //       temp.selectedUnits.length > 0
-        //         ? tempSelectedUnits.push(temp)
-        //         : null;
-        //     });
-        //     console.log(tempSelectedUnits);
-        //     //   setSelectedUnits(tempSelectedUnits);
-        //     towerFloorFormData[towerIndex].floorsUnits.map(
-        //       (ele) => ele.selectedUnits
-        //     );
-        //   }}
-      >
-        Preview
-      </button>
-      <div className='absolute -bottom-6 -left-5 w-full '>
-        <button
-          type='button'
-          className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400 '
-          onClick={() => alert('')}
-        >
-          <BiPlus size={30} /> <span>Add New</span>
-        </button>
-      </div>
-    </div>
+      {fileInputEleCount && (
+        <div className='flex justify-between'>
+          <button
+            className='btn btn-warning mx-auto'
+            type='button'
+            onClick={() => {
+              setShowFileInputs(true);
+            }}
+          >
+            Show File Inputs
+          </button>
+          <button
+            className='btn btn-warning mx-auto'
+            type='button'
+            onClick={() => {
+              setShowFileInputs(false);
+              setFileInputEleCount(null);
+            }}
+          >
+            Reset
+          </button>
+        </div>
+      )}
+      {showFileInputs &&
+        fileInputEleCount &&
+        [...Array(fileInputEleCount).keys()].map((item) => (
+          <label
+            className='flex flex-wrap items-center justify-between gap-5'
+            key={item}
+          >
+            <span className='flex-[3]'>
+              File Input <span className='font-bold'>Type {item + 1}</span>:
+            </span>
+            <input
+              className='file-input file-input-bordered flex-[5]'
+              placeholder='Enter number only'
+              type='file'
+              id={`unitFPFileInput-${item}`}
+              onChange={(e) => {
+                if (e && e.target.files && e.target.files.length > 0) {
+                  console.log(e.target.files[0].name);
+                  handleFileChange(e.target.files[0].name, item + 1);
+                }
+              }}
+            />
+          </label>
+        ))}
+      {towerFloorData &&
+        towerFloorData?.map((tower, towerIndex) => (
+          <div className='my-5 rounded-2xl border-4 p-5' key={towerIndex}>
+            <p className='flex justify-evenly text-center font-semibold'>
+              <span>Tower ID: {tower.towerId}</span>{' '}
+              <span>Tower Name: {tower.towerName}</span>
+              <span>Tower Type: {tower.towerType}</span>
+            </p>
+            <div className='relative flex flex-col justify-between gap-2 overflow-x-auto p-5'>
+              {tower.floorsUnits?.map((floorUnits) => (
+                <div
+                  key={nanoid()}
+                  className={`flex ${tower.towerType === 'Villa' ? 'flex-col' : 'flex-row'} items-start gap-2 tabular-nums`}
+                >
+                  {floorUnits.units.map((unitItem, unitNameIndex) => (
+                    <UnitCell
+                      towerId={tower.towerId}
+                      unitName={unitItem.unitName}
+                      unitType={unitItem.unitType ? +unitItem.unitType : null}
+                      key={unitNameIndex}
+                      color={unitItem.color}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+    </>
   );
 }

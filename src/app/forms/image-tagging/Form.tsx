@@ -1,10 +1,10 @@
 import LoadingCircle from '@/components/ui/LoadingCircle';
-import { useImageFormStore } from '@/store/useImageFormStore';
 import { Dispatch, FormEventHandler, SetStateAction, useId } from 'react';
 import Select, { SingleValue } from 'react-select';
-import UnitFP from './UnitFP';
 import TowerFP from './TowerFP';
 import ProgressBar from '@/components/ui/ProgressBar';
+import { useImageFormStore } from './useImageFormStore';
+import UnitFP from './UnitFP';
 
 type FormProps = {
   projectOptions:
@@ -18,7 +18,7 @@ type FormProps = {
   progress: number;
   setProjectFiles: Dispatch<SetStateAction<FileList | null>>;
   setResultData: (
-    newData:
+    _:
       | {
           fileName: string;
           uploadStatus: 'Success' | 'Failure';
@@ -44,6 +44,7 @@ export default function Form({
     towerFloorFormData,
     uploadingStatus,
     setUploadingStatus,
+    setTowerFloorFormData,
   } = useImageFormStore();
   return (
     <form
@@ -113,7 +114,11 @@ export default function Form({
         selectedImageTaggingType?.value === 'unit-fp' &&
         towerFloorFormData &&
         towerFloorFormData?.length > 0 && (
-          <UnitFP towerFloorData={towerFloorFormData} />
+          <UnitFP
+            towerFloorData={towerFloorFormData}
+            setTowerFloorData={setTowerFloorFormData}
+          />
+          //   <UnitFP  towerFloorData={towerFloorFormData}/>
         )}
       {loadingTowerFloorData === 'complete' &&
         towerFloorFormData &&

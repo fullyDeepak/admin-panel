@@ -3,20 +3,10 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
-import { useImageFormStore } from '@/store/useImageFormStore';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import Form from './Form';
 import PreviewDocs from './PreviewDocs';
-
-export type TowerFloorDataType = {
-  towerId: number;
-  towerName: string;
-  towerType: string;
-  floorsUnits: {
-    floorId: number;
-    units: string[];
-  }[];
-};
+import { useImageFormStore } from './useImageFormStore';
 
 export default function ImageTaggingPage() {
   //   console.log('Whole page re-renders.....');

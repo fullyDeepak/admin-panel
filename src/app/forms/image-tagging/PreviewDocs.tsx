@@ -1,7 +1,7 @@
-import { useImageFormStore } from '@/store/useImageFormStore';
 import axiosClient from '@/utils/AxiosClient';
 import Image from 'next/image';
 import { Dispatch, SetStateAction, useState } from 'react';
+import { useImageFormStore } from './useImageFormStore';
 
 type PreviewDocType = {
   previewDocsData: {

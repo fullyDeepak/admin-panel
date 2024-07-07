@@ -10,7 +10,7 @@ export type TowerFloorDataType = {
   towerType: string;
   floorsUnits: {
     floorId: number;
-    units: string[];
+    units: { unitName: string; color?: string; unitType: string | null }[];
   }[];
 };
 
@@ -85,21 +85,6 @@ type Actions = {
   setSelectedImageTaggingType: (
     select: State['selectedImageTaggingType']
   ) => void;
-  setSelectedUnit: (
-    payload:
-      | {
-          towerId: number;
-          unitName: string;
-          unitType: number;
-          selectColumn?: boolean;
-        }
-      | {
-          towerId: number;
-          unitName: number;
-          unitType: number;
-          selectColumn: boolean;
-        }
-  ) => void;
   setAvailableProjectData: (
     newData: State['availableProjectData'] | []
   ) => void;
@@ -149,35 +134,6 @@ export const useImageFormStore = create<State & Actions>()(
 
     setTowerFloorFormData: (newData) => set({ towerFloorFormData: newData }),
 
-    setSelectedUnit: (payload) =>
-      set(({ selectedTFUData }) => {
-        const unitType = payload.unitType;
-        const unitName = payload.unitName;
-        const towerFloorFormData = get().towerFloorFormData;
-        if (typeof payload.unitName === 'number') {
-          const unitIndex = payload.unitName;
-          const ogTowerData = towerFloorFormData.find(
-            (towerFloorData) => towerFloorData.towerId === payload.towerId
-          );
-          ogTowerData?.floorsUnits.map((item) => {
-            if (payload.selectColumn === true) {
-              selectedTFUData[payload.towerId]['selectedUnits'][
-                item.units[unitIndex]
-              ] = unitType !== null ? unitType + 1 : null;
-            } else if (payload.selectColumn === false) {
-              selectedTFUData[payload.towerId]['selectedUnits'][
-                item.units[unitIndex]
-              ] = null;
-            }
-          });
-        } else {
-          const prevValue =
-            selectedTFUData[payload.towerId]['selectedUnits'][unitName];
-          selectedTFUData[payload.towerId]['selectedUnits'][unitName] =
-            prevValue === null ? unitType + 1 : null;
-        }
-      }),
-
     loadingTowerFloorData: 'idle',
 
     uploadingStatus: 'idle',
@@ -208,7 +164,10 @@ export const useImageFormStore = create<State & Actions>()(
             towerType: startCase(towerFloorData.type),
             floorsUnits: towerFloorData.floors_units.map((floorUnits) => ({
               floorId: floorUnits.floor_id,
-              units: floorUnits.unit_names,
+              units: floorUnits.unit_names.map((unitItem) => ({
+                unitName: unitItem,
+                unitType: null,
+              })),
               selectedUnits: [],
             })),
           });

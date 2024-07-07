@@ -1,9 +1,8 @@
 import { nanoid } from 'nanoid';
-import { TowerFloorDataType } from './page';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import PreviewDocs from './PreviewDocs';
-import { useImageFormStore } from '@/store/useImageFormStore';
 import { useEffect, useState } from 'react';
+import { TowerFloorDataType, useImageFormStore } from './useImageFormStore';
 
 type TowerFPProps = {
   towerFloorData: TowerFloorDataType[];
@@ -58,7 +57,7 @@ export default function TowerFP({ towerFloorData }: TowerFPProps) {
   ];
   return (
     <>
-      {towerFloorData?.map((tower, towerIndex) => (
+      {towerFloorData?.map((tower) => (
         <div
           className='tower-card my-5 flex w-full flex-col gap-3 rounded-2xl p-10 pb-0 shadow-[0_0px_8px_rgb(0,60,255,0.5)]'
           key={nanoid()}
