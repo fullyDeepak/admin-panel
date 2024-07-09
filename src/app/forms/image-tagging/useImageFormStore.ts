@@ -4,13 +4,33 @@ import { SingleValue } from 'react-select';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
+interface Response {
+  project_id: number;
+  project_name: string;
+  tower_id: number;
+  tower_name: string;
+  type: 'apartment' | 'villa' | 'apartmentSingle';
+  floors_units: {
+    floor_id: number;
+    units: {
+      unit_number: string;
+      full_unit_name: string;
+    }[];
+  }[];
+}
+
 export type TowerFloorDataType = {
   towerId: number;
   towerName: string;
   towerType: string;
   floorsUnits: {
     floorId: number;
-    units: { unitName: string; color?: string; unitType: string | null }[];
+    units: {
+      fullUnitName: string;
+      unitNumber: string;
+      color?: string;
+      unitType: string | null;
+    }[];
   }[];
 };
 
@@ -68,7 +88,6 @@ interface State {
       | 'tower-fp'
       | 'unit-fp';
   } | null>;
-  selectedTFUData: SelectedTowerFloorUnitDataType;
   loadingTowerFloorData: 'idle' | 'loading' | 'complete' | 'error';
   uploadingStatus: 'idle' | 'running' | 'complete' | 'error';
   resultData:
@@ -94,18 +113,6 @@ type Actions = {
   resetTowerFloorData: () => void;
 };
 
-interface Response {
-  project_id: number;
-  project_name: string;
-  tower_id: number;
-  tower_name: string;
-  type: 'apartment' | 'villa' | 'apartmentSingle';
-  floors_units: {
-    floor_id: number;
-    unit_names: string[];
-  }[];
-}
-
 export const useImageFormStore = create<State & Actions>()(
   immer((set, get) => ({
     // Initial state
@@ -126,8 +133,6 @@ export const useImageFormStore = create<State & Actions>()(
 
     setSelectedImageTaggingType: (select) =>
       set({ selectedImageTaggingType: select }),
-
-    selectedTFUData: {} as SelectedTowerFloorUnitDataType,
 
     setAvailableProjectData: (newData) =>
       set({ availableProjectData: newData }),
@@ -164,18 +169,13 @@ export const useImageFormStore = create<State & Actions>()(
             towerType: startCase(towerFloorData.type),
             floorsUnits: towerFloorData.floors_units.map((floorUnits) => ({
               floorId: floorUnits.floor_id,
-              units: floorUnits.unit_names.map((unitItem) => ({
-                unitName: unitItem,
+              units: floorUnits.units.map((unitItem) => ({
+                fullUnitName: unitItem.full_unit_name,
+                unitNumber: unitItem.unit_number,
                 unitType: null,
               })),
               selectedUnits: [],
             })),
-          });
-          towerFloorData.floors_units.map((floorUnits) => {
-            floorUnits.unit_names.map((item) => {
-              selectedUnits[towerFloorData.tower_id]['selectedUnits'][item] =
-                null;
-            });
           });
           options = units.map((item) => ({
             value: item.towerId,
@@ -184,7 +184,6 @@ export const useImageFormStore = create<State & Actions>()(
         });
         set({ towerFloorFormData: units });
         set({ towerOptions: options });
-        set({ selectedTFUData: selectedUnits });
         set({ loadingTowerFloorData: 'complete' });
       } catch (error) {
         set({ loadingTowerFloorData: 'error' });

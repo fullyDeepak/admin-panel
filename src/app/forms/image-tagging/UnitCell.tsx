@@ -2,12 +2,19 @@ import { nanoid } from 'nanoid';
 
 type UnitCellProps = {
   towerId: number;
-  unitName: string;
+  fullUnitName: string;
+  unitNumber: string;
   unitType: number | null;
   color?: string;
 };
 
-export default function UnitCell({ unitName, unitType, color }: UnitCellProps) {
+export default function UnitCell({
+  towerId,
+  fullUnitName,
+  unitNumber,
+  unitType,
+  color,
+}: UnitCellProps) {
   return (
     <label className='swap'>
       <button
@@ -18,12 +25,16 @@ export default function UnitCell({ unitName, unitType, color }: UnitCellProps) {
         }}
         className='min-w-32 rounded-full border px-4 py-2 text-center text-sm'
         onClick={() =>
-          alert(`You clicked on Unit:${unitName} and Unit Type:${unitType}`)
+          alert(
+            `You clicked on tower:${towerId}, Unit Number:${unitNumber}, Full Unit Name:${fullUnitName} and Unit Type:${unitType}`
+          )
         }
         type='button'
       >
-        <p className='flex flex-col'>
-          <span>{unitName}</span>
+        <p className='flex flex-col leading-4'>
+          <span>
+            {fullUnitName}-{unitNumber}
+          </span>
           <span className='text-[10px]'>
             Unit Type:{unitType ? unitType : 'NULL'}
           </span>

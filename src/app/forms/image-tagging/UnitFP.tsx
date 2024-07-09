@@ -56,8 +56,10 @@ export default function UnitFP({
           tfuData.floorsUnits.forEach((fuData) => {
             if (floorList.includes(fuData.floorId.toString())) {
               fuData.units.forEach((unitItem) => {
-                unitItem.color = color;
-                unitItem.unitType = unitType.toString();
+                if (unitList.includes(unitItem.unitNumber)) {
+                  unitItem.color = color;
+                  unitItem.unitType = unitType.toString();
+                }
               });
             }
           });
@@ -145,7 +147,8 @@ export default function UnitFP({
                   {floorUnits.units.map((unitItem, unitNameIndex) => (
                     <UnitCell
                       towerId={tower.towerId}
-                      unitName={unitItem.unitName}
+                      fullUnitName={unitItem.fullUnitName}
+                      unitNumber={unitItem.unitNumber}
                       unitType={unitItem.unitType ? +unitItem.unitType : null}
                       key={unitNameIndex}
                       color={unitItem.color}
