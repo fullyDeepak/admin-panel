@@ -16,6 +16,7 @@ export default function ImageTaggingPage() {
     selectedProject,
     selectedImageTaggingType,
     availableProjectData,
+    unitFPDataStore,
     setAvailableProjectData,
     resultData,
     setResultData,
@@ -252,8 +253,35 @@ export default function ImageTaggingPage() {
       setResultData(response.data?.data);
       setUploadingStatus('complete');
       form.reset();
-    } else {
-      alert('Project, Tagging type or files selection are missing.');
+    } else if (
+      selectedProject?.value &&
+      selectedImageTaggingType &&
+      selectedImageTaggingType?.value === 'unit-fp'
+    ) {
+      setResultData(null);
+      setUploadingStatus('running');
+      const form = document.getElementById(
+        'projectTowerImageTagging'
+      ) as HTMLFormElement;
+      const formData = new FormData(form);
+      formData.append('project_id', selectedProject.value.toString());
+      formData.append('tfuData', JSON.stringify(unitFPDataStore));
+      const response = await axiosClient.post<{
+        status: string;
+        data: {
+          fileName: string;
+          uploadStatus: 'Success' | 'Failure';
+        }[];
+      }>('/forms/imgTag/unit', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (progressEvent: any) => {
+          const percentage = (progressEvent.loaded * 100) / progressEvent.total;
+          setProgress(+percentage.toFixed(0));
+        },
+      });
+      setResultData(response.data?.data);
+      setUploadingStatus('complete');
+      form.reset();
     }
   }
 

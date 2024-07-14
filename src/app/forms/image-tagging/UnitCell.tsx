@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid';
 
 type UnitCellProps = {
   towerId: number;
+  floorNumber: number;
   fullUnitName: string;
   unitNumber: string;
   unitType: number | null;
@@ -10,6 +11,7 @@ type UnitCellProps = {
 
 export default function UnitCell({
   towerId,
+  floorNumber,
   fullUnitName,
   unitNumber,
   unitType,
@@ -33,8 +35,9 @@ export default function UnitCell({
       >
         <p className='flex flex-col leading-4'>
           <span>
-            {fullUnitName}-{unitNumber}
+            {floorNumber}-{unitNumber}
           </span>
+          <span className='text-[10px]'>FU Name: {fullUnitName}</span>
           <span className='text-[10px]'>
             Unit Type:{unitType ? unitType : 'NULL'}
           </span>

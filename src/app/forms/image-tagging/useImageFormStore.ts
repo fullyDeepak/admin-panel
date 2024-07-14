@@ -96,21 +96,23 @@ interface State {
         uploadStatus: 'Success' | 'Failure';
       }[]
     | null;
+  unitFPDataStore: { [key: string]: string[][] };
 }
 
 type Actions = {
-  setSelectedProject: (selection: State['selectedProject']) => void;
-  setTowerFloorFormData: (newData: TowerFloorDataType[]) => void;
+  setSelectedProject: (_selection: State['selectedProject']) => void;
+  setTowerFloorFormData: (_newData: TowerFloorDataType[]) => void;
   setSelectedImageTaggingType: (
-    select: State['selectedImageTaggingType']
+    _select: State['selectedImageTaggingType']
   ) => void;
   setAvailableProjectData: (
-    newData: State['availableProjectData'] | []
+    _newData: State['availableProjectData'] | []
   ) => void;
-  setResultData: (newData: State['resultData']) => void;
-  setUploadingStatus: (newStatus: State['uploadingStatus']) => void;
-  fetchTowerFloorData: (projectId: number) => void;
+  setResultData: (_newData: State['resultData']) => void;
+  setUploadingStatus: (_newStatus: State['uploadingStatus']) => void;
+  fetchTowerFloorData: (_projectId: number) => void;
   resetTowerFloorData: () => void;
+  setUnitFPDataStore: (_unitType: string, _newData: string[][]) => void;
 };
 
 export const useImageFormStore = create<State & Actions>()(
@@ -142,6 +144,8 @@ export const useImageFormStore = create<State & Actions>()(
     loadingTowerFloorData: 'idle',
 
     uploadingStatus: 'idle',
+
+    unitFPDataStore: {},
 
     setResultData: (newData) => set({ resultData: newData }),
 
@@ -193,5 +197,10 @@ export const useImageFormStore = create<State & Actions>()(
 
     resetTowerFloorData: () =>
       set({ towerFloorFormData: [], loadingTowerFloorData: 'idle' }),
+    setUnitFPDataStore: (unitType, newData) => {
+      const prevData = get().unitFPDataStore;
+      prevData[unitType] = newData;
+      set({ unitFPDataStore: prevData });
+    },
   }))
 );

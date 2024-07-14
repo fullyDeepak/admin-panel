@@ -1,14 +1,16 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { useState } from 'react';
 import { nanoid } from 'nanoid';
-import { TowerFloorDataType } from './useImageFormStore';
+import { TowerFloorDataType, useImageFormStore } from './useImageFormStore';
 import { produce } from 'immer';
 import { getRandomColor } from '@/lib/utils';
 import UnitCell from './UnitCell';
+import { generateTFU } from './matcher';
+import { range } from 'lodash';
 
 type UnitFPProps = {
   towerFloorData: TowerFloorDataType[];
-  setTowerFloorData: (newData: TowerFloorDataType[]) => void;
+  setTowerFloorData: (_newData: TowerFloorDataType[]) => void;
 };
 
 export default function UnitFP({
@@ -19,46 +21,46 @@ export default function UnitFP({
     null
   );
   const [showFileInputs, setShowFileInputs] = useState(false);
-  function generateTFU(str: string) {
-    let listOfStr: string[] = [];
-    str.split(',').map((item) => {
-      if (item.includes('-')) {
-        const [start, stop] = item.split('-');
-        for (let i = parseInt(start); i <= parseInt(stop); i++) {
-          listOfStr.push(i.toString());
-        }
-      } else {
-        listOfStr = listOfStr.concat(item.split('-'));
-      }
-    });
-    return listOfStr;
-  }
+  const { setUnitFPDataStore } = useImageFormStore();
+
+  // whenever file input receive a file
   function handleFileChange(filename: string, unitType: number) {
     const pattern: RegExp =
-      /^\[(?<towers>[\d,-]+)\]-\[(?<floors>[\d,-]+)\]-\[(?<units>[\d,-]+)\]/gm;
+      /^\[(?<towers>[\d,;-]+)\]-\[(?<floors>[\d,;-]+)\]-\[(?<units>[\dA-Z;,-]+)\]/gm;
     const match = pattern.exec(filename);
-    let towerList: string[] = [];
-    let floorList: string[] = [];
-    let unitList: string[] = [];
+    let generatedData: {
+      tfuMatchData: {
+        [key: string]: {
+          [key: string]: string[];
+        };
+      };
+      tfuCombinations: string[][];
+    };
+    let tfuMatchData: {
+      [key: string]: {
+        [key: string]: string[];
+      };
+    } = {};
     if (match && match.groups) {
       const towers = match.groups.towers;
       const floors = match.groups.floors;
       const units = match.groups.units;
-      towerList = generateTFU(towers);
-      floorList = generateTFU(floors);
-      unitList = generateTFU(units);
-      console.log({ towerList, floorList, unitList });
+      generatedData = generateTFU(towers, floors, units);
+      tfuMatchData = generatedData.tfuMatchData;
+      setUnitFPDataStore(unitType.toString(), generatedData.tfuCombinations);
     }
     const color = getRandomColor(unitType);
     const newTowerFloorData = produce(towerFloorData, (draft) => {
       draft.forEach((tfuData) => {
-        if (towerList.includes(tfuData.towerId.toString())) {
-          tfuData.floorsUnits.forEach((fuData) => {
-            if (floorList.includes(fuData.floorId.toString())) {
-              fuData.units.forEach((unitItem) => {
-                if (unitList.includes(unitItem.unitNumber)) {
-                  unitItem.color = color;
-                  unitItem.unitType = unitType.toString();
+        const fuComb = tfuMatchData[tfuData.towerId.toString()];
+        if (fuComb) {
+          tfuData.floorsUnits.forEach((element) => {
+            if (element.floorId in fuComb) {
+              const unitComb = fuComb[element.floorId];
+              element.units.forEach((item) => {
+                if (unitComb.includes(item.unitNumber)) {
+                  item.color = color;
+                  item.unitType = unitType.toString();
                 }
               });
             }
@@ -67,7 +69,6 @@ export default function UnitFP({
       });
     });
     setTowerFloorData(newTowerFloorData);
-    console.log({ newTowerFloorData });
   }
   return (
     <>
@@ -83,7 +84,7 @@ export default function UnitFP({
           type='number'
         />
       </label>
-      {fileInputEleCount && (
+      {!!fileInputEleCount && (
         <div className='flex justify-between'>
           <button
             className='btn btn-warning mx-auto'
@@ -108,7 +109,7 @@ export default function UnitFP({
       )}
       {showFileInputs &&
         fileInputEleCount &&
-        [...Array(fileInputEleCount).keys()].map((item) => (
+        range(0, fileInputEleCount).map((item) => (
           <label
             className='flex flex-wrap items-center justify-between gap-5'
             key={item}
@@ -120,7 +121,8 @@ export default function UnitFP({
               className='file-input file-input-bordered flex-[5]'
               placeholder='Enter number only'
               type='file'
-              id={`unitFPFileInput-${item}`}
+              name={`unitType-${item + 1}`}
+              id={`unitFPFileInput-${item + 1}`}
               onChange={(e) => {
                 if (e && e.target.files && e.target.files.length > 0) {
                   console.log(e.target.files[0].name);
@@ -147,6 +149,7 @@ export default function UnitFP({
                   {floorUnits.units.map((unitItem, unitNameIndex) => (
                     <UnitCell
                       towerId={tower.towerId}
+                      floorNumber={floorUnits.floorId}
                       fullUnitName={unitItem.fullUnitName}
                       unitNumber={unitItem.unitNumber}
                       unitType={unitItem.unitType ? +unitItem.unitType : null}
