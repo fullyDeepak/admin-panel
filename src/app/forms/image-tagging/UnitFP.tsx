@@ -81,6 +81,7 @@ export default function UnitFP({
           placeholder='Enter number only'
           type='file'
           multiple
+          accept='image/*'
           name={`unit-floor-plan`}
           id={`unitFPFileInput`}
           onChange={(e) => {
