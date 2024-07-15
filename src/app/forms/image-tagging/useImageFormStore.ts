@@ -96,7 +96,7 @@ interface State {
         uploadStatus: 'Success' | 'Failure';
       }[]
     | null;
-  unitFPDataStore: { [key: string]: string[][] };
+  unitFPDataStore: { [key: string]: { tfu: string[][]; unitType: string } };
 }
 
 type Actions = {
@@ -112,7 +112,11 @@ type Actions = {
   setUploadingStatus: (_newStatus: State['uploadingStatus']) => void;
   fetchTowerFloorData: (_projectId: number) => void;
   resetTowerFloorData: () => void;
-  setUnitFPDataStore: (_unitType: string, _newData: string[][]) => void;
+  setUnitFPDataStore: (
+    _fileName: string,
+    _newData: string[][],
+    _unitType: string
+  ) => void;
 };
 
 export const useImageFormStore = create<State & Actions>()(
@@ -197,9 +201,9 @@ export const useImageFormStore = create<State & Actions>()(
 
     resetTowerFloorData: () =>
       set({ towerFloorFormData: [], loadingTowerFloorData: 'idle' }),
-    setUnitFPDataStore: (unitType, newData) => {
+    setUnitFPDataStore: (fileName, newData, unitType) => {
       const prevData = get().unitFPDataStore;
-      prevData[unitType] = newData;
+      prevData[fileName] = { tfu: newData, unitType: unitType };
       set({ unitFPDataStore: prevData });
     },
   }))
