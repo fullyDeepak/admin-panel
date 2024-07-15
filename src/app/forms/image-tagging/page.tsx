@@ -266,22 +266,28 @@ export default function ImageTaggingPage() {
       const formData = new FormData(form);
       formData.append('project_id', selectedProject.value.toString());
       formData.append('tfuData', JSON.stringify(unitFPDataStore));
-      const response = await axiosClient.post<{
-        status: string;
-        data: {
-          fileName: string;
-          uploadStatus: 'Success' | 'Failure';
-        }[];
-      }>('/forms/imgTag/unit', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (progressEvent: any) => {
-          const percentage = (progressEvent.loaded * 100) / progressEvent.total;
-          setProgress(+percentage.toFixed(0));
-        },
-      });
-      setResultData(response.data?.data);
-      setUploadingStatus('complete');
-      form.reset();
+
+      try {
+        const response = await axiosClient.post<{
+          status: string;
+          data: {
+            fileName: string;
+            uploadStatus: 'Success' | 'Failure';
+          }[];
+        }>('/forms/imgTag/unit', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          onUploadProgress: (progressEvent: any) => {
+            const percentage =
+              (progressEvent.loaded * 100) / progressEvent.total;
+            setProgress(+percentage.toFixed(0));
+          },
+        });
+        setResultData(response.data?.data);
+        setUploadingStatus('complete');
+        form.reset();
+      } catch (error) {
+        setUploadingStatus('error');
+      }
     }
   }
 

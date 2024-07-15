@@ -165,9 +165,11 @@ export default function Form({
             className='btn-rezy btn mx-auto min-w-40 disabled:text-gray-600'
             disabled={uploadingStatus === 'running' ? true : false}
           >
-            {uploadingStatus === 'idle' || uploadingStatus === 'complete'
-              ? 'Submit'
-              : 'Uploading...'}
+            {uploadingStatus === 'idle' || uploadingStatus === 'complete' ? (
+              'Submit'
+            ) : (
+              <LoadingCircle size='medium' circleColor='violet' />
+            )}
           </button>
           {uploadingStatus === 'idle' ? (
             <></>
