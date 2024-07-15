@@ -23,7 +23,7 @@ export default function UnitFP({
     for (const file of files) {
       unitType++;
       const pattern: RegExp =
-        /^\[(?<towers>[\d,;-]+)\]-\[(?<floors>[\d,;-]+)\]-\[(?<units>[\dA-Z;,-]+)\]/gm;
+        /^\[(?<towers>[\d,;\-ALL]+)\]-\[(?<floors>[\d,;\-ALL]+)\]-\[(?<units>[\d,;\-A-Z]+)\]/gm;
       const match = pattern.exec(file.name);
       let generatedData: {
         tfuMatchData: {
@@ -49,6 +49,12 @@ export default function UnitFP({
           generatedData.tfuCombinations,
           unitType.toString()
         );
+      } else {
+        alert(`Invalid file name pattern: ${file.name}`);
+        const fileInput = document.getElementById(
+          'unitFPFileInput'
+        ) as HTMLInputElement;
+        fileInput.value = '';
       }
       const color = getRandomColor(unitType);
       newTowerFloorData = produce(newTowerFloorData, (draft) => {
@@ -86,7 +92,6 @@ export default function UnitFP({
           id={`unitFPFileInput`}
           onChange={(e) => {
             if (e && e.target.files && e.target.files.length > 0) {
-              console.log(e.target.files[0].name);
               handleFileChange(e.target.files);
             }
           }}
