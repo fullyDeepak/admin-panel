@@ -92,6 +92,7 @@ interface State {
   uploadingStatus: 'idle' | 'running' | 'complete' | 'error';
   resultData:
     | {
+        unitType?: string;
         fileName: string;
         uploadStatus: 'Success' | 'Failure';
       }[]

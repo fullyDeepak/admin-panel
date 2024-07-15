@@ -83,6 +83,20 @@ export default function ImageTaggingPage() {
       accessorKey: 'uploadStatus',
     },
   ];
+  const resultColumnUnit = [
+    {
+      header: 'Unit Type',
+      accessorKey: 'unitType',
+    },
+    {
+      header: 'S3 Location',
+      accessorKey: 'fileName',
+    },
+    {
+      header: 'Upload Status',
+      accessorKey: 'uploadStatus',
+    },
+  ];
 
   // populate project dropdown
   const { data: projectOptions, isLoading: loadingProjectOptions } = useQuery({
@@ -271,6 +285,7 @@ export default function ImageTaggingPage() {
         const response = await axiosClient.post<{
           status: string;
           data: {
+            unitType: string;
             fileName: string;
             uploadStatus: 'Success' | 'Failure';
           }[];
@@ -330,7 +345,11 @@ export default function ImageTaggingPage() {
         <div className='mx-auto my-10 max-w-[60%]'>
           <h3 className='text-center text-2xl font-semibold'>Upload Status</h3>
           <TanstackReactTable
-            columns={resultColumn}
+            columns={
+              selectedImageTaggingType?.value === 'unit-fp'
+                ? resultColumnUnit
+                : resultColumn
+            }
             data={resultData}
             showPagination={false}
             enableSearch={false}

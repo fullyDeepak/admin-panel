@@ -165,11 +165,11 @@ export default function Form({
             className='btn-rezy btn mx-auto min-w-40 disabled:text-gray-600'
             disabled={uploadingStatus === 'running' ? true : false}
           >
-            {uploadingStatus === 'idle' || uploadingStatus === 'complete' ? (
-              'Submit'
-            ) : (
-              <LoadingCircle size='medium' circleColor='violet' />
-            )}
+            {uploadingStatus === 'idle' ||
+            uploadingStatus === 'complete' ||
+            uploadingStatus === 'error'
+              ? 'Submit'
+              : 'Submitting...'}
           </button>
           {uploadingStatus === 'idle' ? (
             <></>
@@ -178,6 +178,12 @@ export default function Form({
             <ProgressBar progress={progress} />
           ) : (
             <></>
+          )}
+          {uploadingStatus === 'error' && (
+            <p className='text-center font-semibold text-error'>
+              Some error occurred while processing, please check if unit already
+              tagged!
+            </p>
           )}
         </>
       )}
