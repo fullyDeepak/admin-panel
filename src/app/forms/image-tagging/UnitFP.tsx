@@ -1,9 +1,12 @@
 import { nanoid } from 'nanoid';
 import { TowerFloorDataType, useImageFormStore } from './useImageFormStore';
 import { produce } from 'immer';
-import { getRandomColor } from '@/lib/utils';
 import UnitCell from './UnitCell';
 import { generateTFU } from './matcher';
+import { useEffect } from 'react';
+import PreviewUnitDocs from './PreviewUnitDocs';
+import TanstackReactTable from '@/components/tables/TanstackReactTable';
+import { isEqual, uniqWith } from 'lodash';
 
 type UnitFPProps = {
   towerFloorData: TowerFloorDataType[];
@@ -14,11 +17,32 @@ export default function UnitFP({
   towerFloorData,
   setTowerFloorData,
 }: UnitFPProps) {
-  const { setUnitFPDataStore } = useImageFormStore();
+  const {
+    setUnitFPDataStore,
+    previewUnitDocsData,
+    setPreviewUnitDocsData,
+    setShowUnitModal,
+    showUnitModal,
+    unitFpTableData,
+  } = useImageFormStore();
+
+  useEffect(() => {
+    if (showUnitModal === true) {
+      (
+        document.getElementById('unit-preview-modal') as HTMLDialogElement
+      ).showModal();
+    }
+  }, [showUnitModal]);
 
   // whenever file input receive a file
   function handleFileChange(files: FileList) {
     let unitType = 0;
+    if (unitFpTableData && unitFpTableData.length > 0) {
+      const maxUnitType = Math.max(
+        ...unitFpTableData.map((item) => +item.unit_type)
+      );
+      unitType = maxUnitType;
+    }
     let newTowerFloorData = [...towerFloorData];
     for (const file of files) {
       unitType++;
@@ -56,7 +80,6 @@ export default function UnitFP({
         ) as HTMLInputElement;
         fileInput.value = '';
       }
-      const color = getRandomColor(unitType);
       newTowerFloorData = produce(newTowerFloorData, (draft) => {
         draft.forEach((tfuData) => {
           const fuComb = tfuMatchData[tfuData.towerId.toString()];
@@ -66,7 +89,6 @@ export default function UnitFP({
                 const unitComb = fuComb[element.floorId];
                 element.units.forEach((item) => {
                   if (unitComb.includes(item.unitNumber)) {
-                    item.color = color;
                     item.unitType = unitType.toString();
                   }
                 });
@@ -78,6 +100,7 @@ export default function UnitFP({
     }
     setTowerFloorData(newTowerFloorData);
   }
+
   return (
     <>
       <label className='flex flex-wrap items-center justify-between gap-5'>
@@ -97,6 +120,33 @@ export default function UnitFP({
           }}
         />
       </label>
+
+      {unitFpTableData && unitFpTableData.length > 0 && (
+        <div className='mx-auto w-full'>
+          <h3 className='text-center text-2xl font-semibold'>Available Data</h3>
+          <TanstackReactTable
+            columns={[
+              {
+                header: 'Unit Type',
+                accessorKey: 'unit_type',
+              },
+              {
+                header: 'S3 Location',
+                accessorKey: 's3_path',
+              },
+            ]}
+            data={uniqWith(
+              unitFpTableData.map((item) => ({
+                unit_type: item.unit_type,
+                s3_path: item.s3_path,
+              })),
+              isEqual
+            )}
+            showPagination={false}
+            enableSearch={false}
+          />
+        </div>
+      )}
 
       {towerFloorData &&
         towerFloorData?.map((tower, towerIndex) => (
@@ -120,7 +170,10 @@ export default function UnitFP({
                       unitNumber={unitItem.unitNumber}
                       unitType={unitItem.unitType ? +unitItem.unitType : null}
                       key={unitNameIndex}
-                      color={unitItem.color}
+                      previewURL={unitItem.preview_url || ''}
+                      s3Path={unitItem.s3_path || ''}
+                      setPreviewUnitDocsData={setPreviewUnitDocsData}
+                      setShowUnitModal={setShowUnitModal}
                     />
                   ))}
                 </div>
@@ -128,6 +181,13 @@ export default function UnitFP({
             </div>
           </div>
         ))}
+      {previewUnitDocsData && (
+        <PreviewUnitDocs
+          previewDocsData={previewUnitDocsData}
+          setShowModal={setShowUnitModal}
+          showModal
+        />
+      )}
     </>
   );
 }

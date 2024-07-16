@@ -1,4 +1,5 @@
 import axiosClient from '@/utils/AxiosClient';
+import { produce } from 'immer';
 import { startCase } from 'lodash';
 import { SingleValue } from 'react-select';
 import { create } from 'zustand';
@@ -19,6 +20,18 @@ interface Response {
   }[];
 }
 
+interface UnitResponse {
+  project_id: number;
+  tower_id: number;
+  unit_type: number;
+  s3_path: string;
+  preview_url: string;
+  floor_units: {
+    units: string[];
+    floor_id: number;
+  }[];
+}
+
 export type TowerFloorDataType = {
   towerId: number;
   towerName: string;
@@ -28,8 +41,9 @@ export type TowerFloorDataType = {
     units: {
       fullUnitName: string;
       unitNumber: string;
-      color?: string;
       unitType: string | null;
+      s3_path?: string;
+      preview_url?: string;
     }[];
   }[];
 };
@@ -98,6 +112,15 @@ interface State {
       }[]
     | null;
   unitFPDataStore: { [key: string]: { tfu: string[][]; unitType: string } };
+  showUnitModal: boolean;
+  previewUnitDocsData: {
+    tower_id: number;
+    s3_path: string;
+    preview_url: string;
+    unitType: number | null;
+    fName: string;
+  } | null;
+  unitFpTableData: { unit_type: number; s3_path: string }[] | null;
 }
 
 type Actions = {
@@ -118,6 +141,8 @@ type Actions = {
     _newData: string[][],
     _unitType: string
   ) => void;
+  setPreviewUnitDocsData: (_newData: State['previewUnitDocsData']) => void;
+  setShowUnitModal: (_val: boolean) => void;
 };
 
 export const useImageFormStore = create<State & Actions>()(
@@ -137,6 +162,12 @@ export const useImageFormStore = create<State & Actions>()(
     availableProjectData: [],
 
     resultData: null,
+
+    showUnitModal: false,
+
+    previewUnitDocsData: null,
+
+    unitFpTableData: null,
 
     setSelectedImageTaggingType: (select) =>
       set({ selectedImageTaggingType: select }),
@@ -164,7 +195,7 @@ export const useImageFormStore = create<State & Actions>()(
         }>('/forms/getUMUnitNames', {
           params: { project_id: projectId },
         });
-        const units: TowerFloorDataType[] = [];
+        let units: TowerFloorDataType[] = [];
         const selectedUnits: SelectedTowerFloorUnitDataType = {};
         let options: {
           value: number;
@@ -191,7 +222,40 @@ export const useImageFormStore = create<State & Actions>()(
             label: `${item.towerId}: ${item.towerName}`,
           }));
         });
+        if (get().selectedImageTaggingType?.value === 'unit-fp') {
+          const unitResponse = await axiosClient.get<{
+            data: UnitResponse[];
+          }>('/forms/imgTag/unit', {
+            params: { project_id: projectId },
+          });
+
+          set({ unitFpTableData: unitResponse.data.data });
+
+          units = produce(units, (draft) => {
+            draft.forEach((tfuData) => {
+              unitResponse.data.data.forEach((unitRes) => {
+                if (tfuData.towerId === unitRes.tower_id) {
+                  tfuData.floorsUnits.forEach((flUnit) => {
+                    unitRes.floor_units.forEach((flUnitRes) => {
+                      if (flUnitRes.floor_id === flUnit.floorId) {
+                        flUnit.units.forEach((unitItem) => {
+                          if (flUnitRes.units.includes(unitItem.unitNumber)) {
+                            unitItem.unitType = unitRes.unit_type.toString();
+                            unitItem.preview_url = unitRes.preview_url;
+                            unitItem.s3_path = unitRes.s3_path;
+                          }
+                        });
+                      }
+                    });
+                  });
+                }
+              });
+            });
+          });
+        }
+
         set({ towerFloorFormData: units });
+
         set({ towerOptions: options });
         set({ loadingTowerFloorData: 'complete' });
       } catch (error) {
@@ -206,6 +270,12 @@ export const useImageFormStore = create<State & Actions>()(
       const prevData = get().unitFPDataStore;
       prevData[fileName] = { tfu: newData, unitType: unitType };
       set({ unitFPDataStore: prevData });
+    },
+    setPreviewUnitDocsData: (newdata) => {
+      set({ previewUnitDocsData: newdata });
+    },
+    setShowUnitModal: (value) => {
+      set({ showUnitModal: value });
     },
   }))
 );

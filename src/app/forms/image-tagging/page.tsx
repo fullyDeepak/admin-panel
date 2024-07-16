@@ -9,7 +9,6 @@ import PreviewDocs from './PreviewDocs';
 import { useImageFormStore } from './useImageFormStore';
 
 export default function ImageTaggingPage() {
-  //   console.log('Whole page re-renders.....');
   const {
     fetchTowerFloorData,
     setUploadingStatus,
@@ -159,7 +158,6 @@ export default function ImageTaggingPage() {
           }
           return newItem;
         });
-        console.log({ projectData });
         setAvailableProjectData(projectData);
       } else if (
         selectedImageTaggingType?.value === 'tower-fp' &&
@@ -299,6 +297,7 @@ export default function ImageTaggingPage() {
         });
         setResultData(response.data?.data);
         setUploadingStatus('complete');
+        fetchTowerFloorData(selectedProject.value);
         form.reset();
       } catch (error) {
         setUploadingStatus('error');
