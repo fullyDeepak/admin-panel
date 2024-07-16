@@ -101,6 +101,25 @@ export default function UnitFP({
     setTowerFloorData(newTowerFloorData);
   }
 
+  function getTotalUnitCount(data: TowerFloorDataType['floorsUnits']) {
+    let count = 0;
+    data.map((flUnit) => {
+      count += flUnit.units.length;
+    });
+    return count;
+  }
+
+  function getTaggedUnitCount(data: TowerFloorDataType['floorsUnits']) {
+    let count = 0;
+    data.map((flUnit) => {
+      flUnit.units.map((unitItem) => {
+        if (unitItem.unitType) {
+          count++;
+        }
+      });
+    });
+    return count;
+  }
   return (
     <>
       <label className='flex flex-wrap items-center justify-between gap-5'>
@@ -151,11 +170,21 @@ export default function UnitFP({
       {towerFloorData &&
         towerFloorData?.map((tower, towerIndex) => (
           <div className='my-5 rounded-2xl border-4 p-5' key={towerIndex}>
-            <p className='flex justify-evenly text-center font-semibold'>
-              <span>Tower ID: {tower.towerId}</span>{' '}
-              <span>Tower Name: {tower.towerName}</span>
-              <span>Tower Type: {tower.towerType}</span>
-            </p>
+            <div className='flex w-full flex-col gap-2'>
+              <p className='flex justify-evenly text-center font-semibold'>
+                <span>Tower ID: {tower.towerId}</span>{' '}
+                <span>Tower Name: {tower.towerName}</span>
+                <span>Tower Type: {tower.towerType}</span>
+              </p>
+              <p className='flex justify-evenly text-center font-semibold'>
+                <span>
+                  Total Unit Count: {getTotalUnitCount(tower.floorsUnits)}
+                </span>{' '}
+                <span>
+                  Tagged Unit Count: {getTaggedUnitCount(tower.floorsUnits)}
+                </span>
+              </p>
+            </div>
             <div className='relative flex flex-col justify-between gap-2 overflow-x-auto p-5'>
               {tower.floorsUnits?.map((floorUnits) => (
                 <div
