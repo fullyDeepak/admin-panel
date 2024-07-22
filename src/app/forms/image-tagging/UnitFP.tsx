@@ -70,7 +70,7 @@ export default function UnitFP({
         tfuMatchData = generatedData.tfuMatchData;
         setUnitFPDataStore(
           file.name,
-          generatedData.tfuCombinations,
+          uniqWith(generatedData.tfuCombinations, isEqual),
           unitType.toString()
         );
       } else {
