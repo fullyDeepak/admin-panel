@@ -1,5 +1,6 @@
 import { maxBy } from 'lodash';
 import { TowerFloorDataType } from './useImageFormStore';
+import { produce } from 'immer';
 
 // type Range = string | number;
 
@@ -88,7 +89,6 @@ export function generateTFU(
   const unitParts = unitStr.split(';');
 
   let tfuCombinations = [];
-  // const combinations: { [key: string]: string[][] } = {};
   const tfuMatchData: {
     [key: string]: {
       [key: string]: string[];
@@ -129,7 +129,22 @@ export function generateTFU(
           tempTower[towerItem][floor].push(unit);
         }
       }
-      tfuMatchData[towerItem] = tempTower[towerItem];
+      if (tfuMatchData[towerItem] == undefined) {
+        tfuMatchData[towerItem] = tempTower[towerItem];
+      } else {
+        const prevData = tfuMatchData[towerItem];
+        const currentTowerData = tempTower[towerItem];
+        const newTowerData = produce(prevData, (draft) => {
+          Object.entries(currentTowerData).map(([floor, units]) => {
+            if (prevData[floor] == undefined) {
+              draft[floor] = units;
+            } else {
+              draft[floor].push(...units);
+            }
+          });
+        });
+        tfuMatchData[towerItem] = newTowerData;
+      }
     }
   }
   return { tfuMatchData, tfuCombinations };
