@@ -257,17 +257,17 @@ export default function ProjectTowerEditPage() {
       >
         <ul className='steps mb-5'>
           <li
-            className={`${formCount >= 0 ? 'step-error after:!text-white' : ''} step`}
+            className={`${formCount >= 0 ? 'step-secondary after:!text-white' : ''} step`}
           >
             Project
           </li>
           <li
-            className={`${formCount >= 1 ? 'step-error after:!text-white' : ''} step`}
+            className={`${formCount >= 1 ? 'step-secondary after:!text-white' : ''} step`}
           >
             Tower
           </li>
           <li
-            className={`${formCount >= 2 ? 'step-error after:!text-white' : ''} step`}
+            className={`${formCount >= 2 ? 'step-secondary after:!text-white' : ''} step`}
           >
             Final Preview
           </li>
@@ -293,7 +293,7 @@ export default function ProjectTowerEditPage() {
           )}
           {formsStep.length - 1 === formCount && (
             <button
-              className='btn btn-sm w-32 border-none bg-rose-500 text-white md:btn-md hover:bg-red-600'
+              className='btn btn-sm w-32 border-none bg-violet-600 text-white md:btn-md hover:bg-violet-700'
               disabled={editProjectFormData.projectName ? false : true}
             >
               Submit
@@ -306,7 +306,7 @@ export default function ProjectTowerEditPage() {
           <p className='mt-10 text-center text-2xl font-semibold'>Sent Data</p>
           <div className='relative my-10 max-h-[500px] min-w-[80%] overflow-y-auto border bg-gray-100 font-mono text-sm'>
             <button
-              className='btn btn-circle absolute right-0 top-2 border-none bg-rose-500 text-white hover:bg-rose-700'
+              className='btn btn-circle absolute right-0 top-2 border-none bg-violet-600 text-white hover:bg-violet-700'
               type='button'
               onClick={() =>
                 navigator.clipboard.writeText(JSON.stringify(sentData, null, 2))

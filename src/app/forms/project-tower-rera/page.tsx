@@ -179,18 +179,18 @@ export default function ProjectTowerReraPage() {
         onSubmit={submitForm}
       >
         <ul className='steps mb-5'>
-          <li className={`${formCount >= 0 ? 'step-error' : ''} step`}>
+          <li className={`${formCount >= 0 ? 'step-secondary' : ''} step`}>
             Project
           </li>
-          <li className={`${formCount >= 1 ? 'step-error' : ''} step`}>
+          <li className={`${formCount >= 1 ? 'step-secondary' : ''} step`}>
             Tower
           </li>
           {projectFormDataRera.isRERAProject ? (
             <>
-              <li className={`${formCount >= 2 ? 'step-error' : ''} step`}>
+              <li className={`${formCount >= 2 ? 'step-secondary' : ''} step`}>
                 Status
               </li>
-              <li className={`${formCount >= 3 ? 'step-error' : ''} step`}>
+              <li className={`${formCount >= 3 ? 'step-secondary' : ''} step`}>
                 Final Preview
               </li>
             </>
@@ -201,7 +201,7 @@ export default function ProjectTowerReraPage() {
           )}
         </ul>
 
-        <div className='mx-auto flex flex-wrap items-center justify-between gap-5 rounded-full bg-rose-100 p-2 px-6 text-2xl transition-all'>
+        <div className='mx-auto flex flex-wrap items-center justify-between gap-5 rounded-full bg-violet-100 p-2 px-6 text-2xl transition-all'>
           <div className='flex items-center gap-5 transition-all duration-1000'>
             <span>Is RERA project?:</span>
             <input
@@ -248,7 +248,7 @@ export default function ProjectTowerReraPage() {
             ? reraFormSteps.length - 1 === formCount
             : nonReraFormSteps.length - 1 === formCount) && (
             <button
-              className='btn btn-sm w-32 border-none bg-rose-500 text-white md:btn-md hover:bg-red-600'
+              className='btn btn-sm w-32 border-none bg-violet-600 text-white md:btn-md hover:bg-violet-700'
               disabled={
                 projectFormDataRera.district && projectFormDataRera.projectName
                   ? false
@@ -265,7 +265,7 @@ export default function ProjectTowerReraPage() {
           <p className='mt-10 text-center text-2xl font-semibold'>Sent Data</p>
           <div className='relative my-10 max-h-[500px] min-w-[80%] overflow-y-auto border bg-gray-100 font-mono text-sm'>
             <button
-              className='btn btn-circle absolute right-0 top-2 border-none bg-rose-500 text-white hover:bg-rose-700'
+              className='btn btn-circle absolute right-0 top-2 border-none bg-violet-600 text-white hover:bg-violet-700'
               type='button'
               onClick={() =>
                 navigator.clipboard.writeText(JSON.stringify(sentData, null, 2))

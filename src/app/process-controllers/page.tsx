@@ -13,7 +13,7 @@ export default function ProcessControllers() {
           <h2 className='text-center text-xl font-semibold'>TM Controller</h2>
           <Link
             href={'/process-controllers/start-etl'}
-            className='btn  flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
             ETL Process
           </Link>
@@ -22,7 +22,7 @@ export default function ProcessControllers() {
           <h2 className='text-center text-xl font-semibold'>UM Controller</h2>
           <Link
             href={'/process-controllers/um-generator'}
-            className='btn  flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
             UM Generator
           </Link>

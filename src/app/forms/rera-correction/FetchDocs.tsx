@@ -1,6 +1,5 @@
 import LoadingCircle from '@/components/ui/LoadingCircle';
 import PDFViewer from '@/components/ui/PdfViewer';
-import { useReraCorrectionStore } from '@/store/useReraCorrectionStore';
 import axiosClient from '@/utils/AxiosClient';
 import React, { useState } from 'react';
 
@@ -66,7 +65,7 @@ export default function FetchDocs({
         </button>
       )}
       {loadingReraDocsState === 'loading' && (
-        <LoadingCircle circleColor='rose' size='medium' />
+        <LoadingCircle circleColor='violet' size='medium' />
       )}
       {loadingReraDocsState === 'complete' && (
         <>
@@ -80,7 +79,7 @@ export default function FetchDocs({
           </button>
           <ul
             tabIndex={0}
-            className='menu dropdown-content z-[1]  rounded-box bg-base-100 p-2 shadow-c'
+            className='menu dropdown-content z-[1] rounded-box bg-base-100 p-2 shadow-c'
           >
             {reraDocs.map((doc, index) => (
               <li key={index}>

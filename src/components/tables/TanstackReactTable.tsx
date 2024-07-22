@@ -81,7 +81,7 @@ export default function TanstackReactTable({
         <div className='relative max-w-xs self-end'>
           <input
             type='text'
-            className='block w-full rounded-md border-0 py-1.5 ps-9 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6'
+            className='block w-full rounded-md border-0 py-1.5 ps-9 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
             placeholder='Search for items'
             onChange={(e) => setFiltering(e.target.value)}
           />
@@ -158,7 +158,7 @@ export default function TanstackReactTable({
           {/* <div>{table.getRowModel().rows.length} Rows</div> */}
           <select
             value={table.getState().pagination.pageSize}
-            className='select select-sm hidden border-2 border-rose-400 outline-none focus:border-rose-400 focus:outline-none md:inline-block'
+            className='select select-sm hidden border-2 border-violet-400 outline-none focus:border-violet-400 focus:outline-none md:inline-block'
             onChange={(e) => {
               table.setPageSize(Number(e.target.value));
             }}
@@ -172,14 +172,14 @@ export default function TanstackReactTable({
           <div className='join self-end text-sm'>
             <button
               onClick={() => table.setPageIndex(0)}
-              className='btn btn-outline join-item max-h-8 min-h-0 border-rose-600 px-2 hover:border-rose-600 hover:bg-rose-600'
+              className='btn btn-outline join-item max-h-8 min-h-0 border-violet-600 px-2 hover:border-violet-600 hover:bg-violet-600'
             >
               <MdOutlineFirstPage size={20} />
             </button>
             <button
               disabled={!table.getCanPreviousPage()}
               onClick={() => table.previousPage()}
-              className='btn btn-outline join-item max-h-8 min-h-0 gap-0 border-rose-600 px-2 hover:border-rose-600 hover:bg-rose-600'
+              className='btn btn-outline join-item max-h-8 min-h-0 gap-0 border-violet-600 px-2 hover:border-violet-600 hover:bg-violet-600'
             >
               <MdOutlineNavigateBefore size={20} />
               Prev
@@ -187,14 +187,14 @@ export default function TanstackReactTable({
             <button
               disabled={!table.getCanNextPage()}
               onClick={() => table.nextPage()}
-              className='btn btn-outline join-item max-h-8 min-h-0 gap-0 border-rose-600 px-2  hover:border-rose-600 hover:bg-rose-600'
+              className='btn btn-outline join-item max-h-8 min-h-0 gap-0 border-violet-600 px-2 hover:border-violet-600 hover:bg-violet-600'
             >
               Next
               <MdOutlineNavigateNext size={20} />
             </button>
             <button
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              className='btn btn-outline join-item max-h-8 min-h-0 border-rose-600 px-2 hover:border-rose-600 hover:bg-rose-600'
+              className='btn btn-outline join-item max-h-8 min-h-0 border-violet-600 px-2 hover:border-violet-600 hover:bg-violet-600'
             >
               <MdOutlineLastPage size={20} />
             </button>

@@ -148,12 +148,12 @@ export default function TowerUnitDetails({
     });
   }
   return (
-    <section className='flex flex-col gap-2 '>
+    <section className='flex flex-col gap-2'>
       <h3 className='my-4 text-2xl font-semibold'>
         Section: Unit Generator Data
       </h3>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex flex-[2] items-center  '>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex flex-[2] items-center'>
           <span>Min Floor:</span>
         </span>
         <input
@@ -165,8 +165,8 @@ export default function TowerUnitDetails({
           }
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex flex-[2] items-center  '>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex flex-[2] items-center'>
           <span>Max Floor:</span>
         </span>
         <input
@@ -178,8 +178,8 @@ export default function TowerUnitDetails({
           }
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex flex-[2] items-center  '>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex flex-[2] items-center'>
           <span>Ground Floor Name:</span>
         </span>
         <input
@@ -191,14 +191,14 @@ export default function TowerUnitDetails({
           }
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex flex-[2] items-center  '>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex flex-[2] items-center'>
           <span>Ground Floor Unit Nos.:</span>
         </span>
         <span className='flex flex-[5] flex-row gap-5'>
           <input
             className={
-              'w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 '
+              'w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
             }
             name='groundFloorUnitNoMin'
             defaultValue={
@@ -222,14 +222,14 @@ export default function TowerUnitDetails({
           />
         </span>
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex flex-[2] items-center  '>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex flex-[2] items-center'>
           <span>Typical Floor Unit Nos.:</span>
         </span>
         <span className='flex flex-[5] flex-row gap-5'>
           <input
             className={
-              'w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 '
+              'w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
             }
             name='typicalFloorUnitNoMin'
             defaultValue={
@@ -253,8 +253,8 @@ export default function TowerUnitDetails({
           />
         </span>
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex flex-[2] items-center  '>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex flex-[2] items-center'>
           <span>Delete Full Unit Nos.:</span>
         </span>
         <input
@@ -266,8 +266,8 @@ export default function TowerUnitDetails({
           }
         />
       </label>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex flex-[2] items-center  '>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex flex-[2] items-center'>
           <span>Add Exception Unit Nos.:</span>
         </span>
         <input

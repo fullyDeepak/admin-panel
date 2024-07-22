@@ -54,7 +54,7 @@ export default function DocsETLTagData({
                 </button>
               )}
               {loadingReraDocs === 'loading' && (
-                <LoadingCircle circleColor='rose' size='medium' />
+                <LoadingCircle circleColor='violet' size='medium' />
               )}
               {loadingReraDocs === 'complete' && (
                 <>

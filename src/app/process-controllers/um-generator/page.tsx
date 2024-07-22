@@ -155,7 +155,7 @@ export default function UMGenerator() {
           </div>
         </dialog>
         <button
-          className='btn btn-error btn-lg btn-wide text-white'
+          className='btn btn-lg btn-wide bg-violet-600 text-white hover:bg-violet-700'
           onClick={() =>
             (
               document.getElementById('um-generate-modal') as HTMLDialogElement

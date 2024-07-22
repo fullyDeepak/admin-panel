@@ -30,7 +30,7 @@ const close = (
 );
 
 const deskIconCss =
-  'md:relative md:active:bg-transparent md:after:absolute md:after:bg-rose-500 md:after:bottom-2 md:after:left-0 md:after:h-[2px] md:after:w-full md:after:origin-bottom-right md:after:scale-x-0 md:hover:after:origin-bottom-left md:hover:after:scale-x-100 md:after:transition-transform md:after:ease-in-out md:after:duration-300';
+  'md:relative md:active:bg-transparent md:after:absolute md:after:bg-violet-500 md:after:bottom-2 md:after:left-0 md:after:h-[2px] md:after:w-full md:after:origin-bottom-right md:after:scale-x-0 md:hover:after:origin-bottom-left md:hover:after:scale-x-100 md:after:transition-transform md:after:ease-in-out md:after:duration-300';
 
 const NavBar = () => {
   const { data } = useSession();
@@ -60,8 +60,8 @@ const NavBar = () => {
   ];
 
   return (
-    <div className='z-10 flex items-center justify-between bg-rose-300 px-5 py-5 md:px-10'>
-      <div className='order-1 flex-1 text-sm font-bold text-rose-700 lg:text-xl'>
+    <div className='z-10 flex items-center justify-between bg-violet-200 px-5 py-5 md:px-10'>
+      <div className='order-1 flex-1 text-sm font-bold text-violet-700 lg:text-xl'>
         Rezy Admin Dashboard
       </div>
       <div className='order-3 flex flex-[0] justify-between uppercase lg:order-2 lg:flex-1'>
@@ -78,15 +78,15 @@ const NavBar = () => {
           }}
           className={`fixed right-0 top-[88px] z-10 flex h-full w-full items-end lg:static lg:w-full lg:translate-x-0 lg:bg-transparent ${
             isOpen
-              ? 'translate-x-[0%] bg-black/50 '
+              ? 'translate-x-[0%] bg-black/50'
               : 'translate-x-[200%] bg-transparent'
           }`}
         >
-          <div className='ml-auto flex h-full flex-col items-center gap-5 bg-rose-200 p-10 lg:mx-auto lg:flex-row lg:bg-inherit lg:p-0'>
+          <div className='ml-auto flex h-full flex-col items-center gap-5 bg-violet-200 p-10 lg:mx-auto lg:flex-row lg:bg-inherit lg:p-0'>
             {menus.map((item) => (
               <Link
                 key={item.label}
-                className={`${deskIconCss} btn w-full text-nowrap bg-rose-800 text-base text-white lg:btn-link hover:bg-rose-500 lg:w-min lg:text-gray-700 lg:no-underline lg:hover:bg-transparent lg:hover:text-black lg:hover:no-underline `}
+                className={`${deskIconCss} btn w-full text-nowrap bg-violet-800 text-base text-white lg:btn-link hover:bg-violet-500 lg:w-min lg:text-gray-700 lg:no-underline lg:hover:bg-transparent lg:hover:text-black lg:hover:no-underline`}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
               >
@@ -105,10 +105,10 @@ const NavBar = () => {
           </div>
           <ul
             tabIndex={0}
-            className=' dropdown-content right-0 z-[1] w-80 rounded-lg bg-base-100 p-2 shadow-c'
+            className='dropdown-content right-0 z-[1] w-80 rounded-lg bg-base-100 p-2 shadow-c'
           >
             <li>
-              <span className='block cursor-default px-5 pb-0 pt-5 text-xl font-semibold hover:bg-transparent active:!bg-transparent '>
+              <span className='block cursor-default px-5 pb-0 pt-5 text-xl font-semibold hover:bg-transparent active:!bg-transparent'>
                 Hi, {data?.user?.name?.split(' ')[0]}
               </span>
             </li>

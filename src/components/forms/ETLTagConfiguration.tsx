@@ -162,7 +162,7 @@ export default function ETLTagConfiguration({
         )}
       </div>
       <button
-        className='btn btn-outline btn-sm w-1/2 self-center border-none bg-rose-500 text-white hover:border-none hover:bg-rose-600'
+        className='btn btn-outline btn-sm w-1/2 self-center border-none bg-violet-500 text-white hover:border-none hover:bg-violet-600'
         onClick={() =>
           (
             document.getElementById(
@@ -225,7 +225,7 @@ export default function ETLTagConfiguration({
             </label>
           </div>
           <button
-            className='btn btn-sm mx-auto flex items-center justify-center bg-rose-500 text-white hover:bg-rose-700'
+            className='btn btn-sm mx-auto flex items-center justify-center bg-violet-500 text-white hover:bg-violet-700'
             type='button'
             onClick={() => {
               console.log(towerData.id);

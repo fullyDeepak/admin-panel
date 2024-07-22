@@ -71,12 +71,12 @@ export default function StartETLPage() {
         <dialog id='etl-start-confirm-modal' className='modal backdrop-blur-xl'>
           <Toaster />
           <div className='modal-box h-[40%]'>
-            <div className='flex flex-col items-center  justify-center text-red-500'>
+            <div className='flex flex-col items-center justify-center text-red-500'>
               <CgInfo size={60} />
-              <h3 className='text-3xl font-bold '>Please Confirm again</h3>
+              <h3 className='text-3xl font-bold'>Please Confirm again</h3>
             </div>
             <div className='mt-5 flex flex-col gap-3'>
-              <div className='flex '>
+              <div className='flex'>
                 <span className='font-semibold'>
                   This will start ETL Process.
                 </span>
@@ -110,16 +110,16 @@ export default function StartETLPage() {
         </dialog>
         <dialog id='etl-start-modal' className='modal backdrop-blur-sm'>
           <div className='modal-box h-[50%]'>
-            <div className='flex flex-col items-center  justify-center text-red-500'>
+            <div className='flex flex-col items-center justify-center text-red-500'>
               <CgInfo size={60} />
-              <h3 className='text-3xl font-bold '>Attention Please !!!</h3>
-              <h2 className='text-xl font-bold '>
+              <h3 className='text-3xl font-bold'>Attention Please !!!</h3>
+              <h2 className='text-xl font-bold'>
                 You have entered the danger area.
               </h2>
             </div>
             <p className='py-4'>Do you really want to start ETL Process?</p>
             <div className='flex flex-col gap-3'>
-              <div className='flex '>
+              <div className='flex'>
                 <span className='font-semibold'>
                   This action can&apos;t be undone.
                 </span>
@@ -156,7 +156,7 @@ export default function StartETLPage() {
           </div>
         </dialog>
         <button
-          className='btn btn-error btn-lg btn-wide text-white'
+          className='btn btn-lg btn-wide bg-violet-600 text-white hover:bg-violet-700'
           onClick={() =>
             (
               document.getElementById('etl-start-modal') as HTMLDialogElement

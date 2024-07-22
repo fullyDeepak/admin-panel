@@ -150,16 +150,16 @@ const ChipInput = ({
 
   return (
     <div
-      className={`ml-[6px] flex w-full flex-[5] flex-wrap items-center gap-3 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus-within:ring-2 focus-within:ring-inset focus-within:ring-rose-600 ${addTWClass}`}
+      className={`ml-[6px] flex w-full flex-[5] flex-wrap items-center gap-3 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus-within:ring-2 focus-within:ring-inset focus-within:ring-violet-600 ${addTWClass}`}
     >
       {chips?.map((chip, index) => (
         <div
           key={index}
-          className='badge relative h-auto max-h-60 whitespace-pre-wrap border-rose-300 bg-rose-100 pr-7'
+          className='badge relative h-auto max-h-60 whitespace-pre-wrap border-violet-300 bg-violet-100 pr-7'
         >
           {chip}
           <span
-            className='absolute right-0 cursor-pointer rounded-r-full bg-rose-500 px-1.5 text-white'
+            className='absolute right-0 cursor-pointer rounded-r-full bg-violet-500 px-1.5 text-white'
             onClick={() => handleChipRemove(index)}
           >
             &times;

@@ -14,19 +14,19 @@ export default function FormHomePage() {
           </h2>
           <Link
             href={'/forms/village-replacement'}
-            className='btn flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
             Village Replacement
           </Link>
           <Link
             href={'/forms/village-onboarding'}
-            className='btn flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
             Village Onboarding
           </Link>
           <Link
             href={'/forms/sro-scraper'}
-            className='btn flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
             SRO Scraper
           </Link>
@@ -37,13 +37,13 @@ export default function FormHomePage() {
           </h2>
           <Link
             href={'/forms/rera-correction'}
-            className='btn flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
             RERA DMV
           </Link>
           <Link
             href={'/forms/unit-master-correction'}
-            className='btn flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
             UM Manual
           </Link>
@@ -54,19 +54,19 @@ export default function FormHomePage() {
           </h2>
           <Link
             href={'/forms/project-tower-rera'}
-            className='btn flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
             Onboard Project
           </Link>
           <Link
             href={'/forms/project-tower-edit'}
-            className='btn flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
             Update Project
           </Link>
           <Link
             href={'/forms/image-tagging'}
-            className='btn flex items-center active:btn-success hover:text-black active:text-white'
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
             Image Tagging
           </Link>

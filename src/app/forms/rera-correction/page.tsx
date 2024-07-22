@@ -23,7 +23,7 @@ type SroResponse = {
   village_name: string;
 };
 const inputBoxClass =
-  'w-full rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 ';
+  'w-full rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 export default function ReraCorrectionPage() {
   const [pdfPreviewDivs, setPdfPreviewDivs] = useState<React.JSX.Element[]>([]);
   const {
@@ -667,7 +667,7 @@ export default function ReraCorrectionPage() {
                 }}
               />
               <span
-                className={`badge aspect-square h-10 rounded-full bg-rose-200 ${selectedProjects.length > 100 ? 'text-base' : 'text-lg'} `}
+                className={`badge aspect-square h-10 rounded-full bg-violet-200 ${selectedProjects.length > 100 ? 'text-base' : 'text-lg'} `}
               >
                 {selectedProjects.length}
               </span>

@@ -47,7 +47,7 @@ export default function ETLTagData({
       )}
       {formProjectETLTagData.map((etlTagData, index) => (
         <div
-          className='moveTransition tower-card relative mb-14 flex flex-col gap-3 rounded-2xl p-10 shadow-[0_0px_8px_rgb(255,60,255,0.8)]'
+          className='moveTransition tower-card relative mb-14 flex flex-col gap-3 rounded-2xl p-10 shadow-[0_0px_8px_rgb(139,92,246,0.6)]'
           key={index}
         >
           <button
@@ -414,7 +414,7 @@ export default function ETLTagData({
           <div className='absolute -bottom-6 -left-5 z-10 w-full'>
             <button
               type='button'
-              className='btn btn-md mx-auto flex items-center border-none bg-rose-300 hover:bg-rose-400'
+              className='btn btn-md mx-auto flex items-center border-none bg-violet-300 hover:bg-violet-400'
               onClick={() => {
                 const newData = {
                   ...etlTagData,
