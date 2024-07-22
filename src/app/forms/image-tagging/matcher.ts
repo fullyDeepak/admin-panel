@@ -1,3 +1,6 @@
+import { maxBy } from 'lodash';
+import { TowerFloorDataType } from './useImageFormStore';
+
 // type Range = string | number;
 
 function parseRange(rangeStr: string) {
@@ -41,7 +44,8 @@ function parseCombinedString(combinedStr: string) {
 export function generateTFU(
   towerStr: string,
   floorStr: string,
-  unitStr: string
+  unitStr: string,
+  towerFloorData: TowerFloorDataType[]
 ): {
   tfuMatchData: {
     [key: string]: {
@@ -50,6 +54,34 @@ export function generateTFU(
   };
   tfuCombinations: string[][];
 } {
+  if (towerStr === 'ALL') {
+    const towerIdList = towerFloorData.map((tfuData) => tfuData.towerId);
+    towerStr = towerIdList.join(',');
+  }
+  if (floorStr === 'ALL') {
+    const floorIdList: string[] = [];
+    towerFloorData.map((tfuData) => {
+      tfuData.floorsUnits.map((fuData) => {
+        floorIdList.push(fuData.floorId.toString());
+      });
+    });
+    floorStr = floorIdList.join(',');
+  }
+  if (unitStr === 'ALL') {
+    let maxUnit = 0;
+    towerFloorData.map((tfuData) => {
+      tfuData.floorsUnits.map((fuData) => {
+        const maxUnitNum = maxBy(
+          fuData.units.map((u) => ({ ...u, unitNumber: +u.unitNumber })),
+          'unitNumber'
+        )?.unitNumber;
+        if (maxUnitNum) {
+          maxUnit = maxUnit < maxUnitNum ? maxUnitNum : maxUnit;
+        }
+      });
+    });
+    unitStr = `0-${maxUnit}`;
+  }
   /** Generate all possible combinations of Tower, Floor, and Unit. */
   const towerParts = towerStr.split(';');
   let floorParts = floorStr.split(';');
