@@ -5,8 +5,8 @@ import UnitCell from './UnitCell';
 import { generateTFU } from './matcher';
 import { useEffect } from 'react';
 import PreviewUnitDocs from './PreviewUnitDocs';
-import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import { isEqual, uniqWith } from 'lodash';
+import SimpleTable from '@/components/tables/SimpleTable';
 
 type UnitFPProps = {
   towerFloorData: TowerFloorDataType[];
@@ -143,26 +143,15 @@ export default function UnitFP({
       {unitFpTableData && unitFpTableData.length > 0 && (
         <div className='mx-auto w-full'>
           <h3 className='text-center text-2xl font-semibold'>Available Data</h3>
-          <TanstackReactTable
-            columns={[
-              {
-                header: 'Unit Type',
-                accessorKey: 'unit_type',
-              },
-              {
-                header: 'S3 Location',
-                accessorKey: 's3_path',
-              },
-            ]}
-            data={uniqWith(
-              unitFpTableData.map((item) => ({
-                unit_type: item.unit_type,
-                s3_path: item.s3_path,
-              })),
+          <SimpleTable
+            columns={['Unit Type', 'AWS S3 Path']}
+            tableData={uniqWith(
+              unitFpTableData.map((item) => [
+                item.unit_type.toString(),
+                item.s3_path,
+              ]),
               isEqual
             )}
-            showPagination={false}
-            enableSearch={false}
           />
         </div>
       )}
