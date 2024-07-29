@@ -94,151 +94,132 @@ export default function ProjectForm() {
   });
 
   // populate form fields
-  useQuery({
-    queryKey: ['project', editProjectFormData.selectedProject],
-    queryFn: async () => {
-      try {
-        if (editProjectFormData.selectedProject) {
-          const res = await axiosClient.get<{ data: GetProjectDetails }>(
-            `/projects/${editProjectFormData.selectedProject}`
-          );
-          const projectData = res.data.data;
-          console.log({ projectData });
-          const towerDataRes = projectData.towers;
-          const projectETLTagData: FormProjectETLTagDataType[] =
-            projectData.ProjectETLTagDataType.map((etlData, index) => {
-              const localityWbPlot: {
-                locality_contains: string[];
-                ward_block: string[];
-                locality_plot: string[];
-              } =
-                etlData.locality_wb_plot.length > 0
-                  ? JSON.parse(etlData.locality_wb_plot[0])
-                  : {
-                      locality_contains: [],
-                      ward_block: [],
-                      locality_plot: [],
-                    };
-              return {
-                id: index,
-                village: {
-                  label: '' + etlData.village_id,
-                  value: etlData.village_id,
-                },
-                docId: etlData.doc_id,
-                docIdNotEquals: etlData.doc_id_not_equals,
-                rootDocs: etlData.root_docs,
-                apartmentContains: etlData.apartment_contains,
-                counterpartyContains: etlData.counterparty_contains,
-                aptSurveyPlotDetails: etlData.aptSurveyPlotDetails,
-                counterpartySurveyPlotDetails:
-                  etlData.counterpartySurveyPlotDetails,
-                localityContains: localityWbPlot.locality_contains,
-                wardBlock: localityWbPlot.ward_block,
-                localityPlot: localityWbPlot.locality_plot,
-                surveyEquals: etlData.survey_equals,
-                plotEquals: etlData.plot_equals,
-                surveyContains: etlData.survey_contains,
-                plotContains: etlData.plot_contains,
-                doorNoStartWith: etlData.door_no_start,
-                aptNameNotContains: etlData.apt_name_not_contains,
-                singleUnit: etlData.single_unit,
-                etlPattern: etlData.etl_pattern,
-                localityWbPlot: '',
-              };
-            });
-          //reset project etl card before set
-          resetProjectETLTagCard();
-          // set old project etl data
-          updateOldProjectFormETLTagData(projectETLTagData);
-          // set project ETL cards
-          projectETLTagData.map((etlData, index) =>
-            addProjectETLTagCard({ ...etlData, id: index + 1 })
-          );
-          // map tower data
-          const towerData: editTowerDetail[] = towerDataRes.map(
-            (item, index) => ({
-              id: index + 1,
-              towerId: item.tower_id,
-              projectPhase: +item.phase,
-              reraId: item.rera_id,
-              towerType: item.type,
-              etlTowerName: item.etl_tower_name,
-              towerNameAlias: item.tower_name_alias,
-              etlUnitConfigs: item.unit_configs.map((unit) => ({
-                configName: unit.config,
-                minArea: unit.min_built,
-                maxArea: unit.max_built,
-              })),
-              minFloor: item.min_floor,
-              maxFloor: item.max_floor,
-              groundFloorName: item.ground_floor_name,
-              deleteFullUnitNos: item.delete_full_unit_nos,
-              exceptionUnitNos: item.exception_unit_nos,
-              groundFloorUnitNoMax: item.ground_floor_unit_no_max,
-              groundFloorUnitNoMin: item.ground_floor_unit_no_min,
-              typicalFloorUnitNoMax: item.typical_floor_unit_no_max,
-              typicalFloorUnitNoMin: item.typical_floor_unit_no_min,
-              towerDoorNo: item.tower_door_no,
-              validTowerUnits: null,
-            })
-          );
-          console.log({ towerData });
-          setNewTowerEditData(towerData);
-          setOldTowerEditData(towerData);
-          const amenities = projectData.amenities.map(
-            (item: { id: number; amenity: string }) => ({
-              label: item.amenity,
-              value: item.id,
-            })
-          );
-
-          const localities: {
-            label: string;
-            value: string;
-          }[] = JSON.parse(projectData?.localities || '[]')?.map(
-            (locality: string) => ({
-              label: locality,
-              value: locality,
-            })
-          );
-          //   const localityWbPlot: {
-          //     locality_contains: string[];
-          //     ward_block: string[];
-          //     locality_plot: string[];
-          //   } =
-          //     projectData.locality_wb_plot.length > 0
-          //       ? JSON.parse(projectData.locality_wb_plot[0])
-          //       : {
-          //           locality_contains: [],
-          //           ward_block: [],
-          //           locality_plot: [],
-          //         };
-          const projectFormData: Partial<EditProjectTaggingType> = {
-            village_id: projectData.village_id,
-            projectName: projectData.project_name,
-            developerGroup: projectData.developer_group_name,
-            developer: projectData.developer_name,
-            layoutName: projectData.project_layout,
-            projectDesc: projectData.project_description,
-            projectType: projectData.project_category,
-            projectSubType: projectData.project_subtype,
-            amenitiesTags: amenities,
-            localities: localities || [],
-            reraId: projectData.rera_id,
-            developerKeywords: projectData.developer_keywords || [],
-            landlordKeywords: projectData.landlord_keywords || [],
+  async function fetchFormData(selectedProject: number) {
+    try {
+      const res = await axiosClient.get<{ data: GetProjectDetails }>(
+        `/projects/${selectedProject}`
+      );
+      const projectData = res.data.data;
+      console.log({ projectData });
+      const towerDataRes = projectData.towers;
+      const projectETLTagData: FormProjectETLTagDataType[] =
+        projectData.ProjectETLTagDataType.map((etlData, index) => {
+          const localityWbPlot: {
+            locality_contains: string[];
+            ward_block: string[];
+            locality_plot: string[];
+          } =
+            etlData.locality_wb_plot.length > 0
+              ? JSON.parse(etlData.locality_wb_plot[0])
+              : {
+                  locality_contains: [],
+                  ward_block: [],
+                  locality_plot: [],
+                };
+          return {
+            id: index,
+            village: {
+              label: '' + etlData.village_id,
+              value: etlData.village_id,
+            },
+            docId: etlData.doc_id,
+            docIdNotEquals: etlData.doc_id_not_equals,
+            rootDocs: etlData.root_docs,
+            apartmentContains: etlData.apartment_contains,
+            counterpartyContains: etlData.counterparty_contains,
+            aptSurveyPlotDetails: etlData.aptSurveyPlotDetails,
+            counterpartySurveyPlotDetails:
+              etlData.counterpartySurveyPlotDetails,
+            localityContains: localityWbPlot.locality_contains,
+            wardBlock: localityWbPlot.ward_block,
+            localityPlot: localityWbPlot.locality_plot,
+            surveyEquals: etlData.survey_equals,
+            plotEquals: etlData.plot_equals,
+            surveyContains: etlData.survey_contains,
+            plotContains: etlData.plot_contains,
+            doorNoStartWith: etlData.door_no_start,
+            aptNameNotContains: etlData.apt_name_not_contains,
+            singleUnit: etlData.single_unit,
+            etlPattern: etlData.etl_pattern,
+            localityWbPlot: '',
           };
-          updateEditProjectFormData(projectFormData);
-          updateOldProjectFormData(projectFormData);
-        }
-        return true;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    staleTime: Infinity,
-  });
+        });
+      //reset project etl card before set
+      resetProjectETLTagCard();
+      // set old project etl data
+      updateOldProjectFormETLTagData(projectETLTagData);
+      // set project ETL cards
+      projectETLTagData.map((etlData, index) =>
+        addProjectETLTagCard({ ...etlData, id: index + 1 })
+      );
+      // map tower data
+      const towerData: editTowerDetail[] = towerDataRes.map((item, index) => ({
+        id: index + 1,
+        towerId: item.tower_id,
+        projectPhase: +item.phase,
+        reraId: item.rera_id,
+        towerType: item.type,
+        etlTowerName: item.etl_tower_name,
+        towerNameAlias: item.tower_name_alias,
+        etlUnitConfigs: item.unit_configs.map((unit) => ({
+          configName: unit.config,
+          minArea: unit.min_built,
+          maxArea: unit.max_built,
+        })),
+        minFloor: item.min_floor,
+        maxFloor: item.max_floor,
+        groundFloorName: item.ground_floor_name,
+        deleteFullUnitNos: item.delete_full_unit_nos,
+        exceptionUnitNos: item.exception_unit_nos,
+        groundFloorUnitNoMax: item.ground_floor_unit_no_max,
+        groundFloorUnitNoMin: item.ground_floor_unit_no_min,
+        typicalFloorUnitNoMax: item.typical_floor_unit_no_max,
+        typicalFloorUnitNoMin: item.typical_floor_unit_no_min,
+        towerDoorNo: item.tower_door_no,
+        validTowerUnits: null,
+      }));
+      console.log({ towerData });
+      setNewTowerEditData(towerData);
+      setOldTowerEditData(towerData);
+      const amenities = projectData.amenities.map(
+        (item: { id: number; amenity: string }) => ({
+          label: item.amenity,
+          value: item.id,
+        })
+      );
+
+      const localities: {
+        label: string;
+        value: string;
+      }[] = JSON.parse(projectData?.localities || '[]')?.map(
+        (locality: string) => ({
+          label: locality,
+          value: locality,
+        })
+      );
+      const projectFormData: Partial<EditProjectTaggingType> = {
+        village_id: projectData.village_id,
+        projectName: projectData.project_name,
+        developerGroup: projectData.developer_group_name,
+        developer: projectData.developer_name,
+        layoutName: projectData.project_layout,
+        projectDesc: projectData.project_description,
+        projectType: projectData.project_category,
+        projectSubType: projectData.project_subtype,
+        amenitiesTags: amenities,
+        localities: localities || [],
+        reraId: projectData.rera_id,
+        developerKeywords: projectData.developer_keywords || [],
+        landlordKeywords: projectData.landlord_keywords || [],
+      };
+      updateEditProjectFormData(projectFormData);
+      updateOldProjectFormData(projectFormData);
+
+      return true;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -302,7 +283,10 @@ export default function ProjectForm() {
             animation='slide-up'
             optionFilterProp='desc'
             value={editProjectFormData.selectedProject}
-            onChange={(e) => updateEditProjectFormData({ selectedProject: e })}
+            onChange={(e) => {
+              updateEditProjectFormData({ selectedProject: e });
+              fetchFormData(e);
+            }}
             placeholder='Select Project Id and Name'
             className='rounded-full'
           >
@@ -334,36 +318,12 @@ export default function ProjectForm() {
           )}
         </span>
       </label>
-      {/* <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Select Village:</span>
-        <span className='w-full flex-[5]'>
-          <Select
-            showSearch
-            animation='slide-up'
-            optionFilterProp='desc'
-            value={editProjectFormData.village_id || undefined}
-            onChange={(e) => updateEditProjectFormData({ village_id: e })}
-            placeholder='Select Village'
-          >
-            {villageOptions?.map((item, i) => (
-              <Option
-                key={i}
-                value={item.value}
-                className='cursor-pointer'
-                desc={item.label}
-              >
-                {item.label}
-              </Option>
-            ))}
-          </Select>
-        </span>
-      </label> */}
       <label className='flex flex-wrap items-center justify-between gap-5'>
         <span className='flex-[2]'>Project Name:</span>
         <input
           className={inputBoxClass}
           name='projectName'
-          defaultValue={editProjectFormData.projectName}
+          value={editProjectFormData.projectName}
           onChange={handleChange}
         />
       </label>
@@ -373,7 +333,7 @@ export default function ProjectForm() {
           type='text'
           className={inputBoxClass}
           name='layoutName'
-          defaultValue={editProjectFormData.layoutName}
+          value={editProjectFormData.layoutName}
           onChange={handleChange}
         />
       </label>
@@ -382,7 +342,7 @@ export default function ProjectForm() {
         <input
           className={inputBoxClass}
           name='developer'
-          defaultValue={editProjectFormData.developer}
+          value={editProjectFormData.developer}
           onChange={handleChange}
         />
       </label>
@@ -391,7 +351,7 @@ export default function ProjectForm() {
         <input
           className={inputBoxClass}
           name='developerGroup'
-          defaultValue={editProjectFormData.developerGroup}
+          value={editProjectFormData.developerGroup}
           onChange={handleChange}
         />
       </label>
@@ -446,7 +406,7 @@ export default function ProjectForm() {
           type='text'
           className={inputBoxClass}
           name='projectDesc'
-          defaultValue={editProjectFormData.projectDesc}
+          value={editProjectFormData.projectDesc}
           onChange={handleChange}
         />
       </label>
