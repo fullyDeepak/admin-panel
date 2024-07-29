@@ -82,6 +82,9 @@ const initialStateProjectData: ProjectTaggingTypeRera = {
   plotSuggestion: [],
   projectCoordinates: [],
   localities: [],
+  keywordType: undefined,
+  developerKeywords: [],
+  landlordKeywords: [],
 };
 
 const initialStateProjectETLTagData: FormProjectETLTagDataType[] = [

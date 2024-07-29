@@ -12,6 +12,7 @@ import { useEditTowerStore } from '@/store/useEditTowerStore';
 import { usePathname } from 'next/navigation';
 import { CgInfo } from 'react-icons/cg';
 import { MdContentCopy } from 'react-icons/md';
+import Keywords from './Keywords';
 
 export default function ProjectTowerEditPage() {
   const [responseData, setResponseData] = useState<object | undefined>(
@@ -41,6 +42,7 @@ export default function ProjectTowerEditPage() {
   delete newProjectFormData.selectedProjectOption;
   delete newProjectFormData.projectSubTypeOptions;
   delete newProjectFormData.towerTypeOptions;
+  delete newProjectFormData.keywordType;
   newProjectFormData.localities = newProjectFormData?.localities?.map(
     (item: { value: string; label: string }) => item.value
   );
@@ -58,7 +60,8 @@ export default function ProjectTowerEditPage() {
   }));
   const formsStep: ReactElement[] = [
     <ProjectForm key={1} />,
-    <TowerForm key={2} />,
+    <Keywords key={2} />,
+    <TowerForm key={3} />,
     <PreviewProjectTower
       key={3}
       projectFormETLTagData={newProjectFormETLTagData}
@@ -264,10 +267,15 @@ export default function ProjectTowerEditPage() {
           <li
             className={`${formCount >= 1 ? 'step-secondary after:!text-white' : ''} step`}
           >
-            Tower
+            Keyword
           </li>
           <li
             className={`${formCount >= 2 ? 'step-secondary after:!text-white' : ''} step`}
+          >
+            Tower
+          </li>
+          <li
+            className={`${formCount >= 3 ? 'step-secondary after:!text-white' : ''} step`}
           >
             Final Preview
           </li>
@@ -304,7 +312,7 @@ export default function ProjectTowerEditPage() {
       {sentData && (
         <div className='flex flex-col items-center justify-between'>
           <p className='mt-10 text-center text-2xl font-semibold'>Sent Data</p>
-          <div className='relative my-10 max-h-[500px] min-w-[80%] overflow-y-auto border bg-gray-100 font-mono text-sm'>
+          <div className='relative my-10 max-h-[500px] min-w-[80%] max-w-[80%] overflow-y-auto border bg-gray-100 font-mono text-sm'>
             <button
               className='btn btn-circle absolute right-0 top-2 border-none bg-violet-600 text-white hover:bg-violet-700'
               type='button'

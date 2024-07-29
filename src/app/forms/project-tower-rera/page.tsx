@@ -12,6 +12,7 @@ import { useTowerStoreRera } from '@/store/useTowerStoreRera';
 import { usePathname } from 'next/navigation';
 import ProjectStatus from './ProjectStatus';
 import { MdContentCopy } from 'react-icons/md';
+import Keywords from './Keywords';
 
 export default function ProjectTowerReraPage() {
   const [responseData, setResponseData] = useState<object | undefined>(
@@ -43,6 +44,7 @@ export default function ProjectTowerReraPage() {
   delete newProjectFormData.projects;
   newProjectFormData.village_id = newProjectFormData.village?.value;
   delete newProjectFormData.village;
+  delete newProjectFormData.keywordType;
   newProjectFormData.projectType = newProjectFormData.projectType?.value;
   newProjectFormData.projectSubType = newProjectFormData.projectSubType?.value;
   newProjectFormData.localities = newProjectFormData?.localities?.map(
@@ -67,7 +69,8 @@ export default function ProjectTowerReraPage() {
   }));
   const nonReraFormSteps: ReactElement[] = [
     <ProjectForm key={1} />,
-    <TowerForm key={2} />,
+    <Keywords key={2} />,
+    <TowerForm key={3} />,
     <PreviewProjectTower
       key={3}
       projectFormData={newProjectFormData}
@@ -78,8 +81,9 @@ export default function ProjectTowerReraPage() {
 
   const reraFormSteps: ReactElement[] = [
     <ProjectForm key={1} />,
-    <TowerForm key={2} />,
-    <ProjectStatus key={3} />,
+    <Keywords key={2} />,
+    <TowerForm key={3} />,
+    <ProjectStatus key={4} />,
     <PreviewProjectTower
       key={4}
       projectFormData={newProjectFormData}
@@ -183,14 +187,17 @@ export default function ProjectTowerReraPage() {
             Project
           </li>
           <li className={`${formCount >= 1 ? 'step-secondary' : ''} step`}>
+            Keyword
+          </li>
+          <li className={`${formCount >= 2 ? 'step-secondary' : ''} step`}>
             Tower
           </li>
           {projectFormDataRera.isRERAProject ? (
             <>
-              <li className={`${formCount >= 2 ? 'step-secondary' : ''} step`}>
+              <li className={`${formCount >= 3 ? 'step-secondary' : ''} step`}>
                 Status
               </li>
-              <li className={`${formCount >= 3 ? 'step-secondary' : ''} step`}>
+              <li className={`${formCount >= 4 ? 'step-secondary' : ''} step`}>
                 Final Preview
               </li>
             </>

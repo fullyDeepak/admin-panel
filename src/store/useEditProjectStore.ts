@@ -24,6 +24,7 @@ export interface EditProjectTaggingType extends FormProjectDataType {
       }[]
     | [];
   projectSubType: string;
+  reraId: string | null;
 }
 
 interface FormState {
@@ -63,6 +64,10 @@ const initialStateProjectData: EditProjectTaggingType = {
   projectDesc: '',
   amenitiesTags: [],
   localities: [],
+  developerKeywords: [],
+  landlordKeywords: [],
+  keywordType: undefined,
+  reraId: null,
 };
 
 export const useEditProjectStore = create<FormState>((set) => ({
@@ -76,7 +81,7 @@ export const useEditProjectStore = create<FormState>((set) => ({
       oldProjectFormData: { ...state.editProjectFormData, ...oldDetails },
     })),
   updateOldProjectFormETLTagData: (oldDetails) =>
-    set((state) => ({
+    set(() => ({
       oldProjectFormETLTagData: oldDetails,
     })),
   updateProjectETLTagData: (etlCardId, key, value) => {

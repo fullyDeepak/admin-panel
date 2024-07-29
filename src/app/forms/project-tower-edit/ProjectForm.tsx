@@ -225,6 +225,9 @@ export default function ProjectForm() {
             projectSubType: projectData.project_subtype,
             amenitiesTags: amenities,
             localities: localities || [],
+            reraId: projectData.rera_id,
+            developerKeywords: projectData.developer_keywords || [],
+            landlordKeywords: projectData.landlord_keywords || [],
           };
           updateEditProjectFormData(projectFormData);
           updateOldProjectFormData(projectFormData);

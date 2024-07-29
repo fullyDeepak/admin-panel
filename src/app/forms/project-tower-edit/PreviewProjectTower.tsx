@@ -19,6 +19,8 @@ type PreviewProjectTowerProps = {
     projectCoordinates: string[];
     aptSurveyPlotDetails: boolean;
     counterpartySurveyPlotDetails: boolean;
+    developerKeywords: string[];
+    landlordKeywords: string[];
   };
   projectFormETLTagData:
     | {
@@ -196,9 +198,6 @@ export default function PreviewProjectTower({
       etlUnitConfigs.push({ ...etl, id: item.id })
     )
   );
-  projectFormData.amenitiesTags.map((item) => item.label);
-  const amenitiesLabels: string[] = [];
-  projectFormData.amenitiesTags.map((item) => amenitiesLabels.push(item.label));
   console.log({ projectFormData });
   return (
     <div className='flex flex-col gap-10'>
@@ -234,7 +233,9 @@ export default function PreviewProjectTower({
                 <span className='flex-[1]'>
                   {typeof value === 'boolean'
                     ? JSON.stringify(value)
-                    : (value as string)}
+                    : Array.isArray(value)
+                      ? value.join(',')
+                      : (value as string)}
                 </span>
               )}
             </div>

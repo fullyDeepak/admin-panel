@@ -1,3 +1,5 @@
+import { SingleValue } from 'react-select';
+
 export interface GetTowerUnitConfigDetails {
   id: number;
   config: string;
@@ -69,6 +71,9 @@ export interface GetProjectDetails {
   }[];
   towers: GetTowerDetails[];
   ProjectETLTagDataType: GetProjectETLTagDataType[];
+  rera_id: string | null;
+  developer_keywords: string[];
+  landlord_keywords: string[];
 }
 
 export interface FormProjectETLTagDataType {
@@ -123,6 +128,9 @@ export interface FormProjectDataType {
     __isNew__?: boolean;
   }[];
   localities: { label: string; value: string }[];
+  keywordType: SingleValue<{ label: string; value: string }> | undefined;
+  landlordKeywords: string[];
+  developerKeywords: string[];
 }
 export interface FormEtlUnitConfigType {
   configName: string;

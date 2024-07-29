@@ -19,6 +19,8 @@ type PreviewProjectTowerProps = {
     projectCoordinates: string[];
     aptSurveyPlotDetails: boolean;
     counterpartySurveyPlotDetails: boolean;
+    developerKeywords: string[];
+    landlordKeywords: string[];
   };
   projectFormETLTagData: {
     id: number;
@@ -234,7 +236,9 @@ export default function PreviewProjectTower({
                     <span className='flex-[1]'>
                       {typeof value === 'boolean'
                         ? JSON.stringify(value)
-                        : (value as string)}
+                        : Array.isArray(value)
+                          ? value.join(',')
+                          : (value as string)}
                     </span>
                   )}
                 </div>
