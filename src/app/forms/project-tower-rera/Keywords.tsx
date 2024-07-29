@@ -18,7 +18,10 @@ export default function Keywords() {
       projectFormDataRera.projects,
     ],
     queryFn: async () => {
-      if (!projectFormDataRera.keywordType || !projectFormDataRera.projects) {
+      if (
+        !projectFormDataRera.keywordType ||
+        projectFormDataRera.projects.length === 0
+      ) {
         return undefined;
       }
       const data = {
@@ -69,7 +72,7 @@ export default function Keywords() {
         <div className='flex w-full'>
           <ul className='menu mr-5 max-h-[90vh] w-full max-w-[400px] flex-nowrap rounded-box bg-violet-100 py-4'>
             <li className='menu-title text-center text-xl text-violet-600'>
-              RERA Landlord Land Owner
+              RERA {startCase(projectFormDataRera.keywordType.value)}
             </li>
             <div className='overflow-y-auto'>
               {keywordList?.rera?.map((projectKeywords) =>
@@ -96,7 +99,7 @@ export default function Keywords() {
           </ul>
           <ul className='menu mr-2 max-h-[90vh] w-full max-w-[300px] flex-nowrap overflow-y-auto rounded-box bg-violet-100 py-4'>
             <li className='menu-title text-center text-xl text-violet-600'>
-              Transaction Land Owner
+              Transaction {startCase(projectFormDataRera.keywordType.value)}
             </li>
           </ul>
           <div className='flex flex-col items-center justify-center gap-5'>
