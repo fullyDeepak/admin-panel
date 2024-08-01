@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import Select, { MultiValue, SingleValue } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
-import React, { useId, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { useProjectStoreRera } from '@/store/useProjectStoreRera';
 import axiosClient from '@/utils/AxiosClient';
 import { MultiSelect } from 'react-multi-select-component';
@@ -126,20 +126,25 @@ export default function ProjectForm() {
           isEqual
         );
         const projectOptions = projectResponse?.data?.data;
-        setProjectMVDetails(projectOptions);
         const projectDropdownOptions = projectOptions.map((item) => ({
           value: item.id,
           label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
         }));
-        setProjectOptions(projectDropdownOptions);
-        return { mandalOptions, projectDropdownOptions };
+        return { mandalOptions, projectDropdownOptions, projectOptions };
       }
     },
     staleTime: Infinity,
   });
 
+  useEffect(() => {
+    if (mandalData) {
+      setProjectMVDetails(mandalData.projectOptions);
+      setProjectOptions(mandalData.projectDropdownOptions);
+    }
+  }, [mandalData]);
+
   //   village dropdown
-  const { isPending: loadingVillages, data: villageOptions } = useQuery({
+  const { isPending: loadingVillages, data: villageData } = useQuery({
     queryKey: ['village', projectFormDataRera.mandal],
     queryFn: async () => {
       if (
@@ -179,27 +184,36 @@ export default function ProjectForm() {
           }),
         ]);
         const projectOptions = projectResponse?.data?.data;
-        setProjectMVDetails(projectOptions);
         const projectDropdownOptions = projectOptions.map((item) => ({
           value: item.id,
           label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
         }));
-        setProjectOptions(projectDropdownOptions);
-        return uniqWith(
-          options.data.data.map((item) => ({
-            label: `${item.village_id}:${startCase(item.village_name.toLowerCase())}`,
-            value: item.village_id,
-          })),
-          isEqual
-        );
+        const returnData = {
+          options: uniqWith(
+            options.data.data.map((item) => ({
+              label: `${item.village_id}:${startCase(item.village_name.toLowerCase())}`,
+              value: item.village_id,
+            })),
+            isEqual
+          ),
+          projectOptions,
+          projectDropdownOptions,
+        };
+        return returnData;
       }
     },
-
     staleTime: Infinity,
   });
 
+  useEffect(() => {
+    if (villageData) {
+      setProjectMVDetails(villageData.projectOptions);
+      setProjectOptions(villageData.projectDropdownOptions);
+    }
+  }, [villageData]);
+
   //   projects dropdown
-  const { isPending: loadingProjects, data: _ } = useQuery({
+  const { isPending: loadingProjects, data: projectData } = useQuery({
     queryKey: ['project', projectFormDataRera.village],
     queryFn: async () => {
       if (
@@ -222,24 +236,28 @@ export default function ProjectForm() {
         }>(`/forms/rera/getProjects`, {
           params: {
             district_id: projectFormDataRera.district?.value,
-            // mandal_id: projectFormDataRera?.mandal?.value,
             village_id: projectFormDataRera.village.value,
           },
         });
-        const options = res?.data?.data;
-        setProjectMVDetails(options);
-        const dropdownOptions = options.map((item) => {
+        const projectOptions = res?.data?.data;
+        const projectDropdownOptions = projectOptions.map((item) => {
           return {
             value: item.id,
             label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
           };
         });
-        setProjectOptions(dropdownOptions);
-        return true;
+        return { projectOptions, projectDropdownOptions };
       }
     },
     staleTime: Infinity,
   });
+
+  useEffect(() => {
+    if (projectData) {
+      setProjectMVDetails(projectData.projectOptions);
+      setProjectOptions(projectData.projectDropdownOptions);
+    }
+  }, [projectData]);
 
   let loadingToastId: string;
 
@@ -427,7 +445,7 @@ export default function ProjectForm() {
           <Select
             className='w-full flex-1'
             key={'village'}
-            options={villageOptions || undefined}
+            options={villageData?.options || undefined}
             isLoading={loadingVillages}
             value={projectFormDataRera.village}
             onChange={(e) => {
@@ -706,7 +724,7 @@ export default function ProjectForm() {
         />
       </label>
       <DocsETLTagData
-        villageOptions={villageOptions}
+        villageOptions={villageData?.options}
         loadingVillages={loadingVillages}
       />
       <ProjectMatcherSection
