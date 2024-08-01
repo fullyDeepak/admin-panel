@@ -503,7 +503,7 @@ export default function ProjectForm() {
                     updateProjectFormDataRera({ reraProjectType: 'mixed' })
                   }
                 />
-                <span className='text-sm'>Residential(APT+Mixed)</span>
+                <span className='text-sm'>Apartment</span>
               </label>
               <label
                 className={`${projectFormDataRera.reraProjectType === 'villa' ? 'border-violet-600 bg-violet-100' : ''} flex select-none items-center gap-2 rounded border-2 px-3 py-2`}
@@ -521,7 +521,7 @@ export default function ProjectForm() {
                     updateProjectFormDataRera({ reraProjectType: 'villa' })
                   }
                 />
-                <span className='text-sm'>Residential(Villa)</span>
+                <span className='text-sm'>Villa</span>
               </label>
               <label
                 className={`${projectFormDataRera.reraProjectType === 'commercial' ? 'border-violet-600 bg-violet-100' : ''} flex select-none items-center gap-2 rounded border-2 px-3 py-2`}
