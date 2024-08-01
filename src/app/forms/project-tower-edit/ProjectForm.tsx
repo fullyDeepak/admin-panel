@@ -15,6 +15,7 @@ import { inputBoxClass } from '@/app/constants/tw-class';
 import ProjectMatcherSection from '@/components/forms/ProjectMatcherSection';
 import { MultiValue } from 'react-select';
 import { useId } from 'react';
+import { startCase } from 'lodash';
 
 export default function ProjectForm() {
   const {
@@ -70,21 +71,24 @@ export default function ProjectForm() {
     queryKey: ['village'],
     queryFn: async () => {
       try {
-        const response = await axiosClient.get('/forms/getOnboardedDMV');
-        const data = response.data.data;
-        const newData = [];
-        for (const district of data) {
-          for (const subDistrict of district.districts.districts) {
-            for (const mandal of subDistrict.mandals) {
-              for (const village of mandal.villages) {
-                newData.push({
-                  value: village.village_id,
-                  label: `${(subDistrict.district_name as string).charAt(0).toUpperCase() + (subDistrict.district_name as string).slice(1).toLowerCase()}-${(mandal.mandal_name as string).charAt(0).toUpperCase() + (mandal.mandal_name as string).slice(1).toLowerCase()}-${(village.village_name as string).charAt(0).toUpperCase() + (village.village_name as string).slice(1).toLowerCase()}`,
-                });
-              }
-            }
-          }
-        }
+        const response = await axiosClient.get<{
+          data: {
+            district_id: number;
+            district_name: string;
+            mandal_id: number;
+            mandal_name: string;
+            village_id: number;
+            village_name: string;
+          }[];
+        }>('/forms/getOnboardedDMV');
+        const dmvData = response.data.data;
+        const newData: { value: number; label: string }[] = [];
+        dmvData.map((dmv) => {
+          newData.push({
+            value: dmv.village_id,
+            label: `${startCase(dmv.district_name.toLowerCase())}-${startCase(dmv.mandal_name.toLowerCase())}-${startCase(dmv.village_name.toLowerCase())}`,
+          });
+        });
         return newData;
       } catch (error) {
         return [];
