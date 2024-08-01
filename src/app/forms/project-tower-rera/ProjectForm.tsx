@@ -7,10 +7,9 @@ import axiosClient from '@/utils/AxiosClient';
 import { MultiSelect } from 'react-multi-select-component';
 import { extractKMLCoordinates } from '@/utils/extractKMLCoordinates';
 import toast from 'react-hot-toast';
-import { uniq, startCase } from 'lodash';
+import { uniq, startCase, uniqWith, isEqual } from 'lodash';
 import { useTowerStoreRera } from '@/store/useTowerStoreRera';
 import { useReraDocStore } from '@/store/useReraDocStore';
-import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
 import DocsETLTagData from './DocsETLTagData';
 import ProjectMatcherSection from '@/components/forms/ProjectMatcherSection';
 
@@ -62,11 +61,23 @@ export default function ProjectForm() {
   const { isPending: loadingDistricts, data: districtOptions } = useQuery({
     queryKey: ['district'],
     queryFn: async () => {
-      const options = await fetchDropdownOption('districts', 'state', 36);
-      return options.map((item) => ({
-        label: `${item.value}:${startCase(item.label.toLowerCase())}`,
-        value: item.value,
-      }));
+      const response = await axiosClient.get<{
+        data: {
+          district_id: number;
+          district_name: string;
+          mandal_id: number;
+          mandal_name: string;
+          village_id: number;
+          village_name: string;
+        }[];
+      }>('/forms/getOnboardedDMV');
+      return uniqWith(
+        response.data.data.map((item) => ({
+          label: `${item.district_id}:${startCase(item.district_name.toLowerCase())}`,
+          value: item.district_id,
+        })),
+        isEqual
+      );
     },
     staleTime: Infinity,
   });
@@ -80,11 +91,18 @@ export default function ProjectForm() {
         projectFormDataRera.district !== null
       ) {
         const [optionsResponse, projectResponse] = await Promise.all([
-          fetchDropdownOption(
-            'mandals',
-            'district',
-            projectFormDataRera.district?.value
-          ),
+          axiosClient.get<{
+            data: {
+              district_id: number;
+              district_name: string;
+              mandal_id: number;
+              mandal_name: string;
+              village_id: number;
+              village_name: string;
+            }[];
+          }>('/forms/getOnboardedDMV', {
+            params: { district_id: projectFormDataRera.district.value },
+          }),
           axiosClient.get<{
             data: {
               id: number;
@@ -100,10 +118,13 @@ export default function ProjectForm() {
             params: { district_id: projectFormDataRera.district?.value },
           }),
         ]);
-        const mandalOptions = optionsResponse.map((item) => ({
-          label: `${item.value}:${startCase(item.label.toLowerCase())}`,
-          value: item.value,
-        }));
+        const mandalOptions = uniqWith(
+          optionsResponse.data.data.map((item) => ({
+            label: `${item.mandal_id}:${startCase(item.mandal_name.toLowerCase())}`,
+            value: item.mandal_id,
+          })),
+          isEqual
+        );
         const projectOptions = projectResponse?.data?.data;
         setProjectMVDetails(projectOptions);
         const projectDropdownOptions = projectOptions.map((item) => ({
@@ -127,11 +148,18 @@ export default function ProjectForm() {
       ) {
         console.log('fetching villages', projectFormDataRera.mandal);
         const [options, projectResponse] = await Promise.all([
-          fetchDropdownOption(
-            'villages',
-            'mandal',
-            projectFormDataRera.mandal?.value
-          ),
+          axiosClient.get<{
+            data: {
+              district_id: number;
+              district_name: string;
+              mandal_id: number;
+              mandal_name: string;
+              village_id: number;
+              village_name: string;
+            }[];
+          }>('/forms/getOnboardedDMV', {
+            params: { mandal_id: projectFormDataRera.mandal.value },
+          }),
           axiosClient.get<{
             data: {
               id: number;
@@ -157,10 +185,13 @@ export default function ProjectForm() {
           label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
         }));
         setProjectOptions(projectDropdownOptions);
-        return options.map((item) => ({
-          label: `${item.value}:${startCase(item.label.toLowerCase())}`,
-          value: item.value,
-        }));
+        return uniqWith(
+          options.data.data.map((item) => ({
+            label: `${item.village_id}:${startCase(item.village_name.toLowerCase())}`,
+            value: item.village_id,
+          })),
+          isEqual
+        );
       }
     },
 
