@@ -1,25 +1,26 @@
 import { useReraCorrectionStore } from '@/store/useReraCorrectionStore';
-import { useCorrectionStore } from './useCorrectionStore';
+import {
+  useCorrectionStore,
+  useCorrectionStoreState,
+} from './useCorrectionStore';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import axiosClient from '@/utils/AxiosClient';
 
-const { state, setFormData } = useCorrectionStore.getState();
+const { setFormData } = useCorrectionStore.getState();
+const { districtIdValue, mandalIdValue, villageIdValue } =
+  useCorrectionStoreState();
 const { selectedProjects } = useReraCorrectionStore.getState();
 
 export async function setReraDMVLId(
   type: 'DISTRICT' | 'MANDAL' | 'VILLAGE' | 'SURVEY'
 ) {
   const projectIds = selectedProjects.map((item) => item.value);
-  if (
-    type === 'DISTRICT' &&
-    state.districtIdValue &&
-    state.districtIdValue.trim()
-  ) {
+  if (type === 'DISTRICT' && districtIdValue && districtIdValue.trim()) {
     try {
       const response = axiosClient.put('/forms/rera/district', {
         project_ids: projectIds,
-        district_id: +state.districtIdValue,
+        district_id: +districtIdValue,
       });
       await toast.promise(
         response,
@@ -52,15 +53,11 @@ export async function setReraDMVLId(
         });
       }
     }
-  } else if (
-    type === 'MANDAL' &&
-    state.mandalIdValue &&
-    state.mandalIdValue.trim()
-  ) {
+  } else if (type === 'MANDAL' && mandalIdValue && mandalIdValue.trim()) {
     try {
       const response = axiosClient.put('/forms/rera/mandal', {
         project_ids: projectIds,
-        mandal_id: +state.mandalIdValue,
+        mandal_id: +mandalIdValue,
       });
       await toast.promise(
         response,
@@ -93,15 +90,11 @@ export async function setReraDMVLId(
         });
       }
     }
-  } else if (
-    type === 'VILLAGE' &&
-    state.villageIdValue &&
-    state.villageIdValue.trim()
-  ) {
+  } else if (type === 'VILLAGE' && villageIdValue && villageIdValue.trim()) {
     try {
       const response = axiosClient.put('/forms/rera/village', {
         project_ids: projectIds,
-        village_id: +state.villageIdValue,
+        village_id: +villageIdValue,
       });
       await toast.promise(
         response,

@@ -5,7 +5,6 @@ import Select, { SingleValue } from 'react-select';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
 import axiosClient from '@/utils/AxiosClient';
-import { Toaster } from 'react-hot-toast';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import { isEqual, uniqWith } from 'lodash';
 import FetchDocs from './FetchDocs';
@@ -211,7 +210,6 @@ export default function ReraCorrectionPage() {
   return (
     <div className='mx-auto mt-10 flex w-[80%] flex-col'>
       <h1 className='self-center text-3xl'>Form: RERA Correction</h1>
-      <Toaster />
       <div className='flex justify-start gap-5'>
         <div className='mt-5 flex flex-1 flex-col gap-3 rounded p-10 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
           <h3 className='text-center text-2xl font-semibold'>SRO DMVs</h3>
