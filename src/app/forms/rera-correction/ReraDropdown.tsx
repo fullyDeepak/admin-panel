@@ -334,6 +334,7 @@ export default function ReraDropdown() {
               mandalId: selectedReraMandal?.value.split(':')[0],
               mandal: selectedReraMandal?.value.split(':')[1],
               village: selectedReraVillage?.value.split(':')[1],
+              mandal_raw: selectedReraRawMandal?.value,
             },
           }
         );
@@ -370,7 +371,7 @@ export default function ReraDropdown() {
           });
         });
         setFormData('reraTableData', data);
-        setRawMandalOption(uniqWith(rawOptions, isEqual));
+        // setRawMandalOption(uniqWith(rawOptions, isEqual));
         setRawVillageOption(uniqWith(rawVillageOptions, isEqual));
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
