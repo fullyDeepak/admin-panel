@@ -80,12 +80,12 @@ export default function ProjectForm() {
         projectFormDataRera.district !== null
       ) {
         const [optionsResponse, projectResponse] = await Promise.all([
-          await fetchDropdownOption(
+          fetchDropdownOption(
             'mandals',
             'district',
             projectFormDataRera.district?.value
           ),
-          await axiosClient.get<{
+          axiosClient.get<{
             data: {
               id: number;
               project_name: string;
@@ -126,14 +126,13 @@ export default function ProjectForm() {
         projectFormDataRera.mandal !== null
       ) {
         console.log('fetching villages', projectFormDataRera.mandal);
-
         const [options, projectResponse] = await Promise.all([
-          await fetchDropdownOption(
+          fetchDropdownOption(
             'villages',
             'mandal',
             projectFormDataRera.mandal?.value
           ),
-          await axiosClient.get<{
+          axiosClient.get<{
             data: {
               id: number;
               project_name: string;
@@ -164,6 +163,7 @@ export default function ProjectForm() {
         }));
       }
     },
+
     staleTime: Infinity,
   });
 
