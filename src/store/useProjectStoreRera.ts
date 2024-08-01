@@ -31,6 +31,7 @@ export interface ProjectTaggingTypeRera extends FormProjectDataType {
     label: string;
     value: string;
   }>;
+  reraProjectType: 'mixed' | 'villa' | 'commercial';
   projectTypeSuggestion: string[];
   projectSubTypeSuggestion: string[];
   surveySuggestion: string[];
@@ -85,6 +86,7 @@ const initialStateProjectData: ProjectTaggingTypeRera = {
   keywordType: undefined,
   developerKeywords: [],
   landlordKeywords: [],
+  reraProjectType: 'mixed',
 };
 
 const initialStateProjectETLTagData: FormProjectETLTagDataType[] = [

@@ -12,9 +12,10 @@ import { useTowerStoreRera } from '@/store/useTowerStoreRera';
 import { useReraDocStore } from '@/store/useReraDocStore';
 import DocsETLTagData from './DocsETLTagData';
 import ProjectMatcherSection from '@/components/forms/ProjectMatcherSection';
+import { FaCheckCircle } from 'react-icons/fa';
 
 const inputBoxClass =
-  'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
+  'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
 export default function ProjectForm() {
   const {
@@ -84,7 +85,11 @@ export default function ProjectForm() {
 
   // mandal dropdown
   const { isPending: loadingMandalsData, data: mandalData } = useQuery({
-    queryKey: ['mandal', projectFormDataRera.district],
+    queryKey: [
+      'mandal',
+      projectFormDataRera.district,
+      projectFormDataRera.reraProjectType,
+    ],
     queryFn: async () => {
       if (
         projectFormDataRera.district !== undefined &&
@@ -111,11 +116,16 @@ export default function ProjectForm() {
               mandal_name: string;
               village_id: number;
               village_name: string;
+              tower_count: string;
+              unit_count: string;
             }[];
             message: string;
             statusCode: number;
           }>(`/forms/rera/getProjects`, {
-            params: { district_id: projectFormDataRera.district?.value },
+            params: {
+              district_id: projectFormDataRera.district?.value,
+              project_type: projectFormDataRera.reraProjectType,
+            },
           }),
         ]);
         const mandalOptions = uniqWith(
@@ -128,7 +138,7 @@ export default function ProjectForm() {
         const projectOptions = projectResponse?.data?.data;
         const projectDropdownOptions = projectOptions.map((item) => ({
           value: item.id,
-          label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
+          label: `${item.id}:${startCase(item.project_name.toLowerCase())}-(${item.tower_count})-(${item.unit_count})`,
         }));
         return { mandalOptions, projectDropdownOptions, projectOptions };
       }
@@ -145,7 +155,11 @@ export default function ProjectForm() {
 
   //   village dropdown
   const { isPending: loadingVillages, data: villageData } = useQuery({
-    queryKey: ['village', projectFormDataRera.mandal],
+    queryKey: [
+      'village',
+      projectFormDataRera.mandal,
+      projectFormDataRera.reraProjectType,
+    ],
     queryFn: async () => {
       if (
         projectFormDataRera.mandal !== undefined &&
@@ -173,6 +187,8 @@ export default function ProjectForm() {
               mandal_name: string;
               village_id: number;
               village_name: string;
+              tower_count: string;
+              unit_count: string;
             }[];
             message: string;
             statusCode: number;
@@ -180,13 +196,14 @@ export default function ProjectForm() {
             params: {
               district_id: projectFormDataRera.district?.value,
               mandal_id: projectFormDataRera?.mandal?.value,
+              project_type: projectFormDataRera.reraProjectType,
             },
           }),
         ]);
         const projectOptions = projectResponse?.data?.data;
         const projectDropdownOptions = projectOptions.map((item) => ({
           value: item.id,
-          label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
+          label: `${item.id}:${startCase(item.project_name.toLowerCase())}-(${item.tower_count})-(${item.unit_count})`,
         }));
         const returnData = {
           options: uniqWith(
@@ -214,7 +231,11 @@ export default function ProjectForm() {
 
   //   projects dropdown
   const { isPending: loadingProjects, data: projectData } = useQuery({
-    queryKey: ['project', projectFormDataRera.village],
+    queryKey: [
+      'project',
+      projectFormDataRera.village,
+      projectFormDataRera.reraProjectType,
+    ],
     queryFn: async () => {
       if (
         projectFormDataRera.mandal !== undefined &&
@@ -230,6 +251,8 @@ export default function ProjectForm() {
             mandal_name: string;
             village_id: number;
             village_name: string;
+            tower_count: string;
+            unit_count: string;
           }[];
           message: string;
           statusCode: number;
@@ -237,15 +260,14 @@ export default function ProjectForm() {
           params: {
             district_id: projectFormDataRera.district?.value,
             village_id: projectFormDataRera.village.value,
+            project_type: projectFormDataRera.reraProjectType,
           },
         });
         const projectOptions = res?.data?.data;
-        const projectDropdownOptions = projectOptions.map((item) => {
-          return {
-            value: item.id,
-            label: `${item.id}:${startCase(item.project_name.toLowerCase())}`,
-          };
-        });
+        const projectDropdownOptions = projectOptions.map((item) => ({
+          value: item.id,
+          label: `${item.id}:${startCase(item.project_name.toLowerCase())}-(${item.tower_count})-(${item.unit_count})`,
+        }));
         return { projectOptions, projectDropdownOptions };
       }
     },
@@ -460,6 +482,67 @@ export default function ProjectForm() {
       </label>
       {projectFormDataRera.isRERAProject && (
         <>
+          <div className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex-[2] text-base md:text-xl'>
+              Choose Project Type:
+            </span>
+            <div className='flex w-full flex-[5] items-center gap-5'>
+              <label
+                className={`${projectFormDataRera.reraProjectType === 'mixed' ? 'border-violet-600 bg-violet-100' : ''} flex select-none items-center justify-evenly gap-2 rounded border-2 px-3 py-2`}
+              >
+                {projectFormDataRera.reraProjectType === 'mixed' && (
+                  <FaCheckCircle color='green' size={20} />
+                )}
+                <input
+                  type='radio'
+                  hidden
+                  name='err-type-2-subtype'
+                  checked={projectFormDataRera.reraProjectType === 'mixed'}
+                  className='radio checked:bg-violet-600'
+                  onChange={() =>
+                    updateProjectFormDataRera({ reraProjectType: 'mixed' })
+                  }
+                />
+                <span className='text-sm'>Residential(APT+Mixed)</span>
+              </label>
+              <label
+                className={`${projectFormDataRera.reraProjectType === 'villa' ? 'border-violet-600 bg-violet-100' : ''} flex select-none items-center gap-2 rounded border-2 px-3 py-2`}
+              >
+                {projectFormDataRera.reraProjectType === 'villa' && (
+                  <FaCheckCircle color='green' size={20} />
+                )}
+                <input
+                  type='radio'
+                  hidden
+                  name='err-type-2-subtype'
+                  className='radio checked:bg-violet-600'
+                  checked={projectFormDataRera.reraProjectType === 'villa'}
+                  onChange={() =>
+                    updateProjectFormDataRera({ reraProjectType: 'villa' })
+                  }
+                />
+                <span className='text-sm'>Residential(Villa)</span>
+              </label>
+              <label
+                className={`${projectFormDataRera.reraProjectType === 'commercial' ? 'border-violet-600 bg-violet-100' : ''} flex select-none items-center gap-2 rounded border-2 px-3 py-2`}
+              >
+                {projectFormDataRera.reraProjectType === 'commercial' && (
+                  <FaCheckCircle color='green' size={20} />
+                )}
+                <input
+                  type='radio'
+                  hidden
+                  name='err-type-2-subtype'
+                  className='radio checked:bg-violet-600'
+                  checked={projectFormDataRera.reraProjectType === 'commercial'}
+                  onChange={() =>
+                    updateProjectFormDataRera({ reraProjectType: 'commercial' })
+                  }
+                />
+                <span className='text-sm'>Commercial</span>
+              </label>
+            </div>
+          </div>
           <div className='flex items-center justify-between gap-5'>
             <span className='flex-[2] text-xl'>Select Projects:</span>
             <div className='flex flex-[5] items-center gap-5'>
