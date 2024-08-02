@@ -7,6 +7,7 @@ import localFont from 'next/font/local';
 import { getServerSession } from 'next-auth';
 import NextAuthProvider from '@/components/providers/NextAuthProvider';
 import DismissibleToast from '@/components/ui/DismissibleToast';
+import NextTopLoader from 'nextjs-toploader';
 
 const gsans = localFont({
   src: [
@@ -32,11 +33,11 @@ export default async function RootLayout({
   return (
     <html lang='en' className={`${gsans.variable}`}>
       <body className={'font-gsans'}>
+        <NextTopLoader color='#6d28d9' showSpinner={false} />
         <DismissibleToast />
         <NextAuthProvider session={session}>
           {!!session && <NavBar />}
         </NextAuthProvider>
-        {/* <NavBar /> */}
         <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
     </html>
