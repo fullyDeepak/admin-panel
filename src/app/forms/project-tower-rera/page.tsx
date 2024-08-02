@@ -212,7 +212,7 @@ export default function ProjectTowerReraPage() {
           <div className='flex items-center gap-5 transition-all duration-1000'>
             <span>Is RERA project?:</span>
             <input
-              className={`toggle ${projectFormDataRera.isRERAProject ? 'toggle-success' : ''}`}
+              className={`toggle ${projectFormDataRera.isRERAProject ? 'toggle-secondary' : ''}`}
               type='checkbox'
               name='towerDoorNo'
               defaultChecked={projectFormDataRera.isRERAProject}
