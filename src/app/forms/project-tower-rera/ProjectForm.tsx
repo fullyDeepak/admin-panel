@@ -13,6 +13,7 @@ import { useReraDocStore } from '@/store/useReraDocStore';
 import DocsETLTagData from './DocsETLTagData';
 import ProjectMatcherSection from '@/components/forms/ProjectMatcherSection';
 import { FaCheckCircle } from 'react-icons/fa';
+import LoadingCircle from '@/components/ui/LoadingCircle';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
@@ -142,6 +143,7 @@ export default function ProjectForm() {
         }));
         return { mandalOptions, projectDropdownOptions, projectOptions };
       }
+      return null;
     },
     staleTime: Infinity,
   });
@@ -194,7 +196,7 @@ export default function ProjectForm() {
             statusCode: number;
           }>(`/forms/rera/getProjects`, {
             params: {
-              district_id: projectFormDataRera.district?.value,
+              //   district_id: projectFormDataRera.district?.value,
               mandal_id: projectFormDataRera?.mandal?.value,
               project_type: projectFormDataRera.reraProjectType,
             },
@@ -218,6 +220,7 @@ export default function ProjectForm() {
         };
         return returnData;
       }
+      return null;
     },
     staleTime: Infinity,
   });
@@ -258,7 +261,7 @@ export default function ProjectForm() {
           statusCode: number;
         }>(`/forms/rera/getProjects`, {
           params: {
-            district_id: projectFormDataRera.district?.value,
+            // district_id: projectFormDataRera.district?.value,
             village_id: projectFormDataRera.village.value,
             project_type: projectFormDataRera.reraProjectType,
           },
@@ -270,6 +273,7 @@ export default function ProjectForm() {
         }));
         return { projectOptions, projectDropdownOptions };
       }
+      return null;
     },
     staleTime: Infinity,
   });
@@ -315,6 +319,8 @@ export default function ProjectForm() {
     }
   }
 
+  const [loadingProjectDetails, setLoadingProjectDetails] = useState(false);
+
   async function fetchProjectsDetails() {
     const dmvp = {
       district: projectFormDataRera.district,
@@ -322,28 +328,32 @@ export default function ProjectForm() {
       village: projectFormDataRera.village,
       projects: projectFormDataRera.projects,
     };
-    console.log(dmvp);
     resetProjectFormDataRera();
     resetReraDocs();
     updateProjectFormDataRera(dmvp);
     const selectedProjectIds = projectFormDataRera.projects.map(
       (item) => +item.value
     );
+    setLoadingProjectDetails(true);
     const response = await axiosClient.get<{
       data: [
         {
           project_id: string;
           project_name: string;
-          developer_name: string;
           project_type: string;
           project_subtype: string;
-          village_id: number;
+          village_id: string;
           survey_number: string;
           plot_number: string;
           rera_id: string;
+          developer_name: string;
           tower_id: string;
           tower_name: string;
           tower_type: string;
+          max_floor_id: string;
+          min_floor: number;
+          gf_max_unit_count: string;
+          typical_floor_max_unit: string;
           etl_unit_configs: {
             configName: string;
             minArea: number;
@@ -357,14 +367,14 @@ export default function ProjectForm() {
     const data = response.data.data;
     const developers = uniq(data.map((item) => item.developer_name));
     updateProjectFormDataRera({
-      village_id: data[0].village_id,
+      village_id: +data[0].village_id,
       projectName: uniq(data.map((item) => item.project_name)).join(' || '),
       projectIds: uniq(data.map((item) => +item.project_id)),
       developer: developers.join(' || '),
       projectTypeSuggestion: uniq(data.map((item) => item.project_type)),
       projectSubTypeSuggestion: uniq(data.map((item) => item.project_subtype)),
       surveySuggestion: uniq(data.map((item) => item.survey_number)),
-      plotSuggestion: uniq(data.map((item) => item.plot_number)),
+      plotSuggestion: uniq(data.map((item) => item?.plot_number)),
     });
     const phases: Record<number, number> = {};
     const projectIds = uniq(data.map((item) => +item.project_id));
@@ -385,19 +395,20 @@ export default function ProjectForm() {
         towerNameAlias: item.tower_name,
         etlUnitConfigs: item.etl_unit_configs,
         towerDoorNo: '',
-        minFloor: 0,
-        maxFloor: 0,
+        minFloor: item.min_floor,
+        maxFloor: item.max_floor_id,
         validTowerUnits: null,
         groundFloorName: '',
-        groundFloorUnitNoMin: 0,
-        groundFloorUnitNoMax: 0,
-        typicalFloorUnitNoMin: 0,
-        typicalFloorUnitNoMax: 0,
+        groundFloorUnitNoMin: item.min_floor === 0 ? 'G' : item.min_floor,
+        groundFloorUnitNoMax: item.gf_max_unit_count,
+        typicalFloorUnitNoMin: 1,
+        typicalFloorUnitNoMax: item.typical_floor_max_unit,
         deleteFullUnitNos: '',
         exceptionUnitNos: '',
       };
     });
     setTowersDataRera(towersData);
+    setLoadingProjectDetails(false);
   }
   function setMandalVillageSuggestion(
     e: {
@@ -576,7 +587,11 @@ export default function ProjectForm() {
                 disabled={Boolean(!projectFormDataRera.projects.length)}
                 onClick={fetchProjectsDetails}
               >
-                Fetch
+                {loadingProjectDetails ? (
+                  <LoadingCircle size='medium' tailwindClass='bg-white' />
+                ) : (
+                  'Fetch'
+                )}
               </button>
               <span
                 className={`badge aspect-square h-10 rounded-full bg-violet-300 ${projectOptions?.length > 100 ? 'text-base' : 'text-lg'} `}
