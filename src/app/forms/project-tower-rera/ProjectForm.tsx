@@ -396,14 +396,14 @@ export default function ProjectForm() {
         towerNameAlias: item.tower_name,
         etlUnitConfigs: item.etl_unit_configs,
         towerDoorNo: '',
-        minFloor: item.min_floor || '',
+        minFloor: item.min_floor == 0 ? '0' : item.min_floor || '',
         maxFloor: item.max_floor_id || '',
         validTowerUnits: null,
         groundFloorName: '',
         groundFloorUnitNoMin:
           projectFormDataRera.reraProjectType === 'villa'
             ? 1
-            : item.min_floor === 0
+            : item.min_floor == 0
               ? 'G'
               : item.min_floor,
         groundFloorUnitNoMax:
@@ -658,7 +658,7 @@ export default function ProjectForm() {
         <input
           className={inputBoxClass}
           name='layoutName'
-          defaultValue={projectFormDataRera.layoutName}
+          value={projectFormDataRera.layoutName}
           onChange={handleChange}
         />
       </label>
@@ -667,7 +667,7 @@ export default function ProjectForm() {
         <input
           className={inputBoxClass}
           name='developer'
-          defaultValue={projectFormDataRera.developer}
+          value={projectFormDataRera.developer}
           onChange={handleChange}
         />
       </label>
@@ -676,7 +676,7 @@ export default function ProjectForm() {
         <input
           className={inputBoxClass}
           name='developerGroup'
-          defaultValue={projectFormDataRera.developerGroup}
+          value={projectFormDataRera.developerGroup}
           onChange={handleChange}
         />
       </label>
@@ -760,7 +760,7 @@ export default function ProjectForm() {
             className='w-full flex-1'
             name='projectSubType2'
             options={projectFormDataRera.projectSubTypeOptions}
-            defaultValue={projectFormDataRera.projectSubType}
+            value={projectFormDataRera.projectSubType}
             onChange={(
               e: SingleValue<{
                 label: string;
