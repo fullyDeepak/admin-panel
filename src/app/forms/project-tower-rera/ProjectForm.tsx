@@ -347,6 +347,7 @@ export default function ProjectForm() {
           plot_number: string;
           rera_id: string;
           developer_name: string;
+          tower_count: number;
           tower_id: string;
           tower_name: string;
           tower_type: string;
@@ -384,9 +385,9 @@ export default function ProjectForm() {
       return {
         id: index + 1,
         projectPhase: phases[+item.project_id],
-        reraId: item.rera_id,
-        reraTowerId: item.tower_id,
-        towerTypeSuggestion: item.tower_type,
+        reraId: item.rera_id || '',
+        reraTowerId: item.tower_id || '',
+        towerTypeSuggestion: item.tower_type || '',
         towerType: {
           label: '',
           value: '',
@@ -395,14 +396,26 @@ export default function ProjectForm() {
         towerNameAlias: item.tower_name,
         etlUnitConfigs: item.etl_unit_configs,
         towerDoorNo: '',
-        minFloor: item.min_floor,
-        maxFloor: item.max_floor_id,
+        minFloor: item.min_floor || '',
+        maxFloor: item.max_floor_id || '',
         validTowerUnits: null,
         groundFloorName: '',
-        groundFloorUnitNoMin: item.min_floor === 0 ? 'G' : item.min_floor,
-        groundFloorUnitNoMax: item.gf_max_unit_count,
-        typicalFloorUnitNoMin: 1,
-        typicalFloorUnitNoMax: item.typical_floor_max_unit,
+        groundFloorUnitNoMin:
+          projectFormDataRera.reraProjectType === 'villa'
+            ? 1
+            : item.min_floor === 0
+              ? 'G'
+              : item.min_floor,
+        groundFloorUnitNoMax:
+          projectFormDataRera.reraProjectType === 'villa'
+            ? item.tower_count
+            : item.gf_max_unit_count,
+        typicalFloorUnitNoMin:
+          projectFormDataRera.reraProjectType !== 'villa' ? 1 : '',
+        typicalFloorUnitNoMax:
+          projectFormDataRera.reraProjectType !== 'villa'
+            ? item.typical_floor_max_unit
+            : '',
         deleteFullUnitNos: '',
         exceptionUnitNos: '',
       };
