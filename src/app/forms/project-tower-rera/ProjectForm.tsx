@@ -397,7 +397,7 @@ export default function ProjectForm() {
         },
         etlTowerName: item.tower_name,
         towerNameAlias: item.tower_name,
-        etlUnitConfigs: item.etl_unit_configs,
+        etlUnitConfigs: uniqWith(item.etl_unit_configs, isEqual),
         towerDoorNo: '',
         minFloor: item.min_floor == 0 ? '0' : item.min_floor || '',
         maxFloor: item.max_floor_id || '',
