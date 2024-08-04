@@ -386,7 +386,10 @@ export default function ProjectForm() {
         id: index + 1,
         projectPhase: phases[+item.project_id],
         reraId: item.rera_id || '',
-        reraTowerId: item.tower_id || '',
+        reraTowerId:
+          projectFormDataRera.reraProjectType === 'villa'
+            ? `${item.project_id}_0`
+            : item.tower_id,
         towerTypeSuggestion: item.tower_type || '',
         towerType: {
           label: '',
