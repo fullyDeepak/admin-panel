@@ -82,7 +82,7 @@ export default function Keywords() {
         <div className='flex w-full'>
           <ul className='mr-5 flex max-h-[90vh] w-full max-w-[400px] flex-col gap-1 rounded-box bg-violet-100 py-4'>
             <li className='menu-title text-center text-xl text-violet-600'>
-              RERA Landlord Land Owner
+              RERA {startCase(editProjectFormData.keywordType.value)}
             </li>
             <button
               className='btn btn-warning btn-sm max-w-fit self-center'
@@ -138,7 +138,7 @@ export default function Keywords() {
           </ul>
           <ul className='menu mr-2 max-h-[90vh] w-full max-w-[400px] flex-nowrap overflow-y-auto rounded-box bg-violet-100 py-4'>
             <li className='menu-title text-center text-xl text-violet-600'>
-              Transaction Land Owner
+              Transaction {startCase(editProjectFormData.keywordType.value)}
             </li>
             <button
               className='btn btn-warning btn-sm max-w-fit self-center'
@@ -287,7 +287,7 @@ export default function Keywords() {
           </div>
           <ul className='ml-2 flex max-h-[90vh] w-full flex-col gap-4 rounded-box bg-green-100 py-4'>
             <li className='menu-title text-center text-xl text-green-600'>
-              Tagged Keywords:{' '}
+              Tagged Keywords:
               {startCase(editProjectFormData.keywordType.value)}
             </li>
             {editProjectFormData.keywordType?.value === 'developer' && (
