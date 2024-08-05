@@ -177,6 +177,39 @@ export default function Keywords() {
                   <summary className=''>
                     {transData.simple_transaction_type}
                   </summary>
+                  <div className='flex items-center justify-center'>
+                    <button
+                      className='btn btn-warning btn-xs mx-auto max-w-fit'
+                      type='button'
+                      onClick={() => {
+                        let names: string[] = [];
+                        transData.count_names.map((partyName) => {
+                          names = names.concat(partyName.names);
+                        });
+                        if (
+                          editProjectFormData.keywordType?.value === 'landlord'
+                        ) {
+                          updateEditProjectFormData({
+                            landlordKeywords: [
+                              ...editProjectFormData.landlordKeywords,
+                              ...names,
+                            ],
+                          });
+                        } else if (
+                          editProjectFormData.keywordType?.value === 'developer'
+                        ) {
+                          updateEditProjectFormData({
+                            developerKeywords: [
+                              ...editProjectFormData.developerKeywords,
+                              ...names,
+                            ],
+                          });
+                        }
+                      }}
+                    >
+                      Select this deed type
+                    </button>
+                  </div>
 
                   <ul className='flex flex-col gap-y-1'>
                     {transData.count_names.map((countNamesItem) =>
