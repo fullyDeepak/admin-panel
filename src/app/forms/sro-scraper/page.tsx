@@ -26,12 +26,7 @@ export default function SroScraperPage() {
   let ToastId: string | undefined;
 
   //   populated dropdown
-  const {
-    isPending: loadingSros,
-    error: SrosError,
-    status: SrosStatus,
-    data: sroOptions,
-  } = useQuery({
+  const { isPending: loadingSros, data: sroOptions } = useQuery({
     queryKey: ['sroList'],
     queryFn: async (): Promise<{ label: string; value: number }[]> => {
       let sros;
@@ -116,7 +111,7 @@ export default function SroScraperPage() {
         className='mt-5 flex w-full max-w-[70%] flex-col gap-4 self-center rounded p-10 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
         onSubmit={submitForm}
       >
-        <label className='flex flex-wrap items-center justify-between gap-5 '>
+        <label className='flex flex-wrap items-center justify-between gap-5'>
           <span className='flex-[2] text-xl'>SRO Name & Code :</span>
           <Select
             className='w-full flex-[5]'
@@ -136,7 +131,7 @@ export default function SroScraperPage() {
             }}
           />
         </label>
-        <label className='flex flex-wrap items-center justify-between gap-5 '>
+        <label className='flex flex-wrap items-center justify-between gap-5'>
           <span className='flex-[2] text-xl'>Enabled:</span>
           <span className='flex flex-[5] items-center justify-between gap-5'>
             <span

@@ -12,27 +12,27 @@ interface towerDetailRera extends FormTowerDetailType {
 }
 interface FormState {
   towerFormDataRera: towerDetailRera[];
-  setTowersDataRera: (data: towerDetailRera[]) => void;
+  setTowersDataRera: (_data: towerDetailRera[]) => void;
   updateTowerFormDataRera: (
-    id: number,
-    key: keyof towerDetailRera,
-    value: any
+    _id: number,
+    _key: keyof towerDetailRera,
+    _value: any
   ) => void;
-  addNewTowerDataRera: (newDetails: towerDetailRera) => void;
-  deleteTowerFormDataRera: (towerId: number) => void;
+  addNewTowerDataRera: (_newDetails: towerDetailRera) => void;
+  deleteTowerFormDataRera: (_towerId: number) => void;
   addEtlUnitConfigRera: (
-    towerId: number,
-    configName: string,
-    minArea: number,
-    maxArea: number
+    _towerId: number,
+    _configName: string,
+    _minArea: number,
+    _maxArea: number
   ) => void;
   updateEtlUnitConfigRera: (
-    towerId: number,
-    configName: string,
-    minArea: number,
-    maxArea: number
+    _towerId: number,
+    _configName: string,
+    _minArea: number,
+    _maxArea: number
   ) => void;
-  deleteEtlUnitConfigRera: (towerId: number, configName: string) => void;
+  deleteEtlUnitConfigRera: (_towerId: number, _configName: string) => void;
   resetTowerFormDataRera: () => void;
 }
 

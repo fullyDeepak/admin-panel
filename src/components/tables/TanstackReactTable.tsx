@@ -9,8 +9,6 @@ import {
   getSortedRowModel,
   SortingState,
   getFilteredRowModel,
-  TableOptions,
-  Table,
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import { GoArrowDown, GoArrowUp, GoArrowSwitch } from 'react-icons/go';

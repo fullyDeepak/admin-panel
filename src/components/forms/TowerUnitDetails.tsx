@@ -4,9 +4,9 @@ import { FormTowerDetailType } from '@/types/types';
 interface TowerUnitDetailsProps {
   towerData: FormTowerDetailType;
   updateTowerForm: (
-    id: number,
-    key: keyof FormTowerDetailType,
-    value: any
+    _id: number,
+    _key: keyof FormTowerDetailType,
+    _value: any
   ) => void;
   towersFormData: FormTowerDetailType[];
 }

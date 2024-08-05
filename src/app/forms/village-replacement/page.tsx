@@ -54,12 +54,7 @@ export default function VillageReplacementPage() {
   const queryClient = useQueryClient();
 
   // populate state dropdown
-  const {
-    isPending: loadingStates,
-    error: stateError,
-    status: stateCallStatus,
-    data: stateOptions,
-  } = useQuery({
+  const { isPending: loadingStates, data: stateOptions } = useQuery({
     queryKey: ['state'],
     queryFn: () => fetchDropdownOption('states'),
     staleTime: Infinity,
@@ -73,12 +68,7 @@ export default function VillageReplacementPage() {
   }, [stateOptions]);
 
   // populate district dropdown
-  const {
-    isPending: loadingDistricts,
-    error: distError,
-    status: districtCallStatus,
-    data: districtOptions,
-  } = useQuery({
+  const { isPending: loadingDistricts, data: districtOptions } = useQuery({
     queryKey: ['district', selectedState],
     queryFn: () => {
       if (selectedState !== undefined && selectedState !== null) {
@@ -91,12 +81,7 @@ export default function VillageReplacementPage() {
   });
 
   // populate mandal dropdown
-  const {
-    isPending: loadingMandals,
-    error: mandalError,
-    status: mandalCallStatus,
-    data: mandalOptions,
-  } = useQuery({
+  const { isPending: loadingMandals, data: mandalOptions } = useQuery({
     queryKey: ['mandal', selectedDistrict],
     queryFn: () => {
       if (selectedDistrict !== undefined && selectedDistrict !== null) {
@@ -113,12 +98,7 @@ export default function VillageReplacementPage() {
   });
 
   // populate village dropdown
-  const {
-    isPending: loadingVillages,
-    error: villageError,
-    status: villageCallStatus,
-    data: villageOptions,
-  } = useQuery({
+  const { isPending: loadingVillages, data: villageOptions } = useQuery({
     queryKey: ['village', selectedMandal],
     queryFn: () => {
       if (selectedMandal !== undefined && selectedMandal !== null) {
@@ -230,13 +210,7 @@ export default function VillageReplacementPage() {
     return { rawVillages: [], cols: [] };
   }
 
-  const {
-    isPending: loadingRawVillages,
-    error: rawVillageError,
-    status: rawVillageStatus,
-    data: rawVillageData,
-    refetch: refetchRawVillage,
-  } = useQuery({
+  const { data: rawVillageData, refetch: refetchRawVillage } = useQuery({
     queryKey: ['rawVillage', selectedVillage],
     queryFn: async () => fetchRawVillages(),
     staleTime: Infinity,
@@ -306,7 +280,7 @@ export default function VillageReplacementPage() {
         className='mt-5 flex w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
         onSubmit={submitForm}
       >
-        <label className='flex items-center justify-between gap-5 '>
+        <label className='flex items-center justify-between gap-5'>
           <span className='flex-[2] text-base md:text-xl'>State:</span>
           <Select
             className='w-full flex-[5]'
@@ -328,7 +302,7 @@ export default function VillageReplacementPage() {
             isDisabled={loadingStates}
           />
         </label>
-        <label className='flex items-center justify-between gap-5 '>
+        <label className='flex items-center justify-between gap-5'>
           <span className='flex-[2] text-base md:text-xl'>District:</span>
           <Select
             className='w-full flex-[5]'
@@ -349,7 +323,7 @@ export default function VillageReplacementPage() {
             isDisabled={Boolean(!selectedState)}
           />
         </label>
-        <label className='flex items-center justify-between gap-5 '>
+        <label className='flex items-center justify-between gap-5'>
           <span className='flex-[2] text-base md:text-xl'>Mandal:</span>
           <Select
             className='w-full flex-[5]'
@@ -370,7 +344,7 @@ export default function VillageReplacementPage() {
             isDisabled={Boolean(!selectedDistrict)}
           />
         </label>
-        <label className='flex items-center justify-between gap-5 '>
+        <label className='flex items-center justify-between gap-5'>
           <span className='flex-[2] text-base md:text-xl'>Village:</span>
           <Select
             className='w-full flex-[5]'
@@ -388,10 +362,10 @@ export default function VillageReplacementPage() {
             isDisabled={Boolean(!selectedMandal)}
           />
         </label>
-        <label className='flex items-center justify-between gap-5 '>
+        <label className='flex items-center justify-between gap-5'>
           <span className='flex-[2] text-base md:text-xl'>Raw Village:</span>
           <CSVReader
-            onFileLoaded={(data: string[][], fileInfo, originalFile) => {
+            onFileLoaded={(data: string[][], _fileInfo, _originalFile) => {
               const newData = data.filter((item) => item[0].trim() !== '');
               setRawCSVData(newData);
               setPreviewCSV(true);

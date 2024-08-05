@@ -51,7 +51,7 @@ export async function extractKMLCoordinates(
     };
 
     // Set up an error event handler
-    reader.onerror = (e) => {
+    reader.onerror = () => {
       reject(new Error('Error reading file.'));
     };
 

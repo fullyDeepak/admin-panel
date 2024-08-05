@@ -141,7 +141,7 @@ export default function UnitFP({
       </label>
 
       {unitFpTableData && unitFpTableData.length > 0 && (
-        <div className='mx-auto w-full'>
+        <div className='z-0 mx-auto w-full'>
           <h3 className='text-center text-2xl font-semibold'>Available Data</h3>
           <SimpleTable
             columns={['Unit Type', 'AWS S3 Path']}

@@ -8,22 +8,22 @@ import { TiDeleteOutline } from 'react-icons/ti';
 interface ETLTagConfigurationProps {
   towerData: FormTowerDetailType;
   updateETLUnitConfig: (
-    towerId: number,
-    configName: string,
-    minArea: number,
-    maxArea: number
+    _towerId: number,
+    _configName: string,
+    _minArea: number,
+    _maxArea: number
   ) => void;
-  deleteEtlUnitConfig: (towerId: number, configName: string) => void;
+  deleteEtlUnitConfig: (_towerId: number, _configName: string) => void;
   addEtlUnitConfig: (
-    towerId: number,
-    configName: string,
-    minArea: number,
-    maxArea: number
+    _towerId: number,
+    _configName: string,
+    _minArea: number,
+    _maxArea: number
   ) => void;
   updateTowerData: (
-    id: number,
-    key: keyof FormTowerDetailType,
-    value: any
+    _id: number,
+    _key: keyof FormTowerDetailType,
+    _value: any
   ) => void;
 }
 
@@ -41,7 +41,6 @@ export default function ETLTagConfiguration({
     configName: string;
     status: boolean;
   }>({ configName: '', status: false });
-  const [isApartmentSingle, setIsApartmentSingle] = useState<boolean>(false);
   return (
     <>
       <h3 className='my-4 text-2xl font-semibold'>

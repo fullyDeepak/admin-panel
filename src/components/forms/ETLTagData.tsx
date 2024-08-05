@@ -12,9 +12,9 @@ import { nanoid } from 'nanoid';
 interface ETLTagDataType {
   formProjectETLTagData: FormProjectETLTagDataType[];
   //   firstSelectedVillage: SingleValue<{ label: string; value: number }>;
-  updateProjectETLFormData: (id: number, key: string, value: any) => void;
-  deleteProjectETLCard: (etlCardId: number) => void;
-  addProjectETLCard: (newDetails: FormProjectETLTagDataType) => void;
+  updateProjectETLFormData: (_id: number, _key: string, _value: any) => void;
+  deleteProjectETLCard: (_etlCardId: number) => void;
+  addProjectETLCard: (_newDetails: FormProjectETLTagDataType) => void;
   showHeading?: boolean;
   villageOptions:
     | {

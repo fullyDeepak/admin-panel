@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
 import { useState } from 'react';
 import LoadingCircle from '@/components/ui/LoadingCircle';
-import { useEditProjectStore } from '@/store/useEditProjectStore';
+import { useEditProjectStore } from './useEditProjectStore';
 import { startCase } from 'lodash';
 import EditableList from './EditableList';
 

@@ -1,7 +1,7 @@
 import {
   EditProjectTaggingType,
   useEditProjectStore,
-} from '@/store/useEditProjectStore';
+} from './useEditProjectStore';
 import { nanoid } from 'nanoid';
 import { KeyboardEvent, useState } from 'react';
 import { RiCloseLine } from 'react-icons/ri';

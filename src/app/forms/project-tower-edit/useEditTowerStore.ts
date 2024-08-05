@@ -9,28 +9,28 @@ export interface editTowerDetail extends FormTowerDetailType {
 interface FormState {
   editTowerFormData: editTowerDetail[];
   oldTowerFormData: editTowerDetail[];
-  setNewTowerEditData: (data: editTowerDetail[]) => void;
-  setOldTowerEditData: (data: editTowerDetail[]) => void;
+  setNewTowerEditData: (_data: editTowerDetail[]) => void;
+  setOldTowerEditData: (_data: editTowerDetail[]) => void;
   updateEditTowerFormData: (
-    id: number,
-    key: keyof editTowerDetail,
-    value: any
+    _id: number,
+    _key: keyof editTowerDetail,
+    _value: any
   ) => void;
-  addNewEditTowerData: (newDetails: editTowerDetail) => void;
-  deleteEditTowerFormData: (towerId: number) => void;
+  addNewEditTowerData: (_newDetails: editTowerDetail) => void;
+  deleteEditTowerFormData: (_towerId: number) => void;
   addEtlUnitConfig: (
-    towerId: number,
-    configName: string,
-    minArea: number,
-    maxArea: number
+    _towerId: number,
+    _configName: string,
+    _minArea: number,
+    _maxArea: number
   ) => void;
   updateEtlUnitConfig: (
-    towerId: number,
-    configName: string,
-    minArea: number,
-    maxArea: number
+    _towerId: number,
+    _configName: string,
+    _minArea: number,
+    _maxArea: number
   ) => void;
-  deleteEtlUnitConfig: (towerId: number, configName: string) => void;
+  deleteEtlUnitConfig: (_towerId: number, _configName: string) => void;
   resetEditTowerFormData: () => void;
 }
 

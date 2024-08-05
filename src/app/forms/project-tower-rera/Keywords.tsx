@@ -1,4 +1,4 @@
-import { useProjectStoreRera } from '@/store/useProjectStoreRera';
+import { useProjectStoreRera } from './useProjectStoreRera';
 import Select from 'react-select';
 import { FiChevronRight } from 'react-icons/fi';
 import { useQuery } from '@tanstack/react-query';
@@ -69,7 +69,7 @@ export default function Keywords() {
         </div>
       )}
       {projectFormDataRera.keywordType?.value && (
-        <div className='flex w-full'>
+        <div className='contain flex h-dvh w-full'>
           <ul className='menu mr-5 max-h-[90vh] w-full max-w-[400px] flex-nowrap rounded-box bg-violet-100 py-4'>
             <li className='menu-title text-center text-xl text-violet-600'>
               RERA {startCase(projectFormDataRera.keywordType.value)}

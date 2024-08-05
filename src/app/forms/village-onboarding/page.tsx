@@ -42,12 +42,7 @@ export default function VillageOnboardingPage() {
   }, [inputDate]);
 
   //   state dropdown
-  const {
-    isPending: loadingStates,
-    error: stateError,
-    status: stateCallStatus,
-    data: stateOptions,
-  } = useQuery({
+  const { isPending: loadingStates, data: stateOptions } = useQuery({
     queryKey: ['state'],
     queryFn: () => fetchDropdownOption('states'),
     staleTime: Infinity,
@@ -61,12 +56,7 @@ export default function VillageOnboardingPage() {
   }, [stateOptions]);
 
   //   district dropdown
-  const {
-    isPending: loadingDistricts,
-    error: distError,
-    status: districtCallStatus,
-    data: districtOptions,
-  } = useQuery({
+  const { isPending: loadingDistricts, data: districtOptions } = useQuery({
     queryKey: ['district', selectedState],
     queryFn: () => {
       if (selectedState !== undefined && selectedState !== null) {
@@ -78,12 +68,7 @@ export default function VillageOnboardingPage() {
   });
 
   // mandal dropdown
-  const {
-    isPending: loadingMandals,
-    error: mandalError,
-    status: mandalCallStatus,
-    data: mandalOptions,
-  } = useQuery({
+  const { isPending: loadingMandals, data: mandalOptions } = useQuery({
     queryKey: ['mandal', selectedDistrict],
     queryFn: () => {
       if (selectedDistrict !== undefined && selectedDistrict !== null) {
@@ -98,12 +83,7 @@ export default function VillageOnboardingPage() {
     staleTime: Infinity,
   });
 
-  const {
-    isPending: loadingVillages,
-    error: villageError,
-    status: villageCallStatus,
-    data: villageOptions,
-  } = useQuery({
+  const { isPending: loadingVillages, data: villageOptions } = useQuery({
     queryKey: ['village', selectedMandal],
     queryFn: () => {
       if (selectedMandal !== undefined && selectedMandal !== null) {
@@ -127,7 +107,7 @@ export default function VillageOnboardingPage() {
         village_id: selectedVillage?.value,
         onboarding_date: isoDate,
       });
-      const res = await axiosClient.post('/forms/onboard_village', {
+      await axiosClient.post('/forms/onboard_village', {
         village_id: selectedVillage?.value,
         onboarding_date: isoDate,
       });
@@ -188,7 +168,7 @@ export default function VillageOnboardingPage() {
         className='mt-5 flex flex-col gap-3 self-center rounded p-10 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
         onSubmit={submitForm}
       >
-        <label className='flex items-center justify-between gap-5 '>
+        <label className='flex items-center justify-between gap-5'>
           <span className='flex-[2] text-xl'>State:</span>
           <Select
             className='w-full flex-[5]'
@@ -205,7 +185,7 @@ export default function VillageOnboardingPage() {
             isDisabled={loadingStates}
           />
         </label>
-        <label className='flex items-center justify-between gap-5 '>
+        <label className='flex items-center justify-between gap-5'>
           <span className='flex-[2] text-xl'>District:</span>
           <Select
             className='w-full flex-[5]'
@@ -221,7 +201,7 @@ export default function VillageOnboardingPage() {
             isDisabled={Boolean(!selectedState)}
           />
         </label>
-        <label className='flex items-center justify-between gap-5 '>
+        <label className='flex items-center justify-between gap-5'>
           <span className='flex-[2] text-xl'>Mandal:</span>
           <Select
             className='w-full flex-[5]'
@@ -237,7 +217,7 @@ export default function VillageOnboardingPage() {
             isDisabled={Boolean(!selectedDistrict)}
           />
         </label>
-        <label className='flex items-center justify-between gap-5 '>
+        <label className='flex items-center justify-between gap-5'>
           <span className='flex-[2] text-xl'>Village:</span>
           <Select
             className='w-full flex-[5]'
@@ -250,7 +230,7 @@ export default function VillageOnboardingPage() {
             isDisabled={Boolean(!selectedMandal)}
           />
         </label>
-        <label className='flex items-center justify-between gap-5 '>
+        <label className='flex items-center justify-between gap-5'>
           <span className='flex-[2] text-xl'>
             Transactions Onboarding Date:
           </span>
@@ -265,7 +245,7 @@ export default function VillageOnboardingPage() {
           />
         </label>
         {replacementDictFlag !== null && (
-          <label className='flex items-center justify-between gap-5 '>
+          <label className='flex items-center justify-between gap-5'>
             <span className='flex-[2] text-xl'>In Replacement Dictionary?</span>
             {replacementDictFlag === true ? (
               <span className='badge badge-success badge-lg p-3 font-bold text-white'>

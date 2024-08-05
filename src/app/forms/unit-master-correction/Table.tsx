@@ -24,7 +24,7 @@ interface TableProps<TData> {
   columns: ColumnDef<TData, any>[];
   showPagination?: boolean;
   enableSearch?: boolean;
-  setSelectedRows: (data: TData[]) => void;
+  setSelectedRows: (_data: TData[]) => void;
   rowSelection: { [id: string]: boolean };
   setRowSelection: OnChangeFn<RowSelectionState>;
   isMultiSelection?: boolean;

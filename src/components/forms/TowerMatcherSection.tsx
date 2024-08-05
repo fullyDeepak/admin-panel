@@ -4,9 +4,9 @@ import { FormTowerDetailType } from '@/types/types';
 type ProjectMatcherProps = {
   towerFormData: FormTowerDetailType;
   updateTowerFormData: (
-    id: number,
-    key: keyof FormTowerDetailType,
-    value: any
+    _id: number,
+    _key: keyof FormTowerDetailType,
+    _value: any
   ) => void;
 };
 
@@ -17,8 +17,8 @@ export default function TowerMatcherSection({
   return (
     <section>
       <h3 className='my-4 text-2xl font-semibold'>Section: Matcher Data</h3>
-      <label className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex flex-[2] items-center  '>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex flex-[2] items-center'>
           <span>Tower Door No. String:</span>
         </span>
         <input

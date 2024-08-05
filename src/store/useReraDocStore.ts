@@ -8,8 +8,8 @@ interface FormState {
     content: { type: string; data: Uint8Array };
   }[];
   loadingReraDocs: 'idle' | 'loading' | 'complete' | 'error';
-  setLoadingReraDocs: (status: FormState['loadingReraDocs']) => void;
-  fetchReraDocs: (projectIds: number[]) => void;
+  setLoadingReraDocs: (_status: FormState['loadingReraDocs']) => void;
+  fetchReraDocs: (_projectIds: number[]) => void;
   resetReraDocs: () => void;
 }
 

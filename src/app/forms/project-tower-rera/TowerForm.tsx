@@ -1,9 +1,9 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
-import { useTowerStoreRera } from '@/store/useTowerStoreRera';
+import { useTowerStoreRera } from './useTowerStoreRera';
 import { useEffect, useState } from 'react';
-import { BiInfoCircle, BiPlus } from 'react-icons/bi';
+import { BiPlus } from 'react-icons/bi';
 import Select, { SingleValue } from 'react-select';
-import { useProjectStoreRera } from '@/store/useProjectStoreRera';
+import { useProjectStoreRera } from './useProjectStoreRera';
 import TowerUnitDetails from '@/components/forms/TowerUnitDetails';
 import ETLTagConfiguration from '@/components/forms/ETLTagConfiguration';
 import TowerMatcherSection from '@/components/forms/TowerMatcherSection';
@@ -19,8 +19,7 @@ export default function TowerForm() {
     deleteEtlUnitConfigRera,
     updateEtlUnitConfigRera,
   } = useTowerStoreRera();
-  const { projectFormDataRera, updateProjectFormDataRera } =
-    useProjectStoreRera();
+  const { projectFormDataRera } = useProjectStoreRera();
   const [isApartmentSingle, setIsApartmentSingle] = useState<boolean>(false);
 
   useEffect(() => {

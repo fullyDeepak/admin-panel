@@ -18,17 +18,17 @@ interface FormState {
     value: number;
   }[];
   setProjectOptions: (
-    options: {
+    _options: {
       label: string;
       value: number;
     }[]
   ) => void;
 
-  setRERATableDataStore: (tableData: ReraDMLVTableData[]) => void;
+  setRERATableDataStore: (_tableData: ReraDMLVTableData[]) => void;
   selectedProjects: FormState['projectOption'];
-  setSelectedProjects: (options: FormState['projectOption']) => void;
+  setSelectedProjects: (_options: FormState['projectOption']) => void;
   reraDocsList: ReraDocType;
-  setReraDocList: (projectId: ReraDocType) => void;
+  setReraDocList: (_projectId: ReraDocType) => void;
   resetReraDocsList: () => void;
 }
 

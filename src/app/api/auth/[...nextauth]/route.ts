@@ -20,7 +20,7 @@ const handler = NextAuth({
         email: {},
         password: {},
       },
-      async authorize(credentials, req) {
+      async authorize(credentials, _req) {
         if (process.env.NODE_ENV === 'development') {
           return { name: 'dev user', email: 'dev_email' };
         }

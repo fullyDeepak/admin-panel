@@ -22,10 +22,10 @@ type PDFViewerProps = {
 };
 
 interface CustomZoomPlugin extends Plugin {
-  zoomTo(scale: number | SpecialZoomLevel): void;
+  zoomTo(_scale: number | SpecialZoomLevel): void;
 }
 interface StoreProps {
-  zoom?(scale: number | SpecialZoomLevel): void;
+  zoom?(_scale: number | SpecialZoomLevel): void;
 }
 
 const customZoomPlugin = (): CustomZoomPlugin => {
@@ -64,7 +64,7 @@ export default function PDFViewer({ content, title }: PDFViewerProps) {
       cancel='.cancel'
     >
       <span
-        className='cancel absolute right-0 top-0 flex h-10 w-10 cursor-default items-center justify-between rounded-tr-xl text-center hover:bg-red-500 hover:text-white '
+        className='cancel absolute right-0 top-0 flex h-10 w-10 cursor-default items-center justify-between rounded-tr-xl text-center hover:bg-red-500 hover:text-white'
         title='Close'
         onClick={() => setHide(true)}
       >

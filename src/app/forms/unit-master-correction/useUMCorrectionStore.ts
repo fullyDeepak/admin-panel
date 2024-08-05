@@ -116,25 +116,25 @@ interface State {
 }
 
 type Actions = {
-  setSelectedProject: (selection: State['selectedProject']) => void;
+  setSelectedProject: (_selection: State['selectedProject']) => void;
   fetchUMMErrData: () => void;
   fetchUMMErrTwoData: () => void;
-  setSelectedTower: (selection: State['selectedTower']) => void;
-  setSelectedFloor: (selection: State['selectedFloor']) => void;
-  setErrorType: (selection: State['errorType']) => void;
-  setErrTwoType: (selection: State['errTwoType']) => void;
-  setTableData: (newData: UMManualDataType[]) => void;
-  setFloorOption: (newData: State['floorOptions']) => void;
-  setSelectedTableData: (newData: State['selectedTableData']) => void;
-  setSelectedErrTwoData: (newData: State['errTwoRightData']) => void;
-  setMatchedData: (newData: State['matchedData']) => void;
-  setUnMatchedData: (newData: State['matchedData']) => void;
-  setMatchedStaleData: (newData: State['matchedData']) => void;
-  setErrTwoSelectedUnit: (newData: State['errTwoSelectedUnit']) => void;
-  setSelectedErrTwoFloor: (newData: State['selectedErrTwoFloor']) => void;
+  setSelectedTower: (_selection: State['selectedTower']) => void;
+  setSelectedFloor: (_selection: State['selectedFloor']) => void;
+  setErrorType: (_selection: State['errorType']) => void;
+  setErrTwoType: (_selection: State['errTwoType']) => void;
+  setTableData: (_newData: UMManualDataType[]) => void;
+  setFloorOption: (_newData: State['floorOptions']) => void;
+  setSelectedTableData: (_newData: State['selectedTableData']) => void;
+  setSelectedErrTwoData: (_newData: State['errTwoRightData']) => void;
+  setMatchedData: (_newData: State['matchedData']) => void;
+  setUnMatchedData: (_newData: State['matchedData']) => void;
+  setMatchedStaleData: (_newData: State['matchedData']) => void;
+  setErrTwoSelectedUnit: (_newData: State['errTwoSelectedUnit']) => void;
+  setSelectedErrTwoFloor: (_newData: State['selectedErrTwoFloor']) => void;
   resetErrTwoLeftRightData: () => void;
-  setErrTwoMatchedData: (data: State['errTwoMatchedData']) => void;
-  setLoadingErrData: (data: State['loadingErrData']) => void;
+  setErrTwoMatchedData: (_data: State['errTwoMatchedData']) => void;
+  setLoadingErrData: (_data: State['loadingErrData']) => void;
 };
 
 export const useUMCorrectionFormStore = create<State & Actions>((set, get) => ({

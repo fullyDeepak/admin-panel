@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { GoShieldCheck, GoShieldX } from 'react-icons/go';
+import { GoShieldCheck } from 'react-icons/go';
 
 export default function SignUpSuccess() {
   return (

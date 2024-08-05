@@ -1,7 +1,7 @@
 'use client';
 
 import { ErrorMessage } from '@hookform/error-message';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { FieldValues, useForm } from 'react-hook-form';
 import SignUpSuccess from './SignUpSuccess';
 
@@ -14,9 +14,8 @@ export default function RegisterPage() {
   } = useForm();
 
   async function doRegister(data: FieldValues) {
-    let response: AxiosResponse<unknown, unknown>;
     try {
-      response = await axios.post('/api/auth/register', data);
+      await axios.post('/api/auth/register', data);
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
         setError('email', {
@@ -151,7 +150,7 @@ export default function RegisterPage() {
                       errors?.email?.type === 'alreadyExist'
                         ? 'input-error'
                         : ''
-                    } input input-bordered mt-2 w-full focus:border-indigo-500 `}
+                    } input input-bordered mt-2 w-full focus:border-indigo-500`}
                     type='email'
                     placeholder='Enter your email'
                     {...register('email', {

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Select, { SingleValue } from 'react-select';
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
-import { useUMCorrectionFormStore } from '@/store/useUMCorrectionStore';
+import { useUMCorrectionFormStore } from './useUMCorrectionStore';
 import { isEqual, uniqWith } from 'lodash';
 import { MultiSelect } from 'react-multi-select-component';
 import { nanoid } from 'nanoid';

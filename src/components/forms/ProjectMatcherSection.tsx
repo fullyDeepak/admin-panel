@@ -5,7 +5,7 @@ import { MultiSelect } from 'react-multi-select-component';
 
 type ProjectMatcherProps = {
   formData: FormProjectDataType;
-  updateFormData: (newDetails: Partial<FormProjectDataType>) => void;
+  updateFormData: (_newDetails: Partial<FormProjectDataType>) => void;
 };
 
 export default function ProjectMatcherSection({
@@ -39,8 +39,8 @@ export default function ProjectMatcherSection({
   return (
     <>
       <h3 className='my-4 text-2xl font-semibold'>Section: Matcher Data</h3>
-      <div className='flex flex-wrap items-center justify-between gap-5 '>
-        <span className='flex-[2] '>Localities:</span>
+      <div className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Localities:</span>
         <MultiSelect
           className='w-full flex-[5]'
           options={localitiesOptions || []}

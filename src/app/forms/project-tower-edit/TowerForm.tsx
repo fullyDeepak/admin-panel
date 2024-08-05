@@ -1,6 +1,6 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
-import { useEditProjectStore } from '@/store/useEditProjectStore';
-import { editTowerDetail, useEditTowerStore } from '@/store/useEditTowerStore';
+import { useEditProjectStore } from './useEditProjectStore';
+import { editTowerDetail, useEditTowerStore } from './useEditTowerStore';
 import { useEffect, useState } from 'react';
 import { BiInfoCircle, BiPlus } from 'react-icons/bi';
 import Select, { Option } from 'rc-select';

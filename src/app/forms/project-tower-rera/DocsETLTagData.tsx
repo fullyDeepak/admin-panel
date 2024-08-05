@@ -1,9 +1,9 @@
 import ETLTagData from '@/components/forms/ETLTagData';
 import LoadingCircle from '@/components/ui/LoadingCircle';
 import PDFViewer from '@/components/ui/PdfViewer';
-import { useProjectStoreRera } from '@/store/useProjectStoreRera';
 import { useReraDocStore } from '@/store/useReraDocStore';
 import React, { useState } from 'react';
+import { useProjectStoreRera } from './useProjectStoreRera';
 
 type DocsETLTagDataProps = {
   villageOptions:
@@ -112,7 +112,7 @@ export default function DocsETLTagData({
             <span className='flex flex-[2] items-center'>
               <span>Suggested Survey:</span>
             </span>
-            <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
+            <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
               <span>{projectFormDataRera.surveySuggestion.join(', ')}</span>
             </span>
           </label>
@@ -120,7 +120,7 @@ export default function DocsETLTagData({
             <span className='flex flex-[2] items-center'>
               <span>Suggested Plot:</span>
             </span>
-            <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
+            <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
               <span>{projectFormDataRera.plotSuggestion.join(', ')}</span>
             </span>
           </label>

@@ -4,8 +4,8 @@ import axiosClient from '@/utils/AxiosClient';
 import {
   EditProjectTaggingType,
   useEditProjectStore,
-} from '@/store/useEditProjectStore';
-import { editTowerDetail, useEditTowerStore } from '@/store/useEditTowerStore';
+} from './useEditProjectStore';
+import { editTowerDetail, useEditTowerStore } from './useEditTowerStore';
 import Select, { Option } from 'rc-select';
 import CreatableSelect from 'react-select/creatable';
 import 'rc-select/assets/index.css';

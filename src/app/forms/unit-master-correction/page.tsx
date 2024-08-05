@@ -3,7 +3,7 @@ import Form from './Form';
 import {
   UMManualDataType,
   useUMCorrectionFormStore,
-} from '@/store/useUMCorrectionStore';
+} from './useUMCorrectionStore';
 import TanstackReactTable from './Table';
 import axiosClient from '@/utils/AxiosClient';
 import LoadingCircle from '@/components/ui/LoadingCircle';

@@ -3,7 +3,7 @@ import React, { ChangeEvent, useState, KeyboardEvent } from 'react';
 type ChipInputProps =
   | {
       chips: string[];
-      updateFormData: (id: number, key: string, value: any) => void;
+      updateFormData: (_id: number, _key: string, _value: any) => void;
       updateChipsFn?: never;
       updateKey: string;
       updateId: number;
@@ -16,7 +16,7 @@ type ChipInputProps =
     }
   | {
       chips: string[];
-      updateFormData: (id: number, key: string, value: any) => void;
+      updateFormData: (_id: number, _key: string, _value: any) => void;
       updateChipsFn?: never;
       updateKey: string;
       updateId: number;

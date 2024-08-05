@@ -32,20 +32,24 @@ interface FormState {
   oldProjectFormData: EditProjectTaggingType | null;
   projectFormETLTagData: FormProjectETLTagDataType[] | null;
   oldProjectFormETLTagData: FormProjectETLTagDataType[] | null;
-  updateProjectETLTagData: (etlCardId: number, key: string, value: any) => void;
-  addProjectETLTagCard: (newDetails: FormProjectETLTagDataType) => void;
-  deleteProjectETLTagCard: (etlCardId: number) => void;
+  updateProjectETLTagData: (
+    _etlCardId: number,
+    _key: string,
+    _value: any
+  ) => void;
+  addProjectETLTagCard: (_newDetails: FormProjectETLTagDataType) => void;
+  deleteProjectETLTagCard: (_etlCardId: number) => void;
   resetProjectETLTagCard: () => void;
   updateOldProjectFormData: (
-    oldDetails: Partial<EditProjectTaggingType>
+    _oldDetails: Partial<EditProjectTaggingType>
   ) => void;
   updateOldProjectFormETLTagData: (
-    oldDetails: FormProjectETLTagDataType[]
+    _oldDetails: FormProjectETLTagDataType[]
   ) => void;
   updateEditProjectFormData: (
-    newDetails: Partial<EditProjectTaggingType>
+    _newDetails: Partial<EditProjectTaggingType>
   ) => void;
-  loadEditProjectFormData?: (data: any) => void;
+  loadEditProjectFormData?: (_data: any) => void;
   resetEditProjectFormData: () => void;
 }
 
