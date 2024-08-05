@@ -113,7 +113,7 @@ export default function Keywords() {
             >
               Select All
             </button>
-            <div className='overflow-y-auto'>
+            <div className='flex flex-col gap-y-1 overflow-y-auto'>
               {keywordList?.rera?.map((projectKeywords) =>
                 projectKeywords.keyword_list.map((keyword, index) => (
                   <label key={index} className='ml-3 flex flex-col'>
@@ -124,7 +124,7 @@ export default function Keywords() {
                       name='rera-keyword-list'
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedKeyword((prev) => [...prev]);
+                          setSelectedKeyword((prev) => [keyword, ...prev]);
                         }
                       }}
                     />
@@ -227,6 +227,7 @@ export default function Keywords() {
                 reraCheckBoxes.forEach((item) => {
                   item.checked = false;
                 });
+                console.log(selectedKeyword);
                 if (editProjectFormData.keywordType?.value === 'developer') {
                   updateEditProjectFormData({
                     developerKeywords: [
