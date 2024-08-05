@@ -6,8 +6,8 @@ import Select, { SingleValue } from 'react-select';
 import { BiInfoCircle, BiPlus } from 'react-icons/bi';
 import { FaRegCopy } from 'react-icons/fa';
 import { MdContentPaste } from 'react-icons/md';
-import { useId } from 'react';
 import { BiReset } from 'react-icons/bi';
+import { nanoid } from 'nanoid';
 
 interface ETLTagDataType {
   formProjectETLTagData: FormProjectETLTagDataType[];
@@ -99,7 +99,7 @@ export default function ETLTagData({
                 <Select
                   className='w-full'
                   key={'village'}
-                  instanceId={useId()}
+                  instanceId={nanoid()}
                   options={villageOptions || undefined}
                   value={etlTagData.village}
                   onChange={(
