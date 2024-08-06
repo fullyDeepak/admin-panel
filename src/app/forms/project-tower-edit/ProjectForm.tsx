@@ -28,6 +28,7 @@ export default function ProjectForm() {
     deleteProjectETLTagCard,
     resetProjectETLTagCard,
     updateOldProjectFormData,
+    updateExistingProjectStatusData,
   } = useEditProjectStore();
   const { setNewTowerEditData, setOldTowerEditData } = useEditTowerStore();
 
@@ -100,9 +101,24 @@ export default function ProjectForm() {
   // populate form fields
   async function fetchFormData(selectedProject: number) {
     try {
-      const res = await axiosClient.get<{ data: GetProjectDetails }>(
-        `/projects/${selectedProject}`
-      );
+      const [res, projectStatusData] = await Promise.all([
+        axiosClient.get<{ data: GetProjectDetails }>(
+          `/projects/${selectedProject}`
+        ),
+        axiosClient.get<{
+          data: {
+            id: string;
+            updated_at: Date;
+            project_id: string;
+            tower_id: string;
+            updated_field: string;
+            updated_value: string;
+          }[];
+        }>('/projects/status', {
+          params: { project_id: selectedProject },
+        }),
+      ]);
+      updateExistingProjectStatusData(projectStatusData.data.data);
       const projectData = res.data.data;
       console.log({ projectData });
       const towerDataRes = projectData.towers;
@@ -215,6 +231,10 @@ export default function ProjectForm() {
         reraId: projectData.rera_id,
         developerKeywords: projectData.developer_keywords || [],
         landlordKeywords: projectData.landlord_keywords || [],
+        selectedProjectStatusTowers: towerData.map((tower) => ({
+          label: `${tower.id}:${tower.etlTowerName}`,
+          value: tower.id,
+        })),
       };
       updateEditProjectFormData(projectFormData);
       updateOldProjectFormData(projectFormData);

@@ -131,6 +131,14 @@ export interface FormProjectDataType {
   keywordType: SingleValue<{ label: string; value: string }> | undefined;
   landlordKeywords: string[];
   developerKeywords: string[];
+  selectedProjectStatusTowers: {
+    label: string;
+    value: number;
+  }[];
+  selectedProjectStatusType: {
+    label: string;
+    value: string;
+  } | null;
 }
 export interface FormEtlUnitConfigType {
   configName: string;

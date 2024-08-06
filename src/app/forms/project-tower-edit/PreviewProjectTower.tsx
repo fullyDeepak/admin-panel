@@ -66,6 +66,14 @@ type PreviewProjectTowerProps = {
     towerDoorNo: string;
     validTowerUnits: string[][];
   }[];
+  statusData: {
+    projectPricingStatus: {
+      [key: string]: string;
+    };
+    projectBookingStatus: {
+      [key: string]: string;
+    };
+  };
 };
 
 const camelToFlat = (c: string) => (
@@ -76,6 +84,7 @@ export default function PreviewProjectTower({
   projectFormData,
   towerFormData,
   projectFormETLTagData,
+  statusData,
 }: PreviewProjectTowerProps) {
   const towerColumns = [
     {
@@ -254,6 +263,55 @@ export default function PreviewProjectTower({
               enableSearch={false}
               showPagination={false}
             />
+          </div>
+        </div>
+      )}
+      {statusData && (
+        <div className='flex flex-col gap-5'>
+          <p className='text-center text-3xl font-semibold'>
+            Project Status Data
+          </p>
+          <div className='mx-auto mt-5 flex gap-10'>
+            <div className='flex flex-col tabular-nums'>
+              <p className='text-center text-lg font-semibold uppercase'>
+                Pricing Data
+              </p>
+              <div className='flex gap-2 border-b border-t-2 font-semibold'>
+                <div className='min-w-36'>Tower Id</div>
+                <div className='min-w-36'>Value</div>
+              </div>
+              {Object.entries(statusData.projectPricingStatus).map(
+                ([key, value]) => (
+                  <div
+                    key={key}
+                    className='flex gap-2 border-y last:border-b-2'
+                  >
+                    <div className='min-w-36'>{key == '0' ? 'ALL' : key}</div>
+                    <div className='min-w-36'>{value}</div>
+                  </div>
+                )
+              )}
+            </div>
+            <div className='flex flex-col tabular-nums'>
+              <p className='text-center text-lg font-semibold uppercase'>
+                booking Data
+              </p>
+              <div className='flex gap-2 border-b border-t-2 font-semibold'>
+                <div className='min-w-36'>Tower Id</div>
+                <div className='min-w-36'>Value</div>
+              </div>
+              {Object.entries(statusData.projectBookingStatus).map(
+                ([key, value]) => (
+                  <div
+                    key={key}
+                    className='flex gap-2 border-y last:border-b-2'
+                  >
+                    <div className='min-w-36'>{key == '0' ? 'ALL' : key}</div>
+                    <div className='min-w-36'>{value}</div>
+                  </div>
+                )
+              )}
+            </div>
           </div>
         </div>
       )}

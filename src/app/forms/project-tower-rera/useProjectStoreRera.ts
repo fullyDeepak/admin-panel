@@ -37,6 +37,10 @@ export interface ProjectTaggingTypeRera extends FormProjectDataType {
   surveySuggestion: string[];
   plotSuggestion: string[];
   projectCoordinates: string[];
+  selectedProjectStatusTowers: {
+    label: string;
+    value: number;
+  }[];
 }
 
 interface FormState {
@@ -91,6 +95,8 @@ const initialStateProjectData: ProjectTaggingTypeRera = {
   developerKeywords: [],
   landlordKeywords: [],
   reraProjectType: 'mixed',
+  selectedProjectStatusTowers: [],
+  selectedProjectStatusType: null,
 };
 
 const initialStateProjectETLTagData: FormProjectETLTagDataType[] = [

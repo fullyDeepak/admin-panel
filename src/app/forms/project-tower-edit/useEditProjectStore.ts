@@ -32,6 +32,20 @@ interface FormState {
   oldProjectFormData: EditProjectTaggingType | null;
   projectFormETLTagData: FormProjectETLTagDataType[] | null;
   oldProjectFormETLTagData: FormProjectETLTagDataType[] | null;
+  projectPricingStatus: {
+    [key: string]: string;
+  };
+  projectBookingStatus: {
+    [key: string]: string;
+  };
+  existingProjectStatusData: {
+    id: string;
+    updated_at: Date;
+    project_id: string;
+    tower_id: string;
+    updated_field: string;
+    updated_value: string;
+  }[];
   updateProjectETLTagData: (
     _etlCardId: number,
     _key: string,
@@ -51,6 +65,15 @@ interface FormState {
   ) => void;
   loadEditProjectFormData?: (_data: any) => void;
   resetEditProjectFormData: () => void;
+  updateProjectStatus: (
+    _key: 'booking' | 'pricing',
+    _newData:
+      | FormState['projectBookingStatus']
+      | FormState['projectPricingStatus']
+  ) => void;
+  updateExistingProjectStatusData: (
+    _data: FormState['existingProjectStatusData']
+  ) => void;
 }
 
 const initialStateProjectData: EditProjectTaggingType = {
@@ -72,6 +95,8 @@ const initialStateProjectData: EditProjectTaggingType = {
   landlordKeywords: [],
   keywordType: undefined,
   reraId: null,
+  selectedProjectStatusTowers: [],
+  selectedProjectStatusType: null,
 };
 
 export const useEditProjectStore = create<FormState>((set) => ({
@@ -80,6 +105,9 @@ export const useEditProjectStore = create<FormState>((set) => ({
   projectFormETLTagData: null,
   oldProjectFormData: null,
   oldProjectFormETLTagData: null,
+  projectBookingStatus: {},
+  projectPricingStatus: {},
+  existingProjectStatusData: [],
   updateOldProjectFormData: (oldDetails) =>
     set((state) => ({
       oldProjectFormData: { ...state.editProjectFormData, ...oldDetails },
@@ -119,5 +147,15 @@ export const useEditProjectStore = create<FormState>((set) => ({
 
   resetEditProjectFormData: () => {
     set({ editProjectFormData: initialStateProjectData });
+  },
+  updateProjectStatus: (key, newData) => {
+    if (key === 'booking') {
+      set({ projectBookingStatus: newData });
+    } else if (key === 'pricing') {
+      set({ projectPricingStatus: newData });
+    }
+  },
+  updateExistingProjectStatusData: (data) => {
+    set({ existingProjectStatusData: data });
   },
 }));

@@ -13,6 +13,8 @@ import { usePathname } from 'next/navigation';
 import { CgInfo } from 'react-icons/cg';
 import { MdContentCopy } from 'react-icons/md';
 import Keywords from './Keywords';
+import ProjectStatus from './ProjectStatus';
+import { getCurrentDate } from '@/lib/utils';
 
 export default function ProjectTowerEditPage() {
   const [responseData, setResponseData] = useState<object | undefined>(
@@ -26,6 +28,8 @@ export default function ProjectTowerEditPage() {
     oldProjectFormETLTagData,
     oldProjectFormData,
     projectFormETLTagData,
+    projectBookingStatus,
+    projectPricingStatus,
   } = useEditProjectStore();
   const { editTowerFormData, resetEditTowerFormData, oldTowerFormData } =
     useEditTowerStore();
@@ -46,6 +50,8 @@ export default function ProjectTowerEditPage() {
   newProjectFormData.localities = newProjectFormData?.localities?.map(
     (item: { value: string; label: string }) => item.value
   );
+  delete newProjectFormData.selectedProjectStatusTowers;
+  delete newProjectFormData.selectedProjectStatusType;
   let newTowerFormData: any;
   newTowerFormData = editTowerFormData.map((item) => ({
     ...item,
@@ -62,11 +68,13 @@ export default function ProjectTowerEditPage() {
     <ProjectForm key={1} />,
     <Keywords key={2} />,
     <TowerForm key={3} />,
+    <ProjectStatus key={4} />,
     <PreviewProjectTower
       key={3}
       projectFormETLTagData={newProjectFormETLTagData}
       projectFormData={newProjectFormData}
       towerFormData={newTowerFormData}
+      statusData={{ projectBookingStatus, projectPricingStatus }}
     />,
   ];
 
@@ -129,8 +137,76 @@ export default function ProjectTowerEditPage() {
         },
       };
       setSentData(data);
-      const projectResPromise = axiosClient.put('/projects', data);
 
+      //project status data
+
+      let bookingDataFlatten: { [key: string]: string } = {};
+      const bookingData: {
+        updated_at: string;
+        project_id: number;
+        tower_id: string;
+        updated_field: string;
+        updated_value: string;
+      }[] = [];
+      let pricingDataFlatten: { [key: string]: string } = {};
+      const pricingData: {
+        updated_at: string;
+        project_id: number;
+        tower_id: string;
+        updated_field: string;
+        updated_value: string;
+      }[] = [];
+      Object.entries(projectBookingStatus).map(([towers, value]) => {
+        const towersKey = towers.split(',');
+        towersKey.map((key) => {
+          bookingDataFlatten[key] = value;
+        });
+      });
+      Object.entries(bookingDataFlatten).map(([key, value]) => {
+        bookingData.push({
+          updated_at: getCurrentDate(),
+          project_id: newProjectFormData.selectedProject,
+          tower_id: key,
+          updated_field: 'manual_bookings',
+          updated_value: value,
+        });
+      });
+      Object.entries(projectPricingStatus).map(([towers, value]) => {
+        const towersKey = towers.split(',');
+        towersKey.map((key) => {
+          pricingDataFlatten[key] = value;
+        });
+      });
+      Object.entries(pricingDataFlatten).map(([key, value]) => {
+        pricingData.push({
+          updated_at: getCurrentDate(),
+          project_id: newProjectFormData.selectedProject,
+          tower_id: key,
+          updated_field: 'price',
+          updated_value: value,
+        });
+      });
+      if (bookingData.length > 0 || pricingData.length > 0) {
+        const projectStatusPromise = axiosClient.post('/projects/status', {
+          bookingData,
+          pricingData,
+        });
+        await toast.promise(
+          projectStatusPromise,
+          {
+            loading: 'Saving new Project Status...',
+            success: 'New Status saved to database.',
+            error: 'Something went wrong',
+          },
+          {
+            success: {
+              duration: 10000,
+            },
+          }
+        );
+      }
+
+      const projectResPromise = axiosClient.put('/projects', data);
       const projectRes = await toast.promise(
         projectResPromise,
         {
@@ -276,6 +352,11 @@ export default function ProjectTowerEditPage() {
           </li>
           <li
             className={`${formCount >= 3 ? 'step-secondary after:!text-white' : ''} step`}
+          >
+            Status
+          </li>
+          <li
+            className={`${formCount >= 4 ? 'step-secondary after:!text-white' : ''} step`}
           >
             Final Preview
           </li>
