@@ -8,6 +8,7 @@ import { MultiSelect } from 'react-multi-select-component';
 import { useState } from 'react';
 import { getCurrentDate } from '@/lib/utils';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
+import { RiCloseLine } from 'react-icons/ri';
 
 const existingProjectStatusDataColumn = [
   {
@@ -39,6 +40,7 @@ export default function ProjectStatus() {
     projectBookingStatus,
     projectPricingStatus,
     updateProjectStatus,
+    deleteProjectStatusData,
     existingProjectStatusData,
   } = useEditProjectStore();
   const { editTowerFormData } = useEditTowerStore();
@@ -47,9 +49,63 @@ export default function ProjectStatus() {
     value: item.id,
   }));
   const [isAllSelected, setIsAllSelected] = useState(true);
+  const [value, setValue] = useState('');
+
+  function handleSave() {
+    const updateKey = editProjectFormData.selectedProjectStatusType?.value;
+    const towers = isAllSelected
+      ? ['0']
+      : editProjectFormData.selectedProjectStatusTowers.map((item) =>
+          item.value.toString()
+        );
+    if (updateKey === 'booking') {
+      const data: {
+        updated_at: string;
+        project_id: number;
+        tower_id: string;
+        updated_field: 'manual_bookings';
+        updated_value: string;
+      }[] = towers.map((item) => ({
+        project_id: editProjectFormData.selectedProject!,
+        tower_id: item,
+        updated_at: getCurrentDate(),
+        updated_value: value,
+        updated_field: 'manual_bookings',
+      }));
+      updateProjectStatus(updateKey, data);
+      setValue('');
+    } else if (updateKey === 'pricing') {
+      const data: {
+        updated_at: string;
+        project_id: number;
+        tower_id: string;
+        updated_field: 'pricing';
+        updated_value: string;
+      }[] = towers.map((item) => ({
+        project_id: editProjectFormData.selectedProject!,
+        tower_id: item,
+        updated_at: getCurrentDate(),
+        updated_value: value,
+        updated_field: 'pricing',
+      }));
+      updateProjectStatus(updateKey, data);
+      setValue('');
+    }
+  }
   return (
     <>
       <h3 className='my-4 text-2xl font-semibold'>Section: Project Status</h3>
+      {existingProjectStatusData && existingProjectStatusData.length > 0 && (
+        <div className='max-h-screen rounded-2xl border-2 p-4'>
+          <h3 className='my-4 text-center text-xl font-semibold'>
+            Available Project Status Data
+          </h3>
+          <TanstackReactTable
+            data={existingProjectStatusData}
+            columns={existingProjectStatusDataColumn}
+          />
+        </div>
+      )}
       <label className='flex flex-wrap items-center justify-between gap-5'>
         <span className='flex-[3] text-xl'>Updated at:</span>
         <p className={inputBoxClass}>{getCurrentDate()}</p>
@@ -93,79 +149,107 @@ export default function ProjectStatus() {
         />
       </label>
       {editProjectFormData.selectedProjectStatusTowers.length > 0 &&
-      editProjectFormData.selectedProjectStatusType?.value === 'pricing' ? (
-        <label className='flex flex-wrap items-center justify-between gap-5'>
-          <span className='flex-[3] text-xl'>Quoted Price(sq.ft.):</span>
-          <input
-            type='number'
-            className={inputBoxClass}
-            name='quoted-price'
-            value={
-              isAllSelected
-                ? projectPricingStatus['0'] || ''
-                : projectPricingStatus[
-                    editProjectFormData.selectedProjectStatusTowers
-                      .map((item) => item.value.toString())
-                      .join(',')
-                  ] || ''
-            }
-            onChange={(e) => {
-              const key = isAllSelected
-                ? '0'
-                : editProjectFormData.selectedProjectStatusTowers
-                    .map((item) => item.value)
-                    .join(',');
-              updateProjectStatus('pricing', {
-                ...projectPricingStatus,
-                [key]: e.target.value,
-              });
-            }}
-          />
-        </label>
+      editProjectFormData.selectedProjectStatusType?.value ? (
+        <>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex-[3] text-xl'>
+              {editProjectFormData.selectedProjectStatusType.value === 'pricing'
+                ? 'Quoted Price(sq.ft.)'
+                : 'Booking Count'}
+              :
+            </span>
+            <input
+              type='number'
+              className={inputBoxClass}
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
+              }}
+            />
+          </label>
+          <button
+            className='btn btn-neutral btn-sm min-w-20 max-w-fit self-center'
+            type='button'
+            onClick={handleSave}
+          >
+            Save
+          </button>
+        </>
       ) : null}
-      {editProjectFormData.selectedProjectStatusTowers.length > 0 &&
-      editProjectFormData.selectedProjectStatusType?.value === 'booking' ? (
-        <label className='flex flex-wrap items-center justify-between gap-5'>
-          <span className='flex-[3] text-xl'>Booking:</span>
-          <input
-            type='number'
-            className={inputBoxClass}
-            name='booking'
-            value={
-              isAllSelected
-                ? projectBookingStatus['0'] || ''
-                : projectBookingStatus[
-                    editProjectFormData.selectedProjectStatusTowers
-                      .map((item) => item.value.toString())
-                      .join(',')
-                  ] || ''
-            }
-            onChange={(e) => {
-              const key = isAllSelected
-                ? '0'
-                : editProjectFormData.selectedProjectStatusTowers
-                    .map((item) => item.value)
-                    .join(',');
-              updateProjectStatus('booking', {
-                ...projectBookingStatus,
-                [key]: e.target.value,
-              });
-              console.log(`Update key: ${key} and value: ${e.target.value}`);
-            }}
-          />
-        </label>
-      ) : null}
-      {existingProjectStatusData && existingProjectStatusData.length > 0 && (
-        <div className='max-h-screen rounded-2xl border-2 p-4'>
-          <h3 className='my-4 text-center text-xl font-semibold'>
-            Available Project Status Data
-          </h3>
-          <TanstackReactTable
-            data={existingProjectStatusData}
-            columns={existingProjectStatusDataColumn}
-          />
-        </div>
-      )}
+      <div className='mt-10 flex flex-wrap justify-around gap-4 transition-all duration-500'>
+        {projectBookingStatus && projectBookingStatus.length > 0 ? (
+          <div className='max-w-min flex-1 text-sm tabular-nums'>
+            <p className='text-center text-xl font-semibold'>Booking data</p>
+            <div className='flex gap-2 border-y border-t-2 py-1 font-semibold'>
+              <span className='min-w-28'>Updated At</span>
+              <span className='min-w-16'>Tower Id</span>
+              <span className='min-w-28'>Updated field</span>
+              <span className='min-w-28'>Updated Value</span>
+              <span className='min-w-12'>Delete</span>
+            </div>
+            {projectBookingStatus.map((item) => (
+              <div
+                className='flex gap-2 border-y py-1 last:border-b-2'
+                key={item.tower_id}
+              >
+                <span className='min-w-28'>{item.updated_at}</span>
+                <span className='min-w-16 text-center'>{item.tower_id}</span>
+                <span className='min-w-28'>{item.updated_field}</span>
+                <span className='min-w-28 text-center'>
+                  {item.updated_value}
+                </span>
+                <div className='flex min-w-10 items-center justify-center self-center'>
+                  <button
+                    className='flex h-5 w-5 items-center justify-center rounded-full bg-red-200 p-[1px]'
+                    type='button'
+                    onClick={() => {
+                      deleteProjectStatusData('booking', item.tower_id);
+                    }}
+                  >
+                    <RiCloseLine className='text-red-500' size={15} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+        {projectPricingStatus && projectPricingStatus.length > 0 ? (
+          <div className='max-w-min flex-1 text-sm tabular-nums'>
+            <p className='text-center text-xl font-semibold'>Pricing data</p>
+            <div className='flex gap-2 border-y border-t-2 py-1 font-semibold'>
+              <span className='min-w-28'>Updated At</span>
+              <span className='min-w-16'>Tower Id</span>
+              <span className='min-w-28'>Updated field</span>
+              <span className='min-w-28'>Updated Value</span>
+              <span className='min-w-12'>Delete</span>
+            </div>
+            {projectPricingStatus.map((item) => (
+              <div
+                className='flex gap-2 border-y py-1 last:border-b-2'
+                key={item.tower_id}
+              >
+                <span className='min-w-28'>{item.updated_at}</span>
+                <span className='min-w-16 text-center'>{item.tower_id}</span>
+                <span className='min-w-28'>{item.updated_field}</span>
+                <span className='min-w-28 text-center'>
+                  {item.updated_value}
+                </span>
+                <div className='flex min-w-10 items-center justify-center self-center'>
+                  <button
+                    className='flex h-5 w-5 items-center justify-center rounded-full bg-red-200 p-[1px]'
+                    type='button'
+                    onClick={() => {
+                      deleteProjectStatusData('pricing', item.tower_id);
+                    }}
+                  >
+                    <RiCloseLine className='text-red-500' size={15} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
     </>
   );
 }

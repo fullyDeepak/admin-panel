@@ -1,4 +1,5 @@
 import { FormProjectDataType, FormProjectETLTagDataType } from '@/types/types';
+import { uniqBy } from 'lodash';
 import { create } from 'zustand';
 
 export interface EditProjectTaggingType extends FormProjectDataType {
@@ -33,11 +34,19 @@ interface FormState {
   projectFormETLTagData: FormProjectETLTagDataType[] | null;
   oldProjectFormETLTagData: FormProjectETLTagDataType[] | null;
   projectPricingStatus: {
-    [key: string]: string;
-  };
+    updated_at: string;
+    project_id: number;
+    tower_id: string;
+    updated_field: 'pricing';
+    updated_value: string;
+  }[];
   projectBookingStatus: {
-    [key: string]: string;
-  };
+    updated_at: string;
+    project_id: number;
+    tower_id: string;
+    updated_field: 'manual_bookings';
+    updated_value: string;
+  }[];
   existingProjectStatusData: {
     id: string;
     updated_at: Date;
@@ -67,12 +76,20 @@ interface FormState {
   resetEditProjectFormData: () => void;
   updateProjectStatus: (
     _key: 'booking' | 'pricing',
-    _newData:
-      | FormState['projectBookingStatus']
-      | FormState['projectPricingStatus']
+    _newData: {
+      updated_at: string;
+      project_id: number;
+      tower_id: string;
+      updated_value: string;
+      updated_field: 'manual_bookings' | 'pricing';
+    }[]
   ) => void;
   updateExistingProjectStatusData: (
     _data: FormState['existingProjectStatusData']
+  ) => void;
+  deleteProjectStatusData: (
+    _key: 'pricing' | 'booking',
+    _tower_id: string
   ) => void;
 }
 
@@ -105,8 +122,8 @@ export const useEditProjectStore = create<FormState>((set) => ({
   projectFormETLTagData: null,
   oldProjectFormData: null,
   oldProjectFormETLTagData: null,
-  projectBookingStatus: {},
-  projectPricingStatus: {},
+  projectBookingStatus: [],
+  projectPricingStatus: [],
   existingProjectStatusData: [],
   updateOldProjectFormData: (oldDetails) =>
     set((state) => ({
@@ -150,12 +167,43 @@ export const useEditProjectStore = create<FormState>((set) => ({
   },
   updateProjectStatus: (key, newData) => {
     if (key === 'booking') {
-      set({ projectBookingStatus: newData });
+      set((state) => ({
+        projectBookingStatus: uniqBy(
+          [
+            ...state.projectBookingStatus,
+            ...(newData as FormState['projectBookingStatus']),
+          ],
+          'tower_id'
+        ),
+      }));
     } else if (key === 'pricing') {
-      set({ projectPricingStatus: newData });
+      set((state) => ({
+        projectPricingStatus: uniqBy(
+          [
+            ...state.projectPricingStatus,
+            ...(newData as FormState['projectPricingStatus']),
+          ],
+          'tower_id'
+        ),
+      }));
     }
   },
   updateExistingProjectStatusData: (data) => {
     set({ existingProjectStatusData: data });
+  },
+  deleteProjectStatusData: (key, tower_id) => {
+    if (key === 'booking') {
+      set((state) => ({
+        projectBookingStatus: state.projectBookingStatus.filter(
+          (item) => item.tower_id != tower_id
+        ),
+      }));
+    } else if (key === 'pricing') {
+      set((state) => ({
+        projectPricingStatus: state.projectPricingStatus.filter(
+          (item) => item.tower_id != tower_id
+        ),
+      }));
+    }
   },
 }));

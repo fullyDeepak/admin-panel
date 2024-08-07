@@ -66,13 +66,21 @@ type PreviewProjectTowerProps = {
     towerDoorNo: string;
     validTowerUnits: string[][];
   }[];
-  statusData: {
+  statusData?: {
     projectPricingStatus: {
-      [key: string]: string;
-    };
+      updated_at: string;
+      project_id: number;
+      tower_id: string;
+      updated_value: string;
+      updated_field: 'pricing';
+    }[];
     projectBookingStatus: {
-      [key: string]: string;
-    };
+      updated_at: string;
+      project_id: number;
+      tower_id: string;
+      updated_value: string;
+      updated_field: 'manual_bookings';
+    }[];
   };
 };
 
@@ -271,46 +279,50 @@ export default function PreviewProjectTower({
           <p className='text-center text-3xl font-semibold'>
             Project Status Data
           </p>
-          <div className='mx-auto mt-5 flex gap-10'>
-            <div className='flex flex-col tabular-nums'>
-              <p className='text-center text-lg font-semibold uppercase'>
-                Pricing Data
-              </p>
-              <div className='flex gap-2 border-b border-t-2 font-semibold'>
-                <div className='min-w-36'>Tower Id</div>
-                <div className='min-w-36'>Value</div>
+          <div className='mt-10 flex flex-wrap justify-around gap-4 transition-all duration-500'>
+            <div className='max-w-min flex-1 text-sm tabular-nums'>
+              <p className='text-center text-xl font-semibold'>Booking data</p>
+              <div className='flex gap-2 border-y border-t-2 py-1 font-semibold'>
+                <span className='min-w-28'>Updated At</span>
+                <span className='min-w-16'>Tower Id</span>
+                <span className='min-w-28'>Updated field</span>
+                <span className='min-w-28'>Updated Value</span>
               </div>
-              {Object.entries(statusData.projectPricingStatus).map(
-                ([key, value]) => (
-                  <div
-                    key={key}
-                    className='flex gap-2 border-y last:border-b-2'
-                  >
-                    <div className='min-w-36'>{key == '0' ? 'ALL' : key}</div>
-                    <div className='min-w-36'>{value}</div>
-                  </div>
-                )
-              )}
+              {statusData.projectBookingStatus.map((item) => (
+                <div
+                  className='flex gap-2 border-y py-1 last:border-b-2'
+                  key={item.tower_id}
+                >
+                  <span className='min-w-28'>{item.updated_at}</span>
+                  <span className='min-w-16 text-center'>{item.tower_id}</span>
+                  <span className='min-w-28'>{item.updated_field}</span>
+                  <span className='min-w-28 text-center'>
+                    {item.updated_value}
+                  </span>
+                </div>
+              ))}
             </div>
-            <div className='flex flex-col tabular-nums'>
-              <p className='text-center text-lg font-semibold uppercase'>
-                booking Data
-              </p>
-              <div className='flex gap-2 border-b border-t-2 font-semibold'>
-                <div className='min-w-36'>Tower Id</div>
-                <div className='min-w-36'>Value</div>
+            <div className='max-w-min flex-1 text-sm tabular-nums'>
+              <p className='text-center text-xl font-semibold'>Pricing data</p>
+              <div className='flex gap-2 border-y border-t-2 py-1 font-semibold'>
+                <span className='min-w-28'>Updated At</span>
+                <span className='min-w-16'>Tower Id</span>
+                <span className='min-w-28'>Updated field</span>
+                <span className='min-w-28'>Updated Value</span>
               </div>
-              {Object.entries(statusData.projectBookingStatus).map(
-                ([key, value]) => (
-                  <div
-                    key={key}
-                    className='flex gap-2 border-y last:border-b-2'
-                  >
-                    <div className='min-w-36'>{key == '0' ? 'ALL' : key}</div>
-                    <div className='min-w-36'>{value}</div>
-                  </div>
-                )
-              )}
+              {statusData.projectPricingStatus.map((item) => (
+                <div
+                  className='flex gap-2 border-y py-1 last:border-b-2'
+                  key={item.tower_id}
+                >
+                  <span className='min-w-28'>{item.updated_at}</span>
+                  <span className='min-w-16 text-center'>{item.tower_id}</span>
+                  <span className='min-w-28'>{item.updated_field}</span>
+                  <span className='min-w-28 text-center'>
+                    {item.updated_value}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

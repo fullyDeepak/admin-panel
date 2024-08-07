@@ -14,7 +14,6 @@ import { CgInfo } from 'react-icons/cg';
 import { MdContentCopy } from 'react-icons/md';
 import Keywords from './Keywords';
 import ProjectStatus from './ProjectStatus';
-import { getCurrentDate } from '@/lib/utils';
 
 export default function ProjectTowerEditPage() {
   const [responseData, setResponseData] = useState<object | undefined>(
@@ -140,56 +139,10 @@ export default function ProjectTowerEditPage() {
 
       //project status data
 
-      let bookingDataFlatten: { [key: string]: string } = {};
-      const bookingData: {
-        updated_at: string;
-        project_id: number;
-        tower_id: string;
-        updated_field: string;
-        updated_value: string;
-      }[] = [];
-      let pricingDataFlatten: { [key: string]: string } = {};
-      const pricingData: {
-        updated_at: string;
-        project_id: number;
-        tower_id: string;
-        updated_field: string;
-        updated_value: string;
-      }[] = [];
-      Object.entries(projectBookingStatus).map(([towers, value]) => {
-        const towersKey = towers.split(',');
-        towersKey.map((key) => {
-          bookingDataFlatten[key] = value;
-        });
-      });
-      Object.entries(bookingDataFlatten).map(([key, value]) => {
-        bookingData.push({
-          updated_at: getCurrentDate(),
-          project_id: newProjectFormData.selectedProject,
-          tower_id: key,
-          updated_field: 'manual_bookings',
-          updated_value: value,
-        });
-      });
-      Object.entries(projectPricingStatus).map(([towers, value]) => {
-        const towersKey = towers.split(',');
-        towersKey.map((key) => {
-          pricingDataFlatten[key] = value;
-        });
-      });
-      Object.entries(pricingDataFlatten).map(([key, value]) => {
-        pricingData.push({
-          updated_at: getCurrentDate(),
-          project_id: newProjectFormData.selectedProject,
-          tower_id: key,
-          updated_field: 'price',
-          updated_value: value,
-        });
-      });
-      if (bookingData.length > 0 || pricingData.length > 0) {
+      if (projectBookingStatus.length > 0 || projectPricingStatus.length > 0) {
         const projectStatusPromise = axiosClient.post('/projects/status', {
-          bookingData,
-          pricingData,
+          projectBookingStatus,
+          projectPricingStatus,
         });
         await toast.promise(
           projectStatusPromise,
