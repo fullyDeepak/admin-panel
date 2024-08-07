@@ -36,13 +36,15 @@ export default function Keywords() {
       });
 
       const transactionRes = await axiosClient.get<{
-        data: {
-          simple_transaction_type: string;
-          count_names: {
-            count: number;
-            names: string[];
-          }[];
-        }[];
+        data:
+          | {
+              simple_transaction_type: string;
+              count_names: {
+                count: number;
+                names: string[];
+              }[];
+            }[]
+          | null;
       }>('/forms/getProjectCounterParty', {
         params: { project_id: editProjectFormData.selectedProject },
       });
@@ -145,7 +147,7 @@ export default function Keywords() {
               type='button'
               onClick={() => {
                 let names: string[] = [];
-                keywordList.transaction.map((transData) =>
+                keywordList?.transaction?.map((transData) =>
                   transData.count_names.map((partyName) => {
                     names = names.concat(partyName.names);
                   })
@@ -171,7 +173,7 @@ export default function Keywords() {
             >
               Select All
             </button>
-            {keywordList?.transaction.map((transData, index) => (
+            {keywordList?.transaction?.map((transData, index) => (
               <li key={index}>
                 <details open={index === 0 ? true : false}>
                   <summary className=''>
