@@ -5,6 +5,7 @@ import { formatISO } from 'date-fns';
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { useProjectStoreRera } from './useProjectStoreRera';
 import { useTowerStoreRera } from './useTowerStoreRera';
+import { MultiSelect } from 'react-multi-select-component';
 
 export default function ProjectStatus() {
   const asiaCurrentDate = formatISO(
@@ -14,29 +15,36 @@ export default function ProjectStatus() {
     { representation: 'date' }
   );
 
-  const { projectFormDataRera } = useProjectStoreRera();
+  const { projectFormDataRera, updateProjectFormDataRera } =
+    useProjectStoreRera();
   const { towerFormDataRera } = useTowerStoreRera();
-
+  const towerOptions = towerFormDataRera.map((item) => ({
+    label: `${item.id}:${item.etlTowerName}`,
+    value: item.id,
+  }));
   return (
     <>
-      <h3 className='my-4 text-2xl font-semibold'>
-        Section: Project Status(WIP)
-      </h3>
+      <h3 className='my-4 text-2xl font-semibold'>Section: Project Status</h3>
       <label className='flex flex-wrap items-center justify-between gap-5'>
         <span className='flex-[3] text-xl'>Updated at:</span>
         <p className={inputBoxClass}>{asiaCurrentDate}</p>
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5'>
-        <span className='flex-[3] text-xl'>Project ID:</span>
-        <p className={`${inputBoxClass} h-11`}>
-          {projectFormDataRera.projectIds.join('||')}
-        </p>
-      </label>
-      <label className='flex flex-wrap items-center justify-between gap-5'>
         <span className='flex-[3] text-xl'>Tower ID:</span>
-        <p className={`${inputBoxClass} h-11`}>
-          {towerFormDataRera.map((item) => item.reraTowerId).join(',')}
-        </p>
+        <MultiSelect
+          options={towerOptions}
+          className='w-full flex-[5]'
+          labelledBy='status-tower-id-dropdown'
+          value={projectFormDataRera.selectedProjectStatusTowers}
+          onChange={(
+            e: {
+              label: string;
+              value: number;
+            }[]
+          ) => {
+            updateProjectFormDataRera({ selectedProjectStatusTowers: e });
+          }}
+        />
       </label>
       <label className='flex flex-wrap items-center justify-between gap-5'>
         <span className='flex-[3] text-xl'>Overall Percentage:</span>

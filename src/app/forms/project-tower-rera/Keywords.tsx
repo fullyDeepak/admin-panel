@@ -3,10 +3,10 @@ import Select from 'react-select';
 import { FiChevronRight } from 'react-icons/fi';
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
-import { RiCloseLine } from 'react-icons/ri';
 import { useState } from 'react';
 import LoadingCircle from '@/components/ui/LoadingCircle';
 import { startCase } from 'lodash';
+import EditableList from './EditableList';
 
 export default function Keywords() {
   const { updateProjectFormDataRera, projectFormDataRera } =
@@ -45,8 +45,7 @@ export default function Keywords() {
     staleTime: Infinity,
     refetchOnWindowFocus: false,
   });
-  const [inputValue, setInputValue] = useState('');
-  const [selectedKeyword, setSelectedKeyword] = useState('');
+  const [selectedKeyword, setSelectedKeyword] = useState<string[]>([]);
   return (
     <>
       <label className='flex flex-wrap items-center justify-between gap-5'>
@@ -68,24 +67,53 @@ export default function Keywords() {
           <LoadingCircle circleColor='violet' size='large' />
         </div>
       )}
-      {projectFormDataRera.keywordType?.value && (
-        <div className='contain flex h-dvh w-full'>
-          <ul className='menu mr-5 max-h-[90vh] w-full max-w-[400px] flex-nowrap rounded-box bg-violet-100 py-4'>
+      {projectFormDataRera.keywordType?.value && keywordList && (
+        <div className='flex w-full'>
+          <ul className='mr-5 flex max-h-[90vh] w-full max-w-[400px] flex-col gap-1 rounded-box bg-violet-100 py-4'>
             <li className='menu-title text-center text-xl text-violet-600'>
               RERA {startCase(projectFormDataRera.keywordType.value)}
             </li>
-            <div className='overflow-y-auto'>
+            <button
+              className='btn btn-warning btn-sm max-w-fit self-center'
+              type='button'
+              onClick={() => {
+                let names: string[] = [];
+                keywordList.rera.map((projectKeywords) => {
+                  names = names.concat(projectKeywords.keyword_list);
+                });
+                if (projectFormDataRera.keywordType?.value === 'landlord') {
+                  updateProjectFormDataRera({
+                    landlordKeywords: [
+                      ...projectFormDataRera.landlordKeywords,
+                      ...names,
+                    ],
+                  });
+                } else if (
+                  projectFormDataRera.keywordType?.value === 'developer'
+                ) {
+                  updateProjectFormDataRera({
+                    developerKeywords: [
+                      ...projectFormDataRera.developerKeywords,
+                      ...names,
+                    ],
+                  });
+                }
+              }}
+            >
+              Select All
+            </button>
+            <div className='flex flex-col gap-y-1 overflow-y-auto'>
               {keywordList?.rera?.map((projectKeywords) =>
                 projectKeywords.keyword_list.map((keyword, index) => (
                   <label key={index} className='ml-3 flex flex-col'>
                     <input
-                      type='radio'
+                      type='checkbox'
                       className='peer'
                       hidden
                       name='rera-keyword-list'
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedKeyword(keyword);
+                          setSelectedKeyword((prev) => [keyword, ...prev]);
                         }
                       }}
                     />
@@ -104,10 +132,9 @@ export default function Keywords() {
           </ul>
           <div className='flex flex-col items-center justify-center gap-5'>
             <button
-              className='btn btn-xs'
+              className='btn btn-outline btn-xs'
               type='button'
               onClick={() => {
-                setInputValue(selectedKeyword);
                 const checkBoxes = document.getElementsByName(
                   'rera-keyword-list'
                 ) as unknown as HTMLInputElement[];
@@ -118,6 +145,25 @@ export default function Keywords() {
                   'keyword-editor'
                 ) as HTMLInputElement;
                 editor.focus();
+                if (projectFormDataRera.keywordType?.value === 'developer') {
+                  updateProjectFormDataRera({
+                    developerKeywords: [
+                      ...selectedKeyword,
+                      ...projectFormDataRera.developerKeywords,
+                    ],
+                  });
+                  setSelectedKeyword([]);
+                } else if (
+                  projectFormDataRera.keywordType?.value === 'landlord'
+                ) {
+                  updateProjectFormDataRera({
+                    landlordKeywords: [
+                      ...selectedKeyword,
+                      ...projectFormDataRera.landlordKeywords,
+                    ],
+                  });
+                  setSelectedKeyword([]);
+                }
               }}
             >
               <FiChevronRight size={26} />
@@ -128,86 +174,12 @@ export default function Keywords() {
               Tagged Keywords:{' '}
               {startCase(projectFormDataRera.keywordType.value)}
             </li>
-            <input
-              type='text'
-              className='mx-auto w-full max-w-[80%] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
-              value={inputValue}
-              id='keyword-editor'
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && inputValue.length > 0) {
-                  if (projectFormDataRera.keywordType?.value === 'developer') {
-                    updateProjectFormDataRera({
-                      developerKeywords: [
-                        inputValue,
-                        ...projectFormDataRera.developerKeywords,
-                      ],
-                    });
-                    setInputValue('');
-                  } else if (
-                    projectFormDataRera.keywordType?.value === 'landlord'
-                  ) {
-                    updateProjectFormDataRera({
-                      landlordKeywords: [
-                        inputValue,
-                        ...projectFormDataRera.landlordKeywords,
-                      ],
-                    });
-                    setInputValue('');
-                  }
-                }
-              }}
-            />
-            {projectFormDataRera.keywordType?.value === 'developer' &&
-              projectFormDataRera?.developerKeywords.map((item, index) => (
-                <li
-                  className='mx-5 flex items-center justify-between border-b pb-2 text-sm'
-                  key={index}
-                >
-                  <a>{item}</a>
-                  <button
-                    className='aspect-square rounded-full bg-red-200 p-[1px]'
-                    type='button'
-                    onClick={() => {
-                      const filteredDeveloperKeywords =
-                        projectFormDataRera.developerKeywords.filter(
-                          (keyword) => keyword !== item
-                        );
-                      updateProjectFormDataRera({
-                        developerKeywords: filteredDeveloperKeywords,
-                      });
-                    }}
-                  >
-                    <RiCloseLine className='text-red-500' size={20} />
-                  </button>
-                </li>
-              ))}
-            <ul className='flex w-full flex-col gap-4 overflow-y-auto rounded-box bg-green-100 py-4'>
-              {projectFormDataRera.keywordType?.value === 'landlord' &&
-                projectFormDataRera?.landlordKeywords.map((item, index) => (
-                  <li
-                    className='mx-5 flex items-center justify-between border-b pb-2 text-sm'
-                    key={index}
-                  >
-                    <a>{item}</a>
-                    <button
-                      className='aspect-square rounded-full bg-red-200 p-[1px]'
-                      type='button'
-                      onClick={() => {
-                        const filteredLandlordKeywords =
-                          projectFormDataRera.landlordKeywords.filter(
-                            (keyword) => keyword !== item
-                          );
-                        updateProjectFormDataRera({
-                          landlordKeywords: filteredLandlordKeywords,
-                        });
-                      }}
-                    >
-                      <RiCloseLine className='text-red-500' size={20} />
-                    </button>
-                  </li>
-                ))}
-            </ul>
+            {projectFormDataRera.keywordType?.value === 'developer' && (
+              <EditableList keywordType='developerKeywords' />
+            )}
+            {projectFormDataRera.keywordType?.value === 'landlord' && (
+              <EditableList keywordType='landlordKeywords' />
+            )}
           </ul>
         </div>
       )}
