@@ -2,7 +2,6 @@ import {
   EditProjectTaggingType,
   useEditProjectStore,
 } from './useEditProjectStore';
-import { nanoid } from 'nanoid';
 import { KeyboardEvent, useState } from 'react';
 import { RiCloseLine } from 'react-icons/ri';
 
@@ -53,6 +52,7 @@ export default function EditableList({ keywordType }: Props) {
       if (editProjectFormData[keywordType].length === editingIndex + 1) {
         handleOnBlur();
       } else {
+        handleOnBlur();
         setEditingIndex(editingIndex + 1);
         setInputValue(editProjectFormData[keywordType][editingIndex + 1]);
       }
@@ -64,7 +64,7 @@ export default function EditableList({ keywordType }: Props) {
       {editProjectFormData[keywordType].map((item, index) => (
         <li
           className='mx-5 flex items-center justify-between border-b pb-2 text-sm'
-          key={nanoid()}
+          key={index}
           onDoubleClick={() => handleDoubleClick(index, item)}
         >
           {editingIndex === index ? (
