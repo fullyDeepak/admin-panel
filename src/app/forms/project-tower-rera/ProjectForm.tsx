@@ -382,14 +382,29 @@ export default function ProjectForm() {
     projectIds.map((num, index) => (phases[num] = index + 1));
     console.log('phases', phases);
     const towersData = data.map((item, index) => {
+      let gfMin = null;
+      let gfMax = null;
+      let unitMin = null;
+      let unitMax = null;
+      let reraTowerId = null;
+      if (projectFormDataRera.reraProjectType === 'villa') {
+        gfMin = '1';
+        gfMax = `${item.tower_count}`;
+        reraTowerId = `${item.project_id}_0`;
+        unitMin = '';
+        unitMax = '';
+      } else {
+        gfMin = item.min_floor == 0 ? '1' : '';
+        gfMax = item.min_floor == 0 ? item.gf_max_unit_count : '';
+        unitMin = '1';
+        unitMax = `${item.typical_floor_max_unit}`;
+        reraTowerId = item.tower_id;
+      }
       return {
         id: index + 1,
         projectPhase: phases[+item.project_id],
         reraId: item.rera_id || '',
-        reraTowerId:
-          projectFormDataRera.reraProjectType === 'villa'
-            ? `${item.project_id}_0`
-            : item.tower_id,
+        reraTowerId: reraTowerId,
         towerTypeSuggestion: item.tower_type || '',
         towerType: {
           label: '',
@@ -403,22 +418,10 @@ export default function ProjectForm() {
         maxFloor: item.max_floor_id || '',
         validTowerUnits: null,
         groundFloorName: '',
-        groundFloorUnitNoMin:
-          projectFormDataRera.reraProjectType === 'villa'
-            ? 1
-            : item.min_floor == 0
-              ? 'G'
-              : item.min_floor,
-        groundFloorUnitNoMax:
-          projectFormDataRera.reraProjectType === 'villa'
-            ? item.tower_count
-            : item.gf_max_unit_count,
-        typicalFloorUnitNoMin:
-          projectFormDataRera.reraProjectType !== 'villa' ? 1 : '',
-        typicalFloorUnitNoMax:
-          projectFormDataRera.reraProjectType !== 'villa'
-            ? item.typical_floor_max_unit
-            : '',
+        groundFloorUnitNoMin: gfMin,
+        groundFloorUnitNoMax: gfMax,
+        typicalFloorUnitNoMin: unitMin,
+        typicalFloorUnitNoMax: unitMax,
         deleteFullUnitNos: '',
         exceptionUnitNos: '',
       };
