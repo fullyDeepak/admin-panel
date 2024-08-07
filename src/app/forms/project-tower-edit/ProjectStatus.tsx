@@ -79,14 +79,14 @@ export default function ProjectStatus() {
         updated_at: string;
         project_id: number;
         tower_id: string;
-        updated_field: 'pricing';
+        updated_field: 'price';
         updated_value: string;
       }[] = towers.map((item) => ({
         project_id: editProjectFormData.selectedProject!,
         tower_id: item,
         updated_at: getCurrentDate(),
         updated_value: value,
-        updated_field: 'pricing',
+        updated_field: 'price',
       }));
       updateProjectStatus(updateKey, data);
       setValue('');

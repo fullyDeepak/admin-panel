@@ -141,8 +141,8 @@ export default function ProjectTowerEditPage() {
 
       if (projectBookingStatus.length > 0 || projectPricingStatus.length > 0) {
         const projectStatusPromise = axiosClient.post('/projects/status', {
-          projectBookingStatus,
-          projectPricingStatus,
+          bookingData: projectBookingStatus,
+          pricingData: projectPricingStatus,
         });
         await toast.promise(
           projectStatusPromise,

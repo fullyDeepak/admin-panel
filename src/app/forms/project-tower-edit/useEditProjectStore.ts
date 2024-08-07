@@ -37,7 +37,7 @@ interface FormState {
     updated_at: string;
     project_id: number;
     tower_id: string;
-    updated_field: 'pricing';
+    updated_field: 'price';
     updated_value: string;
   }[];
   projectBookingStatus: {
@@ -81,7 +81,7 @@ interface FormState {
       project_id: number;
       tower_id: string;
       updated_value: string;
-      updated_field: 'manual_bookings' | 'pricing';
+      updated_field: 'manual_bookings' | 'price';
     }[]
   ) => void;
   updateExistingProjectStatusData: (

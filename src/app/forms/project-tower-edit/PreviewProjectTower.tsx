@@ -72,7 +72,7 @@ type PreviewProjectTowerProps = {
       project_id: number;
       tower_id: string;
       updated_value: string;
-      updated_field: 'pricing';
+      updated_field: 'price';
     }[];
     projectBookingStatus: {
       updated_at: string;
