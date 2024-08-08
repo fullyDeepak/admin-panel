@@ -85,7 +85,7 @@ export default function ProjectTowerReraPage() {
     <ProjectForm key={1} />,
     <Keywords key={2} />,
     <TowerForm key={3} />,
-    <ProjectStatus key={4} />,
+    // <ProjectStatus key={4} />,
     <PreviewProjectTower
       key={4}
       projectFormData={newProjectFormData}
@@ -196,10 +196,10 @@ export default function ProjectTowerReraPage() {
           </li>
           {projectFormDataRera.isRERAProject ? (
             <>
-              <li className={`${formCount >= 3 ? 'step-secondary' : ''} step`}>
+              {/* <li className={`${formCount >= 3 ? 'step-secondary' : ''} step`}>
                 Status
-              </li>
-              <li className={`${formCount >= 4 ? 'step-secondary' : ''} step`}>
+              </li> */}
+              <li className={`${formCount >= 3 ? 'step-secondary' : ''} step`}>
                 Final Preview
               </li>
             </>
