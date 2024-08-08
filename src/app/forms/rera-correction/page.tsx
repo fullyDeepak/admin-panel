@@ -18,6 +18,7 @@ import { sroTableColumns } from './utils';
 import ReraDropdown from './ReraDropdown';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { usePathname } from 'next/navigation';
 
 type SroResponse = {
   district_id: number;
@@ -46,7 +47,7 @@ export default function ReraCorrectionPage() {
     villageIdValue,
   } = useCorrectionStoreState();
 
-  const { setFormData } = useCorrectionStore();
+  const { setFormData, resetAll } = useCorrectionStore();
   const queryClient = useQueryClient();
 
   const reraTableColumns = useMemo(
@@ -119,6 +120,10 @@ export default function ReraCorrectionPage() {
 
   const [surveyValue, setSurveyValue] = useState<string[]>([]);
   const [plotValue, setPlotValue] = useState<string[]>([]);
+
+  useEffect(() => {
+    resetAll();
+  }, [usePathname]);
 
   // populate sro district dropdown
   const { isPending: loadingSroDistricts, data: sroDistrictOptions } = useQuery(

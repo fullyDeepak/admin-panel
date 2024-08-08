@@ -91,6 +91,7 @@ interface FormState {
     _key: 'pricing' | 'booking',
     _tower_id: string
   ) => void;
+  resetAllProjectData: () => void;
 }
 
 const initialStateProjectData: EditProjectTaggingType = {
@@ -205,5 +206,16 @@ export const useEditProjectStore = create<FormState>((set) => ({
         ),
       }));
     }
+  },
+  resetAllProjectData: () => {
+    set({
+      editProjectFormData: initialStateProjectData,
+      projectFormETLTagData: null,
+      oldProjectFormData: null,
+      oldProjectFormETLTagData: null,
+      projectBookingStatus: [],
+      projectPricingStatus: [],
+      existingProjectStatusData: [],
+    });
   },
 }));

@@ -7,6 +7,7 @@ import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import Form from './Form';
 import PreviewDocs from './PreviewDocs';
 import { useImageFormStore } from './useImageFormStore';
+import { usePathname } from 'next/navigation';
 
 export default function ImageTaggingPage() {
   const {
@@ -19,6 +20,7 @@ export default function ImageTaggingPage() {
     setAvailableProjectData,
     resultData,
     setResultData,
+    resetAll,
   } = useImageFormStore();
 
   const [projectFiles, setProjectFiles] = useState<FileList | null>(null);
@@ -39,6 +41,10 @@ export default function ImageTaggingPage() {
       ).showModal();
     }
   }, [showModal]);
+
+  useEffect(() => {
+    resetAll();
+  }, [usePathname]);
 
   const availableProjectDataColumns = [
     {
@@ -187,7 +193,10 @@ export default function ImageTaggingPage() {
           return newItem;
         });
         setAvailableProjectData(projectData);
+      } else if (selectedProject?.value && selectedImageTaggingType === null) {
+        console.log('dashboard');
       }
+
       return [];
     },
     refetchOnWindowFocus: false,

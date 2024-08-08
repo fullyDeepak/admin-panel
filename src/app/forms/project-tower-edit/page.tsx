@@ -29,6 +29,7 @@ export default function ProjectTowerEditPage() {
     projectFormETLTagData,
     projectBookingStatus,
     projectPricingStatus,
+    resetAllProjectData,
   } = useEditProjectStore();
   const { editTowerFormData, resetEditTowerFormData, oldTowerFormData } =
     useEditTowerStore();
@@ -38,6 +39,7 @@ export default function ProjectTowerEditPage() {
     (
       document.getElementById('projectTowerEditForm') as HTMLFormElement
     ).reset();
+    resetAllProjectData();
   }, [usePathname]);
 
   let newProjectFormData: any;

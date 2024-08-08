@@ -25,6 +25,7 @@ export default function ProjectTowerReraPage() {
     resetProjectFormDataRera,
     updateProjectFormDataRera,
     projectFormETLTagData,
+    resetAllProjectData,
   } = useProjectStoreRera();
   const { towerFormDataRera, resetTowerFormDataRera } = useTowerStoreRera();
 
@@ -32,6 +33,7 @@ export default function ProjectTowerReraPage() {
     resetProjectFormDataRera();
     resetTowerFormDataRera();
     (document.getElementById('projectTowerForm') as HTMLFormElement).reset();
+    resetAllProjectData();
   }, [usePathname]);
 
   let newProjectFormData: any;

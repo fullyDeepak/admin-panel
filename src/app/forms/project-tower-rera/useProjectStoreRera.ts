@@ -57,6 +57,7 @@ interface FormState {
   addProjectETLTagCard: (_newDetails: FormProjectETLTagDataType) => void;
   deleteProjectETLTagCard: (_etlCardId: number) => void;
   resetProjectFormDataRera: () => void;
+  resetAllProjectData: () => void;
 }
 
 const initialStateProjectData: ProjectTaggingTypeRera = {
@@ -161,4 +162,10 @@ export const useProjectStoreRera = create<FormState>((set, get) => ({
         reraProjectType: get().projectFormDataRera.reraProjectType,
       },
     }),
+  resetAllProjectData: () => {
+    set({
+      projectFormDataRera: initialStateProjectData,
+      projectFormETLTagData: initialStateProjectETLTagData,
+    });
+  },
 }));

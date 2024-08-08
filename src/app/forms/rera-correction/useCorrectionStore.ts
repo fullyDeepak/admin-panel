@@ -58,6 +58,7 @@ type CorrectionStore = {
     _name: K,
     _value: CorrectionStoreState[K]
   ) => void;
+  resetAll: () => void;
 };
 
 const INITIAL_STATE: CorrectionStoreState = {
@@ -89,6 +90,9 @@ export const useCorrectionStore = create<CorrectionStore>()(
         })
       );
     },
+    resetAll: () => {
+      set({ state: INITIAL_STATE });
+    },
   }))
 );
 
@@ -97,3 +101,6 @@ export const useCorrectionStoreActions = () =>
 
 export const useCorrectionStoreState = () =>
   useCorrectionStore.getState().state;
+
+export const useCorrectionStoreReset = () =>
+  useCorrectionStore.getState().resetAll;

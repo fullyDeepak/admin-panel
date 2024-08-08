@@ -143,6 +143,7 @@ type Actions = {
   ) => void;
   setPreviewUnitDocsData: (_newData: State['previewUnitDocsData']) => void;
   setShowUnitModal: (_val: boolean) => void;
+  resetAll: () => void;
 };
 
 export const useImageFormStore = create<State & Actions>()(
@@ -150,25 +151,19 @@ export const useImageFormStore = create<State & Actions>()(
     // Initial state
 
     selectedProject: undefined,
+    towerFloorFormData: [] as TowerFloorDataType[],
+    towerOptions: [],
+    selectedImageTaggingType: null,
+    availableProjectData: [],
+    resultData: null,
+    showUnitModal: false,
+    previewUnitDocsData: null,
+    unitFpTableData: null,
+    loadingTowerFloorData: 'idle',
+    uploadingStatus: 'idle',
+    unitFPDataStore: {},
 
     setSelectedProject: (select) => set({ selectedProject: select }),
-
-    towerFloorFormData: [] as TowerFloorDataType[],
-
-    towerOptions: [],
-
-    selectedImageTaggingType: null,
-
-    availableProjectData: [],
-
-    resultData: null,
-
-    showUnitModal: false,
-
-    previewUnitDocsData: null,
-
-    unitFpTableData: null,
-
     setSelectedImageTaggingType: (select) =>
       set({ selectedImageTaggingType: select }),
 
@@ -176,12 +171,6 @@ export const useImageFormStore = create<State & Actions>()(
       set({ availableProjectData: newData }),
 
     setTowerFloorFormData: (newData) => set({ towerFloorFormData: newData }),
-
-    loadingTowerFloorData: 'idle',
-
-    uploadingStatus: 'idle',
-
-    unitFPDataStore: {},
 
     setResultData: (newData) => set({ resultData: newData }),
 
@@ -276,6 +265,22 @@ export const useImageFormStore = create<State & Actions>()(
     },
     setShowUnitModal: (value) => {
       set({ showUnitModal: value });
+    },
+    resetAll: () => {
+      set({
+        selectedProject: undefined,
+        towerFloorFormData: [] as TowerFloorDataType[],
+        towerOptions: [],
+        selectedImageTaggingType: null,
+        availableProjectData: [],
+        resultData: null,
+        showUnitModal: false,
+        previewUnitDocsData: null,
+        unitFpTableData: null,
+        loadingTowerFloorData: 'idle',
+        uploadingStatus: 'idle',
+        unitFPDataStore: {},
+      });
     },
   }))
 );

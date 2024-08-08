@@ -149,6 +149,6 @@ export const useEditTowerStore = create<FormState>((set) => ({
     }));
   },
   resetEditTowerFormData: () => {
-    set({ editTowerFormData: initialState });
+    set({ editTowerFormData: initialState, oldTowerFormData: initialState });
   },
 }));
