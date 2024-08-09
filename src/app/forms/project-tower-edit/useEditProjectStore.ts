@@ -47,6 +47,13 @@ interface FormState {
     updated_field: 'manual_bookings';
     updated_value: string;
   }[];
+  projectConstructionStatus: {
+    updated_at: string;
+    project_id: number;
+    tower_id: string;
+    updated_field: 'display_construction_status';
+    updated_value: string;
+  }[];
   existingProjectStatusData: {
     id: string;
     updated_at: Date;
@@ -75,20 +82,23 @@ interface FormState {
   loadEditProjectFormData?: (_data: any) => void;
   resetEditProjectFormData: () => void;
   updateProjectStatus: (
-    _key: 'booking' | 'pricing',
+    _key: 'booking' | 'pricing' | 'display_construction_status',
     _newData: {
       updated_at: string;
       project_id: number;
       tower_id: string;
       updated_value: string;
-      updated_field: 'manual_bookings' | 'price';
+      updated_field:
+        | 'manual_bookings'
+        | 'price'
+        | 'display_construction_status';
     }[]
   ) => void;
   updateExistingProjectStatusData: (
     _data: FormState['existingProjectStatusData']
   ) => void;
   deleteProjectStatusData: (
-    _key: 'pricing' | 'booking',
+    _key: 'pricing' | 'booking' | 'display_construction_status',
     _tower_id: string
   ) => void;
   resetAllProjectData: () => void;
@@ -125,6 +135,7 @@ export const useEditProjectStore = create<FormState>((set) => ({
   oldProjectFormETLTagData: null,
   projectBookingStatus: [],
   projectPricingStatus: [],
+  projectConstructionStatus: [],
   existingProjectStatusData: [],
   updateOldProjectFormData: (oldDetails) =>
     set((state) => ({
@@ -187,6 +198,16 @@ export const useEditProjectStore = create<FormState>((set) => ({
           'tower_id'
         ),
       }));
+    } else if (key === 'display_construction_status') {
+      set((state) => ({
+        projectConstructionStatus: uniqBy(
+          [
+            ...state.projectConstructionStatus,
+            ...(newData as FormState['projectConstructionStatus']),
+          ],
+          'tower_id'
+        ),
+      }));
     }
   },
   updateExistingProjectStatusData: (data) => {
@@ -202,6 +223,12 @@ export const useEditProjectStore = create<FormState>((set) => ({
     } else if (key === 'pricing') {
       set((state) => ({
         projectPricingStatus: state.projectPricingStatus.filter(
+          (item) => item.tower_id != tower_id
+        ),
+      }));
+    } else if (key === 'display_construction_status') {
+      set((state) => ({
+        projectConstructionStatus: state.projectConstructionStatus.filter(
           (item) => item.tower_id != tower_id
         ),
       }));

@@ -81,6 +81,13 @@ type PreviewProjectTowerProps = {
       updated_value: string;
       updated_field: 'manual_bookings';
     }[];
+    projectConstructionStatus: {
+      updated_at: string;
+      project_id: number;
+      tower_id: string;
+      updated_field: 'display_construction_status';
+      updated_value: string;
+    }[];
   };
 };
 
@@ -279,51 +286,91 @@ export default function PreviewProjectTower({
           <p className='text-center text-3xl font-semibold'>
             Project Status Data
           </p>
-          <div className='mt-10 flex flex-wrap justify-around gap-4 transition-all duration-500'>
-            <div className='max-w-min flex-1 text-sm tabular-nums'>
-              <p className='text-center text-xl font-semibold'>Booking data</p>
-              <div className='flex gap-2 border-y border-t-2 py-1 font-semibold'>
-                <span className='min-w-28'>Updated At</span>
-                <span className='min-w-16'>Tower Id</span>
-                <span className='min-w-28'>Updated field</span>
-                <span className='min-w-28'>Updated Value</span>
-              </div>
-              {statusData.projectBookingStatus.map((item) => (
-                <div
-                  className='flex gap-2 border-y py-1 last:border-b-2'
-                  key={item.tower_id}
-                >
-                  <span className='min-w-28'>{item.updated_at}</span>
-                  <span className='min-w-16 text-center'>{item.tower_id}</span>
-                  <span className='min-w-28'>{item.updated_field}</span>
-                  <span className='min-w-28 text-center'>
-                    {item.updated_value}
-                  </span>
+          <div className='mt-10 flex flex-wrap justify-around gap-4 gap-y-8 transition-all duration-500'>
+            {statusData.projectBookingStatus.length > 0 && (
+              <div className='max-w-min flex-1 text-sm tabular-nums'>
+                <p className='text-center text-xl font-semibold'>
+                  Booking data
+                </p>
+                <div className='flex gap-2 border-y border-t-2 py-1 font-semibold'>
+                  <span className='min-w-28'>Updated At</span>
+                  <span className='min-w-16'>Tower Id</span>
+                  <span className='min-w-28'>Updated field</span>
+                  <span className='min-w-28'>Updated Value</span>
                 </div>
-              ))}
-            </div>
-            <div className='max-w-min flex-1 text-sm tabular-nums'>
-              <p className='text-center text-xl font-semibold'>Pricing data</p>
-              <div className='flex gap-2 border-y border-t-2 py-1 font-semibold'>
-                <span className='min-w-28'>Updated At</span>
-                <span className='min-w-16'>Tower Id</span>
-                <span className='min-w-28'>Updated field</span>
-                <span className='min-w-28'>Updated Value</span>
+                {statusData.projectBookingStatus.map((item) => (
+                  <div
+                    className='flex gap-2 border-y py-1 last:border-b-2'
+                    key={item.tower_id}
+                  >
+                    <span className='min-w-28'>{item.updated_at}</span>
+                    <span className='min-w-16 text-center'>
+                      {item.tower_id}
+                    </span>
+                    <span className='min-w-28'>{item.updated_field}</span>
+                    <span className='min-w-28 text-center'>
+                      {item.updated_value}
+                    </span>
+                  </div>
+                ))}
               </div>
-              {statusData.projectPricingStatus.map((item) => (
-                <div
-                  className='flex gap-2 border-y py-1 last:border-b-2'
-                  key={item.tower_id}
-                >
-                  <span className='min-w-28'>{item.updated_at}</span>
-                  <span className='min-w-16 text-center'>{item.tower_id}</span>
-                  <span className='min-w-28'>{item.updated_field}</span>
-                  <span className='min-w-28 text-center'>
-                    {item.updated_value}
-                  </span>
+            )}
+            {statusData.projectPricingStatus.length > 0 && (
+              <div className='max-w-min flex-1 text-sm tabular-nums'>
+                <p className='text-center text-xl font-semibold'>
+                  Pricing data
+                </p>
+                <div className='flex gap-2 border-y border-t-2 py-1 font-semibold'>
+                  <span className='min-w-28'>Updated At</span>
+                  <span className='min-w-16'>Tower Id</span>
+                  <span className='min-w-28'>Updated field</span>
+                  <span className='min-w-28'>Updated Value</span>
                 </div>
-              ))}
-            </div>
+                {statusData.projectPricingStatus.map((item) => (
+                  <div
+                    className='flex gap-2 border-y py-1 last:border-b-2'
+                    key={item.tower_id}
+                  >
+                    <span className='min-w-28'>{item.updated_at}</span>
+                    <span className='min-w-16 text-center'>
+                      {item.tower_id}
+                    </span>
+                    <span className='min-w-28'>{item.updated_field}</span>
+                    <span className='min-w-28 text-center'>
+                      {item.updated_value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {statusData.projectConstructionStatus.length > 0 && (
+              <div className='max-w-min flex-1 text-sm tabular-nums'>
+                <p className='text-center text-xl font-semibold'>
+                  Construction Status data
+                </p>
+                <div className='flex gap-2 border-y border-t-2 py-1 font-semibold'>
+                  <span className='min-w-28'>Updated At</span>
+                  <span className='min-w-16'>Tower Id</span>
+                  <span className='min-w-52'>Updated field</span>
+                  <span className='min-w-28'>Updated Value</span>
+                </div>
+                {statusData.projectConstructionStatus.map((item) => (
+                  <div
+                    className='flex gap-2 border-y py-1 last:border-b-2'
+                    key={item.tower_id}
+                  >
+                    <span className='min-w-28'>{item.updated_at}</span>
+                    <span className='min-w-16 text-center'>
+                      {item.tower_id}
+                    </span>
+                    <span className='min-w-52'>{item.updated_field}</span>
+                    <span className='min-w-28 text-center'>
+                      {item.updated_value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

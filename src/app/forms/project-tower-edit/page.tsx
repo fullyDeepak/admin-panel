@@ -28,6 +28,7 @@ export default function ProjectTowerEditPage() {
     oldProjectFormData,
     projectFormETLTagData,
     projectBookingStatus,
+    projectConstructionStatus,
     projectPricingStatus,
     resetAllProjectData,
   } = useEditProjectStore();
@@ -75,7 +76,11 @@ export default function ProjectTowerEditPage() {
       projectFormETLTagData={newProjectFormETLTagData}
       projectFormData={newProjectFormData}
       towerFormData={newTowerFormData}
-      statusData={{ projectBookingStatus, projectPricingStatus }}
+      statusData={{
+        projectBookingStatus,
+        projectPricingStatus,
+        projectConstructionStatus,
+      }}
     />,
   ];
 
@@ -145,6 +150,7 @@ export default function ProjectTowerEditPage() {
         const projectStatusPromise = axiosClient.post('/projects/status', {
           bookingData: projectBookingStatus,
           pricingData: projectPricingStatus,
+          constructionData: projectConstructionStatus,
         });
         await toast.promise(
           projectStatusPromise,
