@@ -146,7 +146,11 @@ export default function ProjectTowerEditPage() {
 
       //project status data
 
-      if (projectBookingStatus.length > 0 || projectPricingStatus.length > 0) {
+      if (
+        projectBookingStatus.length > 0 ||
+        projectPricingStatus.length > 0 ||
+        projectConstructionStatus.length > 0
+      ) {
         const projectStatusPromise = axiosClient.post('/projects/status', {
           bookingData: projectBookingStatus,
           pricingData: projectPricingStatus,
