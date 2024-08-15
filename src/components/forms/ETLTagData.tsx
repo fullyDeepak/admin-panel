@@ -95,6 +95,8 @@ export default function ETLTagData({
                     </Option>
                   ))}
                 </RcSelect>
+              ) : index === 0 ? (
+                <span>{etlTagData.village?.label}</span>
               ) : (
                 <Select
                   className='w-full'

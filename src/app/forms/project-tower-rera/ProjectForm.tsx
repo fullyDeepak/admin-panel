@@ -22,6 +22,7 @@ export default function ProjectForm() {
   const {
     projectFormDataRera,
     updateProjectFormDataRera,
+    updateProjectETLTagData,
     resetProjectFormDataRera,
   } = useProjectStoreRera();
   const { setTowersDataRera } = useTowerStoreRera();
@@ -502,6 +503,7 @@ export default function ProjectForm() {
             value={projectFormDataRera.village}
             onChange={(e) => {
               updateProjectFormDataRera({ village: e });
+              updateProjectETLTagData(1, 'village', e);
             }}
             isDisabled={Boolean(!projectFormDataRera.mandal)}
           />
