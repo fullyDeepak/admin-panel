@@ -8,6 +8,8 @@ import Form from './Form';
 import PreviewDocs from './PreviewDocs';
 import { useImageFormStore } from './useImageFormStore';
 import { usePathname } from 'next/navigation';
+import { ImageStatsData } from '@/types/types';
+import StatsUI from './StatsUI';
 
 export default function ImageTaggingPage() {
   const {
@@ -33,6 +35,7 @@ export default function ImageTaggingPage() {
     file_type: 'image' | 'pdf';
   } | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [statsData, setStatsData] = useState<ImageStatsData | null>(null);
 
   useEffect(() => {
     if (showModal === true) {
@@ -125,7 +128,7 @@ export default function ImageTaggingPage() {
   });
 
   // populate tower floor dropdown
-  useQuery({
+  const { isLoading: loadingStats } = useQuery({
     queryKey: [
       'getUMUnitNames',
       selectedProject?.value,
@@ -194,7 +197,15 @@ export default function ImageTaggingPage() {
         });
         setAvailableProjectData(projectData);
       } else if (selectedProject?.value && selectedImageTaggingType === null) {
-        console.log('dashboard');
+        setStatsData(null);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const statsData = await axiosClient<{ data: ImageStatsData }>(
+          '/forms/imgTag/stats',
+          {
+            params: { project_id: selectedProject.value },
+          }
+        );
+        setStatsData(statsData.data.data);
       }
 
       return [];
@@ -327,7 +338,16 @@ export default function ImageTaggingPage() {
         setResultData={setResultData}
         submitForm={submitForm}
       />
-      {selectedImageTaggingType?.value !== 'tower-fp' &&
+      {selectedImageTaggingType === null && selectedProject?.value && (
+        <div className='mx-auto my-10 w-full max-w-[60%]'>
+          <h3 className='text-center text-2xl font-semibold'>
+            Selected Project Stats
+          </h3>
+          <StatsUI data={statsData} isLoading={loadingStats} />
+        </div>
+      )}
+      {selectedImageTaggingType != null &&
+        selectedImageTaggingType?.value !== 'tower-fp' &&
         selectedImageTaggingType?.value !== 'unit-fp' &&
         availableProjectData &&
         availableProjectData?.length > 0 && (

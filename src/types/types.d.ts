@@ -181,3 +181,18 @@ export type ReraDMLVTableData = {
   clean_survey_number: string;
   clean_plot_number: string;
 };
+
+export type ImageStatsData = {
+  project_res: {
+    brochure: string[];
+    project_image: string[];
+    project_master_plan: string[];
+  };
+  tower_unit_res: {
+    tower_id: number;
+    tower_name: string;
+    tower_docs: string[] | null;
+    total_unit_count: number;
+    tagged_unit_count: number;
+  }[];
+};
