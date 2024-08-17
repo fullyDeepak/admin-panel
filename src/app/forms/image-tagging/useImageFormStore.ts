@@ -1,3 +1,4 @@
+import { ImageStatsData } from '@/types/types';
 import axiosClient from '@/utils/AxiosClient';
 import { produce } from 'immer';
 import { startCase } from 'lodash';
@@ -121,6 +122,7 @@ interface State {
     fName: string;
   } | null;
   unitFpTableData: { unit_type: number; s3_path: string }[] | null;
+  statsData: ImageStatsData | null;
 }
 
 type Actions = {
@@ -144,6 +146,7 @@ type Actions = {
   setPreviewUnitDocsData: (_newData: State['previewUnitDocsData']) => void;
   setShowUnitModal: (_val: boolean) => void;
   resetAll: () => void;
+  setStatsData: (_newData: ImageStatsData | null) => void;
 };
 
 export const useImageFormStore = create<State & Actions>()(
@@ -162,6 +165,7 @@ export const useImageFormStore = create<State & Actions>()(
     loadingTowerFloorData: 'idle',
     uploadingStatus: 'idle',
     unitFPDataStore: {},
+    statsData: null,
 
     setSelectedProject: (select) => set({ selectedProject: select }),
     setSelectedImageTaggingType: (select) =>
@@ -260,8 +264,8 @@ export const useImageFormStore = create<State & Actions>()(
       prevData[fileName] = { tfu: newData, unitType: unitType };
       set({ unitFPDataStore: prevData });
     },
-    setPreviewUnitDocsData: (newdata) => {
-      set({ previewUnitDocsData: newdata });
+    setPreviewUnitDocsData: (newData) => {
+      set({ previewUnitDocsData: newData });
     },
     setShowUnitModal: (value) => {
       set({ showUnitModal: value });
@@ -282,5 +286,6 @@ export const useImageFormStore = create<State & Actions>()(
         unitFPDataStore: {},
       });
     },
+    setStatsData: (newData) => set({ statsData: newData }),
   }))
 );

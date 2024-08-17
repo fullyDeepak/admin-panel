@@ -5,6 +5,7 @@ import TowerFP from './TowerFP';
 import ProgressBar from '@/components/ui/ProgressBar';
 import { useImageFormStore } from './useImageFormStore';
 import UnitFP from './UnitFP';
+import StatsUI from './StatsUI';
 
 type FormProps = {
   projectOptions:
@@ -25,6 +26,7 @@ type FormProps = {
         }[]
       | null
   ) => void;
+  loadingStats: boolean;
 };
 
 export default function Form({
@@ -34,6 +36,7 @@ export default function Form({
   progress,
   setProjectFiles,
   setResultData,
+  loadingStats,
 }: FormProps) {
   const {
     selectedProject,
@@ -44,11 +47,12 @@ export default function Form({
     towerFloorFormData,
     uploadingStatus,
     setUploadingStatus,
+    statsData,
     setTowerFloorFormData,
   } = useImageFormStore();
   return (
     <form
-      className='mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[60%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
+      className='mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[65%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
       id='projectTowerImageTagging'
       onSubmit={submitForm}
     >
@@ -105,6 +109,14 @@ export default function Form({
           ]}
         />
       </label>
+
+      <div className='mx-auto my-10 w-full max-w-full'>
+        <h3 className='text-center text-2xl font-semibold'>
+          Selected Project Stats
+        </h3>
+        <StatsUI data={statsData} isLoading={loadingStats} />
+      </div>
+
       {loadingTowerFloorData === 'loading' && (
         <span className='text-center'>
           <LoadingCircle circleColor='black' size='large' />

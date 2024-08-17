@@ -184,14 +184,36 @@ export type ReraDMLVTableData = {
 
 export type ImageStatsData = {
   project_res: {
-    brochure: string[];
-    project_image: string[];
-    project_master_plan: string[];
+    project_id: number;
+    project_docs: {
+      brochure: {
+        s3_path: string;
+        preview_url: string;
+        file_type: 'image' | 'pdf';
+      }[];
+      project_image: {
+        s3_path: string;
+        preview_url: string;
+        file_type: 'image' | 'pdf';
+      }[];
+      project_master_plan: {
+        s3_path: string;
+        preview_url: string;
+        file_type: 'image' | 'pdf';
+      }[];
+    };
   };
   tower_unit_res: {
     tower_id: number;
     tower_name: string;
-    tower_docs: string[] | null;
+    tower_docs:
+      | {
+          s3_path: string;
+          preview_url: string;
+          file_type: 'image' | 'pdf';
+          doc_type: string;
+        }[]
+      | null;
     total_unit_count: number;
     tagged_unit_count: number;
   }[];

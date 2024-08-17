@@ -9,7 +9,6 @@ import PreviewDocs from './PreviewDocs';
 import { useImageFormStore } from './useImageFormStore';
 import { usePathname } from 'next/navigation';
 import { ImageStatsData } from '@/types/types';
-import StatsUI from './StatsUI';
 
 export default function ImageTaggingPage() {
   const {
@@ -23,6 +22,7 @@ export default function ImageTaggingPage() {
     resultData,
     setResultData,
     resetAll,
+    setStatsData,
   } = useImageFormStore();
 
   const [projectFiles, setProjectFiles] = useState<FileList | null>(null);
@@ -35,7 +35,6 @@ export default function ImageTaggingPage() {
     file_type: 'image' | 'pdf';
   } | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [statsData, setStatsData] = useState<ImageStatsData | null>(null);
 
   useEffect(() => {
     if (showModal === true) {
@@ -198,7 +197,6 @@ export default function ImageTaggingPage() {
         setAvailableProjectData(projectData);
       } else if (selectedProject?.value && selectedImageTaggingType === null) {
         setStatsData(null);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
         const statsData = await axiosClient<{ data: ImageStatsData }>(
           '/forms/imgTag/stats',
           {
@@ -337,15 +335,9 @@ export default function ImageTaggingPage() {
         setProjectFiles={setProjectFiles}
         setResultData={setResultData}
         submitForm={submitForm}
+        loadingStats={loadingStats}
       />
-      {selectedImageTaggingType === null && selectedProject?.value && (
-        <div className='mx-auto my-10 w-full max-w-[60%]'>
-          <h3 className='text-center text-2xl font-semibold'>
-            Selected Project Stats
-          </h3>
-          <StatsUI data={statsData} isLoading={loadingStats} />
-        </div>
-      )}
+
       {selectedImageTaggingType != null &&
         selectedImageTaggingType?.value !== 'tower-fp' &&
         selectedImageTaggingType?.value !== 'unit-fp' &&
