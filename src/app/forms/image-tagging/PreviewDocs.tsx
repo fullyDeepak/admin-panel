@@ -2,6 +2,7 @@ import axiosClient from '@/utils/AxiosClient';
 import Image from 'next/image';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useImageFormStore } from './useImageFormStore';
+import { useQueryClient } from '@tanstack/react-query';
 
 type PreviewDocType = {
   previewDocsData: {
@@ -19,8 +20,14 @@ export default function PreviewDocs({
   previewDocsData,
   setShowModal,
 }: PreviewDocType) {
-  const { setAvailableProjectData, availableProjectData } = useImageFormStore();
+  const {
+    setAvailableProjectData,
+    availableProjectData,
+    selectedProject,
+    selectedImageTaggingType,
+  } = useImageFormStore();
   const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   async function deleteDoc() {
     setLoading(true);
@@ -42,6 +49,13 @@ export default function PreviewDocs({
       (document.getElementById('preview-modal') as HTMLDialogElement).close();
       setLoading(false);
       setShowModal(false);
+      await queryClient.refetchQueries({
+        queryKey: [
+          'getStatsData',
+          selectedProject?.value,
+          selectedImageTaggingType,
+        ],
+      });
     } catch (error) {
       setLoading(false);
     }

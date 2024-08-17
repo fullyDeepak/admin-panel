@@ -1,14 +1,13 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import Form from './Form';
 import PreviewDocs from './PreviewDocs';
 import { useImageFormStore } from './useImageFormStore';
 import { usePathname } from 'next/navigation';
-import { ImageStatsData } from '@/types/types';
 
 export default function ImageTaggingPage() {
   const {
@@ -22,8 +21,8 @@ export default function ImageTaggingPage() {
     resultData,
     setResultData,
     resetAll,
-    setStatsData,
   } = useImageFormStore();
+  const queryClient = useQueryClient();
 
   const [projectFiles, setProjectFiles] = useState<FileList | null>(null);
   const [progress, setProgress] = useState(0);
@@ -127,7 +126,7 @@ export default function ImageTaggingPage() {
   });
 
   // populate tower floor dropdown
-  const { isLoading: loadingStats } = useQuery({
+  useQuery({
     queryKey: [
       'getUMUnitNames',
       selectedProject?.value,
@@ -195,15 +194,6 @@ export default function ImageTaggingPage() {
           return newItem;
         });
         setAvailableProjectData(projectData);
-      } else if (selectedProject?.value && selectedImageTaggingType === null) {
-        setStatsData(null);
-        const statsData = await axiosClient<{ data: ImageStatsData }>(
-          '/forms/imgTag/stats',
-          {
-            params: { project_id: selectedProject.value },
-          }
-        );
-        setStatsData(statsData.data.data);
       }
 
       return [];
@@ -321,6 +311,9 @@ export default function ImageTaggingPage() {
         setUploadingStatus('error');
       }
     }
+    await queryClient.refetchQueries({
+      queryKey: ['getStatsData'],
+    });
   }
 
   return (
@@ -335,7 +328,6 @@ export default function ImageTaggingPage() {
         setProjectFiles={setProjectFiles}
         setResultData={setResultData}
         submitForm={submitForm}
-        loadingStats={loadingStats}
       />
 
       {selectedImageTaggingType != null &&
