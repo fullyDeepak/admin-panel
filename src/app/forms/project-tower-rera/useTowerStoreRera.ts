@@ -8,6 +8,10 @@ interface towerDetailRera extends FormTowerDetailType {
     label: string;
     value: string;
   }>;
+  displayTowerType: SingleValue<{
+    label: string;
+    value: string;
+  }> | null;
   towerTypeSuggestion: string;
 }
 interface FormState {
@@ -46,6 +50,7 @@ const initialState: towerDetailRera[] = [
       label: '',
       value: '',
     },
+    displayTowerType: null,
     towerTypeSuggestion: '',
     etlTowerName: '',
     towerNameAlias: '',

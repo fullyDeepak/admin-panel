@@ -36,6 +36,7 @@ export interface GetTowerDetails {
   etl_tower_name: string;
   tower_name_alias: string;
   type: string;
+  display_tower_type: string;
   phase: string;
   rera_id: string;
   tower_id: number;

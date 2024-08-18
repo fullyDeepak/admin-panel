@@ -105,6 +105,23 @@ export default function TowerForm() {
               </span>
             </div>
           </label>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex-[2]'>Display Tower Type:</span>
+            <div className='flex flex-[5]'>
+              <Select
+                className='w-full flex-1'
+                name='projectSubType1'
+                instanceId={nanoid()}
+                options={[
+                  { label: 'Apartment', value: 'apartment' },
+                  { label: 'Villa', value: 'villa' },
+                ]}
+                onChange={(e: SingleValue<{ label: string; value: string }>) =>
+                  updateTowerFormDataRera(tower.id, 'displayTowerType', e)
+                }
+              />
+            </div>
+          </label>
           {projectFormDataRera.isRERAProject && (
             <label className='flex flex-wrap items-center justify-between gap-5'>
               <span className='flex flex-[2] items-center'>

@@ -411,6 +411,7 @@ export default function ProjectForm() {
           label: '',
           value: '',
         },
+        displayTowerType: null,
         etlTowerName: item.tower_name,
         towerNameAlias: item.tower_name,
         etlUnitConfigs: uniqWith(item.etl_unit_configs, isEqual),
@@ -781,6 +782,26 @@ export default function ProjectForm() {
               {projectFormDataRera.projectSubTypeSuggestion.join(', ')}
             </span>
           </span>
+        </div>
+      </div>
+      <div className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Project Display Type:</span>
+        <div className='flex w-full flex-[5]'>
+          <Select
+            className='w-full flex-1'
+            name='projectSubType2'
+            options={[
+              { label: 'Apartment', value: 'apartment' },
+              { label: 'Villa', value: 'villa' },
+            ]}
+            value={projectFormDataRera.displayProjectType}
+            onChange={(
+              e: SingleValue<{
+                label: string;
+                value: string;
+              }>
+            ) => updateProjectFormDataRera({ displayProjectType: e })}
+          />
         </div>
       </div>
       <label className='flex flex-wrap items-center justify-between gap-5'>

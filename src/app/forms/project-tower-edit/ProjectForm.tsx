@@ -179,6 +179,7 @@ export default function ProjectForm() {
         projectPhase: +item.phase,
         reraId: item.rera_id,
         towerType: item.type,
+        displayTowerType: item.display_tower_type || '',
         etlTowerName: item.etl_tower_name,
         towerNameAlias: item.tower_name_alias,
         etlUnitConfigs: item.unit_configs.map((unit) => ({
@@ -421,6 +422,25 @@ export default function ProjectForm() {
                 {option.label}
               </Option>
             ))}
+          </Select>
+        </span>
+      </label>
+      <label className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Display Project Type:</span>
+        <span className='w-full flex-[5] pl-2'>
+          <Select
+            onChange={(e) =>
+              updateEditProjectFormData({ displayProjectType: e })
+            }
+            value={editProjectFormData.displayProjectType}
+            className='w-full'
+          >
+            <Option key={1} value={'apartment'} className='cursor-pointer'>
+              Apartment
+            </Option>
+            <Option key={2} value={'villa'} className='cursor-pointer'>
+              Villa
+            </Option>
           </Select>
         </span>
       </label>

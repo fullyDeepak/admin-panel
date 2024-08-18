@@ -4,6 +4,7 @@ import { create } from 'zustand';
 export interface editTowerDetail extends FormTowerDetailType {
   towerId: number | '__new';
   towerType: string;
+  displayTowerType: string;
 }
 
 interface FormState {
@@ -41,6 +42,7 @@ const initialState: editTowerDetail[] = [
     projectPhase: 1,
     reraId: '',
     towerType: '',
+    displayTowerType: '',
     etlTowerName: '',
     towerNameAlias: '',
     towerDoorNo: '',

@@ -12,6 +12,7 @@ export interface EditProjectTaggingType extends FormProjectDataType {
       }[]
     | [];
   projectType: string;
+  displayProjectType: string;
   towerTypeOptions:
     | {
         label: string;
@@ -114,6 +115,7 @@ const initialStateProjectData: EditProjectTaggingType = {
   developerGroup: '',
   projectType: '',
   projectSubType: '',
+  displayProjectType: '',
   towerTypeOptions: [],
   projectSubTypeOptions: [],
   projectDesc: '',

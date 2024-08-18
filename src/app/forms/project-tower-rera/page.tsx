@@ -10,9 +10,9 @@ import PreviewProjectTower from './PreviewProjectTower';
 import { useProjectStoreRera } from './useProjectStoreRera';
 import { useTowerStoreRera } from './useTowerStoreRera';
 import { usePathname } from 'next/navigation';
-import ProjectStatus from './ProjectStatus';
 import { MdContentCopy } from 'react-icons/md';
 import Keywords from './Keywords';
+// import ProjectStatus from './ProjectStatus';
 
 export default function ProjectTowerReraPage() {
   const [responseData, setResponseData] = useState<object | undefined>(
@@ -49,6 +49,8 @@ export default function ProjectTowerReraPage() {
   delete newProjectFormData.keywordType;
   newProjectFormData.projectType = newProjectFormData.projectType?.value;
   newProjectFormData.projectSubType = newProjectFormData.projectSubType?.value;
+  newProjectFormData.displayProjectType =
+    newProjectFormData.displayProjectType?.value;
   newProjectFormData.localities = newProjectFormData?.localities?.map(
     (item: { value: string; label: string }) => item.value
   );
@@ -61,6 +63,7 @@ export default function ProjectTowerReraPage() {
     ...item,
     validTowerUnits: null,
     towerType: item.towerType?.value,
+    displayTowerType: item.displayTowerType?.value,
     etlUnitConfigs: item.etlUnitConfigs.filter(
       (item) => item.configName !== ''
     ),

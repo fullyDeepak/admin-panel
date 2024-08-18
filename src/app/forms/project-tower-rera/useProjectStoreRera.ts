@@ -31,6 +31,10 @@ export interface ProjectTaggingTypeRera extends FormProjectDataType {
     label: string;
     value: string;
   }>;
+  displayProjectType: SingleValue<{
+    label: string;
+    value: string;
+  }> | null;
   reraProjectType: 'mixed' | 'villa' | 'commercial';
   projectTypeSuggestion: string[];
   projectSubTypeSuggestion: string[];
@@ -78,12 +82,13 @@ const initialStateProjectData: ProjectTaggingTypeRera = {
     label: '',
     value: '',
   },
-  towerTypeOptions: undefined,
-  projectSubTypeOptions: undefined,
-  projectSubType: {
+  displayProjectType: {
     label: '',
     value: '',
   },
+  towerTypeOptions: undefined,
+  projectSubTypeOptions: undefined,
+  projectSubType: null,
   projectTypeSuggestion: [],
   projectSubTypeSuggestion: [],
   projectDesc: '',

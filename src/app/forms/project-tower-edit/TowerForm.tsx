@@ -109,6 +109,24 @@ export default function TowerForm() {
             </span>
           </label>
           <label className='flex flex-wrap items-center justify-between gap-5'>
+            <span className='flex-[2]'>Display Tower Type:</span>
+            <span className='w-full flex-[5] pl-2'>
+              <Select
+                onChange={(e) =>
+                  updateEditTowerFormData(tower.id, 'displayTowerType', e)
+                }
+                value={tower.displayTowerType}
+              >
+                <Option key={1} value={'apartment'} className='cursor-pointer'>
+                  Apartment
+                </Option>
+                <Option key={2} value={'villa'} className='cursor-pointer'>
+                  Villa
+                </Option>
+              </Select>
+            </span>
+          </label>
+          <label className='flex flex-wrap items-center justify-between gap-5'>
             <span className='flex flex-[2] items-center'>
               <span>Tower ID:</span>
             </span>

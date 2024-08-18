@@ -51,6 +51,7 @@ type PreviewProjectTowerProps = {
     projectPhase: number;
     reraId: string;
     towerType: string;
+    displayTowerType: string;
     etlTowerName: string;
     towerNameAlias: string;
     etlUnitConfigs: { configName: string; minArea: number; maxArea: number }[];
@@ -117,6 +118,10 @@ export default function PreviewProjectTower({
     {
       header: 'Tower Type',
       accessorKey: 'towerType',
+    },
+    {
+      header: 'Display Tower Type',
+      accessorKey: 'displayTowerType',
     },
     {
       header: 'Tower ID',
