@@ -1,5 +1,11 @@
 import LoadingCircle from '@/components/ui/LoadingCircle';
-import { Dispatch, FormEventHandler, SetStateAction, useId } from 'react';
+import {
+  Dispatch,
+  FormEventHandler,
+  SetStateAction,
+  useEffect,
+  useId,
+} from 'react';
 import Select, { SingleValue } from 'react-select';
 import TowerFP from './TowerFP';
 import ProgressBar from '@/components/ui/ProgressBar';
@@ -9,6 +15,7 @@ import StatsUI from './StatsUI';
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
 import { ImageStatsData } from '@/types/types';
+import { useSearchParams } from 'next/navigation';
 
 type FormProps = {
   projectOptions:
@@ -31,6 +38,14 @@ type FormProps = {
   ) => void;
 };
 
+const typeOptions = [
+  { label: 'Brochure', value: 'brochure' },
+  { label: 'Project Master Plan', value: 'project_master_plan' },
+  { label: 'Project Images', value: 'project_image' },
+  { label: 'Tower Floor Plan', value: 'tower-fp' },
+  { label: 'Unit Floor Plan', value: 'unit-fp' },
+] as const;
+
 export default function Form({
   loadingProjectOptions,
   projectOptions,
@@ -52,7 +67,19 @@ export default function Form({
     setStatsData,
     setTowerFloorFormData,
   } = useImageFormStore();
-
+  const params = useSearchParams();
+  const projectId = params.get('projectId');
+  const type = params.get('type');
+  useEffect(() => {
+    if (projectId && type) {
+      setSelectedProject(
+        projectOptions?.filter((p) => p.value === Number(projectId))[0]
+      );
+      setSelectedImageTaggingType(
+        typeOptions?.filter((t) => t.value === type)[0]
+      );
+    }
+  }, [projectOptions]);
   const { isLoading: loadingStats } = useQuery({
     queryKey: [
       'getStatsData',
@@ -125,13 +152,7 @@ export default function Form({
             setSelectedImageTaggingType(e);
             setResultData(null);
           }}
-          options={[
-            { label: 'Brochure', value: 'brochure' },
-            { label: 'Project Master Plan', value: 'project_master_plan' },
-            { label: 'Project Images', value: 'project_image' },
-            { label: 'Tower Floor Plan', value: 'tower-fp' },
-            { label: 'Unit Floor Plan', value: 'unit-fp' },
-          ]}
+          options={typeOptions}
         />
       </label>
 
