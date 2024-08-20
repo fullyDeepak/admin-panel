@@ -117,10 +117,10 @@ export default function TowerForm() {
                 }
                 value={tower.displayTowerType}
               >
-                <Option key={1} value={'apartment'} className='cursor-pointer'>
+                <Option key={1} value={'Apartment'} className='cursor-pointer'>
                   Apartment
                 </Option>
-                <Option key={2} value={'villa'} className='cursor-pointer'>
+                <Option key={2} value={'Villa'} className='cursor-pointer'>
                   Villa
                 </Option>
               </Select>

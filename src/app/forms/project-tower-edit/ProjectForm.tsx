@@ -226,6 +226,7 @@ export default function ProjectForm() {
         layoutName: projectData.project_layout,
         projectDesc: projectData.project_description,
         projectType: projectData.project_category,
+        displayProjectType: projectData.display_project_type,
         projectSubType: projectData.project_subtype,
         amenitiesTags: amenities,
         localities: localities || [],
@@ -435,10 +436,10 @@ export default function ProjectForm() {
             value={editProjectFormData.displayProjectType}
             className='w-full'
           >
-            <Option key={1} value={'apartment'} className='cursor-pointer'>
+            <Option key={1} value={'Apartment'} className='cursor-pointer'>
               Apartment
             </Option>
-            <Option key={2} value={'villa'} className='cursor-pointer'>
+            <Option key={2} value={'Villa'} className='cursor-pointer'>
               Villa
             </Option>
           </Select>

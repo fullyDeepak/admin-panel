@@ -791,8 +791,8 @@ export default function ProjectForm() {
             className='w-full flex-1'
             name='projectSubType2'
             options={[
-              { label: 'Apartment', value: 'apartment' },
-              { label: 'Villa', value: 'villa' },
+              { label: 'Apartment', value: 'Apartment' },
+              { label: 'Villa', value: 'Villa' },
             ]}
             value={projectFormDataRera.displayProjectType}
             onChange={(

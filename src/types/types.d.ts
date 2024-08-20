@@ -75,6 +75,7 @@ export interface GetProjectDetails {
   rera_id: string | null;
   developer_keywords: string[];
   landlord_keywords: string[];
+  display_project_type: string;
 }
 
 export interface FormProjectETLTagDataType {
