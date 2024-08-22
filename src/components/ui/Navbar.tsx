@@ -53,6 +53,7 @@ const NavBar = () => {
       label: 'Forms',
       href: '/forms',
     },
+    { label: 'Dashboards', href: '/dashboards' },
     {
       label: 'Process Controller',
       href: '/process-controllers',
@@ -62,7 +63,7 @@ const NavBar = () => {
   return (
     <div className='z-10 flex items-center justify-between bg-violet-200 px-5 py-5 md:px-10'>
       <div className='order-1 flex-1 text-sm font-bold text-violet-700 lg:text-xl'>
-        Rezy Admin Dashboard
+        <Link href='/'>Rezy Admin Dashboard</Link>
       </div>
       <div className='order-3 flex flex-[0] justify-between uppercase lg:order-2 lg:flex-1'>
         <label className='btn btn-circle swap swap-rotate z-50 border-none bg-white/25 text-gray-600 hover:bg-white/25 md:bg-transparent lg:hidden'>
