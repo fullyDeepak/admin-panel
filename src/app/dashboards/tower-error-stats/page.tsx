@@ -1,17 +1,16 @@
 'use client';
 
-import SimpleTable from '@/components/tables/SimpleTable';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export default function TowerErrorStatsPage() {
   const [stats, setStats] = useState<object[]>([]);
   const { isLoading: loadingStats } = useQuery({
     queryKey: ['TowerErrorStatsData'],
     queryFn: async () => {
-      const statsData = await axiosClient('/dashboard/tower-error-stats');
+      const statsData = await axiosClient('/dashboard/project-error-stats');
       console.log(statsData.data);
       setStats(statsData.data.data);
       return statsData.data;
