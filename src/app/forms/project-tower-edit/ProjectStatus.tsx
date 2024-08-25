@@ -46,8 +46,8 @@ export default function ProjectStatus() {
   } = useEditProjectStore();
   const { editTowerFormData } = useEditTowerStore();
   const towerOptions = editTowerFormData.map((item) => ({
-    label: `${item.id}:${item.etlTowerName}`,
-    value: item.id,
+    label: `${item.towerId}:${item.etlTowerName}`,
+    value: item.towerId,
   }));
   const [isAllSelected, setIsAllSelected] = useState(true);
   const [value, setValue] = useState('');
