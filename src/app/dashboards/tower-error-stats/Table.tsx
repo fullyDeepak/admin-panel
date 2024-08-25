@@ -42,86 +42,6 @@ interface TableProps {
   showPagination?: boolean;
   enableSearch?: boolean;
 }
-// export function TowerErrorStatsTable(
-//   props: Omit<TableProps, 'data' | 'columns'> & { project_id: number }
-// ) {
-//   const [stats, setStats] = useState<
-//     (Omit<Stat, 'project_id' | 'project_name'> & {
-//       tower_name: string;
-//       tower_id: number | string;
-//     })[]
-//   >([]);
-//   const {
-//     isLoading: loadingStats,
-//     error,
-//     isError,
-//   } = useQuery({
-//     queryKey: ['TowerErrorStatsData', props.project_id],
-//     queryFn: async () => {
-//       const statsData = await axiosClient<{
-//         data: (Stat & { tower_name: string; tower_id: number })[];
-//       }>(`/dashboard/tower-error-stats?project_id=${props.project_id}`);
-//       console.log(statsData.data);
-//       const newStats = statsData.data.data
-//         .map(
-//           (item) =>
-//             Object.fromEntries(
-//               Object.entries(item).filter(
-//                 ([key]) => key !== 'project_name' && key !== 'project_id'
-//               )
-//             ) as Omit<Stat, 'project_id' | 'project_name'> & {
-//               tower_name: string;
-//               tower_id: number;
-//             }
-//         )
-//         .map((item) => ({
-//           ...item,
-//           tower_id: 'Tower : ' + item.tower_id,
-//         }));
-//       setStats(newStats);
-//       return statsData.data;
-//     },
-//     refetchOnWindowFocus: false,
-//   });
-
-//   const table = useReactTable({
-//     data: stats.filter((item) => !!item),
-//     columns: stats[0]
-//       ? Object.keys(stats[0]).map((item) => ({
-//           header: item.toUpperCase(),
-//           accessorKey: item,
-//         }))
-//       : [],
-//     getCoreRowModel: getCoreRowModel(),
-//     getPaginationRowModel: getPaginationRowModel(),
-//     getSortedRowModel: getSortedRowModel(),
-//     getFilteredRowModel: getFilteredRowModel(),
-//   });
-
-//   return (
-//     <>
-//       {loadingStats ? (
-//         <tr className='my-10'>
-//           <td className='text-center text-2xl font-semibold'>Loading...</td>
-//         </tr>
-//       ) : isError ? (
-//         <tr key={'Error'} className='my-10'>
-//           <td className='text-center text-2xl font-semibold'>
-//             Error: {error.message}
-//           </td>
-//         </tr>
-//       ) : stats && stats.length > 0 ? (
-//         <></>
-//       ) : (
-//         <tr key={'NoDataTower'} className='my-10'>
-//           <td className='text-center text-2xl font-semibold'>
-//             No data available
-//           </td>
-//         </tr>
-//       )}
-//     </>
-//   );
-// }
 export default function TanstackReactTable({
   data,
   columns,
@@ -131,6 +51,13 @@ export default function TanstackReactTable({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filtering, setFiltering] = useState('');
   const [expanded, setExpanded] = useState<ExpandedState>({});
+  const [expandedProject, setExpandedProject] = useState<number>(-1);
+  const [towerStats, setTowerStats] = useState<
+    (Omit<Stat, 'project_id' | 'project_name'> & {
+      tower_name: string;
+      tower_id: number | string;
+    })[]
+  >([]);
 
   const table = useReactTable({
     data,
@@ -149,17 +76,13 @@ export default function TanstackReactTable({
     onExpandedChange: setExpanded,
     getRowCanExpand: () => true,
   });
-  const [expandedProject, setExpandedProject] = useState<number>(-1);
-  const [towerStats, setTowerStats] = useState<
-    (Omit<Stat, 'project_id' | 'project_name'> & {
-      tower_name: string;
-      tower_id: number | string;
-    })[]
-  >([]);
-  const { isLoading: _LoadingTowerStats } = useQuery({
+
+  const { isLoading: LoadingTowerStats } = useQuery({
     queryKey: ['TowerErrorStatsData', expandedProject],
     queryFn: async () => {
-      const statsData = await axiosClient<{
+      console.log(expandedProject);
+      if (expandedProject === -1) return [];
+      const statsData = await axiosClient.get<{
         data: (Stat & { tower_name: string; tower_id: number })[];
       }>(`/dashboard/tower-error-stats?project_id=${expandedProject}`);
       console.log(statsData.data);
@@ -184,21 +107,8 @@ export default function TanstackReactTable({
     },
     refetchOnWindowFocus: false,
   });
-  const towerTable = useReactTable({
-    data: towerStats.filter((item) => !!item),
-    columns: towerStats[0]
-      ? Object.keys(towerStats[0]).map((item) => ({
-          header: item.toUpperCase(),
-          accessorKey: item,
-        }))
-      : [],
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-  });
   return (
-    <div className='mx-auto flex flex-col'>
+    <div className='mx-auto flex max-h-[80dvh] flex-col'>
       {enableSearch && (
         <div className='relative max-w-xs self-end'>
           <input
@@ -230,9 +140,10 @@ export default function TanstackReactTable({
         <table className='table'>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
+              <tr data-id={'HEADER' + headerGroup.id} key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
+                    data-id={header.id}
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
                     className=''
@@ -262,14 +173,21 @@ export default function TanstackReactTable({
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <>
-                <tr key={row.id} className='hover:bg-gray-100'>
+                <tr data-id={row.id} key={row.id} className='hover:bg-gray-100'>
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
+                    <td data-id={cell.id} key={cell.id}>
                       {row.getCanExpand() &&
                         cell.column.columnDef.header === 'PROJECT_ID' && (
                           <span className='w-24 py-4 pr-2 text-center'>
                             <button
                               onClick={() => {
+                                if (!row.getIsExpanded()) {
+                                  table.toggleAllRowsExpanded(false);
+                                }
+                                console.log(
+                                  'Toggling Expanded for ' +
+                                    row.original.project_id
+                                );
                                 row.toggleExpanded();
                                 setExpandedProject(row.original.project_id);
                               }}
@@ -287,24 +205,25 @@ export default function TanstackReactTable({
                   ))}
                 </tr>
                 {row.getIsExpanded() &&
-                  towerTable.getRowModel().rows.map((row) => (
-                    <tr key={row.id} className='hover:bg-gray-100'>
-                      {row
-                        .getVisibleCells()
-                        .filter((cell) => cell.column.id !== 'project_name')
-                        .map((cell) => (
-                          <td
-                            key={row.id + cell.id}
-                            colSpan={cell.column.id === 'project_id' ? 2 : 1}
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        ))}
-                    </tr>
-                  ))}
+                  (LoadingTowerStats
+                    ? 'Loading...'
+                    : towerStats.map((towerRow, idx) => (
+                        <tr
+                          key={'expandedTower' + row.id + idx}
+                          className='hover:bg-gray-100'
+                        >
+                          {Object.entries(towerRow)
+                            .filter(([key, val]) => key !== 'project_name')
+                            .map(([key, val]) => (
+                              <td
+                                key={'expandedTower' + row.id + idx + key}
+                                colSpan={key === 'project_id' ? 2 : 1}
+                              >
+                                {val}
+                              </td>
+                            ))}
+                        </tr>
+                      )))}
               </>
             ))}
           </tbody>
