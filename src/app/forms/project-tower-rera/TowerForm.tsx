@@ -113,8 +113,8 @@ export default function TowerForm() {
                 name='projectSubType1'
                 instanceId={nanoid()}
                 options={[
-                  { label: 'Apartment', value: 'Apartment' },
-                  { label: 'Villa', value: 'Villa' },
+                  { label: 'APARTMENT', value: 'APARTMENT' },
+                  { label: 'VILLA', value: 'VILLA' },
                 ]}
                 onChange={(e: SingleValue<{ label: string; value: string }>) =>
                   updateTowerFormDataRera(tower.id, 'displayTowerType', e)

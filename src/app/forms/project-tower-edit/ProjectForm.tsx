@@ -436,11 +436,11 @@ export default function ProjectForm() {
             value={editProjectFormData.displayProjectType}
             className='w-full'
           >
-            <Option key={1} value={'Apartment'} className='cursor-pointer'>
-              Apartment
+            <Option key={1} value={'APARTMENT'} className='cursor-pointer'>
+              APARTMENT
             </Option>
-            <Option key={2} value={'Villa'} className='cursor-pointer'>
-              Villa
+            <Option key={2} value={'VILLA'} className='cursor-pointer'>
+              VILLA
             </Option>
           </Select>
         </span>
