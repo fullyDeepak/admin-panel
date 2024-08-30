@@ -1,0 +1,21 @@
+.leaflet-labels {
+  background-color: hsla(0, 0%, 100%, 0.8);
+  border: none;
+  border-radius: 200px;
+  padding: 2px 8px;
+  box-shadow: none;
+  font-weight: 700;
+  /* opacity: 0.8 !important; */
+  backdrop-filter: blur(2px);
+  /* font-size: 16px; */
+  /* -webkit-text-stroke: 1px rgb(50, 50, 50); */
+  /* -webkit-text-fill-color: white; */
+  font-family: var(--font-inter);
+  box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.2);
+  color: black;
+}
+.leaflet-container {
+  min-height: 100px;
+  height: 100%;
+  z-index: 0;
+}
