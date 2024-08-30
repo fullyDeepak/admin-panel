@@ -289,7 +289,10 @@ export default function UnitErrorDashboardPage() {
                 }
               })
               .map((floor) => (
-                <div className='flex w-full flex-row items-center gap-2 overflow-auto rounded-xl border-4 p-1'>
+                <div
+                  key={floor.floor_number}
+                  className='flex w-full flex-row items-center gap-2 overflow-auto rounded-xl border-4 p-1'
+                >
                   {/* center and fixed card */}
                   <div className='flex h-full min-w-fit gap-3 rounded-xl p-10 text-2xl'>
                     Floor:{' '}
