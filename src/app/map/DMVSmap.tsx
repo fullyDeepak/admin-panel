@@ -16,6 +16,7 @@ import {
   LatLngTuple,
   LatLngBoundsExpression,
   Layer,
+  LatLngBounds,
 } from 'leaflet';
 import pinIcon from './pin.png';
 import { ghmcArea, ghmcWardsCircle, ghmcZones } from '@/data/data';
@@ -23,6 +24,7 @@ import './leaflet.css';
 import * as geojson from 'geojson';
 import bboxCalculator from '@turf/bbox';
 import { AllGeoJSON } from '@turf/helpers';
+import MapBounds from './MapBound';
 
 type Props = {
   mapGeoJson: {
@@ -45,17 +47,6 @@ export default function DMVSmap({
   selectionType: _,
   setSelection,
 }: Props) {
-  // console.log(mapGeoJson);
-
-  let bbox: number[] | undefined;
-  let boundArea: LatLngBoundsExpression;
-  if (mapGeoJson) {
-    bbox = bboxCalculator(mapGeoJson as AllGeoJSON);
-    boundArea = [
-      [bbox[1], bbox[2]],
-      [bbox[3], bbox[0]],
-    ];
-  }
   const center: LatLngTuple = [22, 75];
   const mapLayer = [
     {
@@ -129,7 +120,10 @@ export default function DMVSmap({
     layer.bindPopup(feature.properties?.name);
   }
 
-  const [_textAreaValue, _setTextAreaValue] = useState('');
+  const [currentBoundArea, setCurrentBoundArea] = useState<LatLngBounds | null>(
+    null
+  );
+  const [newMapGeoJson, setNewMapGeoJson] = useState(mapGeoJson);
 
   const _geoJSONLayer = useRef<LeafletGeoJSON | null>(null);
 
@@ -144,12 +138,18 @@ export default function DMVSmap({
   function FlyMapTo() {
     const map = useMap();
     useEffect(() => {
-      if (bbox && map && bbox[0] !== Infinity) {
+      if (mapGeoJson && newMapGeoJson !== mapGeoJson) {
+        const bbox = bboxCalculator(mapGeoJson as AllGeoJSON);
+        const boundArea: LatLngBoundsExpression = [
+          [bbox[1], bbox[2]],
+          [bbox[3], bbox[0]],
+        ];
         map.flyToBounds(boundArea, {
           duration: 1.9,
         });
+        setNewMapGeoJson(mapGeoJson);
       }
-    }, [map]);
+    }, [mapGeoJson]);
     return null;
   }
   return (
@@ -158,6 +158,7 @@ export default function DMVSmap({
       <div className='mx-auto h-[70vh] w-[93%]'>
         <MapContainer center={center} zoom={4} scrollWheelZoom={true}>
           <FlyMapTo />
+          <MapBounds setArea={setCurrentBoundArea} />
           <LayersControl>
             {mapLayer?.map((item, i) => (
               <LayersControl.BaseLayer
@@ -216,7 +217,14 @@ export default function DMVSmap({
           </LayersControl>
         </MapContainer>
       </div>
-      <div>ok</div>
+      <div className='mx-auto p-5'>
+        <p>Current Bound box</p>
+        {currentBoundArea && (
+          <p className='w-full bg-slate-200 p-2 text-xs [font-family:monospace]'>
+            {JSON.stringify(currentBoundArea, null, 2)}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
