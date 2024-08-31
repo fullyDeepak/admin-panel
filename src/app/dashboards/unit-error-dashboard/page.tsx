@@ -4,6 +4,7 @@ import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import Select, { SingleValue } from 'react-select';
+import UnitCell from './UnitCell';
 
 type ErrorFilters =
   | 'Clean'
@@ -42,17 +43,19 @@ export default function UnitErrorDashboardPage() {
       label: string;
     }>
   >({ value: 'All', label: 'All' });
-  const [umShell, setUmShell] = useState<
-    {
+  const [umShell, setUmShell] = useState<{
+    towerType: string;
+    floors: {
       floor_number: number;
       units: {
         unit_number: string;
         unit_name: string;
         nameMismatch?: boolean;
         noHM?: boolean;
+        noTM?: boolean;
       }[];
-    }[]
-  >([]);
+    }[];
+  } | null>(null);
   // fetchers
   const { data: projectOptions, isLoading: loadingProjectOptions } = useQuery({
     queryKey: ['projects'],
@@ -105,14 +108,17 @@ export default function UnitErrorDashboardPage() {
   } = useQuery({
     queryKey: ['um-shell', selectedTower],
     queryFn: async () => {
-      if (!selectedTower || selectedTower.value === -1) return [];
+      if (!selectedTower || selectedTower.value === -1) return null;
       try {
         const umRes = await axiosClient.get<{
           data: {
-            floor_number: number;
-            units: {
-              unit_number: string;
-              unit_name: string;
+            tower_type: string;
+            floors: {
+              floor_number: number;
+              units: {
+                unit_number: string;
+                unit_name: string;
+              }[];
             }[];
           }[];
         }>('/unitmaster/shell', {
@@ -140,35 +146,55 @@ export default function UnitErrorDashboardPage() {
         }>('/unitmaster/no-hm', {
           params: { tower_id: selectedTower.value },
         });
+        const noTMRes = await axiosClient.get<{
+          data: {
+            floor_number: number;
+            units: {
+              unit_number: string;
+              unit_name: string;
+            }[];
+          }[];
+        }>('/unitmaster/no-tm', {
+          params: { tower_id: selectedTower.value },
+        });
         const umShell = umRes.data.data;
         const nameMismatchShell = nameMismatchRes.data.data;
         const noHMShell = noHMRes.data.data;
+        const noTMShell = noTMRes.data.data;
         // add attribute nameMismatch to units that are present in nameMismatchShell
-        const mergedUM = umShell.map((floor) => {
-          return {
-            floor_number: floor.floor_number,
-            units: floor.units.map((unit) => {
-              return {
-                unit_number: unit.unit_number,
-                unit_name: unit.unit_name,
-                nameMismatch: nameMismatchShell.some(
-                  (nm) =>
-                    nm.floor_number === floor.floor_number &&
-                    nm.units.find((u) => u.unit_number === unit.unit_number)
-                ),
-                noHM: noHMShell.some(
-                  (nm) =>
-                    nm.floor_number === floor.floor_number &&
-                    nm.units.find((u) => u.unit_number === unit.unit_number)
-                ),
-              };
-            }),
-          };
-        });
+        const mergedUM = {
+          towerType: umShell[0].tower_type,
+          floors: umShell[0].floors.map((floor) => {
+            return {
+              floor_number: floor.floor_number,
+              units: floor.units.map((unit) => {
+                return {
+                  unit_number: unit.unit_number,
+                  unit_name: unit.unit_name,
+                  nameMismatch: nameMismatchShell.some(
+                    (nm) =>
+                      nm.floor_number === floor.floor_number &&
+                      nm.units.find((u) => u.unit_number === unit.unit_number)
+                  ),
+                  noHM: noHMShell.some(
+                    (nm) =>
+                      nm.floor_number === floor.floor_number &&
+                      nm.units.find((u) => u.unit_number === unit.unit_number)
+                  ),
+                  noTM: noTMShell.some(
+                    (nm) =>
+                      nm.floor_number === floor.floor_number &&
+                      nm.units.find((u) => u.unit_number === unit.unit_number)
+                  ),
+                };
+              }),
+            };
+          }),
+        };
         return mergedUM;
       } catch (error) {
         console.log(error);
-        return [];
+        return null;
       }
     },
     refetchOnWindowFocus: false,
@@ -270,77 +296,77 @@ export default function UnitErrorDashboardPage() {
               Error: {UMError.message}
             </p>
           </div>
-        ) : umShell && umShell.length > 0 ? (
+        ) : umShell && umShell.floors.length > 0 ? (
           // display as a grid where each row is a floor and each column is a unit
-          <div className='my-10 flex w-full flex-col gap-3 rounded-xl p-10 shadow-[0_0px_8px_rgb(0,60,255,0.5)]'>
-            {/* rows == floors */}
-            {umShell
-              .filter((floor) => {
-                if (!selectedErrorFilter) return true;
-                switch (selectedErrorFilter.value) {
-                  case 'All':
-                    return true;
-                  case 'Verify Name':
-                    return floor.units.some((unit) => unit.nameMismatch);
-                  case 'Tag HM':
-                    return floor.units.some((unit) => unit.noHM);
-                  default:
-                    return true;
-                }
-              })
-              .map((floor) => (
-                <div
-                  key={floor.floor_number}
-                  className='flex w-full flex-row items-center gap-2 overflow-auto rounded-xl border-4 p-1'
-                >
-                  {/* center and fixed card */}
-                  <div className='flex h-full min-w-fit gap-3 rounded-xl p-10 text-2xl'>
-                    Floor:{' '}
-                    <span className='font-semibold'>{floor.floor_number}</span>
-                  </div>
-                  {/* scrollable card */}
+          <div className='my-5 rounded-2xl border-4 p-5'>
+            <div className='custom-scrollbar relative flex flex-col justify-between gap-2 overflow-x-auto p-5'>
+              {umShell.floors
+                ?.filter((floor) => {
+                  if (!selectedErrorFilter) return true;
+                  switch (selectedErrorFilter.value) {
+                    case 'All':
+                      return true;
+                    case 'Clean':
+                      return (
+                        floor.units.some((unit) => !unit.nameMismatch) &&
+                        floor.units.some((unit) => !unit.noHM)
+                      );
+                    case 'Verify Name':
+                      return floor.units.some((unit) => unit.nameMismatch);
+                    case 'Tag HM':
+                      return floor.units.some((unit) => unit.noHM);
+                    case 'Tag TM':
+                      return floor.units.some((unit) => unit.noTM);
+                    default:
+                      return true;
+                  }
+                })
+                .map((floor) => (
                   <div
                     key={floor.floor_number}
-                    className='custom-scrollbar flex w-full flex-row gap-2 overflow-auto rounded-l border-4 p-3'
+                    className={`flex ${umShell.towerType === 'VILLA' ? 'flex-col' : 'flex-row'} items-start gap-2 tabular-nums`}
                   >
-                    {/* columns == units */}
                     {floor.units
                       .filter((unit) => {
                         if (!selectedErrorFilter) return true;
                         switch (selectedErrorFilter.value) {
                           case 'All':
                             return true;
+                          case 'Clean':
+                            return !unit.nameMismatch && !unit.noHM;
                           case 'Verify Name':
                             return unit.nameMismatch;
                           case 'Tag HM':
                             return unit.noHM;
+                          case 'Tag TM':
+                            return unit.noTM;
                           default:
                             return true;
                         }
                       })
-                      .map((unit, index) => (
-                        <div
-                          key={floor.floor_number.toString() + unit.unit_number}
-                          className={`flex min-w-fit items-center gap-3 rounded-xl p-1 shadow-[0_0px_8px_rgb(0,60,255,0.5)] ${unit.nameMismatch ? 'bg-red-100' : ''}`}
-                        >
-                          <span className='flex h-fit w-fit flex-col items-center p-2 font-semibold'>
-                            <span>Floor: {floor.floor_number}</span>
-                            <span>Unit Number: {unit.unit_number}</span>
-                            <span>Unit Name: {unit.unit_name}</span>
-                            <ul className='bg-red-300'>
-                              {unit.nameMismatch && (
-                                <li className='badge badge-error'>NM</li>
-                              )}
-                              {unit.noHM && (
-                                <li className='badge badge-error'>No HM</li>
-                              )}
-                            </ul>
-                          </span>
-                        </div>
+                      .map((unitItem, unitNameIndex) => (
+                        <UnitCell
+                          towerId={selectedTower?.value as number}
+                          floorNumber={floor.floor_number}
+                          fullUnitName={unitItem.unit_name}
+                          unitNumber={unitItem.unit_number}
+                          key={
+                            floor.floor_number.toString() + '|' + unitNameIndex
+                          }
+                          unitType={
+                            unitItem.nameMismatch
+                              ? 10
+                              : unitItem.noHM
+                                ? 20
+                                : unitItem.noTM
+                                  ? 30
+                                  : 1
+                          }
+                        />
                       ))}
                   </div>
-                </div>
-              ))}
+                ))}
+            </div>
           </div>
         ) : (
           <div className='my-10'>
