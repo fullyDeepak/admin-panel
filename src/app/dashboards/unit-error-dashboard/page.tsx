@@ -51,8 +51,11 @@ export default function UnitErrorDashboardPage() {
         unit_number: string;
         unit_name: string;
         nameMismatch?: boolean;
+        clean?: boolean;
+        missing?: boolean;
         noHM?: boolean;
         noTM?: boolean;
+        verifyPTIN?: boolean;
       }[];
     }[];
   } | null>(null);
@@ -124,6 +127,17 @@ export default function UnitErrorDashboardPage() {
         }>('/unitmaster/shell', {
           params: { tower_id: selectedTower.value },
         });
+        const verifyPTINUnitsRes = await axiosClient.get<{
+          data: {
+            floor_number: number;
+            units: {
+              unit_number: string;
+              unit_name: string;
+            }[];
+          }[];
+        }>('/unitmaster/verify-ptin', {
+          params: { tower_id: selectedTower.value },
+        });
         const nameMismatchRes = await axiosClient.get<{
           data: {
             floor_number: number;
@@ -157,10 +171,35 @@ export default function UnitErrorDashboardPage() {
         }>('/unitmaster/no-tm', {
           params: { tower_id: selectedTower.value },
         });
+        const cleanUnitsRes = await axiosClient.get<{
+          data: {
+            floor_number: number;
+            units: {
+              unit_number: string;
+              unit_name: string;
+            }[];
+          }[];
+        }>('/unitmaster/clean', {
+          params: { tower_id: selectedTower.value },
+        });
+        const missingUnitsRes = await axiosClient.get<{
+          data: {
+            floor_number: number;
+            units: {
+              unit_number: string;
+              unit_name: string;
+            }[];
+          }[];
+        }>('/unitmaster/missing', {
+          params: { tower_id: selectedTower.value },
+        });
         const umShell = umRes.data.data;
         const nameMismatchShell = nameMismatchRes.data.data;
+        const missingShell = missingUnitsRes.data.data;
         const noHMShell = noHMRes.data.data;
         const noTMShell = noTMRes.data.data;
+        const verifyPTINUnitsShell = verifyPTINUnitsRes.data.data;
+        const cleanUnitsShell = cleanUnitsRes.data.data;
         // add attribute nameMismatch to units that are present in nameMismatchShell
         const mergedUM = {
           towerType: umShell[0].tower_type,
@@ -171,7 +210,22 @@ export default function UnitErrorDashboardPage() {
                 return {
                   unit_number: unit.unit_number,
                   unit_name: unit.unit_name,
+                  verifyPTIN: verifyPTINUnitsShell.some(
+                    (vp) =>
+                      vp.floor_number === floor.floor_number &&
+                      vp.units.find((u) => u.unit_number === unit.unit_number)
+                  ),
                   nameMismatch: nameMismatchShell.some(
+                    (nm) =>
+                      nm.floor_number === floor.floor_number &&
+                      nm.units.find((u) => u.unit_number === unit.unit_number)
+                  ),
+                  clean: cleanUnitsShell.some(
+                    (nm) =>
+                      nm.floor_number === floor.floor_number &&
+                      nm.units.find((u) => u.unit_number === unit.unit_number)
+                  ),
+                  missing: missingShell.some(
                     (nm) =>
                       nm.floor_number === floor.floor_number &&
                       nm.units.find((u) => u.unit_number === unit.unit_number)
@@ -299,7 +353,7 @@ export default function UnitErrorDashboardPage() {
         ) : umShell && umShell.floors.length > 0 ? (
           // display as a grid where each row is a floor and each column is a unit
           <div className='my-5 rounded-2xl border-4 p-5'>
-            <div className='custom-scrollbar relative flex flex-col justify-between gap-2 overflow-x-auto p-5'>
+            <div className='custom-scrollbar relative flex flex-col-reverse justify-between gap-2 overflow-x-auto p-5'>
               {umShell.floors
                 ?.filter((floor) => {
                   if (!selectedErrorFilter) return true;
@@ -307,16 +361,17 @@ export default function UnitErrorDashboardPage() {
                     case 'All':
                       return true;
                     case 'Clean':
-                      return (
-                        floor.units.some((unit) => !unit.nameMismatch) &&
-                        floor.units.some((unit) => !unit.noHM)
-                      );
+                      return floor.units.some((unit) => unit.clean);
+                    case 'Verify PTIN - Temp DNo':
+                      return floor.units.some((unit) => unit.verifyPTIN);
                     case 'Verify Name':
                       return floor.units.some((unit) => unit.nameMismatch);
                     case 'Tag HM':
                       return floor.units.some((unit) => unit.noHM);
                     case 'Tag TM':
                       return floor.units.some((unit) => unit.noTM);
+                    case 'Missing':
+                      return floor.units.some((unit) => unit.missing);
                     default:
                       return true;
                   }
@@ -333,13 +388,17 @@ export default function UnitErrorDashboardPage() {
                           case 'All':
                             return true;
                           case 'Clean':
-                            return !unit.nameMismatch && !unit.noHM;
+                            return unit.clean;
+                          case 'Verify PTIN - Temp DNo':
+                            return unit.verifyPTIN;
                           case 'Verify Name':
                             return unit.nameMismatch;
                           case 'Tag HM':
                             return unit.noHM;
                           case 'Tag TM':
                             return unit.noTM;
+                          case 'Missing':
+                            return unit.missing;
                           default:
                             return true;
                         }
@@ -354,13 +413,19 @@ export default function UnitErrorDashboardPage() {
                             floor.floor_number.toString() + '|' + unitNameIndex
                           }
                           unitType={
-                            unitItem.nameMismatch
-                              ? 10
-                              : unitItem.noHM
-                                ? 20
-                                : unitItem.noTM
-                                  ? 30
-                                  : 1
+                            unitItem.clean
+                              ? 1
+                              : unitItem.nameMismatch
+                                ? 2
+                                : unitItem.verifyPTIN
+                                  ? 3
+                                  : unitItem.noHM
+                                    ? 4
+                                    : unitItem.noTM
+                                      ? 5
+                                      : unitItem.missing
+                                        ? 6
+                                        : null
                           }
                         />
                       ))}

@@ -20,8 +20,8 @@ type Stat = {
 export default function TowerErrorStatsPage() {
   const [stats, setStats] = useState<Stat[]>([]);
   const {
-    isLoading: loadingStats,
-    error,
+    isLoading: isLoadingStats,
+    error: loadingStatError,
     isError,
   } = useQuery({
     queryKey: ['TowerErrorStatsData'],
@@ -36,14 +36,14 @@ export default function TowerErrorStatsPage() {
 
   return (
     <>
-      {loadingStats ? (
+      {isLoadingStats ? (
         <div className='my-10'>
           <p className='text-center text-2xl font-semibold'>Loading...</p>
         </div>
       ) : isError ? (
         <div className='my-10'>
           <p className='text-center text-2xl font-semibold'>
-            Error: {error.message}
+            Error: {loadingStatError.message}
           </p>
         </div>
       ) : stats && stats.length > 0 ? (
