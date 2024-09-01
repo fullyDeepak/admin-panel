@@ -393,7 +393,8 @@ export default function UnitErrorDashboardPage() {
               {umShell.floors.map((floor) => (
                 <div
                   key={floor.floor_number}
-                  className={`flex ${umShell.towerType === 'VILLA' ? 'flex-col' : 'flex-row'} items-start gap-2 tabular-nums`}
+                  data-tower-type={umShell.towerType}
+                  className={`flex items-start gap-2 tabular-nums`}
                 >
                   {floor.units
                     .map((unit) => {
