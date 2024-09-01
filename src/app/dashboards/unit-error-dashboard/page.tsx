@@ -206,42 +206,46 @@ export default function UnitErrorDashboardPage() {
           floors: umShell[0].floors.map((floor) => {
             return {
               floor_number: floor.floor_number,
-              units: floor.units.map((unit) => {
-                return {
-                  unit_number: unit.unit_number,
-                  unit_name: unit.unit_name,
-                  verifyPTIN: verifyPTINUnitsShell.some(
-                    (vp) =>
-                      vp.floor_number === floor.floor_number &&
-                      vp.units.find((u) => u.unit_number === unit.unit_number)
-                  ),
-                  nameMismatch: nameMismatchShell.some(
-                    (nm) =>
-                      nm.floor_number === floor.floor_number &&
-                      nm.units.find((u) => u.unit_number === unit.unit_number)
-                  ),
-                  clean: cleanUnitsShell.some(
-                    (nm) =>
-                      nm.floor_number === floor.floor_number &&
-                      nm.units.find((u) => u.unit_number === unit.unit_number)
-                  ),
-                  missing: missingShell.some(
-                    (nm) =>
-                      nm.floor_number === floor.floor_number &&
-                      nm.units.find((u) => u.unit_number === unit.unit_number)
-                  ),
-                  noHM: noHMShell.some(
-                    (nm) =>
-                      nm.floor_number === floor.floor_number &&
-                      nm.units.find((u) => u.unit_number === unit.unit_number)
-                  ),
-                  noTM: noTMShell.some(
-                    (nm) =>
-                      nm.floor_number === floor.floor_number &&
-                      nm.units.find((u) => u.unit_number === unit.unit_number)
-                  ),
-                };
-              }),
+              units: floor.units
+                .sort(
+                  (a, b) => parseInt(a.unit_number) - parseInt(b.unit_number)
+                )
+                .map((unit) => {
+                  return {
+                    unit_number: unit.unit_number,
+                    unit_name: unit.unit_name,
+                    verifyPTIN: verifyPTINUnitsShell.some(
+                      (vp) =>
+                        vp.floor_number === floor.floor_number &&
+                        vp.units.find((u) => u.unit_number === unit.unit_number)
+                    ),
+                    nameMismatch: nameMismatchShell.some(
+                      (nm) =>
+                        nm.floor_number === floor.floor_number &&
+                        nm.units.find((u) => u.unit_number === unit.unit_number)
+                    ),
+                    clean: cleanUnitsShell.some(
+                      (nm) =>
+                        nm.floor_number === floor.floor_number &&
+                        nm.units.find((u) => u.unit_number === unit.unit_number)
+                    ),
+                    missing: missingShell.some(
+                      (nm) =>
+                        nm.floor_number === floor.floor_number &&
+                        nm.units.find((u) => u.unit_number === unit.unit_number)
+                    ),
+                    noHM: noHMShell.some(
+                      (nm) =>
+                        nm.floor_number === floor.floor_number &&
+                        nm.units.find((u) => u.unit_number === unit.unit_number)
+                    ),
+                    noTM: noTMShell.some(
+                      (nm) =>
+                        nm.floor_number === floor.floor_number &&
+                        nm.units.find((u) => u.unit_number === unit.unit_number)
+                    ),
+                  };
+                }),
             };
           }),
         };
