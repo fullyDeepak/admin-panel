@@ -55,7 +55,7 @@ const NavBar = () => {
       href: '/process-controllers',
     },
     {
-      label: 'Rezy Maps',
+      label: 'Maps',
       href: '/map',
     },
   ];
@@ -87,7 +87,7 @@ const NavBar = () => {
             {menus.map((item) => (
               <Link
                 key={item.label}
-                className={`${deskIconCss} btn w-full text-nowrap bg-violet-800 text-sm text-white lg:btn-link hover:bg-violet-500 lg:w-min lg:text-gray-700 lg:no-underline lg:hover:bg-transparent lg:hover:text-black lg:hover:no-underline`}
+                className={`${deskIconCss} btn w-full text-nowrap bg-violet-800 text-base text-white lg:btn-link hover:bg-violet-500 lg:w-min lg:text-gray-700 lg:no-underline lg:hover:bg-transparent lg:hover:text-black lg:hover:no-underline`}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
               >
