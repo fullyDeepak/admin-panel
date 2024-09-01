@@ -5,25 +5,29 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import Select, { SingleValue } from 'react-select';
 import UnitCell from './UnitCell';
+import { useSearchParams } from 'next/navigation';
 
-type ErrorFilters =
-  | 'Clean'
-  | 'Verify Name'
-  | 'Verify PTIN - Temp DNo'
-  | 'Tag HM'
-  | 'Tag TM'
-  | 'Missing';
-
-const errorFilterOptions = [
-  { value: 'All', label: 'All' },
-  { value: 'Clean', label: 'Clean' },
-  { value: 'Verify Name', label: 'Verify Name' },
-  { value: 'Verify PTIN - Temp DNo', label: 'Verify PTIN - Temp DNo' },
-  { value: 'Tag HM', label: 'Tag HM' },
-  { value: 'Tag TM', label: 'Tag TM' },
-  { value: 'Missing', label: 'Missing' },
+const errorFilterOptions: {
+  value: string;
+  label: string;
+}[] = [
+  { value: 'all', label: 'All' },
+  { value: 'clean', label: 'Clean' },
+  { value: 'verify_name', label: 'Verify Name' },
+  { value: 'verify_ptin', label: 'Verify PTIN - Temp DNo' },
+  { value: 'tag_hm', label: 'Tag HM' },
+  { value: 'tag_tm', label: 'Tag TM' },
+  { value: 'missing', label: 'Missing' },
 ];
 export default function UnitErrorDashboardPage() {
+  const params = useSearchParams();
+  const projectId = params.get('project_id');
+  const towerId = params.get('tower_id');
+  const errorFilter = params.get('filter');
+
+  console.dir({ projectId, towerId, errorFilter });
+
+  const [autoset, setAutoset] = useState(false);
   // states
   const [selectedProject, setSelectedProject] = useState<
     SingleValue<{
@@ -42,7 +46,7 @@ export default function UnitErrorDashboardPage() {
       value: string;
       label: string;
     }>
-  >({ value: 'All', label: 'All' });
+  >({ value: 'all', label: 'All' });
   const [umShell, setUmShell] = useState<{
     towerType: string;
     floors: {
@@ -86,12 +90,12 @@ export default function UnitErrorDashboardPage() {
       if (!selectedProject || selectedProject.value === -1) return [];
       try {
         const res = await axiosClient.get<{
-          data: { id: number; tower_name: string }[];
+          data: { id: string; tower_name: string }[];
         }>('/projects/towers', {
           params: { project_id: selectedProject.value },
         });
         const options = res.data.data.map((item) => ({
-          value: item.id,
+          value: parseInt(item.id),
           label: `${item.id}:${item.tower_name}`,
         }));
         return options;
@@ -264,6 +268,34 @@ export default function UnitErrorDashboardPage() {
     setSelectedTower({ value: -1, label: 'Select Tower' });
   }, [selectedProject]);
 
+  // set selected project == project_id on page load
+  useEffect(() => {
+    if (projectId) {
+      setSelectedProject({ value: +projectId, label: projectId });
+    }
+  }, [projectOptions]);
+  // set selected tower == tower_id on page load
+  useEffect(() => {
+    console.log('Autosetting');
+    if (autoset) return;
+    if (towerId) {
+      console.log(towerOptions);
+      const filtered_tower = towerOptions?.find(
+        (item) => item?.value === parseInt(towerId)
+      );
+      if (filtered_tower) {
+        setSelectedTower(filtered_tower);
+        setAutoset(true);
+      }
+    }
+    const filtered_error = errorFilterOptions.find(
+      (item) => item?.value === errorFilter
+    );
+    if (errorFilter && filtered_error) {
+      setSelectedErrorFilter(filtered_error);
+    }
+  }, [selectedProject, towerOptions]);
+
   // set UMShell on new UMShell data
   useEffect(() => {
     if (umShellData) {
@@ -368,19 +400,19 @@ export default function UnitErrorDashboardPage() {
                       if (!selectedErrorFilter)
                         return { ...unit, not_filtered: true };
                       switch (selectedErrorFilter.value) {
-                        case 'All':
+                        case 'all':
                           return { ...unit, not_filtered: true };
-                        case 'Clean':
+                        case 'clean':
                           return { ...unit, not_filtered: unit.clean };
-                        case 'Verify PTIN - Temp DNo':
+                        case 'verify_ptin':
                           return { ...unit, not_filtered: unit.verifyPTIN };
-                        case 'Verify Name':
+                        case 'verify_name':
                           return { ...unit, not_filtered: unit.nameMismatch };
-                        case 'Tag HM':
+                        case 'tag_hm':
                           return { ...unit, not_filtered: unit.noHM };
-                        case 'Tag TM':
+                        case 'tag_tm':
                           return { ...unit, not_filtered: unit.noTM };
-                        case 'Missing':
+                        case 'missing':
                           return { ...unit, not_filtered: unit.missing };
                         default:
                           return { ...unit, not_filtered: true };
@@ -388,7 +420,6 @@ export default function UnitErrorDashboardPage() {
                     })
                     .map((unitItem, unitNameIndex) => (
                       <UnitCell
-                        towerId={selectedTower?.value as number}
                         floorNumber={floor.floor_number}
                         fullUnitName={unitItem.unit_name}
                         unitNumber={unitItem.unit_number}

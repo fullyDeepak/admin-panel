@@ -1,9 +1,7 @@
-import { getRandomColor } from '@/lib/utils';
 import { nanoid } from 'nanoid';
 import toast from 'react-hot-toast';
 
 type UnitCellProps = {
-  towerId: number;
   floorNumber: number;
   fullUnitName: string;
   unitNumber: string;
@@ -12,7 +10,6 @@ type UnitCellProps = {
 };
 
 export default function UnitCell({
-  towerId,
   floorNumber,
   fullUnitName,
   unitNumber,

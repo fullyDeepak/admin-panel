@@ -20,6 +20,9 @@ import {
   MdOutlineLastPage,
   MdOutlineNavigateBefore,
   MdOutlineNavigateNext,
+  MdOutlineLink,
+  MdOutlineExpandMore,
+  MdOutlineExpandLess,
 } from 'react-icons/md';
 
 type Stat = {
@@ -173,7 +176,11 @@ export default function TanstackReactTable({
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <>
-                <tr data-id={row.id} key={row.id} className='hover:bg-gray-100'>
+                <tr
+                  data-id={row.id}
+                  key={row.id}
+                  className={`hover:bg-gray-100 ${row.getIsExpanded() ? 'bg-emerald-100' : ''}`}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <td data-id={cell.id} key={cell.id}>
                       {row.getCanExpand() &&
@@ -191,16 +198,36 @@ export default function TanstackReactTable({
                                 row.toggleExpanded();
                                 setExpandedProject(row.original.project_id);
                               }}
-                              className='btn btn-outline btn-sm'
+                              className='btn btn-sm bg-emerald-100'
                             >
-                              {row.getIsExpanded() ? '👇' : '👉'}
+                              {row.getIsExpanded() ? (
+                                <MdOutlineExpandLess />
+                              ) : (
+                                <MdOutlineExpandMore />
+                              )}
                             </button>
                           </span>
                         )}
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      <span className='inline-flex flex-row'>
+                        {cell.getValue() as string}
+                        &nbsp;
+                        {cell.column.columnDef.header
+                          ?.toString()
+                          .toLowerCase() !== 'project_id' &&
+                          cell.column.columnDef.header
+                            ?.toString()
+                            .toLowerCase() !== 'project_name' &&
+                          cell.column.columnDef.header
+                            ?.toString()
+                            .toLowerCase() !== 'updated_value' && (
+                            <a
+                              className='link-hover link'
+                              href={`/dashboards/unit-error-dashboard?project_id=${row.getValue('project_id')}${'&filter=' + (cell.column.columnDef.header === 'TOTAL GENERATED UNITS' ? 'all' : cell.column.columnDef.header === 'MATCHED UNITS' ? 'clean' : cell.column.columnDef.header === 'NO MATCH' ? 'verify_name' : cell.column.columnDef.header === 'UNIT COUNT MANUAL' ? 'verify_ptin' : cell.column.columnDef.header === 'ERROR 1: NAME MISMATCH' ? 'verify_name' : cell.column.columnDef.header === 'ERROR 2: NAME MATCH BUT NO HM' ? 'tag_hm' : cell.column.columnDef.header === 'ERROR 3: IN TM NO HM NAME MISMATCH' ? 'tag_tm' : cell.column.columnDef.header === 'ERROR 4: NO TM' ? 'missing' : 'all')}`}
+                            >
+                              <MdOutlineLink size={20} />
+                            </a>
+                          )}
+                      </span>
                     </td>
                   ))}
                 </tr>
@@ -210,16 +237,33 @@ export default function TanstackReactTable({
                     : towerStats.map((towerRow, idx) => (
                         <tr
                           key={'expandedTower' + row.id + idx}
-                          className='hover:bg-gray-100'
+                          className='bg-slate-200 hover:bg-gray-400'
                         >
                           {Object.entries(towerRow)
-                            .filter(([key, val]) => key !== 'project_name')
+                            .filter(([key, _val]) => key !== 'project_name')
+                            .map(([key, val]) => [key.toUpperCase(), val])
                             .map(([key, val]) => (
                               <td
                                 key={'expandedTower' + row.id + idx + key}
                                 colSpan={key === 'project_id' ? 2 : 1}
                               >
-                                {val}
+                                <span className='inline-flex flex-row'>
+                                  {val}
+                                  &nbsp;
+                                  {key?.toString().toLowerCase() !==
+                                    'tower_id' &&
+                                    key?.toString().toLowerCase() !==
+                                      'tower_name' &&
+                                    key?.toString().toLowerCase() !==
+                                      'updated_value' && (
+                                      <a
+                                        className='link-hover link'
+                                        href={`/dashboards/unit-error-dashboard?project_id=${row.getValue('project_id')}&tower_id=${towerRow.tower_id.toString().split(':')[1].trim()}${'&filter=' + (key === 'TOTAL GENERATED UNITS' ? 'all' : key === 'MATCHED UNITS' ? 'clean' : key === 'NO MATCH' ? 'verify_name' : key === 'UNIT COUNT MANUAL' ? 'verify_ptin' : key === 'ERROR 1: NAME MISMATCH' ? 'verify_name' : key === 'ERROR 2: NAME MATCH BUT NO HM' ? 'tag_hm' : key === 'ERROR 3: IN TM NO HM NAME MISMATCH' ? 'tag_tm' : key === 'ERROR 4: NO TM' ? 'missing' : 'all')}`}
+                                      >
+                                        <MdOutlineLink size={20} />
+                                      </a>
+                                    )}
+                                </span>
                               </td>
                             ))}
                         </tr>
