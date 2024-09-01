@@ -8,6 +8,7 @@ type UnitCellProps = {
   fullUnitName: string;
   unitNumber: string;
   unitType: number | null;
+  shouldColor?: boolean;
 };
 
 export default function UnitCell({
@@ -16,6 +17,7 @@ export default function UnitCell({
   fullUnitName,
   unitNumber,
   unitType,
+  shouldColor,
 }: UnitCellProps) {
   let color =
     unitType === 1
@@ -36,8 +38,8 @@ export default function UnitCell({
       <button
         id={nanoid()}
         style={{
-          backgroundColor:
-            unitType === 1
+          backgroundColor: shouldColor
+            ? unitType === 1
               ? '#4ade80'
               : unitType === 2
                 ? '#fdba74'
@@ -49,7 +51,8 @@ export default function UnitCell({
                       ? '#f87171'
                       : unitType === 6
                         ? '#f43f5e'
-                        : '#e4e4e4',
+                        : '#e4e4e4'
+            : '#e4e4e4',
           opacity: color ? 1 : 0.6,
         }}
         className='min-w-32 rounded-full border px-4 py-2 text-center text-sm hover:brightness-90 disabled:cursor-not-allowed'

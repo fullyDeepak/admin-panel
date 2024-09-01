@@ -354,83 +354,63 @@ export default function UnitErrorDashboardPage() {
           // display as a grid where each row is a floor and each column is a unit
           <div className='my-5 rounded-2xl border-4 p-5'>
             <div className='custom-scrollbar relative flex flex-col-reverse justify-between gap-2 overflow-x-auto p-5'>
-              {umShell.floors
-                ?.filter((floor) => {
-                  if (!selectedErrorFilter) return true;
-                  switch (selectedErrorFilter.value) {
-                    case 'All':
-                      return true;
-                    case 'Clean':
-                      return floor.units.some((unit) => unit.clean);
-                    case 'Verify PTIN - Temp DNo':
-                      return floor.units.some((unit) => unit.verifyPTIN);
-                    case 'Verify Name':
-                      return floor.units.some((unit) => unit.nameMismatch);
-                    case 'Tag HM':
-                      return floor.units.some((unit) => unit.noHM);
-                    case 'Tag TM':
-                      return floor.units.some((unit) => unit.noTM);
-                    case 'Missing':
-                      return floor.units.some((unit) => unit.missing);
-                    default:
-                      return true;
-                  }
-                })
-                .map((floor) => (
-                  <div
-                    key={floor.floor_number}
-                    className={`flex ${umShell.towerType === 'VILLA' ? 'flex-col' : 'flex-row'} items-start gap-2 tabular-nums`}
-                  >
-                    {floor.units
-                      .filter((unit) => {
-                        if (!selectedErrorFilter) return true;
-                        switch (selectedErrorFilter.value) {
-                          case 'All':
-                            return true;
-                          case 'Clean':
-                            return unit.clean;
-                          case 'Verify PTIN - Temp DNo':
-                            return unit.verifyPTIN;
-                          case 'Verify Name':
-                            return unit.nameMismatch;
-                          case 'Tag HM':
-                            return unit.noHM;
-                          case 'Tag TM':
-                            return unit.noTM;
-                          case 'Missing':
-                            return unit.missing;
-                          default:
-                            return true;
+              {umShell.floors.map((floor) => (
+                <div
+                  key={floor.floor_number}
+                  className={`flex ${umShell.towerType === 'VILLA' ? 'flex-col' : 'flex-row'} items-start gap-2 tabular-nums`}
+                >
+                  {floor.units
+                    .map((unit) => {
+                      if (!selectedErrorFilter)
+                        return { ...unit, not_filtered: true };
+                      switch (selectedErrorFilter.value) {
+                        case 'All':
+                          return { ...unit, not_filtered: true };
+                        case 'Clean':
+                          return { ...unit, not_filtered: unit.clean };
+                        case 'Verify PTIN - Temp DNo':
+                          return { ...unit, not_filtered: unit.verifyPTIN };
+                        case 'Verify Name':
+                          return { ...unit, not_filtered: unit.nameMismatch };
+                        case 'Tag HM':
+                          return { ...unit, not_filtered: unit.noHM };
+                        case 'Tag TM':
+                          return { ...unit, not_filtered: unit.noTM };
+                        case 'Missing':
+                          return { ...unit, not_filtered: unit.missing };
+                        default:
+                          return { ...unit, not_filtered: true };
+                      }
+                    })
+                    .map((unitItem, unitNameIndex) => (
+                      <UnitCell
+                        towerId={selectedTower?.value as number}
+                        floorNumber={floor.floor_number}
+                        fullUnitName={unitItem.unit_name}
+                        unitNumber={unitItem.unit_number}
+                        key={
+                          floor.floor_number.toString() + '|' + unitNameIndex
                         }
-                      })
-                      .map((unitItem, unitNameIndex) => (
-                        <UnitCell
-                          towerId={selectedTower?.value as number}
-                          floorNumber={floor.floor_number}
-                          fullUnitName={unitItem.unit_name}
-                          unitNumber={unitItem.unit_number}
-                          key={
-                            floor.floor_number.toString() + '|' + unitNameIndex
-                          }
-                          unitType={
-                            unitItem.clean
-                              ? 1
-                              : unitItem.nameMismatch
-                                ? 2
-                                : unitItem.verifyPTIN
-                                  ? 3
-                                  : unitItem.noHM
-                                    ? 4
-                                    : unitItem.noTM
-                                      ? 5
-                                      : unitItem.missing
-                                        ? 6
-                                        : null
-                          }
-                        />
-                      ))}
-                  </div>
-                ))}
+                        shouldColor={unitItem.not_filtered}
+                        unitType={
+                          unitItem.clean
+                            ? 1
+                            : unitItem.nameMismatch
+                              ? 2
+                              : unitItem.verifyPTIN
+                                ? 3
+                                : unitItem.noHM
+                                  ? 4
+                                  : unitItem.noTM
+                                    ? 5
+                                    : unitItem.missing
+                                      ? 6
+                                      : null
+                        }
+                      />
+                    ))}
+                </div>
+              ))}
             </div>
           </div>
         ) : (
