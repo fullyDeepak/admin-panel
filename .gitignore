@@ -35,3 +35,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# local test
+src/app/table/page.tsx 
+src/components/tables/pagination.txt
+src/components/ui/YearPicker.tsx
+
+
+.gitignore
