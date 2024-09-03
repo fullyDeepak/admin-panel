@@ -96,9 +96,22 @@ export default function TowerForm() {
                 instanceId={nanoid()}
                 options={projectFormDataRera.towerTypeOptions}
                 defaultValue={tower.towerType}
-                onChange={(e: SingleValue<{ label: string; value: string }>) =>
-                  updateTowerFormDataRera(tower.id, 'towerType', e)
-                }
+                onChange={(
+                  e: SingleValue<{ label: string; value: string }>
+                ) => {
+                  updateTowerFormDataRera(tower.id, 'towerType', e);
+                  if (e?.value === 'apartment') {
+                    updateTowerFormDataRera(tower.id, 'displayTowerType', {
+                      Label: 'APARTMENT',
+                      value: 'APARTMENT',
+                    });
+                  } else if (e?.value === 'villa') {
+                    updateTowerFormDataRera(tower.id, 'displayTowerType', {
+                      label: 'VILLA',
+                      value: 'VILLA',
+                    });
+                  }
+                }}
               />
               <span className='ml-[6px] min-h-11 w-full flex-1 rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
                 <span>{tower.towerTypeSuggestion}</span>
@@ -112,6 +125,7 @@ export default function TowerForm() {
                 className='w-full flex-1'
                 name='projectSubType1'
                 instanceId={nanoid()}
+                value={tower.displayTowerType}
                 options={[
                   { label: 'APARTMENT', value: 'APARTMENT' },
                   { label: 'VILLA', value: 'VILLA' },
