@@ -25,7 +25,8 @@ export default function ProjectForm() {
     updateProjectETLTagData,
     resetProjectFormDataRera,
   } = useProjectStoreRera();
-  const { setTowersDataRera } = useTowerStoreRera();
+  const { setTowersDataRera, towerFormDataRera, updateTowerFormDataRera } =
+    useTowerStoreRera();
   const { resetReraDocs } = useReraDocStore();
   const [mainProject, setMainProject] = useState<string>('');
   const [projectOptions, setProjectOptions] = useState<
@@ -800,7 +801,34 @@ export default function ProjectForm() {
                 label: string;
                 value: string;
               }>
-            ) => updateProjectFormDataRera({ displayProjectType: e })}
+            ) => {
+              updateProjectFormDataRera({ displayProjectType: e });
+              if (e?.value === 'APARTMENT') {
+                towerFormDataRera.map((item) => {
+                  updateTowerFormDataRera(item.id, 'towerType', {
+                    label: 'Apartment',
+                    value: 'apartment',
+                  });
+                  updateTowerFormDataRera(item.id, 'displayTowerType', {
+                    label: 'APARTMENT',
+                    value: 'APARTMENT',
+                  });
+                });
+              } else if (e?.value === 'VILLA') {
+                towerFormDataRera.map((item) => {
+                  updateTowerFormDataRera(item.id, 'towerType', {
+                    label: 'Villa',
+                    value: 'villa',
+                  });
+                });
+                towerFormDataRera.map((item) => {
+                  updateTowerFormDataRera(item.id, 'displayTowerType', {
+                    label: 'VILLA',
+                    value: 'VILLA',
+                  });
+                });
+              }
+            }}
           />
         </div>
       </div>
