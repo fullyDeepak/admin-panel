@@ -15,12 +15,6 @@ export default function Home() {
       >
         Go to Dashboards
       </Link>
-      <Link
-        className='btn bg-violet-700 text-white hover:bg-violet-800'
-        href={'/village-project-cleaner'}
-      >
-        Go to Village Project Cleaner
-      </Link>
     </main>
   );
 }

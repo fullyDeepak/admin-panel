@@ -47,6 +47,12 @@ export default function FormHomePage() {
           >
             UM Manual
           </Link>
+          <Link
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+            href={'/forms/village-project-cleaner'}
+          >
+            Go to Village Project Cleaner
+          </Link>
         </div>
         <div className='flex w-fit flex-col gap-4 text-gray-500'>
           <h2 className='text-center text-xl font-semibold'>

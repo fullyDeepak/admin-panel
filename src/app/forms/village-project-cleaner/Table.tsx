@@ -157,7 +157,7 @@ export default function TanstackReactTable<TData>({
     setSelectedRows(ogData);
   }, [rowSelection]);
   return (
-    <div className='mx-auto flex flex-col'>
+    <div className='mx-auto flex max-h-[80vh] flex-col'>
       {enableSearch && (
         <div className='relative max-w-xs self-end'>
           <input
@@ -185,8 +185,8 @@ export default function TanstackReactTable<TData>({
           </div>
         </div>
       )}
-      <div className='m-5 max-h-screen overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
-        <table className='relative w-full border-collapse bg-white text-sm text-gray-700'>
+      <div className='m-5 overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
+        <table className='relative h-20 w-full border-collapse bg-white text-sm text-gray-700'>
           <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50'>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

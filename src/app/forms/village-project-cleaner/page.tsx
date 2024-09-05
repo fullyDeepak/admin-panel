@@ -6,10 +6,11 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 import { LuLoader } from 'react-icons/lu';
 // @ts-expect-error  third party
-import Select, { SingleValue } from 'react-select-virtualized';
+import Select from 'react-select-virtualized';
+import { SingleValue } from 'react-select';
 import TanstackReactTable from './Table';
-import { inputBoxClass } from '../constants/tw-class';
-import {} from 'lodash';
+import { inputBoxClass } from '../../constants/tw-class';
+import { isEqual, isEqualWith } from 'lodash';
 
 type rawAptDataRow = {
   district_name: string;
@@ -34,10 +35,6 @@ const cleanedRowsColumns = [
     header: 'Raw Apartment Name',
     cell: ({ row }) => <p>{row.getValue('raw_apt_name')}</p>,
   }),
-  cleaningColumnHelper.accessor('clean_apt_name', {
-    header: 'Clean Apartment Name',
-    cell: ({ row }) => <p>{row.getValue('clean_apt_name')}</p>,
-  }),
   cleaningColumnHelper.accessor('plot_count', {
     header: 'Plot Count',
     cell: ({ row }) => <p>{row.getValue('plot_count')}</p>,
@@ -61,8 +58,8 @@ const rawAptSelectionColumns = [
     cell: ({ row }) => <p>{row.getValue('raw_apt_name')}</p>,
   }),
   columnHelper.accessor('clean_survey', {
-    header: 'Clean Apartment Name',
-    cell: ({ row }) => <p>{row.getValue('clean_apt_name')}</p>,
+    header: 'Clean Survey',
+    cell: ({ row }) => <p>{row.getValue('clean_survey')}</p>,
   }),
   columnHelper.accessor('plot_count', {
     header: 'Plot Count',
@@ -229,7 +226,17 @@ export default function Page() {
       console.log(selectedDistrict, selectedMandal, selectedVillage);
     }
   }, [selectedVillage]);
-  const submitForm = () => {};
+  const updateData = async (
+    rows: (rawAptDataRow & { clean_apt_name: string })[]
+  ) => {
+    try {
+      await axiosClient.post('/forms/update-rawapt-clean', rows);
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
   return (
     <>
       {isLoading ? (
@@ -242,10 +249,7 @@ export default function Page() {
           <h1 className='mb-4 text-center text-3xl font-semibold underline'>
             Village Project Cleaner
           </h1>
-          <form
-            className='mt-5 flex w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
-            onSubmit={submitForm}
-          >
+          <div className='z-10 mt-5 flex w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
             <label className='flex items-center justify-between gap-5'>
               <span className='flex-[2] text-base md:text-xl'>District:</span>
               <Select
@@ -299,35 +303,17 @@ export default function Page() {
                 isDisabled={Boolean(!selectedMandal)}
               />
             </label>
-          </form>
-          {selectedVillage?.value && (
-            <div className='z-10 mt-5 flex w-full max-w-full flex-col items-center justify-center gap-3 self-center rounded p-0 align-middle shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
-              <Select
-                key={'clean-apt'}
-                className='w-full max-w-[600px]'
-                options={cleanAptCandidates || []}
-                isLoading={loadingCleanAptCandidates}
-                onChange={(
-                  e: SingleValue<{
-                    label: string;
-                    value: number;
-                  }>
-                ) => setCleanAptName(e?.value || null)}
-              />
-              <input
-                type='text'
-                className={inputBoxClass + ' !ml-0'}
-                placeholder='Enter Clean Apartment Name'
-                value={cleanAptName || ''}
-                onChange={(e) => setCleanAptName(e.target.value)}
-              />
-            </div>
-          )}
+          </div>
           <div className='mt-10 flex flex-col'>
-            <h2 className='text-center text-2xl font-semibold'>
-              Raw Apt Dict (Select Raw Apartment Name for &apos;
-              {cleanAptName}&apos;)
-            </h2>
+            {cleanAptName && (
+              <h2
+                id='heading-label'
+                className='text-center text-2xl font-semibold'
+              >
+                Raw Apt Dict (Select Raw Apartment Name for &apos;
+                {cleanAptName}&apos;)
+              </h2>
+            )}
             <div className='flex items-center gap-5 px-4'>
               {loadingRawAptDictData ? (
                 <div className='flex h-[50dvh] flex-col items-center justify-center'>
@@ -339,10 +325,18 @@ export default function Page() {
               ) : (
                 rawAptDictData &&
                 rawAptDictData?.length > 0 && (
-                  <div className='mt-5 flex flex-col gap-5'>
+                  <div className='mt-5 flex max-w-[60%] flex-col gap-5'>
                     <div className=''>
                       <TanstackReactTable
-                        data={rawAptDictData}
+                        data={rawAptDictData?.filter((ele) => {
+                          return !cleanedRows.some(
+                            (item) =>
+                              item.raw_apt_name === ele.raw_apt_name &&
+                              item.clean_survey === ele.clean_survey &&
+                              item.plot_count === ele.plot_count &&
+                              item.occurrence_count === ele.occurrence_count
+                          );
+                        })}
                         columns={rawAptSelectionColumns}
                         setSelectedRows={setSelectedRows}
                         rowSelection={rowSelection}
@@ -353,31 +347,72 @@ export default function Page() {
                   </div>
                 )
               )}
-              <button
-                className='btn btn-neutral mx-auto my-5 w-40'
-                onClick={() => {
-                  if (!cleanAptName) return;
-                  setCleanedRows(
-                    selectedRows.map((item) => ({
-                      ...item,
-                      clean_apt_name: cleanAptName,
-                    }))
-                  );
-                  document
-                    .getElementById('cleaned-apartment-data')
-                    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }}
-              >
-                Attach
-              </button>
+              {selectedVillage?.value && (
+                <div className='flex w-full flex-col items-center'>
+                  <div className='z-10 mt-5 flex w-full max-w-full flex-col items-center justify-center gap-3 self-center rounded p-0 align-middle shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
+                    <Select
+                      key={'clean-apt'}
+                      className='w-full max-w-[600px]'
+                      options={cleanAptCandidates || []}
+                      isLoading={loadingCleanAptCandidates}
+                      onChange={(
+                        e: SingleValue<{
+                          label: string;
+                          value: string;
+                        }>
+                      ) => {
+                        setCleanAptName(e?.value.split(':')[1].trim() || null);
+                        document
+                          .getElementById('heading-label')
+                          ?.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start',
+                          });
+                      }}
+                    />
+                    <input
+                      type='text'
+                      className={inputBoxClass + ' !ml-0'}
+                      placeholder='Enter Clean Apartment Name'
+                      value={cleanAptName || ''}
+                      onChange={(e) => setCleanAptName(e.target.value)}
+                    />
+                  </div>
+
+                  <button
+                    className='btn btn-neutral mx-auto my-5 w-40'
+                    onClick={() => {
+                      if (!cleanAptName) return;
+                      setCleanedRows((prev) => {
+                        return [
+                          ...prev,
+                          ...selectedRows.map((item) => ({
+                            ...item,
+                            clean_apt_name: cleanAptName,
+                          })),
+                        ];
+                      });
+                      setRowSelection({});
+                      document
+                        .getElementById('cleaned-apartment-data')
+                        ?.scrollIntoView({
+                          behavior: 'smooth',
+                          block: 'start',
+                        });
+                    }}
+                  >
+                    Attach
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-          {
-            <div className='mt-5 flex flex-col gap-5'>
-              <h2
-                id='cleaned-apartment-data'
-                className='text-center text-2xl font-semibold'
-              >
+          {selectedVillage?.value && (
+            <div
+              id='cleaned-apartment-data'
+              className='mt-5 flex flex-col gap-5 px-4'
+            >
+              <h2 className='text-center text-2xl font-semibold'>
                 Cleaned Apartment Data
               </h2>
               <div className=''>
@@ -391,13 +426,42 @@ export default function Page() {
                 />
               </div>
               <div className='flex justify-around gap-4'>
-                <button className='btn btn-error'>Unmap</button>
-                <button className='btn btn-primary' onClick={() => {}}>
+                <button
+                  className='btn btn-error'
+                  onClick={() => {
+                    setCleanedRows((prev) => {
+                      return prev.filter(
+                        (item) =>
+                          !selectedCleanedRows.some(
+                            (ele) =>
+                              ele.raw_apt_name === item.raw_apt_name &&
+                              ele.clean_survey === item.clean_survey &&
+                              ele.plot_count === item.plot_count &&
+                              ele.occurrence_count === item.occurrence_count
+                          )
+                      );
+                    });
+                    setCleanRowSelection({});
+                  }}
+                >
+                  Unmap
+                </button>
+                <button
+                  className='btn btn-primary'
+                  onClick={async () => {
+                    if (await updateData(cleanedRows)) {
+                      setCleanedRows([]);
+                      alert('Done');
+                    } else {
+                      alert('Error');
+                    }
+                  }}
+                >
                   Submit
                 </button>
               </div>
             </div>
-          }
+          )}
         </div>
       )}
     </>

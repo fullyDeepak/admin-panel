@@ -110,3 +110,7 @@ input[type='number'] {
 .rmsc .dropdown-heading .dropdown-heading-value {
   white-space: unset !important;
 }
+
+.fast-option {
+  overflow: hidden;
+}
