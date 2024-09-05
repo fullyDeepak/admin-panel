@@ -159,7 +159,11 @@ export default function Page() {
     },
     staleTime: Infinity,
   });
-  const { data: rawAptDictData, isLoading: loadingRawAptDictData } = useQuery({
+  const {
+    data: rawAptDictData,
+    isLoading: loadingRawAptDictData,
+    refetch: refetchRawAptDictData,
+  } = useQuery({
     queryKey: ['raw-apt-dict', selectedVillage],
     queryFn: async () => {
       if (!selectedVillage) return null;
@@ -451,6 +455,7 @@ export default function Page() {
                   onClick={async () => {
                     if (await updateData(cleanedRows)) {
                       setCleanedRows([]);
+                      await refetchRawAptDictData();
                       alert('Done');
                     } else {
                       alert('Error');
