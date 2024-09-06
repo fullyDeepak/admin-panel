@@ -5,12 +5,11 @@ import { useQuery } from '@tanstack/react-query';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 import { LuLoader } from 'react-icons/lu';
+import { SingleValue } from 'react-select';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
-import { SingleValue } from 'react-select';
-import TanstackReactTable from './Table';
 import { inputBoxClass } from '../../constants/tw-class';
-import { isEqual, isEqualWith } from 'lodash';
+import TanstackReactTable from './Table';
 
 type rawAptDataRow = {
   district_name: string;
@@ -126,6 +125,7 @@ export default function Page() {
     (rawAptDataRow & { clean_apt_name: string })[]
   >([]);
   const [cleanRowSelection, setCleanRowSelection] = useState({});
+
   const { isLoading } = useQuery({
     queryKey: ['village-project-cleaner'],
     queryFn: async () => {

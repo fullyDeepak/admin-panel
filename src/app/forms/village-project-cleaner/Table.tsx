@@ -10,7 +10,7 @@ import {
   RowSelectionState,
   OnChangeFn,
 } from '@tanstack/react-table';
-import { HTMLProps, useEffect, useRef, useState } from 'react';
+import { HTMLProps, useEffect, useMemo, useRef, useState } from 'react';
 import { GoArrowDown, GoArrowUp, GoArrowSwitch } from 'react-icons/go';
 import {
   MdOutlineFirstPage,
@@ -130,8 +130,9 @@ export default function TanstackReactTable<TData>({
     ...columns,
   ];
 
+  const memoized = useMemo<TData[]>(() => data, []);
   const table = useReactTable({
-    data,
+    data: memoized,
     columns: newColumn,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
