@@ -130,9 +130,8 @@ export default function TanstackReactTable<TData>({
     ...columns,
   ];
 
-  const memoized = useMemo<TData[]>(() => data, []);
   const table = useReactTable({
-    data: memoized,
+    data,
     columns: newColumn,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

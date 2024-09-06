@@ -125,7 +125,7 @@ export default function Page() {
     (rawAptDataRow & { clean_apt_name: string })[]
   >([]);
   const [cleanRowSelection, setCleanRowSelection] = useState({});
-
+  const [rawAptNames, setRawAptNames] = useState<rawAptDataRow[]>([]);
   const { isLoading } = useQuery({
     queryKey: ['village-project-cleaner'],
     queryFn: async () => {
@@ -181,6 +181,7 @@ export default function Page() {
           occurrence_count: string;
         }[];
       }>('/forms/raw-apt-candidates?village_id=' + selectedVillage?.value);
+      setRawAptNames(res.data.data);
       return res.data.data;
     },
   });
@@ -241,6 +242,21 @@ export default function Page() {
       return false;
     }
   };
+
+  useEffect(() => {
+    const filteredRows = rawAptDictData?.filter((ele) => {
+      return !cleanedRows.some(
+        (item) =>
+          item.raw_apt_name === ele.raw_apt_name &&
+          item.clean_survey === ele.clean_survey &&
+          item.plot_count === ele.plot_count &&
+          item.occurrence_count === ele.occurrence_count
+      );
+    });
+    if (filteredRows) {
+      setRawAptNames(filteredRows);
+    }
+  }, [cleanedRows]);
   return (
     <>
       {isLoading ? (
@@ -332,15 +348,7 @@ export default function Page() {
                   <div className='mt-5 flex max-w-[60%] flex-col gap-5'>
                     <div className=''>
                       <TanstackReactTable
-                        data={rawAptDictData?.filter((ele) => {
-                          return !cleanedRows.some(
-                            (item) =>
-                              item.raw_apt_name === ele.raw_apt_name &&
-                              item.clean_survey === ele.clean_survey &&
-                              item.plot_count === ele.plot_count &&
-                              item.occurrence_count === ele.occurrence_count
-                          );
-                        })}
+                        data={rawAptNames}
                         columns={rawAptSelectionColumns}
                         setSelectedRows={setSelectedRows}
                         rowSelection={rowSelection}
@@ -382,7 +390,8 @@ export default function Page() {
                       onChange={(e) => setCleanAptName(e.target.value)}
                     />
                   </div>
-
+                  {JSON.stringify(selectedRows)}
+                  {JSON.stringify(rowSelection)}
                   <button
                     className='btn btn-neutral mx-auto my-5 w-40'
                     onClick={() => {
