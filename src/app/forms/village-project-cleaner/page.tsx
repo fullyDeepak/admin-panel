@@ -10,7 +10,7 @@ import { SingleValue } from 'react-select';
 import Select from 'react-select-virtualized';
 import { inputBoxClass } from '../../constants/tw-class';
 import TanstackReactTable from './Table';
-
+import toast from 'react-hot-toast';
 type rawAptDataRow = {
   district_name: string;
   district_id: string;
@@ -367,13 +367,20 @@ export default function Page() {
             </label>
           </div>
           <div className='mt-10 flex flex-col'>
-            {cleanAptName && (
+            {cleanAptName ? (
               <h2
                 id='heading-label'
-                className='text-center text-2xl font-semibold'
+                className='bg-success text-center text-2xl font-semibold'
               >
                 Raw Apt Dict (Select Raw Apartment Name for &apos;
                 {cleanAptName}&apos;)
+              </h2>
+            ) : (
+              <h2
+                id='heading-label'
+                className='bg-error text-center text-2xl font-semibold'
+              >
+                Select Clean Apartment Name to Tag Raw Apartment Name With
               </h2>
             )}
             <div className='flex items-center gap-5 px-4'>
@@ -400,7 +407,7 @@ export default function Page() {
                 )
               )}
               {selectedVillage?.value && (
-                <div className='flex flex-col items-center'>
+                <div className='flex w-[30%] flex-col items-center'>
                   <div className='z-10 mt-5 flex w-full max-w-full flex-col items-center justify-center gap-3 self-center rounded p-0 align-middle shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
                     <Select
                       key={'clean-apt'}
@@ -433,7 +440,10 @@ export default function Page() {
                   <button
                     className='btn btn-neutral mx-auto my-5 w-40'
                     onClick={() => {
-                      if (!cleanAptName) return;
+                      if (!cleanAptName) {
+                        toast.error('Select an Apartment or enter one.');
+                        return;
+                      }
                       setCleanedRows((prev) => {
                         return [
                           ...prev,
