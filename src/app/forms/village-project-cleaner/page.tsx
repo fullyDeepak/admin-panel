@@ -390,8 +390,6 @@ export default function Page() {
                       onChange={(e) => setCleanAptName(e.target.value)}
                     />
                   </div>
-                  {JSON.stringify(selectedRows)}
-                  {JSON.stringify(rowSelection)}
                   <button
                     className='btn btn-neutral mx-auto my-5 w-40'
                     onClick={() => {
