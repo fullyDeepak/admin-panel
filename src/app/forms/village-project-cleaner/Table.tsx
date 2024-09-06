@@ -1,17 +1,19 @@
 import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
+  Column,
   ColumnDef,
+  ColumnFiltersState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
-  getFilteredRowModel,
-  RowSelectionState,
   OnChangeFn,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
 } from '@tanstack/react-table';
-import { HTMLProps, useEffect, useMemo, useRef, useState } from 'react';
-import { GoArrowDown, GoArrowUp, GoArrowSwitch } from 'react-icons/go';
+import { HTMLProps, useEffect, useRef, useState } from 'react';
+import { GoArrowDown, GoArrowSwitch, GoArrowUp } from 'react-icons/go';
 import {
   MdOutlineFirstPage,
   MdOutlineLastPage,
@@ -71,15 +73,13 @@ export default function TanstackReactTable<TData>({
   data,
   columns,
   showPagination = true,
-  enableSearch = true,
   setSelectedRows,
   rowSelection,
   setRowSelection,
   isMultiSelection = true,
 }: TableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [filtering, setFiltering] = useState('');
-  //   const [rowSelection, setRowSelection] = useState({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const newColumn: ColumnDef<TData, any>[] = [
     {
       id: 'select',
@@ -142,11 +142,11 @@ export default function TanstackReactTable<TData>({
     enableMultiRowSelection: isMultiSelection,
     state: {
       sorting: sorting,
-      globalFilter: filtering,
+      columnFilters: columnFilters,
       rowSelection: rowSelection,
     },
     onSortingChange: setSorting,
-    onGlobalFilterChange: setFiltering,
+    onColumnFiltersChange: setColumnFilters,
   });
   table.getSelectedRowModel;
 
@@ -157,34 +157,7 @@ export default function TanstackReactTable<TData>({
     setSelectedRows(ogData);
   }, [rowSelection]);
   return (
-    <div className='mx-auto flex max-h-[80vh] flex-col'>
-      {enableSearch && (
-        <div className='relative max-w-xs self-end'>
-          <input
-            type='text'
-            className='block w-full rounded-md border-0 py-1.5 ps-9 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
-            placeholder='Search for items'
-            onChange={(e) => setFiltering(e.target.value)}
-          />
-          <div className='pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3'>
-            <svg
-              className='h-4 w-4 text-gray-400'
-              xmlns='http://www.w3.org/2000/svg'
-              width={24}
-              height={24}
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeWidth={2}
-              strokeLinecap='round'
-              strokeLinejoin='round'
-            >
-              <circle cx={11} cy={11} r={8} />
-              <path d='m21 21-4.3-4.3' />
-            </svg>
-          </div>
-        </div>
-      )}
+    <div className='mx-auto flex h-[80vh] flex-col justify-between'>
       <div className='m-5 overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
         <table className='relative h-20 w-full border-collapse bg-white text-sm text-gray-700'>
           <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50'>
@@ -193,32 +166,47 @@ export default function TanstackReactTable<TData>({
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                    className='z-0 px-4 py-4 font-semibold text-gray-900'
+                    className='z-0 max-w-7xl px-4 py-4 font-semibold text-gray-900'
                   >
-                    <div className='flex cursor-pointer select-none items-center gap-1'>
-                      <span className='items-center gap-1 text-base text-black/70'>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                      </span>
-                      {header.id !== 'select' && (
-                        <span className='w-20'>
-                          {
-                            {
-                              asc: <GoArrowUp size={16} />,
-                              desc: <GoArrowDown size={16} />,
-                              false: (
-                                <GoArrowSwitch
-                                  style={{ transform: 'rotate(90deg)' }}
-                                  size={16}
-                                />
-                              ),
-                            }[(header.column.getIsSorted() as string) ?? null]
-                          }
+                    <div className='flex flex-col items-center gap-1'>
+                      <div
+                        className='flex cursor-pointer select-none items-center gap-1'
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        <span className='items-center gap-1 text-base text-black/70'>
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                         </span>
-                      )}
+                        {header.id !== 'select' && (
+                          <span className=''>
+                            {
+                              {
+                                asc: <GoArrowUp size={16} />,
+                                desc: <GoArrowDown size={16} />,
+                                false: (
+                                  <GoArrowSwitch
+                                    style={{ transform: 'rotate(90deg)' }}
+                                    size={16}
+                                  />
+                                ),
+                              }[(header.column.getIsSorted() as string) ?? null]
+                            }
+                          </span>
+                        )}
+                      </div>
+                      {header.column.getCanFilter() &&
+                        header.column.columnDef.meta &&
+                        (
+                          header.column.columnDef.meta as {
+                            filterVariant: string;
+                          }
+                        ).filterVariant !== 'checkbox' && (
+                          <div>
+                            <Filter column={header.column} />
+                          </div>
+                        )}
                     </div>
                   </th>
                 ))}
@@ -229,7 +217,7 @@ export default function TanstackReactTable<TData>({
             {table.getRowModel().rows.map((row) => (
               <tr
                 key={row.id}
-                className={`cursor-pointer border-b ${row.getIsSelected() ? 'bg-sky-100 hover:bg-opacity-50' : 'bg-none hover:bg-gray-100'}`}
+                className={`max-w-7xl cursor-pointer border-b ${row.getIsSelected() ? 'bg-sky-100 hover:bg-opacity-50' : 'bg-none hover:bg-gray-100'}`}
                 onClick={() => {
                   isMultiSelection
                     ? row.toggleSelected()
@@ -237,7 +225,7 @@ export default function TanstackReactTable<TData>({
                 }}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className='px-4 py-3'>
+                  <td key={cell.id} className='max-w-7xl px-4 py-3'>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -298,5 +286,53 @@ export default function TanstackReactTable<TData>({
         </div>
       )}
     </div>
+  );
+}
+
+function Filter({ column }: { column: Column<any, unknown> }) {
+  const columnFilterValue = column.getFilterValue();
+  // @ts-expect-error
+  const { filterVariant } = column.columnDef.meta ?? {};
+
+  return filterVariant === 'range' ? (
+    <div>
+      <div className='flex space-x-2'>
+        {/* See faceted column filters example for min max values functionality */}
+        <input
+          type='number'
+          value={(columnFilterValue as [number, number])?.[0] ?? ''}
+          onChange={(e) =>
+            column.setFilterValue((old: [number, number]) => [
+              e.target.value,
+              old?.[1],
+            ])
+          }
+          placeholder={`Min`}
+          className='block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
+        />
+        <input
+          type='number'
+          value={(columnFilterValue as [number, number])?.[1] ?? ''}
+          onChange={(e) =>
+            column.setFilterValue((old: [number, number]) => [
+              old?.[0],
+              e.target.value,
+            ])
+          }
+          placeholder={`Max`}
+          className='block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
+        />
+      </div>
+      <div className='h-1' />
+    </div>
+  ) : (
+    <input
+      className='block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
+      onChange={(e) => column.setFilterValue(e.target.value)}
+      placeholder={`Search...`}
+      type='text'
+      value={(columnFilterValue ?? '') as string}
+    />
+    // See faceted column filters example for datalist search suggestions
   );
 }

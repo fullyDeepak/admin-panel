@@ -29,49 +29,91 @@ const cleaningColumnHelper = createColumnHelper<
   rawAptDataRow & { clean_apt_name: string }
 >();
 
+const rawAptSelectionColumns = [
+  columnHelper.accessor('raw_apt_name', {
+    header: 'Raw Apartment Name',
+    cell: ({ row }) => (
+      <p className='max-w-7xl text-pretty break-all'>
+        {row.getValue('raw_apt_name')}
+      </p>
+    ),
+    meta: {
+      filterVariant: 'text',
+    },
+    filterFn: 'includesString',
+  }),
+  columnHelper.accessor('clean_survey', {
+    header: 'Clean Survey',
+    cell: ({ row }) => (
+      <p className='break max-w-7xl text-pretty break-all'>
+        {row.getValue('clean_survey')}
+      </p>
+    ),
+    meta: {
+      filterVariant: 'text',
+    },
+    filterFn: 'includesString',
+  }),
+  columnHelper.accessor('plot_count', {
+    header: 'Plot Count',
+    cell: ({ row }) => (
+      <p className='max-w-7xl text-pretty break-all'>
+        {row.getValue('plot_count')}
+      </p>
+    ),
+    meta: {
+      filterVariant: 'range',
+    },
+    filterFn: 'inNumberRange',
+  }),
+  columnHelper.accessor('occurrence_count', {
+    header: 'Occurrence Count',
+    cell: ({ row }: any) => (
+      <p className='max-w-7xl text-pretty break-all'>
+        {row.original.occurrence_count.toString()}
+      </p>
+    ),
+    meta: {
+      filterVariant: 'range',
+    },
+    filterFn: 'inNumberRange',
+  }),
+];
+
 const cleanedRowsColumns = [
   cleaningColumnHelper.accessor('raw_apt_name', {
     header: 'Raw Apartment Name',
-    cell: ({ row }) => <p>{row.getValue('raw_apt_name')}</p>,
+    cell: ({ row }) => (
+      <p className='max-w-7xl text-pretty break-all'>
+        {row.getValue('raw_apt_name')}
+      </p>
+    ),
   }),
   cleaningColumnHelper.accessor('plot_count', {
     header: 'Plot Count',
-    cell: ({ row }) => <p>{row.getValue('plot_count')}</p>,
+    cell: ({ row }) => (
+      <p className='max-w-7xl text-pretty break-all'>
+        {row.getValue('plot_count')}
+      </p>
+    ),
   }),
   cleaningColumnHelper.accessor('occurrence_count', {
     cell: ({ row }: any) => (
-      <p className='min-w-[300px]'>
+      <p className='max-w-7xl text-pretty break-all'>
         {row.original.occurrence_count.toString()}
       </p>
     ),
   }),
   cleaningColumnHelper.accessor('clean_apt_name', {
     header: 'Clean Apartment Name',
-    cell: ({ row }) => <p>{row.getValue('clean_apt_name')}</p>,
-  }),
-];
-
-const rawAptSelectionColumns = [
-  columnHelper.accessor('raw_apt_name', {
-    header: 'Raw Apartment Name',
-    cell: ({ row }) => <p>{row.getValue('raw_apt_name')}</p>,
-  }),
-  columnHelper.accessor('clean_survey', {
-    header: 'Clean Survey',
-    cell: ({ row }) => <p>{row.getValue('clean_survey')}</p>,
-  }),
-  columnHelper.accessor('plot_count', {
-    header: 'Plot Count',
-    cell: ({ row }) => <p>{row.getValue('plot_count')}</p>,
-  }),
-  columnHelper.accessor('occurrence_count', {
-    cell: ({ row }: any) => (
-      <p className='min-w-[300px]'>
-        {row.original.occurrence_count.toString()}
+    cell: ({ row }) => (
+      <p className='max-w-7xl text-pretty break-all'>
+        {row.getValue('clean_apt_name')}
       </p>
     ),
   }),
 ];
+
 export default function Page() {
   const [selectedDistrict, setSelectedDistrict] = useState<{
     label: string;
@@ -345,22 +387,20 @@ export default function Page() {
               ) : (
                 rawAptDictData &&
                 rawAptDictData?.length > 0 && (
-                  <div className='mt-5 flex max-w-[60%] flex-col gap-5'>
-                    <div className=''>
-                      <TanstackReactTable
-                        data={rawAptNames}
-                        columns={rawAptSelectionColumns}
-                        setSelectedRows={setSelectedRows}
-                        rowSelection={rowSelection}
-                        setRowSelection={setRowSelection}
-                        isMultiSelection={true}
-                      />
-                    </div>
+                  <div className='w-[70%]'>
+                    <TanstackReactTable
+                      data={rawAptNames}
+                      columns={rawAptSelectionColumns}
+                      setSelectedRows={setSelectedRows}
+                      rowSelection={rowSelection}
+                      setRowSelection={setRowSelection}
+                      isMultiSelection={true}
+                    />
                   </div>
                 )
               )}
               {selectedVillage?.value && (
-                <div className='flex w-full flex-col items-center'>
+                <div className='flex flex-col items-center'>
                   <div className='z-10 mt-5 flex w-full max-w-full flex-col items-center justify-center gap-3 self-center rounded p-0 align-middle shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
                     <Select
                       key={'clean-apt'}
