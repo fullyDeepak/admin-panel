@@ -28,7 +28,7 @@ type rawAptDataRow = {
 
 const columnHelper = createColumnHelper<rawAptDataRow>();
 const cleaningColumnHelper = createColumnHelper<
-  rawAptDataRow & { clean_apt_name: string }
+  rawAptDataRow & { clean_apt_name: string; selected_project_id: string }
 >();
 
 const rawAptSelectionColumns = [
@@ -126,6 +126,14 @@ const cleanedRowsColumns = [
       </p>
     ),
   }),
+  cleaningColumnHelper.accessor('selected_project_id', {
+    header: 'Selected Project Id',
+    cell: ({ row }) => (
+      <p className='max-w-7xl text-pretty break-all'>
+        {row.getValue('selected_project_id')}
+      </p>
+    ),
+  }),
 ];
 
 export default function Page() {
@@ -175,13 +183,21 @@ export default function Page() {
   const [rowSelection, setRowSelection] = useState({});
   const [cleanAptName, setCleanAptName] = useState<string | null>(null);
   const [cleanedRows, setCleanedRows] = useState<
-    (rawAptDataRow & { clean_apt_name: string })[]
+    (rawAptDataRow & { clean_apt_name: string; selected_project_id: string })[]
   >([]);
   const [selectedCleanedRows, setSelectedCleanedRows] = useState<
-    (rawAptDataRow & { clean_apt_name: string })[]
+    (rawAptDataRow & { clean_apt_name: string; selected_project_id: string })[]
   >([]);
   const [cleanRowSelection, setCleanRowSelection] = useState({});
   const [rawAptNames, setRawAptNames] = useState<rawAptDataRow[]>([]);
+  const [selectedCleanProjectId, setSelectedCleanProjectId] =
+    useState<string>('__new');
+  const [selectedCleanApartmentOption, setSelectedCleanApartmentOption] =
+    useState<SingleValue<{ label: string; value: string }>>({
+      label: 'Select Apartment',
+      value: '',
+    });
+  const [showWarning, setShowWarning] = useState<boolean>(true);
   const { isLoading } = useQuery({
     queryKey: ['village-project-cleaner'],
     queryFn: async () => {
@@ -249,21 +265,29 @@ export default function Page() {
       return toSet;
     },
   });
-  const { data: cleanAptCandidates, isLoading: loadingCleanAptCandidates } =
-    useQuery({
-      queryKey: ['clean-apt-candidates', selectedVillage],
-      queryFn: async () => {
-        if (!selectedVillage) return null;
-        const res = await axiosClient.get<{ data: string[] }>(
-          '/forms/clean-project-name-candidates?village_id=' +
-            selectedVillage?.value
-        );
-        return res.data.data.map((item) => ({
-          label: item,
-          value: item,
-        }));
-      },
-    });
+  const {
+    data: cleanAptCandidates,
+    isLoading: loadingCleanAptCandidates,
+    refetch: refetchCleanAptCandidates,
+  } = useQuery({
+    queryKey: ['clean-apt-candidates', selectedVillage],
+    queryFn: async () => {
+      if (!selectedVillage) return null;
+      const res = await axiosClient.get<{
+        data: {
+          temp_project_id: string;
+          project_name: string;
+        }[];
+      }>(
+        '/forms/clean-project-name-candidates?village_id=' +
+          selectedVillage?.value
+      );
+      return res.data.data.map((item) => ({
+        label: item.project_name,
+        value: item.temp_project_id ? item.temp_project_id : '__new',
+      }));
+    },
+  });
   //effects
   useEffect(() => {
     if (selectedDistrict) {
@@ -295,11 +319,11 @@ export default function Page() {
       console.log(selectedDistrict, selectedMandal, selectedVillage);
     }
   }, [selectedVillage]);
-  const updateData = async (
-    rows: (rawAptDataRow & { clean_apt_name: string })[]
-  ) => {
+  const updateData = async () => {
     try {
-      await axiosClient.post('/forms/update-rawapt-clean', rows);
+      await axiosClient.post('/forms/update-rawapt-clean', {
+        rows: cleanedRows,
+      });
       return true;
     } catch (error) {
       console.log(error);
@@ -394,8 +418,11 @@ export default function Page() {
                 id='heading-label'
                 className='bg-success text-center text-2xl font-semibold'
               >
-                Raw Apt Dict (Select Raw Apartment Name for &apos;
-                {cleanAptName}&apos;)
+                Raw Apt Dict (Select Raw Apartment Names for &apos;
+                {cleanAptName}&apos;){' '}
+                {selectedCleanProjectId === '__new'
+                  ? 'A New Temp Project Id will be generated.'
+                  : `${selectedCleanProjectId} will be assigned.`}
               </h2>
             ) : (
               <h2
@@ -416,7 +443,7 @@ export default function Page() {
               ) : (
                 rawAptDictData &&
                 rawAptDictData?.length > 0 && (
-                  <div className='w-[70%]'>
+                  <div className='w-[60%]'>
                     <TanstackReactTable
                       data={rawAptNames}
                       columns={rawAptSelectionColumns}
@@ -429,26 +456,34 @@ export default function Page() {
                 )
               )}
               {selectedVillage?.value && (
-                <div className='flex w-[30%] flex-col items-center'>
+                <div className='flex w-full flex-col items-center'>
                   <div className='z-10 mt-5 flex w-full max-w-full flex-col items-center justify-center gap-3 self-center rounded p-0 align-middle shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
                     <Select
                       key={'clean-apt'}
                       className='w-full max-w-[600px]'
                       options={cleanAptCandidates || []}
                       isLoading={loadingCleanAptCandidates}
+                      value={selectedCleanApartmentOption}
                       onChange={(
                         e: SingleValue<{
                           label: string;
                           value: string;
                         }>
                       ) => {
-                        setCleanAptName(e?.value.split(':')[1].trim() || null);
+                        if (!e) {
+                          toast.error('Select an Apartment or enter one.');
+                          return;
+                        }
+                        console.log('Selected Clean Apartment', e);
+                        setCleanAptName(e?.label.split(':')[1].trim() || null);
+                        setSelectedCleanProjectId(e?.value);
                         document
                           .getElementById('heading-label')
                           ?.scrollIntoView({
                             behavior: 'smooth',
                             block: 'start',
                           });
+                        setShowWarning(false);
                       }}
                     />
                     <input
@@ -456,26 +491,82 @@ export default function Page() {
                       className={inputBoxClass + ' !ml-0'}
                       placeholder='Enter Clean Apartment Name'
                       value={cleanAptName || ''}
-                      onChange={(e) => setCleanAptName(e.target.value)}
+                      onChange={(e) => {
+                        setSelectedCleanProjectId('__new');
+                        setCleanAptName(e.target.value);
+                        setShowWarning(true);
+                      }}
                     />
+                    {cleanAptCandidates &&
+                      cleanAptCandidates.length > 0 &&
+                      cleanAptCandidates.find(
+                        (item) =>
+                          item.label.split(':')[1].trim().toUpperCase() ===
+                          cleanAptName?.toUpperCase()
+                      ) &&
+                      showWarning && (
+                        <p className='flex flex-col text-center text-2xl font-semibold'>
+                          <span>
+                            Selected Apartment is already in the list.
+                          </span>
+                          <button
+                            className='btn btn-neutral mx-auto my-5 w-40'
+                            onClick={() => {
+                              const toSet = cleanAptCandidates.find(
+                                (item) =>
+                                  item.label
+                                    .split(':')[1]
+                                    .trim()
+                                    .toUpperCase() ===
+                                  cleanAptName?.toUpperCase()
+                              );
+                              if (toSet) {
+                                setSelectedCleanApartmentOption(toSet);
+                                setCleanAptName(
+                                  toSet.label.split(':')[1].trim()
+                                );
+                                setSelectedCleanProjectId(toSet.value);
+                                setShowWarning(false);
+                              }
+                            }}
+                          >
+                            Select That Project?
+                          </button>
+                        </p>
+                      )}
                   </div>
                   <button
                     className='btn btn-neutral mx-auto my-5 w-40'
-                    onClick={() => {
+                    onClick={async () => {
                       if (!cleanAptName) {
                         toast.error('Select an Apartment or enter one.');
                         return;
                       }
+                      if (selectedRows.length === 0) {
+                        toast.error('Select Raw Apartment or enter one.');
+                        return;
+                      }
+                      const newTempId = (
+                        await axiosClient.get<{
+                          data: string;
+                        }>('/forms/get-new-temp-id')
+                      ).data.data;
                       setCleanedRows((prev) => {
                         return [
                           ...prev,
                           ...selectedRows.map((item) => ({
                             ...item,
                             clean_apt_name: cleanAptName,
+                            selected_project_id:
+                              selectedCleanProjectId === '__new'
+                                ? newTempId
+                                : selectedCleanProjectId,
                           })),
                         ];
                       });
                       setRowSelection({});
+                      setCleanAptName('');
+                      setShowWarning(true);
                       document
                         .getElementById('cleaned-apartment-data')
                         ?.scrollIntoView({
@@ -532,9 +623,10 @@ export default function Page() {
                 <button
                   className='btn btn-primary'
                   onClick={async () => {
-                    if (await updateData(cleanedRows)) {
+                    if (await updateData()) {
                       setCleanedRows([]);
                       await refetchRawAptDictData();
+                      await refetchCleanAptCandidates();
                       alert('Done');
                     } else {
                       alert('Error');
