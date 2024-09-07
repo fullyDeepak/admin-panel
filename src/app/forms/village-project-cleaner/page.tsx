@@ -264,6 +264,7 @@ export default function Page() {
       setRawAptNames(toSet);
       return toSet;
     },
+    refetchOnWindowFocus: false,
   });
   const {
     data: cleanAptCandidates,
@@ -287,6 +288,7 @@ export default function Page() {
         value: item.temp_project_id ? item.temp_project_id : '__new',
       }));
     },
+    refetchOnWindowFocus: false,
   });
   //effects
   useEffect(() => {
