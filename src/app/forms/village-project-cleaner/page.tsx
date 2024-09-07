@@ -22,6 +22,8 @@ type rawAptDataRow = {
   clean_survey: string;
   plot_count: string;
   occurrence_count: string;
+  plots: string;
+  temp_project_id: string;
 };
 
 const columnHelper = createColumnHelper<rawAptDataRow>();
@@ -45,8 +47,20 @@ const rawAptSelectionColumns = [
   columnHelper.accessor('clean_survey', {
     header: 'Clean Survey',
     cell: ({ row }) => (
-      <p className='break max-w-7xl text-pretty break-all'>
+      <p className='break min-w-48 max-w-7xl text-pretty break-all'>
         {row.getValue('clean_survey')}
+      </p>
+    ),
+    meta: {
+      filterVariant: 'text',
+    },
+    filterFn: 'includesString',
+  }),
+  columnHelper.accessor('plots', {
+    header: 'Plots',
+    cell: ({ row }) => (
+      <p className='break min-w-48 max-w-7xl text-pretty break-all'>
+        {row.getValue('plots')}
       </p>
     ),
     meta: {
@@ -57,7 +71,7 @@ const rawAptSelectionColumns = [
   columnHelper.accessor('plot_count', {
     header: 'Plot Count',
     cell: ({ row }) => (
-      <p className='max-w-7xl text-pretty break-all'>
+      <p className='min-w-48 max-w-7xl text-pretty break-all'>
         {row.getValue('plot_count')}
       </p>
     ),
@@ -69,7 +83,7 @@ const rawAptSelectionColumns = [
   columnHelper.accessor('occurrence_count', {
     header: 'Occurrence Count',
     cell: ({ row }: any) => (
-      <p className='max-w-7xl text-pretty break-all'>
+      <p className='min-w-48 max-w-7xl text-pretty break-all'>
         {row.original.occurrence_count.toString()}
       </p>
     ),
@@ -221,10 +235,18 @@ export default function Page() {
           clean_survey: string;
           plot_count: string;
           occurrence_count: string;
+          plots: string;
+          temp_project_id: string;
         }[];
       }>('/forms/raw-apt-candidates?village_id=' + selectedVillage?.value);
-      setRawAptNames(res.data.data);
-      return res.data.data;
+      const toSet = res.data.data.map((item) => ({
+        ...item,
+        raw_apt_name: item.raw_apt_name ? item.raw_apt_name : '[EMPTY]',
+        clean_survey: item.clean_survey ? item.clean_survey : '[EMPTY]',
+        plots: item.plots ? item.plots : '[EMPTY]',
+      }));
+      setRawAptNames(toSet);
+      return toSet;
     },
   });
   const { data: cleanAptCandidates, isLoading: loadingCleanAptCandidates } =
