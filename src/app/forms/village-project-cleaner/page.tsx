@@ -56,6 +56,18 @@ const rawAptSelectionColumns = [
     },
     filterFn: 'includesString',
   }),
+  columnHelper.accessor('occurrence_count', {
+    header: 'Occurrence Count',
+    cell: ({ row }: any) => (
+      <p className='min-w-48 max-w-7xl text-pretty break-all'>
+        {row.original.occurrence_count.toString()}
+      </p>
+    ),
+    meta: {
+      filterVariant: 'range',
+    },
+    filterFn: 'inNumberRange',
+  }),
   columnHelper.accessor('plots', {
     header: 'Plots',
     cell: ({ row }) => (
@@ -73,18 +85,6 @@ const rawAptSelectionColumns = [
     cell: ({ row }) => (
       <p className='min-w-48 max-w-7xl text-pretty break-all'>
         {row.getValue('plot_count')}
-      </p>
-    ),
-    meta: {
-      filterVariant: 'range',
-    },
-    filterFn: 'inNumberRange',
-  }),
-  columnHelper.accessor('occurrence_count', {
-    header: 'Occurrence Count',
-    cell: ({ row }: any) => (
-      <p className='min-w-48 max-w-7xl text-pretty break-all'>
-        {row.original.occurrence_count.toString()}
       </p>
     ),
     meta: {
@@ -264,7 +264,6 @@ export default function Page() {
       setRawAptNames(toSet);
       return toSet;
     },
-    refetchOnWindowFocus: false,
   });
   const {
     data: cleanAptCandidates,
@@ -288,7 +287,6 @@ export default function Page() {
         value: item.temp_project_id ? item.temp_project_id : '__new',
       }));
     },
-    refetchOnWindowFocus: false,
   });
   //effects
   useEffect(() => {

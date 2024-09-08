@@ -157,7 +157,7 @@ export default function TanstackReactTable<TData>({
     setSelectedRows(ogData);
   }, [rowSelection]);
   return (
-    <div className='mx-auto flex h-[80vh] flex-col justify-between'>
+    <div className='mx-auto flex h-[98vh] flex-col justify-between'>
       <div className='m-5 overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
         <table className='relative h-20 w-full border-collapse bg-white text-sm text-gray-700'>
           <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50'>
