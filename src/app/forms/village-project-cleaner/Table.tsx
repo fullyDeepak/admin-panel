@@ -60,6 +60,7 @@ function IndeterminateCheckbox({
       ) : (
         <input
           type='checkbox'
+          name='row-selector-box'
           ref={ref}
           className='checkbox cursor-pointer'
           {...rest}
