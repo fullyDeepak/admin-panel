@@ -32,8 +32,15 @@ export default function MatchAttachMap({
   rawAptNames,
   setCleanedRows,
 }: Props) {
-  const { selectedDMV, cleanAptName, setCleanAptName, setMapData } =
-    useVillageProjectCleanerStore();
+  const {
+    selectedDMV,
+    cleanAptName,
+    setCleanAptName,
+    setMapData,
+    setAttachedMapData,
+    selectedMapProject,
+    setSelectedMapProject,
+  } = useVillageProjectCleanerStore();
   const [selectedRows, setSelectedRows] = useState<RawAptDataRow[]>([]);
   const [rowSelection, setRowSelection] = useState({});
   // const [cleanAptName, setCleanAptName] = useState<string | null>(null);
@@ -76,7 +83,7 @@ export default function MatchAttachMap({
       {
         params: {
           village_id: selectedDMV.village.value,
-          query: cleanAptName,
+          query: `${cleanAptName} ${selectedDMV.village.label.split(':')[1]}`,
         },
       }
     );
@@ -232,19 +239,30 @@ export default function MatchAttachMap({
                         data: string;
                       }>('/forms/get-new-temp-id')
                     ).data.data;
+                    const idToBeAssign =
+                      selectedCleanProjectId === '__new'
+                        ? newTempId
+                        : selectedCleanProjectId;
+                    setAttachedMapData(idToBeAssign, {
+                      village_id: selectedDMV.village?.value,
+                      place_id: selectedMapProject?.place_id,
+                      full_address: selectedMapProject?.description,
+                      pincode: selectedMapProject?.pincode,
+                      lng: selectedMapProject?.geometry.location.lng,
+                      lat: selectedMapProject?.geometry.location.lat,
+                    });
                     setCleanedRows((prev) => {
                       return [
                         ...prev,
                         ...selectedRows.map((item) => ({
                           ...item,
                           clean_apt_name: cleanAptName,
-                          selected_project_id:
-                            selectedCleanProjectId === '__new'
-                              ? newTempId
-                              : selectedCleanProjectId,
+                          selected_project_id: idToBeAssign,
                         })),
                       ];
                     });
+                    setSelectedMapProject(null);
+                    setMapData(null);
                     setRowSelection({});
                     setCleanAptName('');
                     setShowWarning(true);

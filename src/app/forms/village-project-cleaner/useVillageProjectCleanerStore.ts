@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { ProjectCordWithinVillage } from './MapUI';
+import axiosClient from '@/utils/AxiosClient';
+import toast from 'react-hot-toast';
 
 type VillageProjectCleanerState = {
   dmvOptions: {
@@ -25,6 +27,17 @@ type VillageProjectCleanerState = {
   cleanAptName: string | null;
   mapData: ProjectCordWithinVillage['data'] | null;
   selectedMapProject: ProjectCordWithinVillage['data'][0] | null;
+  attachedMapData: Record<
+    string,
+    {
+      village_id: number | undefined;
+      place_id: string | undefined;
+      full_address: string | undefined;
+      pincode: string | undefined;
+      lng: number | undefined;
+      lat: number | undefined;
+    }
+  >;
 };
 
 type VillageProjectCleanerActions = {
@@ -44,6 +57,18 @@ type VillageProjectCleanerActions = {
   setSelectedMapProject: (
     _data: ProjectCordWithinVillage['data'][0] | null
   ) => void;
+  setAttachedMapData: (
+    _key: string | 0,
+    _data: {
+      village_id: number | undefined;
+      place_id: string | undefined;
+      full_address: string | undefined;
+      pincode: string | undefined;
+      lng: number | undefined;
+      lat: number | undefined;
+    } | null
+  ) => void;
+  submitMapData: () => Promise<void>;
 };
 
 const INITIAL_STATE: VillageProjectCleanerState = {
@@ -60,12 +85,13 @@ const INITIAL_STATE: VillageProjectCleanerState = {
   cleanAptName: null,
   mapData: null,
   selectedMapProject: null,
+  attachedMapData: {},
 };
 
 export const useVillageProjectCleanerStore = create<
   VillageProjectCleanerState & VillageProjectCleanerActions
 >()(
-  immer((set) => ({
+  immer((set, get) => ({
     ...INITIAL_STATE,
     setDMVOptions: (key, value) =>
       set((prev) => {
@@ -99,5 +125,38 @@ export const useVillageProjectCleanerStore = create<
       set((prev) => {
         prev.selectedMapProject = data;
       }),
+    setAttachedMapData: (key, data) => {
+      if (key && data) {
+        set((prev) => {
+          prev.attachedMapData[key] = data;
+        });
+      } else if (key === 0) {
+        set((prev) => {
+          prev.attachedMapData = {};
+        });
+      }
+    },
+    submitMapData: async () => {
+      if (Object.keys(get().attachedMapData).length === 0) return;
+      const resPromise = axiosClient.post('/map/project-cord-within-village', {
+        mapData: get().attachedMapData,
+      });
+      await toast.promise(
+        resPromise,
+        {
+          loading: 'Submitting map data...',
+          success: () => {
+            set({
+              selectedMapProject: null,
+              mapData: null,
+              attachedMapData: {},
+            });
+            return 'Map Data successfully submitted.';
+          },
+          error: 'Error',
+        },
+        { duration: 5000 }
+      );
+    },
   }))
 );

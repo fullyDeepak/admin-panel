@@ -34,7 +34,7 @@ export default function CleanAptData({
   setCleanedRows,
   updateData,
 }: Props) {
-  const { selectedDMV } = useVillageProjectCleanerStore();
+  const { selectedDMV, submitMapData } = useVillageProjectCleanerStore();
   const queryClient = useQueryClient();
   const [selectedCleanedRows, setSelectedCleanedRows] = useState<
     (RawAptDataRow & { clean_apt_name: string; selected_project_id: string })[]
@@ -50,7 +50,7 @@ export default function CleanAptData({
           <h2 className='text-center text-2xl font-semibold'>
             Cleaned Apartment Data
           </h2>
-          <div className=''>
+          <div className='max-h-[50vh] overflow-y-auto'>
             <TanstackReactTable
               data={cleanedRows}
               columns={cleanedRowsColumns}
@@ -85,6 +85,7 @@ export default function CleanAptData({
               className='btn btn-primary'
               onClick={async () => {
                 if (await updateData()) {
+                  submitMapData();
                   setCleanedRows([]);
                   await queryClient.refetchQueries({
                     queryKey: ['raw-apt-dict', selectedDMV.village],
