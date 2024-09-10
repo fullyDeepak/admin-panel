@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { ProjectCordWithinVillage } from './MapUI';
 
 type VillageProjectCleanerState = {
   dmvOptions: {
@@ -21,6 +22,9 @@ type VillageProjectCleanerState = {
     mandal: { label: string; value: number } | null;
     village: { label: string; value: number } | null;
   };
+  cleanAptName: string | null;
+  mapData: ProjectCordWithinVillage['data'] | null;
+  selectedMapProject: ProjectCordWithinVillage['data'][0] | null;
 };
 
 type VillageProjectCleanerActions = {
@@ -35,6 +39,11 @@ type VillageProjectCleanerActions = {
     _key: keyof VillageProjectCleanerState['selectedDMV'],
     _value: { label: string; value: number } | null
   ) => void;
+  setCleanAptName: (_value: string | null) => void;
+  setMapData: (_data: ProjectCordWithinVillage['data'] | null) => void;
+  setSelectedMapProject: (
+    _data: ProjectCordWithinVillage['data'][0] | null
+  ) => void;
 };
 
 const INITIAL_STATE: VillageProjectCleanerState = {
@@ -48,6 +57,9 @@ const INITIAL_STATE: VillageProjectCleanerState = {
     mandal: null,
     village: null,
   },
+  cleanAptName: null,
+  mapData: null,
+  selectedMapProject: null,
 };
 
 export const useVillageProjectCleanerStore = create<
@@ -74,6 +86,18 @@ export const useVillageProjectCleanerStore = create<
         } else if (key === 'village') {
           prev.selectedDMV.village = value;
         }
+      }),
+    setCleanAptName: (value) =>
+      set((prev) => {
+        prev.cleanAptName = value;
+      }),
+    setMapData: (data) =>
+      set((prev) => {
+        prev.mapData = data;
+      }),
+    setSelectedMapProject: (data) =>
+      set((prev) => {
+        prev.selectedMapProject = data;
       }),
   }))
 );

@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import { inputBoxClass } from '@/app/constants/tw-class';
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
-import MapUI from './MapUI';
+import MapUI, { ProjectCordWithinVillage } from './MapUI';
 
 type Props = {
   loadingRawAptDictData: boolean;
@@ -32,10 +32,11 @@ export default function MatchAttachMap({
   rawAptNames,
   setCleanedRows,
 }: Props) {
-  const { selectedDMV } = useVillageProjectCleanerStore();
+  const { selectedDMV, cleanAptName, setCleanAptName, setMapData } =
+    useVillageProjectCleanerStore();
   const [selectedRows, setSelectedRows] = useState<RawAptDataRow[]>([]);
   const [rowSelection, setRowSelection] = useState({});
-  const [cleanAptName, setCleanAptName] = useState<string | null>(null);
+  // const [cleanAptName, setCleanAptName] = useState<string | null>(null);
   const [showWarning, setShowWarning] = useState<boolean>(true);
   const [selectedCleanApartmentOption, setSelectedCleanApartmentOption] =
     useState<SingleValue<{ label: string; value: string }>>({
@@ -66,6 +67,32 @@ export default function MatchAttachMap({
         }));
       },
     });
+
+  async function handleShowOnMap() {
+    if (!selectedDMV.village || !cleanAptName) return;
+    setMapData(null);
+    const res = axiosClient.get<ProjectCordWithinVillage>(
+      '/map/project-cord-within-village',
+      {
+        params: {
+          village_id: selectedDMV.village.value,
+          query: cleanAptName,
+        },
+      }
+    );
+    toast.promise(
+      res,
+      {
+        loading: 'Loading...',
+        success: (data) => {
+          setMapData(data.data.data);
+          return `Successfully loaded ${data.data.data.length} projects.`;
+        },
+        error: 'Error',
+      },
+      { duration: 5000 }
+    );
+  }
 
   return (
     <div className='mt-10 flex flex-col'>
@@ -112,7 +139,7 @@ export default function MatchAttachMap({
         {selectedDMV.village?.value && (
           <div className='flex h-[80vh] w-full flex-col items-center'>
             <div className='flex w-full flex-col items-center justify-center'>
-              <div className='z-10 mt-5 flex w-full max-w-full flex-col items-center justify-center gap-3 self-center rounded p-0 align-middle shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
+              <div className='px z-10 mt-5 flex w-full max-w-full flex-col items-center justify-center gap-3 self-center rounded p-0 px-10 py-3 align-middle shadow-none md:max-w-[90%] md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
                 <Select
                   key={'clean-apt'}
                   className='w-full max-w-[600px]'
@@ -182,7 +209,11 @@ export default function MatchAttachMap({
                   )}
               </div>
               <div className='flex items-center justify-between gap-4'>
-                <button className='btn btn-warning' type='button'>
+                <button
+                  className='btn btn-warning'
+                  type='button'
+                  onClick={handleShowOnMap}
+                >
                   Show on Map
                 </button>
                 <button
