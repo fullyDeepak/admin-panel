@@ -30,7 +30,7 @@ export type ProjectCordWithinVillage = {
 };
 
 export default function MapUI() {
-  const { mapData, selectedMapProject, setSelectedMapProject, submitMapData } =
+  const { mapData, selectedMapProject, setSelectedMapProject } =
     useVillageProjectCleanerStore();
 
   return (
@@ -68,13 +68,6 @@ export default function MapUI() {
             </label>
           ))}
         </div>
-        <button
-          type='button'
-          className='btn btn-accent btn-xs max-w-fit'
-          onClick={submitMapData}
-        >
-          Submit
-        </button>
       </div>
     </div>
   );
