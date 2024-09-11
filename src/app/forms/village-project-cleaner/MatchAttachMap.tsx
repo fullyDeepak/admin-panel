@@ -40,6 +40,7 @@ export default function MatchAttachMap({
     setAttachedMapData,
     selectedMapProject,
     setSelectedMapProject,
+    submitMapData,
   } = useVillageProjectCleanerStore();
   const [selectedRows, setSelectedRows] = useState<RawAptDataRow[]>([]);
   const [rowSelection, setRowSelection] = useState({});
@@ -275,6 +276,9 @@ export default function MatchAttachMap({
                   }}
                 >
                   Attach
+                </button>
+                <button className='btn btn-accent' onClick={submitMapData}>
+                  Submit Map
                 </button>
               </div>
             </div>
