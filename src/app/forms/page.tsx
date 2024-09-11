@@ -51,13 +51,13 @@ export default function FormHomePage() {
             className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
             href={'/forms/village-project-cleaner'}
           >
-            Go to Village Project Cleaner
+            Village Project Cleaner
           </Link>
           <Link
             className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
             href={'/forms/dev-tagger'}
           >
-            Go to Developer Tagger
+            Developer Tagger
           </Link>
         </div>
         <div className='flex w-fit flex-col gap-4 text-gray-500'>
