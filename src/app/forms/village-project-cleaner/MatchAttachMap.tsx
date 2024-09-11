@@ -41,6 +41,8 @@ export default function MatchAttachMap({
     selectedMapProject,
     setSelectedMapProject,
     submitMapData,
+    selectedCleanProjectId,
+    setSelectedCleanProjectId,
   } = useVillageProjectCleanerStore();
   const [selectedRows, setSelectedRows] = useState<RawAptDataRow[]>([]);
   const [rowSelection, setRowSelection] = useState({});
@@ -51,8 +53,6 @@ export default function MatchAttachMap({
       label: 'Select Apartment',
       value: '',
     });
-  const [selectedCleanProjectId, setSelectedCleanProjectId] =
-    useState<string>('__new');
 
   // use query
   const { data: cleanAptCandidates, isLoading: loadingCleanAptCandidates } =
@@ -277,7 +277,25 @@ export default function MatchAttachMap({
                 >
                   Attach
                 </button>
-                <button className='btn btn-accent' onClick={submitMapData}>
+                <button
+                  className='btn btn-accent'
+                  onClick={() => {
+                    if (
+                      selectedCleanProjectId.startsWith('T') ||
+                      selectedCleanProjectId.startsWith('R')
+                    ) {
+                      setAttachedMapData(selectedCleanProjectId, {
+                        village_id: selectedDMV.village?.value,
+                        place_id: selectedMapProject?.place_id,
+                        full_address: selectedMapProject?.description,
+                        pincode: selectedMapProject?.pincode,
+                        lng: selectedMapProject?.geometry.location.lng,
+                        lat: selectedMapProject?.geometry.location.lat,
+                      });
+                      submitMapData();
+                    }
+                  }}
+                >
                   Submit Map
                 </button>
               </div>

@@ -38,6 +38,7 @@ type VillageProjectCleanerState = {
       lat: number | undefined;
     }
   >;
+  selectedCleanProjectId: string;
 };
 
 type VillageProjectCleanerActions = {
@@ -69,6 +70,7 @@ type VillageProjectCleanerActions = {
     } | null
   ) => void;
   submitMapData: () => Promise<void>;
+  setSelectedCleanProjectId: (_data: string) => void;
 };
 
 const INITIAL_STATE: VillageProjectCleanerState = {
@@ -86,6 +88,7 @@ const INITIAL_STATE: VillageProjectCleanerState = {
   mapData: null,
   selectedMapProject: null,
   attachedMapData: {},
+  selectedCleanProjectId: '__new',
 };
 
 export const useVillageProjectCleanerStore = create<
@@ -158,5 +161,6 @@ export const useVillageProjectCleanerStore = create<
         { duration: 5000 }
       );
     },
+    setSelectedCleanProjectId: (data) => set({ selectedCleanProjectId: data }),
   }))
 );

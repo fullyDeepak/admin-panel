@@ -17,8 +17,14 @@ import selectPin from './select-pin.png';
 import { useVillageProjectCleanerStore } from './useVillageProjectCleanerStore';
 
 export default function MapInterface() {
-  const { mapData, setSelectedMapProject, selectedMapProject } =
-    useVillageProjectCleanerStore();
+  const {
+    mapData,
+    setSelectedMapProject,
+    selectedMapProject,
+    setAttachedMapData,
+    selectedDMV,
+    selectedCleanProjectId,
+  } = useVillageProjectCleanerStore();
   const center: LatLngTuple = [17.4, 78.47];
   const mapLayer = [
     {
@@ -116,6 +122,19 @@ export default function MapInterface() {
                   className='btn btn-accent btn-sm max-w-fit'
                   onClick={() => {
                     setSelectedMapProject(project);
+                    if (
+                      selectedCleanProjectId.startsWith('T') ||
+                      selectedCleanProjectId.startsWith('R')
+                    ) {
+                      setAttachedMapData(selectedCleanProjectId, {
+                        village_id: selectedDMV.village?.value,
+                        place_id: project.place_id,
+                        full_address: project.description,
+                        pincode: project.pincode,
+                        lng: project.geometry.location.lng,
+                        lat: project.geometry.location.lat,
+                      });
+                    }
                   }}
                 >
                   Select
