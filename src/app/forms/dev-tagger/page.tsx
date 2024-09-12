@@ -1,6 +1,7 @@
 'use client';
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
+import { isEqual, uniq, uniqWith } from 'lodash';
 import { KeyboardEvent, useState } from 'react';
 import { LuLoader, LuMoveRight } from 'react-icons/lu';
 import Select, { SingleValue } from 'react-select';
@@ -11,15 +12,24 @@ export default function Page() {
   const [selectedDistrict, setSelectedDistrict] = useState<{
     label: string;
     value: number;
-  } | null>();
+  } | null>({
+    label: 'Select District',
+    value: 2,
+  });
   const [selectedMandal, setSelectedMandal] = useState<{
     label: string;
     value: number;
-  } | null>();
+  } | null>({
+    label: 'Select Mandal',
+    value: 2,
+  });
   const [selectedVillage, setSelectedVillage] = useState<{
     label: string;
     value: number;
-  } | null>();
+  } | null>({
+    label: 'Select Village',
+    value: 4,
+  });
   const [districtOptions, setDistrictOptions] = useState<
     {
       label: string;
@@ -53,39 +63,36 @@ export default function Page() {
   const [selectedTempProject, setSelectedTempProject] = useState<
     SingleValue<{
       label: string;
-      value: number;
+      value: string;
     }>
-  >({ label: 'Select Project', value: 0 });
+  >({ label: 'Select Project', value: 'T1' });
   const [tempProjectOptions, setTempProjectOptions] = useState<
     {
       label: string;
-      value: number;
+      value: string;
     }[]
   >([]);
   const [keywordOptions, setKeywordOptions] = useState<
     {
-      temp_project_id: string;
-      deed_types: string[];
-      party: string;
-      freq: number;
+      deed_type: string;
+      parties: {
+        party: string;
+        count: number;
+      }[];
     }[]
   >([]);
 
   const [checkedKeywords, setCheckedKeywords] = useState<
     {
-      temp_project_id: string;
-      deed_types: string[];
       party: string;
-      freq: number;
+      count: number;
     }[]
   >([]);
 
   const [taggedKeywords, setTaggedKeywords] = useState<
     {
-      temp_project_id: string;
-      deed_types: string[];
       party: string;
-      freq: number;
+      count: number;
       keyword_type: 'developer' | 'landlord';
       removed: boolean;
     }[]
@@ -93,21 +100,21 @@ export default function Page() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState('');
 
-  const [selectedDeveloper, setSelectedDeveloper] = useState<
-    SingleValue<{
-      label: string;
-      value: string;
-    }>
-  >({ label: 'Select Developer', value: '' });
-  const [developerName, setDeveloperName] = useState<string>('');
-  const [selectedDeveloperId, setSelectedDeveloperId] = useState<string>('');
-  const [selectedJLVPartners, setSelectedJLVPartners] = useState<
+  const [selectedDevelopers, setSelectedDevelopers] = useState<
     {
       label: string;
       value: string;
     }[]
   >([]);
-
+  const [selectedDeveloperGroup, setSelectedDeveloperGroup] = useState<
+    {
+      label: string;
+      value: string;
+    }[]
+  >([]);
+  const [developerEditingIndex, setDeveloperEditingIndex] =
+    useState<number>(-1);
+  const [developerInputValue, setDeveloperInputValue] = useState<string>('');
   // queries
   const { isLoading } = useQuery({
     queryKey: ['village-project-cleaner'],
@@ -142,13 +149,17 @@ export default function Page() {
     },
     staleTime: Infinity,
   });
-  const { isLoading: loadingTempProjects } = useQuery({
+  const {
+    isLoading: loadingTempProjects,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ['temp-projects', selectedVillage],
     queryFn: async () => {
       if (!selectedVillage) return null;
       const res = await axiosClient.get<{
         data: {
-          id: number;
+          id: string;
           name: string;
         }[];
       }>('/temp-projects?village_id=' + selectedVillage?.value);
@@ -159,7 +170,6 @@ export default function Page() {
       setTempProjectOptions(tempProjects);
       return res.data.data;
     },
-    staleTime: Infinity,
   });
 
   const { isLoading: loadingKeywords } = useQuery({
@@ -168,10 +178,11 @@ export default function Page() {
       if (!selectedTempProject?.value) return null;
       const res = await axiosClient.get<{
         data: {
-          temp_project_id: string;
-          deed_types: string[];
-          party: string;
-          freq: number;
+          deed_type: string;
+          parties: {
+            party: string;
+            count: number;
+          }[];
         }[];
       }>(
         '/temp-projects/developer-tagger/get-parties?temp_project_id=' +
@@ -205,6 +216,20 @@ export default function Page() {
   const handleDoubleClickToEdit = (index: number, value: string) => {
     setEditingIndex(index);
     setInputValue(value);
+    const inp = document.getElementById('keywords-edit-input') as
+      | HTMLInputElement
+      | undefined;
+    if (inp) {
+      inp?.focus();
+      const end = inp?.value.length;
+      inp.setSelectionRange(end, end);
+    }
+  };
+
+  const handleDoubleClickToEditDeveloper = (index: number, value: string) => {
+    console.log('double click Developer', index, value);
+    setDeveloperEditingIndex(index);
+    setDeveloperInputValue(value);
     const inp = document.getElementById('keywords-edit-input') as
       | HTMLInputElement
       | undefined;
@@ -270,21 +295,38 @@ export default function Page() {
     // }
   };
 
-  function handleOnKeyDown() {
-    return (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter' || e.key === 'Escape') {
+  function handleOnKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    console.log('handleOnKeyDown', editingIndex);
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      handleOnBlur();
+    } else if (e.key === 'Tab' && editingIndex != null) {
+      e.preventDefault();
+      if (taggedKeywords.length === editingIndex + 1) {
         handleOnBlur();
-      } else if (e.key === 'Tab' && editingIndex != null) {
-        e.preventDefault();
-        if (taggedKeywords.length === editingIndex + 1) {
-          handleOnBlur();
-        } else {
-          handleOnBlur();
-          setEditingIndex(editingIndex + 1);
-          setInputValue(taggedKeywords[editingIndex + 1].party);
-        }
+      } else {
+        handleOnBlur();
+        setEditingIndex(editingIndex + 1);
+        setInputValue(taggedKeywords[editingIndex + 1].party);
       }
-    };
+    }
+  }
+
+  function handleOnDeveloperKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    console.log('handleOnDeveloperKeyDown', developerEditingIndex, e);
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      handleOnDeveloperInputBlur();
+    } else if (e.key === 'Tab' && developerEditingIndex != null) {
+      e.preventDefault();
+      if (selectedDevelopers.length === developerEditingIndex + 1) {
+        handleOnDeveloperInputBlur();
+      } else {
+        handleOnDeveloperInputBlur();
+        setDeveloperEditingIndex(developerEditingIndex + 1);
+        setDeveloperInputValue(
+          selectedDevelopers[developerEditingIndex + 1].label
+        );
+      }
+    }
   }
 
   function handleOnBlur() {
@@ -303,6 +345,26 @@ export default function Page() {
       setEditingIndex(null);
     }
   }
+
+  function handleOnDeveloperInputBlur() {
+    console.log('handleOnDeveloperInputBlur', developerEditingIndex);
+    if (developerEditingIndex != null) {
+      setSelectedDevelopers((prev) => {
+        return prev.map((ele, i) => {
+          if (i === developerEditingIndex) {
+            return {
+              ...ele,
+              label: developerInputValue,
+            };
+          }
+          return ele;
+        });
+      });
+      setDeveloperEditingIndex(-1);
+      setDeveloperInputValue('');
+    }
+  }
+
   if (isLoading) {
     return (
       <div className='flex h-[50dvh] flex-col items-center justify-center'>
@@ -400,12 +462,15 @@ export default function Page() {
               className='w-full flex-[5]'
               key={'tempProject'}
               options={tempProjectOptions || []}
-              value={selectedVillage ? selectedTempProject : null}
+              value={selectedTempProject || []}
+              noOptionsMessage={(_i) => {
+                return isError ? error.message : 'No Raw';
+              }}
               isLoading={loadingTempProjects}
               onChange={(
                 e: SingleValue<{
                   label: string;
-                  value: number;
+                  value: string;
                 }>
               ) => {
                 setSelectedTempProject(e);
@@ -427,45 +492,69 @@ export default function Page() {
       ) : keywordOptions.length > 0 ? (
         <div
           id='keywords-container'
-          className='mx-2 flex h-[98vh] flex-col items-center gap-2 p-2'
+          className='mx-2 flex flex-col items-center justify-between gap-4 px-2 py-4'
         >
           <h3 className='text-center text-2xl font-semibold'>
             Keywords for {selectedTempProject?.label}
           </h3>
-          <div className='flex h-[80vh] w-full flex-row items-center justify-between gap-1 align-middle'>
+          <div className='flex h-[60vh] w-full flex-row items-center justify-between gap-1 border align-middle'>
             {/* keywords for project */}
-            <div className='h-full flex-[3] overflow-auto border border-solid px-4'>
-              <ul className='flex h-[100%] flex-col gap-2 overflow-auto py-2'>
+            <div className='h-full flex-[3] flex-nowrap overflow-y-auto border border-solid px-4'>
+              <ul className='menu flex h-[100%] flex-col flex-nowrap gap-2 overflow-auto py-2'>
                 {keywordOptions
-                  ?.filter(
-                    (ele) =>
-                      !taggedKeywords.some(
-                        (item) => item.party === ele.party && !item.removed
-                      )
+                  ?.filter((group) =>
+                    group.parties.some(
+                      (ele) =>
+                        !taggedKeywords.some(
+                          (item) => item.party === ele.party && !item.removed
+                        )
+                    )
                   )
-                  .map((item) => (
-                    <li key={item.party}>
-                      <label className='flex w-fit flex-col'>
-                        <input
-                          className='peer'
-                          type='checkbox'
-                          hidden
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setCheckedKeywords((prev) => [...prev, item]);
-                            } else {
-                              setCheckedKeywords((prev) =>
-                                prev.filter((ele) => ele !== item)
-                              );
-                            }
-                          }}
-                        />
-                        <span className='btn btn-ghost btn-sm !block h-full flex-row justify-normal self-start py-2 text-left font-normal leading-5 peer-checked:bg-green-500'>
-                          <span>{item.party}</span>{' '}
-                          <span>({item.deed_types.join(', ')})</span>{' '}
-                          <span>({item.freq})</span>
-                        </span>
-                      </label>
+                  .map((keywordGroups, index) => (
+                    <li key={index}>
+                      <details open={index === 0 ? true : false}>
+                        <summary className=''>
+                          {keywordGroups.deed_type}
+                        </summary>
+                        <ul className='flex flex-col gap-y-1'>
+                          {keywordGroups.parties
+                            ?.filter(
+                              (ele) =>
+                                !taggedKeywords.some(
+                                  (item) =>
+                                    item.party === ele.party && !item.removed
+                                )
+                            )
+                            .map((item) => (
+                              <label
+                                key={item.party}
+                                className='flex w-fit flex-col'
+                              >
+                                <input
+                                  className='peer'
+                                  type='checkbox'
+                                  hidden
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setCheckedKeywords((prev) => [
+                                        ...prev,
+                                        item,
+                                      ]);
+                                    } else {
+                                      setCheckedKeywords((prev) =>
+                                        prev.filter((ele) => ele !== item)
+                                      );
+                                    }
+                                  }}
+                                />
+                                <span className='btn btn-ghost btn-sm !block h-full flex-row justify-normal self-start py-2 text-left font-normal leading-5 peer-checked:bg-green-500'>
+                                  <span>{item.party}</span>{' '}
+                                  <span>({item.count})</span>
+                                </span>
+                              </label>
+                            ))}
+                        </ul>
+                      </details>
                     </li>
                   ))}
               </ul>
@@ -475,8 +564,8 @@ export default function Page() {
               <button
                 className='btn btn-ghost bg-green-400'
                 onClick={() => {
-                  setTaggedKeywords((prev) => [
-                    ...prev,
+                  const res = [
+                    ...taggedKeywords,
                     ...checkedKeywords.map((ele) => {
                       return {
                         ...ele,
@@ -484,7 +573,8 @@ export default function Page() {
                         removed: false,
                       };
                     }),
-                  ]);
+                  ];
+                  setTaggedKeywords(uniqWith(res, isEqual));
                   setCheckedKeywords([]);
                 }}
               >
@@ -576,67 +666,28 @@ export default function Page() {
                 ))}
               </ul>
             </div>
-            {/* card to select exisitng developers and/or new ones */}
-            <div className='flex h-full flex-[3] flex-col border border-solid'>
-              <div
-                id='developer'
-                className='flex flex-[2] flex-col gap-5 overflow-x-auto border border-solid p-5'
-              >
-                {loadingDevelopers ? (
-                  <>Loading...</>
-                ) : (
-                  <>
-                    <label className='flex items-center justify-between gap-5'>
-                      <span className='flex-1 text-base'>Developer:</span>
-                      <SelectVirtualized
-                        className='w-full flex-[5]'
-                        key={'developer-name-filler'}
-                        options={developerOptions || []}
-                        onChange={(
-                          e: SingleValue<{
-                            label: string;
-                            value: string;
-                          }>
-                        ) => {
-                          if (e) {
-                            setSelectedDeveloper({
-                              label: e.label,
-                              value: e.value,
-                            });
-                            setDeveloperName(e.label.split(':')[1]);
-                            setSelectedDeveloperId(e.value);
-                          }
-                        }}
-                        isDisabled={selectedTempProject?.value === 0}
-                      />
-                    </label>
-                    <input
-                      type='text'
-                      className='input input-bordered w-full'
-                      value={developerName}
-                      onChange={(e) => setDeveloperName(e.target.value)}
-                    />
-                  </>
-                )}
-              </div>
-              {/* card to add jlv partners for the developer ^ */}
-              <div
-                id='jlv-partners'
-                className='!block flex-[3] overflow-auto border border-solid p-5'
-              >
-                <label className='flex flex-col items-center justify-between gap-5'>
-                  <span className='flex-[2] text-base md:text-xl'>
-                    Select developers to add as JLV Partners to the Above
-                    Developer Name
-                  </span>
+          </div>
+          {/* card to select exisitng developers and/or new ones */}
+          <div className='flex h-[80dvh] w-full justify-between gap-16 border border-solid'>
+            <div
+              id='developer'
+              className='flex h-full w-full flex-col justify-between gap-5 border border-solid p-5'
+            >
+              {loadingDevelopers ? (
+                <>Loading...</>
+              ) : (
+                <>
+                  <h3 className='text-center text-2xl font-semibold'>
+                    Select Developers to Tag to This Project
+                  </h3>
                   <SelectVirtualized
-                    className='w-full flex-[5]'
-                    key={'developer-jlv-selection'}
+                    className='w-full self-start'
+                    key={'developer-name-filler'}
                     options={
                       developerOptions?.filter(
-                        (ele) =>
-                          !selectedJLVPartners.some(
-                            (item) => item.value === ele.value
+                        (item) =>
+                          !selectedDevelopers.some(
+                            (ele) => ele.value === item.value
                           )
                       ) || []
                     }
@@ -647,31 +698,140 @@ export default function Page() {
                       }>
                     ) => {
                       if (e) {
-                        setSelectedJLVPartners((prev) => [
+                        setSelectedDevelopers((prev) => [
                           ...prev,
-                          { label: e.label, value: e.value },
+                          {
+                            label: e.label.split(':')[1],
+                            value: e.value,
+                          },
                         ]);
                       }
                     }}
-                    isDisabled={selectedTempProject?.value === 0}
+                    isDisabled={selectedTempProject?.value === ''}
+                    // menuIsOpen
+                    styles={{
+                      menu: (baseStyle: object, state: object) => {
+                        console.log(baseStyle, state);
+                        return {
+                          ...baseStyle,
+                          height: '120px !important',
+                          overflow: 'hidden',
+                        };
+                      },
+                    }}
                   />
-                </label>
-                <ul className='flex max-h-[60%] flex-col gap-2 overflow-y-scroll py-2'>
-                  {selectedJLVPartners?.map((item) => (
-                    <li
-                      key={item.value}
-                      className='btn btn-sm'
-                      onClick={() => {
-                        setSelectedJLVPartners((prev) =>
-                          prev.filter((ele) => ele.value !== item.value)
-                        );
-                      }}
-                    >
-                      {item.label}
-                    </li>
-                  ))}
-                </ul>
+                  <ul className='flex flex-1 flex-col gap-2 overflow-y-auto py-2'>
+                    {selectedDevelopers?.map((selectedDeveloper, index) => (
+                      <li
+                        className='flex flex-row items-stretch justify-between gap-2 text-pretty'
+                        key={index}
+                      >
+                        {developerEditingIndex === index ? (
+                          <input
+                            id='keywords-edit-input'
+                            className='input input-bordered w-full flex-[4]'
+                            type='text'
+                            onChange={(e) => {
+                              setDeveloperInputValue(e.target.value);
+                            }}
+                            value={developerInputValue}
+                            onBlur={handleOnDeveloperInputBlur}
+                            onKeyDown={handleOnDeveloperKeyDown}
+                            autoFocus
+                          />
+                        ) : (
+                          <span
+                            className='btn btn-sm h-fit max-w-[80%] flex-[4] self-start !whitespace-break-spaces !break-all py-2 text-left font-normal leading-5 hover:bg-slate-50'
+                            onDoubleClick={() => {
+                              handleDoubleClickToEditDeveloper(
+                                index,
+                                selectedDeveloper.label
+                              );
+                            }}
+                          >
+                            {selectedDeveloper.label}
+                          </span>
+                        )}
+                        <span className='h-fit w-6 self-start !whitespace-break-spaces !break-all rounded-md bg-slate-200 py-2 text-center align-middle font-normal leading-5'>
+                          {selectedDeveloper.value || 'N'}
+                        </span>
+                        <button
+                          onClick={() =>
+                            setSelectedDevelopers((prev) => {
+                              return prev.filter(
+                                (item, item_index) => item_index !== index
+                              );
+                            })
+                          }
+                          className='flex-1 rounded-lg bg-emerald-200 p-[1px] text-3xl'
+                        >
+                          ❌
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    className='btn w-full'
+                    onClick={() => {
+                      setSelectedDevelopers((prev) => [
+                        ...prev,
+                        {
+                          label: '',
+                          value: '',
+                        },
+                      ]);
+                      setDeveloperEditingIndex(selectedDevelopers.length);
+                      setDeveloperInputValue('');
+                    }}
+                  >
+                    Add Developer
+                  </button>
+                </>
+              )}
+            </div>
+            {/* card to add jlv partners for the developer ^ */}
+            <div
+              id='developer-group'
+              className='relative h-full w-full border border-solid p-5'
+            >
+              {/* create overlay to show that this is disabled if more than one developer is selected */}
+
+              <div
+                className={`absolute left-0 top-0 z-20 h-full w-full bg-gray-900 opacity-50 transition-opacity duration-300 ease-linear ${selectedDevelopers.length > 1 ? 'h-full w-full opacity-100' : 'h-0 w-0 opacity-0'}`}
+              >
+                <span className='relative top-0 z-40 flex h-full w-full items-center justify-center text-center text-2xl text-white'>
+                  Cant Select Group When more than one developer is selected
+                  since a JV will be created.
+                </span>
               </div>
+
+              <label className='px-auto flex flex-col items-center justify-between gap-5'>
+                <span className='flex-[2] text-base md:text-xl'>
+                  Select developers to add as Sibling Organizations to the Above
+                  Developer group
+                </span>
+                <Select
+                  className='w-full flex-[5]'
+                  key={'developer-jlv-selection'}
+                  options={[]}
+                  isDisabled={selectedDevelopers.length > 1}
+                />
+              </label>
+              <ul className='flex flex-col gap-2 py-2'>
+                {selectedDeveloperGroup?.map((item) => (
+                  <li
+                    key={item.value}
+                    className='btn btn-sm'
+                    onClick={() => {
+                      setSelectedDeveloperGroup((prev) =>
+                        prev.filter((ele) => ele.value !== item.value)
+                      );
+                    }}
+                  >
+                    {item.label}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
           {/* button to submit above data to api */}
