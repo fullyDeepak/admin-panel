@@ -513,7 +513,7 @@ export default function Page() {
                   .map((keywordGroups, index) => (
                     <li key={index}>
                       <details open={index === 0 ? true : false}>
-                        <summary className=''>
+                        <summary className='bg-slate-200'>
                           {keywordGroups.deed_type}
                         </summary>
                         <ul className='flex flex-col gap-y-1'>
@@ -795,19 +795,20 @@ export default function Page() {
               className='relative h-full w-full border border-solid p-5'
             >
               {/* create overlay to show that this is disabled if more than one developer is selected */}
-
               <div
-                className={`absolute left-0 top-0 z-20 h-full w-full bg-gray-900 opacity-50 transition-opacity duration-300 ease-linear ${selectedDevelopers.length > 1 ? 'h-full w-full opacity-100' : 'h-0 w-0 opacity-0'}`}
+                className={`absolute left-0 top-0 z-20 bg-gray-900 opacity-50 ${selectedDevelopers.length > 1 ? 'visible h-full w-full' : 'hidden'}`}
               >
-                <span className='relative top-0 z-40 flex h-full w-full items-center justify-center text-center text-2xl text-white'>
+                <span
+                  className={`relative top-0 flex h-full w-full items-center justify-center text-center text-2xl text-white ${selectedDevelopers.length > 1 ? 'visible' : 'hidden'}`}
+                >
                   Cant Select Group When more than one developer is selected
                   since a JV will be created.
                 </span>
               </div>
 
               <label className='px-auto flex flex-col items-center justify-between gap-5'>
-                <span className='flex-[2] text-base md:text-xl'>
-                  Select developers to add as Sibling Organizations to the Above
+                <span className='flex-[2] text-balance text-center text-base font-semibold md:text-xl'>
+                  Select developers to add as Sibling Organizations to the
                   Developer group
                 </span>
                 <Select
