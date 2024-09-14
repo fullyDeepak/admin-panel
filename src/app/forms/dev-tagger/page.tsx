@@ -501,62 +501,50 @@ export default function Page() {
             {/* keywords for project */}
             <div className='h-full flex-[3] flex-nowrap overflow-y-auto border border-solid px-4'>
               <ul className='menu flex h-[100%] flex-col flex-nowrap gap-2 overflow-auto py-2'>
-                {keywordOptions
-                  ?.filter((group) =>
-                    group.parties.some(
-                      (ele) =>
-                        !taggedKeywords.some(
-                          (item) => item.party === ele.party && !item.removed
-                        )
-                    )
-                  )
-                  .map((keywordGroups, index) => (
-                    <li key={index}>
-                      <details open={index === 0 ? true : false}>
-                        <summary className='bg-slate-200'>
-                          {keywordGroups.deed_type}
-                        </summary>
-                        <ul className='flex flex-col gap-y-1'>
-                          {keywordGroups.parties
-                            ?.filter(
-                              (ele) =>
-                                !taggedKeywords.some(
-                                  (item) =>
-                                    item.party === ele.party && !item.removed
-                                )
-                            )
-                            .map((item) => (
-                              <label
-                                key={item.party}
-                                className='flex w-fit flex-col'
-                              >
-                                <input
-                                  className='peer'
-                                  type='checkbox'
-                                  hidden
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      setCheckedKeywords((prev) => [
-                                        ...prev,
-                                        item,
-                                      ]);
-                                    } else {
-                                      setCheckedKeywords((prev) =>
-                                        prev.filter((ele) => ele !== item)
-                                      );
-                                    }
-                                  }}
-                                />
-                                <span className='btn btn-ghost btn-sm !block h-full flex-row justify-normal self-start py-2 text-left font-normal leading-5 peer-checked:bg-green-500'>
-                                  <span>{item.party}</span>{' '}
-                                  <span>({item.count})</span>
-                                </span>
-                              </label>
-                            ))}
-                        </ul>
-                      </details>
-                    </li>
-                  ))}
+                {keywordOptions.map((keywordGroups, index) => (
+                  <li key={index}>
+                    <details open={index === 0 ? true : false}>
+                      <summary className='bg-slate-200'>
+                        {keywordGroups.deed_type}
+                      </summary>
+                      <ul className='flex flex-col gap-y-1'>
+                        {keywordGroups.parties
+                          .sort((a, b) => {
+                            return b.count - a.count;
+                          })
+                          .map((item) => (
+                            <label
+                              key={item.party}
+                              className='flex w-fit flex-col'
+                            >
+                              <input
+                                className='peer'
+                                type='checkbox'
+                                hidden
+                                name='keyword-checkbox'
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setCheckedKeywords((prev) => [
+                                      ...prev,
+                                      item,
+                                    ]);
+                                  } else {
+                                    setCheckedKeywords((prev) =>
+                                      prev.filter((ele) => ele !== item)
+                                    );
+                                  }
+                                }}
+                              />
+                              <span className='btn btn-ghost btn-sm !block h-full flex-row justify-normal self-start py-2 text-left font-normal leading-5 peer-checked:bg-green-500'>
+                                <span>{item.party}</span>{' '}
+                                <span>({item.count})</span>
+                              </span>
+                            </label>
+                          ))}
+                      </ul>
+                    </details>
+                  </li>
+                ))}
               </ul>
             </div>
             {/* button to shift from left to right */}
@@ -564,6 +552,12 @@ export default function Page() {
               <button
                 className='btn btn-ghost bg-green-400'
                 onClick={() => {
+                  const checkboxes = document.getElementsByName(
+                    'keyword-checkbox'
+                  ) as unknown as HTMLInputElement[];
+                  checkboxes.forEach((item) => {
+                    item.checked = false;
+                  });
                   const res = [
                     ...taggedKeywords,
                     ...checkedKeywords.map((ele) => {
@@ -574,7 +568,11 @@ export default function Page() {
                       };
                     }),
                   ];
-                  setTaggedKeywords(uniqWith(res, isEqual));
+                  setTaggedKeywords(
+                    uniqWith(res, (a, b) => {
+                      return a.party == b.party && a.count == b.count;
+                    })
+                  );
                   setCheckedKeywords([]);
                 }}
               >
@@ -583,8 +581,14 @@ export default function Page() {
               <button
                 className='btn btn-ghost bg-red-400'
                 onClick={() => {
-                  setTaggedKeywords((prev) => [
-                    ...prev,
+                  const checkboxes = document.getElementsByName(
+                    'keyword-checkbox'
+                  ) as unknown as HTMLInputElement[];
+                  checkboxes.forEach((item) => {
+                    item.checked = false;
+                  });
+                  const res = [
+                    ...taggedKeywords,
                     ...checkedKeywords.map((ele) => {
                       return {
                         ...ele,
@@ -592,13 +596,13 @@ export default function Page() {
                         removed: false,
                       };
                     }),
-                  ]);
+                  ];
+                  setTaggedKeywords(
+                    uniqWith(res, (a, b) => {
+                      return a.party == b.party && a.count == b.count;
+                    })
+                  );
                   setCheckedKeywords([]);
-                  document.getElementById('selected-keywords')?.scrollTo({
-                    behavior: 'smooth',
-                    top: document.getElementById('selected-keywords')
-                      ?.scrollHeight,
-                  });
                 }}
               >
                 <LuMoveRight size={20} />
@@ -770,17 +774,24 @@ export default function Page() {
                       </li>
                     ))}
                   </ul>
+                  <div className='flex w-full flex-row justify-center gap-2'>
+                    <button className='btn'>IS JV</button>
+                    <button className='btn'>Is Mutation</button>
+                  </div>
                   <button
                     className='btn w-full'
                     onClick={() => {
-                      setSelectedDevelopers((prev) => [
-                        ...prev,
+                      const to_set = [
+                        ...selectedDevelopers.filter(
+                          (item) => item.label !== ''
+                        ),
                         {
                           label: '',
                           value: '',
                         },
-                      ]);
-                      setDeveloperEditingIndex(selectedDevelopers.length);
+                      ];
+                      setSelectedDevelopers(to_set);
+                      setDeveloperEditingIndex(to_set.length);
                       setDeveloperInputValue('');
                     }}
                   >
@@ -814,9 +825,15 @@ export default function Page() {
                 <Select
                   className='w-full flex-[5]'
                   key={'developer-jlv-selection'}
-                  options={[]}
+                  options={[
+                    {
+                      label: 'aparna',
+                      value: '12',
+                    },
+                  ]}
                   isDisabled={selectedDevelopers.length > 1}
                 />
+                <input type='text' className='input input-bordered w-full' />
               </label>
               <ul className='flex flex-col gap-2 py-2'>
                 {selectedDeveloperGroup?.map((item) => (
