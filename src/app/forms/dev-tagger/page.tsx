@@ -12,24 +12,15 @@ export default function Page() {
   const [selectedDistrict, setSelectedDistrict] = useState<{
     label: string;
     value: number;
-  } | null>({
-    label: 'Select District',
-    value: 2,
-  });
+  } | null>();
   const [selectedMandal, setSelectedMandal] = useState<{
     label: string;
     value: number;
-  } | null>({
-    label: 'Select Mandal',
-    value: 2,
-  });
+  } | null>();
   const [selectedVillage, setSelectedVillage] = useState<{
     label: string;
     value: number;
-  } | null>({
-    label: 'Select Village',
-    value: 4,
-  });
+  } | null>();
   const [districtOptions, setDistrictOptions] = useState<
     {
       label: string;
@@ -65,7 +56,7 @@ export default function Page() {
       label: string;
       value: string;
     }>
-  >({ label: 'Select Project', value: 'T1' });
+  >();
   const [tempProjectOptions, setTempProjectOptions] = useState<
     {
       label: string;
@@ -671,198 +662,197 @@ export default function Page() {
               </ul>
             </div>
           </div>
-          {/* card to select exisitng developers and/or new ones */}
-          <div className='flex h-[80dvh] w-full justify-between gap-16 border border-solid'>
-            <div
-              id='developer'
-              className='flex h-full w-full flex-col justify-between gap-5 border border-solid p-5'
-            >
-              {loadingDevelopers ? (
-                <>Loading...</>
-              ) : (
-                <>
-                  <h3 className='text-center text-2xl font-semibold'>
-                    Select Developers to Tag to This Project
-                  </h3>
-                  <SelectVirtualized
-                    className='w-full self-start'
-                    key={'developer-name-filler'}
-                    options={
-                      developerOptions?.filter(
-                        (item) =>
-                          !selectedDevelopers.some(
-                            (ele) => ele.value === item.value
-                          )
-                      ) || []
-                    }
-                    onChange={(
-                      e: SingleValue<{
-                        label: string;
-                        value: string;
-                      }>
-                    ) => {
-                      if (e) {
-                        setSelectedDevelopers((prev) => [
-                          ...prev,
-                          {
-                            label: e.label.split(':')[1],
-                            value: e.value,
-                          },
-                        ]);
-                      }
-                    }}
-                    isDisabled={selectedTempProject?.value === ''}
-                    // menuIsOpen
-                    styles={{
-                      menu: (baseStyle: object, state: object) => {
-                        console.log(baseStyle, state);
-                        return {
-                          ...baseStyle,
-                          height: '120px !important',
-                          overflow: 'hidden',
-                        };
-                      },
-                    }}
-                  />
-                  <ul className='flex flex-1 flex-col gap-2 overflow-y-auto py-2'>
-                    {selectedDevelopers?.map((selectedDeveloper, index) => (
-                      <li
-                        className='flex flex-row items-stretch justify-between gap-2 text-pretty'
-                        key={index}
-                      >
-                        {developerEditingIndex === index ? (
-                          <input
-                            id='keywords-edit-input'
-                            className='input input-bordered w-full flex-[4]'
-                            type='text'
-                            onChange={(e) => {
-                              setDeveloperInputValue(e.target.value);
-                            }}
-                            value={developerInputValue}
-                            onBlur={handleOnDeveloperInputBlur}
-                            onKeyDown={handleOnDeveloperKeyDown}
-                            autoFocus
-                          />
-                        ) : (
-                          <span
-                            className='btn btn-sm h-fit max-w-[80%] flex-[4] self-start !whitespace-break-spaces !break-all py-2 text-left font-normal leading-5 hover:bg-slate-50'
-                            onDoubleClick={() => {
-                              handleDoubleClickToEditDeveloper(
-                                index,
-                                selectedDeveloper.label
-                              );
-                            }}
-                          >
-                            {selectedDeveloper.label}
-                          </span>
-                        )}
-                        <span className='h-fit w-6 self-start !whitespace-break-spaces !break-all rounded-md bg-slate-200 py-2 text-center align-middle font-normal leading-5'>
-                          {selectedDeveloper.value || 'N'}
-                        </span>
-                        <button
-                          onClick={() =>
-                            setSelectedDevelopers((prev) => {
-                              return prev.filter(
-                                (item, item_index) => item_index !== index
-                              );
-                            })
-                          }
-                          className='flex-1 rounded-lg bg-emerald-200 p-[1px] text-3xl'
-                        >
-                          ❌
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className='flex w-full flex-row justify-center gap-2'>
-                    <button className='btn'>IS JV</button>
-                    <button className='btn'>Is Mutation</button>
-                  </div>
-                  <button
-                    className='btn w-full'
-                    onClick={() => {
-                      const to_set = [
-                        ...selectedDevelopers.filter(
-                          (item) => item.label !== ''
-                        ),
-                        {
-                          label: '',
-                          value: '',
-                        },
-                      ];
-                      setSelectedDevelopers(to_set);
-                      setDeveloperEditingIndex(to_set.length);
-                      setDeveloperInputValue('');
-                    }}
-                  >
-                    Add Developer
-                  </button>
-                </>
-              )}
-            </div>
-            {/* card to add jlv partners for the developer ^ */}
-            <div
-              id='developer-group'
-              className='relative h-full w-full border border-solid p-5'
-            >
-              {/* create overlay to show that this is disabled if more than one developer is selected */}
-              <div
-                className={`absolute left-0 top-0 z-20 bg-gray-900 opacity-50 ${selectedDevelopers.length > 1 ? 'visible h-full w-full' : 'hidden'}`}
-              >
-                <span
-                  className={`relative top-0 flex h-full w-full items-center justify-center text-center text-2xl text-white ${selectedDevelopers.length > 1 ? 'visible' : 'hidden'}`}
-                >
-                  Cant Select Group When more than one developer is selected
-                  since a JV will be created.
-                </span>
-              </div>
-
-              <label className='px-auto flex flex-col items-center justify-between gap-5'>
-                <span className='flex-[2] text-balance text-center text-base font-semibold md:text-xl'>
-                  Select developers to add as Sibling Organizations to the
-                  Developer group
-                </span>
-                <Select
-                  className='w-full flex-[5]'
-                  key={'developer-jlv-selection'}
-                  options={[
-                    {
-                      label: 'aparna',
-                      value: '12',
-                    },
-                  ]}
-                  isDisabled={selectedDevelopers.length > 1}
-                />
-                <input type='text' className='input input-bordered w-full' />
-              </label>
-              <ul className='flex flex-col gap-2 py-2'>
-                {selectedDeveloperGroup?.map((item) => (
-                  <li
-                    key={item.value}
-                    className='btn btn-sm'
-                    onClick={() => {
-                      setSelectedDeveloperGroup((prev) =>
-                        prev.filter((ele) => ele.value !== item.value)
-                      );
-                    }}
-                  >
-                    {item.label}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          {/* button to submit above data to api */}
-          <button
-            className='btn w-40'
-            onClick={() => {
-              //
-            }}
-          >
-            Submit
-          </button>
         </div>
       ) : null}
+      <div>
+        {/* card to select exisitng developers and/or new ones */}
+        <div className='flex h-[80dvh] w-full justify-between gap-16 border border-solid'>
+          <div
+            id='developer'
+            className='flex h-full w-full flex-col justify-between gap-5 border border-solid p-5'
+          >
+            {loadingDevelopers ? (
+              <>Loading...</>
+            ) : (
+              <>
+                <h3 className='text-center text-2xl font-semibold'>
+                  Select Developers to Tag to This Project
+                </h3>
+                <SelectVirtualized
+                  className='w-full self-start'
+                  key={'developer-name-filler'}
+                  options={
+                    developerOptions?.filter(
+                      (item) =>
+                        !selectedDevelopers.some(
+                          (ele) => ele.value === item.value
+                        )
+                    ) || []
+                  }
+                  onChange={(
+                    e: SingleValue<{
+                      label: string;
+                      value: string;
+                    }>
+                  ) => {
+                    if (e) {
+                      setSelectedDevelopers((prev) => [
+                        ...prev,
+                        {
+                          label: e.label.split(':')[1],
+                          value: e.value,
+                        },
+                      ]);
+                    }
+                  }}
+                  isDisabled={selectedTempProject?.value === ''}
+                  // menuIsOpen
+                  styles={{
+                    menu: (baseStyle: object, state: object) => {
+                      console.log(baseStyle, state);
+                      return {
+                        ...baseStyle,
+                        height: '220px !important',
+                        overflow: 'hidden',
+                      };
+                    },
+                  }}
+                />
+                <ul className='flex flex-1 flex-col gap-2 overflow-y-auto py-2'>
+                  {selectedDevelopers?.map((selectedDeveloper, index) => (
+                    <li
+                      className='flex flex-row items-stretch justify-between gap-2 text-pretty'
+                      key={index}
+                    >
+                      {developerEditingIndex === index ? (
+                        <input
+                          id='keywords-edit-input'
+                          className='input input-bordered w-full flex-[4]'
+                          type='text'
+                          onChange={(e) => {
+                            setDeveloperInputValue(e.target.value);
+                          }}
+                          value={developerInputValue}
+                          onBlur={handleOnDeveloperInputBlur}
+                          onKeyDown={handleOnDeveloperKeyDown}
+                          autoFocus
+                        />
+                      ) : (
+                        <span
+                          className='btn btn-sm h-fit max-w-[80%] flex-[4] self-start !whitespace-break-spaces !break-all py-2 text-left font-normal leading-5 hover:bg-slate-50'
+                          onDoubleClick={() => {
+                            handleDoubleClickToEditDeveloper(
+                              index,
+                              selectedDeveloper.label
+                            );
+                          }}
+                        >
+                          {selectedDeveloper.label}
+                        </span>
+                      )}
+                      <span className='h-fit w-6 self-start !whitespace-break-spaces !break-all rounded-md bg-slate-200 py-2 text-center align-middle font-normal leading-5'>
+                        {selectedDeveloper.value || 'N'}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setSelectedDevelopers((prev) => {
+                            return prev.filter(
+                              (item, item_index) => item_index !== index
+                            );
+                          })
+                        }
+                        className='flex-1 rounded-lg bg-emerald-200 p-[1px] text-3xl'
+                      >
+                        ❌
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <div className='flex w-full flex-row justify-center gap-2'>
+                  <button className='btn'>IS JV</button>
+                  <button className='btn'>Is Mutation</button>
+                </div>
+                <button
+                  className='btn w-full'
+                  onClick={() => {
+                    const to_set = [
+                      ...selectedDevelopers.filter((item) => item.label !== ''),
+                      {
+                        label: '',
+                        value: '',
+                      },
+                    ];
+                    setSelectedDevelopers(to_set);
+                    setDeveloperEditingIndex(to_set.length);
+                    setDeveloperInputValue('');
+                  }}
+                >
+                  Add Developer
+                </button>
+              </>
+            )}
+          </div>
+          {/* card to add jlv partners for the developer ^ */}
+          <div
+            id='developer-group'
+            className='relative h-full w-full border border-solid p-5'
+          >
+            {/* create overlay to show that this is disabled if more than one developer is selected */}
+            <div
+              className={`absolute left-0 top-0 z-20 bg-gray-900 opacity-50 ${selectedDevelopers.length > 1 ? 'visible h-full w-full' : 'hidden'}`}
+            >
+              <span
+                className={`relative top-0 flex h-full w-full items-center justify-center text-center text-2xl text-white ${selectedDevelopers.length > 1 ? 'visible' : 'hidden'}`}
+              >
+                Cant Select Group When more than one developer is selected since
+                a JV will be created.
+              </span>
+            </div>
+            <label className='px-auto flex flex-col items-center justify-between gap-5'>
+              <span className='flex-[2] text-balance text-center text-base font-semibold md:text-xl'>
+                Select developers to add as Sibling Organizations to the
+                Developer group
+              </span>
+              <Select
+                className='w-full flex-[5]'
+                key={'developer-jlv-selection'}
+                options={[
+                  {
+                    label: 'aparna',
+                    value: '12',
+                  },
+                ]}
+                isDisabled={selectedDevelopers.length > 1}
+              />
+              <input type='text' className='input input-bordered w-full' />
+            </label>
+            <ul className='flex flex-col gap-2 py-2'>
+              {selectedDeveloperGroup?.map((item) => (
+                <li
+                  key={item.value}
+                  className='btn btn-sm'
+                  onClick={() => {
+                    setSelectedDeveloperGroup((prev) =>
+                      prev.filter((ele) => ele.value !== item.value)
+                    );
+                  }}
+                >
+                  {item.label}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        {/* button to submit above data to api */}
+        <button
+          className='btn w-40'
+          onClick={() => {
+            //
+          }}
+        >
+          Submit
+        </button>
+      </div>
     </>
   );
 }
