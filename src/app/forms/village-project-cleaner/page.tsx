@@ -62,7 +62,6 @@ export default function Page() {
       setDMVOptions('district', districtOpts);
       return res.data.data;
     },
-    staleTime: Infinity,
   });
   const { data: rawAptDictData, isLoading: loadingRawAptDictData } = useQuery({
     queryKey: ['raw-apt-dict', selectedDMV.village],

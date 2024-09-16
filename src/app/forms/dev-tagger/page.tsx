@@ -1,12 +1,44 @@
 'use client';
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
-import { isEqual, uniq, uniqWith } from 'lodash';
+import { uniqWith } from 'lodash';
 import { KeyboardEvent, useState } from 'react';
 import { LuLoader, LuMoveRight } from 'react-icons/lu';
 import Select, { SingleValue } from 'react-select';
+import TanstackReactTable from './Table';
+import { createColumnHelper } from '@tanstack/react-table';
 // @ts-expect-error  third party
 import SelectVirtualized from 'react-select-virtualized';
+const columnHelper = createColumnHelper<GroupSelectorTableRow>();
+type GroupSelectorTableRow = {
+  developerName: string;
+  developerId: string;
+};
+const columns = [
+  columnHelper.accessor('developerName', {
+    header: 'Developer Name',
+    cell: ({ row }) => (
+      <p className='max-w-7xl text-pretty break-all'>
+        {row.getValue('developerName')}
+      </p>
+    ),
+    meta: {
+      filterVariant: 'text',
+    },
+  }),
+  columnHelper.accessor('developerId', {
+    header: 'Developer Id',
+    cell: ({ row }) => (
+      <p className='max-w-7xl text-pretty break-all'>
+        {row.getValue('developerId')}
+      </p>
+    ),
+    meta: {
+      filterVariant: 'text',
+    },
+  }),
+];
+
 export default function Page() {
   // states
   const [selectedDistrict, setSelectedDistrict] = useState<{
@@ -88,9 +120,19 @@ export default function Page() {
       removed: boolean;
     }[]
   >([]);
+
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState('');
+  const [developerEditingIndex, setDeveloperEditingIndex] =
+    useState<number>(-1);
+  const [developerInputValue, setDeveloperInputValue] = useState<string>('');
+  const [developerGroupEditingIndex, setDeveloperGroupEditingIndex] =
+    useState<number>(-1);
+  const [developerGroupInputValue, setDevelopergroupInputValue] =
+    useState<string>('');
 
+  const [isMutation, setIsMutation] = useState<boolean>(false);
+  useState<number>(-1);
   const [selectedDevelopers, setSelectedDevelopers] = useState<
     {
       label: string;
@@ -98,14 +140,33 @@ export default function Page() {
     }[]
   >([]);
   const [selectedDeveloperGroup, setSelectedDeveloperGroup] = useState<
-    {
+    SingleValue<{
       label: string;
       value: string;
-    }[]
+    }>
+  >({
+    label: 'Select Developer Group',
+    value: '',
+  });
+
+  const [selectedDeveloperGroupId, setSelectedDeveloperGroupId] = useState<
+    string | null
+  >(null);
+  const [cleanDeveloperGroupName, setCleanDeveloperGroupName] = useState<
+    string | null
+  >(null);
+  const [showWarning, setShowWarning] = useState<boolean>(true);
+  const [selectingGroupMembers, setSelectingGroupMembers] =
+    useState<boolean>(true);
+  const [selectedRows, setSelectedRows] = useState<GroupSelectorTableRow[]>([]);
+  const [rowSelection, setRowSelection] = useState({});
+  const [developerSelectorTableData, setDeveloperSelectorTableData] = useState<
+    GroupSelectorTableRow[]
   >([]);
-  const [developerEditingIndex, setDeveloperEditingIndex] =
-    useState<number>(-1);
-  const [developerInputValue, setDeveloperInputValue] = useState<string>('');
+
+  const [developerGroupMembers, setDeveloperGroupMembers] = useState<
+    GroupSelectorTableRow[]
+  >([]);
   // queries
   const { isLoading } = useQuery({
     queryKey: ['village-project-cleaner'],
@@ -198,12 +259,51 @@ export default function Page() {
         label: `${item.developer_id}:${item.developer_name}`,
         value: item.developer_id,
       }));
+
+      const developerSelectorTableData = res.data.data.map((item) => ({
+        developerName: item.developer_name,
+        developerId: item.developer_id,
+      }));
+      setDeveloperSelectorTableData(developerSelectorTableData);
       return developers;
     },
-    staleTime: Infinity,
+  });
+
+  const {
+    data: developerGroupOptions,
+    isLoading: loadingDeveloperGroupOptions,
+  } = useQuery({
+    queryKey: ['developer-group-options'],
+    queryFn: async () => {
+      const res = await axiosClient.get<{
+        data: {
+          id: string;
+          name: string;
+        }[];
+      }>('/developer-groups');
+      const developerGroupOptions = res.data.data.map((item) => ({
+        label: `${item.id}:${item.name}`,
+        value: item.id,
+      }));
+      return developerGroupOptions;
+    },
   });
 
   // handlers
+  function handleDoubleClickToEditDeveloperGroup(index: number, value: string) {
+    console.log('double click Developer Group', index, value);
+    setDeveloperGroupEditingIndex(index);
+    setDevelopergroupInputValue(value);
+    const inp = document.getElementById('keywords-edit-input') as
+      | HTMLInputElement
+      | undefined;
+    if (inp) {
+      inp?.focus();
+      const end = inp?.value.length;
+      inp.setSelectionRange(end, end);
+    }
+  }
+
   const handleDoubleClickToEdit = (index: number, value: string) => {
     setEditingIndex(index);
     setInputValue(value);
@@ -230,6 +330,24 @@ export default function Page() {
       inp.setSelectionRange(end, end);
     }
   };
+
+  function handleOnDeveloperGroupKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    console.log('handleOnDeveloperGroupKeyDown', developerGroupEditingIndex);
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      handleOnBlur();
+    } else if (e.key === 'Tab' && developerGroupEditingIndex != null) {
+      e.preventDefault();
+      if (selectedRows.length === developerGroupEditingIndex + 1) {
+        handleOnBlur();
+      } else {
+        handleOnBlur();
+        setDeveloperGroupEditingIndex(developerGroupEditingIndex + 1);
+        setInputValue(
+          selectedRows[developerGroupEditingIndex + 1].developerName
+        );
+      }
+    }
+  }
 
   const handleOnClickToToggle = (
     index: number,
@@ -334,6 +452,25 @@ export default function Page() {
         });
       });
       setEditingIndex(null);
+    }
+  }
+
+  function handleOnDeveloperGroupInputBlur() {
+    console.log('handleOnDeveloperGroupInputBlur', developerGroupEditingIndex);
+    if (developerGroupEditingIndex != null) {
+      setDeveloperGroupMembers((prev) => {
+        return prev.map((ele, i) => {
+          if (i === developerGroupEditingIndex) {
+            return {
+              ...ele,
+              developerName: developerGroupInputValue,
+            };
+          }
+          return ele;
+        });
+      });
+      setDeveloperGroupEditingIndex(-1);
+      setDevelopergroupInputValue('');
     }
   }
 
@@ -662,6 +799,7 @@ export default function Page() {
               </ul>
             </div>
           </div>
+          <button className='btn btn-ghost bg-violet-500'>Submit</button>
         </div>
       ) : null}
       <div>
@@ -707,16 +845,6 @@ export default function Page() {
                   }}
                   isDisabled={selectedTempProject?.value === ''}
                   // menuIsOpen
-                  styles={{
-                    menu: (baseStyle: object, state: object) => {
-                      console.log(baseStyle, state);
-                      return {
-                        ...baseStyle,
-                        height: '220px !important',
-                        overflow: 'hidden',
-                      };
-                    },
-                  }}
                 />
                 <ul className='flex flex-1 flex-col gap-2 overflow-y-auto py-2'>
                   {selectedDevelopers?.map((selectedDeveloper, index) => (
@@ -750,7 +878,7 @@ export default function Page() {
                           {selectedDeveloper.label}
                         </span>
                       )}
-                      <span className='h-fit w-6 self-start !whitespace-break-spaces !break-all rounded-md bg-slate-200 py-2 text-center align-middle font-normal leading-5'>
+                      <span className='flex-1 rounded-lg bg-emerald-200 p-[1px] text-3xl'>
                         {selectedDeveloper.value || 'N'}
                       </span>
                       <button
@@ -769,8 +897,14 @@ export default function Page() {
                   ))}
                 </ul>
                 <div className='flex w-full flex-row justify-center gap-2'>
-                  <button className='btn'>IS JV</button>
-                  <button className='btn'>Is Mutation</button>
+                  <span>IS JV</span>
+                  <input
+                    type='checkbox'
+                    className='toggle'
+                    checked={isMutation}
+                    onChange={(e) => setIsMutation(e.target.checked)}
+                  />
+                  <span>Is Mutation</span>
                 </div>
                 <button
                   className='btn w-full'
@@ -795,59 +929,183 @@ export default function Page() {
           {/* card to add jlv partners for the developer ^ */}
           <div
             id='developer-group'
-            className='relative h-full w-full border border-solid p-5'
+            className='relative flex h-full w-full flex-col gap-2 border border-solid p-5'
           >
             {/* create overlay to show that this is disabled if more than one developer is selected */}
             <div
-              className={`absolute left-0 top-0 z-20 bg-gray-900 opacity-50 ${selectedDevelopers.length > 1 ? 'visible h-full w-full' : 'hidden'}`}
+              className={`absolute left-0 top-0 z-20 bg-gray-900 opacity-50 ${!isMutation && selectedDevelopers.length > 1 ? 'visible h-full w-full' : 'hidden'}`}
             >
               <span
-                className={`relative top-0 flex h-full w-full items-center justify-center text-center text-2xl text-white ${selectedDevelopers.length > 1 ? 'visible' : 'hidden'}`}
+                className={`relative top-0 flex h-full w-full items-center justify-center text-center text-xl text-white ${selectedDevelopers.length > 1 ? 'visible' : 'hidden'}`}
               >
                 Cant Select Group When more than one developer is selected since
                 a JV will be created.
               </span>
             </div>
             <label className='px-auto flex flex-col items-center justify-between gap-5'>
-              <span className='flex-[2] text-balance text-center text-base font-semibold md:text-xl'>
-                Select developers to add as Sibling Organizations to the
-                Developer group
+              <span className='text-balance text-center text-base font-semibold md:text-xl'>
+                {selectedDeveloperGroupId
+                  ? `Selected Group: ${selectedDeveloperGroupId}`
+                  : 'Select developers to add as Sibling Organizations to the Developer group'}
               </span>
               <Select
-                className='w-full flex-[5]'
+                className='w-full'
                 key={'developer-jlv-selection'}
-                options={[
-                  {
-                    label: 'aparna',
-                    value: '12',
-                  },
-                ]}
+                options={developerGroupOptions || []}
+                isLoading={loadingDeveloperGroupOptions}
+                value={selectedDeveloperGroup}
                 isDisabled={selectedDevelopers.length > 1}
+                onChange={(e) => {
+                  if (e?.value) {
+                    setSelectedDeveloperGroupId(e.value);
+                    setCleanDeveloperGroupName(e.label.split(':')[1].trim());
+                    setShowWarning(false);
+                  }
+                }}
               />
-              <input type='text' className='input input-bordered w-full' />
+              <input
+                type='text'
+                className='input input-bordered w-full'
+                value={cleanDeveloperGroupName || ''}
+                onChange={(e) => {
+                  setSelectedDeveloperGroupId('__new');
+                  setCleanDeveloperGroupName(e.target.value);
+                  setShowWarning(true);
+                }}
+              />
             </label>
-            <ul className='flex flex-col gap-2 py-2'>
-              {selectedDeveloperGroup?.map((item) => (
-                <li
-                  key={item.value}
-                  className='btn btn-sm'
-                  onClick={() => {
-                    setSelectedDeveloperGroup((prev) =>
-                      prev.filter((ele) => ele.value !== item.value)
-                    );
-                  }}
-                >
-                  {item.label}
-                </li>
-              ))}
-            </ul>
+            {developerGroupOptions &&
+              developerGroupOptions.length > 0 &&
+              developerGroupOptions.find(
+                (item) =>
+                  item.label.split(':')[1].trim().toUpperCase() ===
+                  cleanDeveloperGroupName?.toUpperCase()
+              ) &&
+              showWarning && (
+                <p className='flex flex-col text-center text-2xl font-semibold'>
+                  <span>This Developer Group is already in the list.</span>
+                  <button
+                    className='btn btn-neutral mx-auto my-5 w-40'
+                    onClick={() => {
+                      const toSet = developerGroupOptions.find(
+                        (item) =>
+                          item.label.split(':')[1].trim().toUpperCase() ===
+                          cleanDeveloperGroupName?.toUpperCase()
+                      );
+                      if (toSet) {
+                        setSelectedDeveloperGroup(toSet);
+                        setCleanDeveloperGroupName(
+                          toSet.label.split(':')[1].trim()
+                        );
+                        setSelectedDeveloperGroupId(toSet.value);
+                        setShowWarning(false);
+                      }
+                    }}
+                  >
+                    Select That Group?
+                  </button>
+                </p>
+              )}
+            {selectingGroupMembers ? (
+              <div className='flex max-h-[60%] flex-col gap-2 overflow-y-auto py-2'>
+                <TanstackReactTable
+                  data={developerSelectorTableData}
+                  columns={columns}
+                  setSelectedRows={setSelectedRows}
+                  rowSelection={rowSelection}
+                  setRowSelection={setRowSelection}
+                  isMultiSelection={true}
+                />
+              </div>
+            ) : (
+              <>
+                {developerGroupMembers.length > 0 && (
+                  <ul className='flex flex-1 flex-col gap-2 overflow-y-auto py-2'>
+                    {developerGroupMembers?.map((selectedRow, index) => (
+                      <li
+                        className='flex flex-row items-stretch justify-between gap-2 text-pretty'
+                        key={index}
+                      >
+                        {developerGroupEditingIndex === index ? (
+                          <input
+                            id='keywords-edit-input'
+                            className='input input-bordered w-full flex-[4]'
+                            type='text'
+                            onChange={(e) => {
+                              setDevelopergroupInputValue(e.target.value);
+                            }}
+                            value={developerGroupInputValue}
+                            onBlur={handleOnDeveloperGroupInputBlur}
+                            onKeyDown={handleOnDeveloperGroupKeyDown}
+                            autoFocus
+                          />
+                        ) : (
+                          <span
+                            className='btn btn-sm h-fit max-w-[80%] flex-[4] self-start !whitespace-break-spaces !break-all py-2 text-left font-normal leading-5 hover:bg-slate-50'
+                            onDoubleClick={() => {
+                              handleDoubleClickToEditDeveloperGroup(
+                                index,
+                                selectedRow.developerName
+                              );
+                            }}
+                          >
+                            {selectedRow.developerName}
+                          </span>
+                        )}
+                        <span className='rounded-lg bg-emerald-200 p-[1px] text-xl'>
+                          {selectedRow.developerId || 'N'}
+                        </span>
+                        <button
+                          onClick={() =>
+                            setDeveloperGroupMembers((prev) => {
+                              return prev.filter(
+                                (item, item_index) => item_index !== index
+                              );
+                            })
+                          }
+                          className='flex-1 rounded-lg bg-emerald-200 p-[1px] text-3xl'
+                        >
+                          ❌
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </>
+            )}
+            <button
+              className='btn btn-ghost bg-violet-500'
+              onClick={() => {
+                if (selectingGroupMembers) {
+                  console.log(selectedRows, developerGroupMembers);
+                  const res = [
+                    ...developerGroupMembers,
+                    ...selectedRows.filter((ele) => {
+                      return !developerGroupMembers.some(
+                        (item) => item.developerId === ele.developerId
+                      );
+                    }),
+                  ];
+                  setDeveloperGroupMembers(res);
+                  setSelectingGroupMembers(false);
+                  setSelectedRows([]);
+                  setRowSelection({});
+                } else {
+                  setSelectingGroupMembers(true);
+                }
+              }}
+            >
+              {selectingGroupMembers
+                ? 'Attach Selected Developers to Group'
+                : 'Select More Developers'}
+            </button>
           </div>
         </div>
         {/* button to submit above data to api */}
         <button
           className='btn w-40'
           onClick={() => {
-            //
+            console.log;
           }}
         >
           Submit
