@@ -30,6 +30,20 @@ export async function fetchDropdownOption(
       return { value: item.id, label: item.name };
     });
     return dropdownOptions;
+  } else if (type === 'villages') {
+    const res = await axiosClient.get<{
+      data: { id: number; name: string; onboarded: boolean | null }[];
+      message: string;
+      statusCode: number;
+    }>(`/forms/${type}`);
+    const options = res?.data?.data;
+    const dropdownOptions: DropdownOptions[] = options.map((item) => {
+      return {
+        value: item.id,
+        label: item.onboarded ? `${item.name} ✅` : item.name,
+      };
+    });
+    return dropdownOptions;
   } else {
     const res = await axiosClient.get<{
       data: { id: number; name: string }[];
