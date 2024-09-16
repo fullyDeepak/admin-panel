@@ -19,23 +19,12 @@ export async function fetchDropdownOption(
 ): Promise<DropdownOptions[]> {
   if (key !== undefined && id !== undefined) {
     const res = await axiosClient.get<{
-      data: { id: number; name: string }[];
+      data: { id: number; name: string; onboarded?: boolean | null }[];
       message: string;
       statusCode: number;
     }>(`/forms/${type}`, {
       params: { [`${key}_id`]: id },
     });
-    const options = res?.data?.data;
-    const dropdownOptions: DropdownOptions[] = options.map((item) => {
-      return { value: item.id, label: item.name };
-    });
-    return dropdownOptions;
-  } else if (type === 'villages') {
-    const res = await axiosClient.get<{
-      data: { id: number; name: string; onboarded: boolean | null }[];
-      message: string;
-      statusCode: number;
-    }>(`/forms/${type}`);
     const options = res?.data?.data;
     const dropdownOptions: DropdownOptions[] = options.map((item) => {
       return {
