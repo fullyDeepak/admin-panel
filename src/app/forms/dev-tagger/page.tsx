@@ -9,6 +9,8 @@ import TanstackReactTable from './Table';
 import { createColumnHelper } from '@tanstack/react-table';
 // @ts-expect-error  third party
 import SelectVirtualized from 'react-select-virtualized';
+import { submitKeywords } from './utils';
+import toast from 'react-hot-toast';
 const columnHelper = createColumnHelper<GroupSelectorTableRow>();
 type GroupSelectorTableRow = {
   developerName: string;
@@ -502,6 +504,24 @@ export default function Page() {
       </div>
     );
   }
+
+  async function submitKeywords(data: {
+    project_id?: string;
+    keywords: typeof taggedKeywords;
+  }) {
+    await toast.promise(
+      axiosClient.post('/temp-projects/developer-tagger/post-keywords', data),
+      {
+        loading: 'Submitting keywords...',
+        success: () => {
+          setTaggedKeywords([]);
+          setSelectedTempProject(null);
+          return 'Keyword Submitted';
+        },
+        error: 'Error',
+      }
+    );
+  }
   return (
     <>
       <div className='mb-8 mt-10 flex flex-col justify-center'>
@@ -800,7 +820,17 @@ export default function Page() {
               </ul>
             </div>
           </div>
-          <button className='btn btn-ghost bg-violet-500'>Submit</button>
+          <button
+            className='btn-rezy'
+            onClick={() =>
+              submitKeywords({
+                project_id: selectedTempProject?.value,
+                keywords: taggedKeywords,
+              })
+            }
+          >
+            Submit
+          </button>
         </div>
       ) : null}
       <div className='my-5 flex flex-col gap-5'>
@@ -904,6 +934,9 @@ export default function Page() {
                     className='toggle'
                     checked={isMutation}
                     onChange={(e) => setIsMutation(e.target.checked)}
+                    disabled={selectedDevelopers.some((item) =>
+                      item.value.startsWith('M')
+                    )}
                   />
                   <span>Is Mutation</span>
                 </div>
