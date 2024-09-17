@@ -28,6 +28,10 @@ export default function Page() {
         return [];
       }
     },
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   useEffect(() => {
