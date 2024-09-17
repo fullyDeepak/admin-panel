@@ -220,6 +220,7 @@ export default function Page() {
         value: item.id,
       }));
       setTempProjectOptions(tempProjects);
+      setTaggedKeywords([]);
       return res.data.data;
     },
   });
@@ -802,7 +803,7 @@ export default function Page() {
           <button className='btn btn-ghost bg-violet-500'>Submit</button>
         </div>
       ) : null}
-      <div>
+      <div className='my-5 flex flex-col gap-5'>
         {/* card to select exisitng developers and/or new ones */}
         <div className='flex h-[80dvh] w-full justify-between gap-16 border border-solid'>
           <div
@@ -1103,7 +1104,7 @@ export default function Page() {
         </div>
         {/* button to submit above data to api */}
         <button
-          className='btn w-40'
+          className='btn w-40 self-center'
           onClick={() => {
             console.log;
           }}
