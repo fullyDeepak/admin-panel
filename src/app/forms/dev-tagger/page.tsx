@@ -100,13 +100,14 @@ export default function Page() {
     useState<number>(-1);
   const [developerInputValue, setDeveloperInputValue] = useState<string>('');
 
-  const [isMutation, setIsMutation] = useState<boolean>(false);
+  const [isMutation, setIsMutation] = useState<boolean>(true);
   useState<number>(-1);
   const [selectedDevelopers, setSelectedDevelopers] = useState<
     {
       label: string;
       value: string;
       gst_number?: string | null;
+      organization_type?: string | null;
     }[]
   >([]);
 
@@ -114,7 +115,7 @@ export default function Page() {
     GroupSelectorTableRow[]
   >([]);
   const [selectedDeveloperId, setSelectedDeveloperId] = useState<string>('');
-
+  const [JVName, setJVName] = useState<string>('');
   // queries
   const { isLoading } = useQuery({
     queryKey: ['village-project-cleaner'],
@@ -737,19 +738,31 @@ export default function Page() {
             ) : (
               <>
                 <h3 className='text-center text-2xl font-semibold'>
-                  Select Developers to Tag to This Project
+                  Select Developers to Tag to This Project or to Create
+                  Mutations
                 </h3>
                 <SelectVirtualized
                   className='w-full self-start'
                   key={'developer-name-filler'}
                   options={
-                    developerOptions?.filter(
-                      (item) =>
-                        !selectedDevelopers.some(
-                          (ele) => ele.value === item.value
-                        )
-                    ) || []
+                    developerOptions
+                      ?.filter((ele) => {
+                        return (
+                          (!isMutation &&
+                            (ele.value.startsWith('M') ||
+                              (selectedTempProject &&
+                                ele.value.startsWith('J')))) ||
+                          isMutation
+                        );
+                      })
+                      .filter(
+                        (item) =>
+                          !selectedDevelopers.some(
+                            (ele) => ele.value === item.value
+                          )
+                      ) || []
                   }
+                  // closeMenuOnSelect={false}
                   onChange={async (
                     e: SingleValue<{
                       label: string;
@@ -758,8 +771,9 @@ export default function Page() {
                   ) => {
                     if (e) {
                       let gst_number: string | null;
+                      let organization_type: string | null;
                       if (e.value.startsWith('R')) {
-                        gst_number = (
+                        const res = (
                           await axiosClient.get<{
                             data: {
                               developer_id: string;
@@ -774,7 +788,9 @@ export default function Page() {
                               director_names: string | null;
                             };
                           }>('/developers/' + e.value)
-                        ).data.data?.gst_number;
+                        ).data.data;
+                        gst_number = res?.gst_number;
+                        organization_type = res?.organization_type;
                       }
                       setSelectedDevelopers((prev) => [
                         ...prev,
@@ -782,13 +798,37 @@ export default function Page() {
                           label: e.label.split(':')[1],
                           value: e.value,
                           gst_number: gst_number,
+                          organization_type: organization_type,
                         },
                       ]);
                     }
                   }}
-                  isDisabled={selectedTempProject?.value === ''}
+                  isDisabled={
+                    selectedDevelopers.filter((ele) =>
+                      ele.value.startsWith('J')
+                    ).length > 0 || selectedTempProject?.value === ''
+                  }
                   // menuIsOpen
                 />
+                {!isMutation && selectedDevelopers.length > 0 && (
+                  <label
+                    htmlFor='jv-name'
+                    className='flex items-center justify-center gap-3 self-center'
+                  >
+                    <span className='text-balance text-center text-base font-semibold md:text-xl'>
+                      Enter JV Name :
+                    </span>
+                    <input
+                      type='text'
+                      className='input input-bordered w-96'
+                      name='jv-name'
+                      value={JVName}
+                      onChange={(e) => {
+                        setJVName(e.target.value);
+                      }}
+                    />
+                  </label>
+                )}
                 <ul className='flex flex-1 flex-col gap-2 overflow-y-auto py-2'>
                   {selectedDevelopers?.map((selectedDeveloper, index) => (
                     <li
@@ -834,6 +874,9 @@ export default function Page() {
                         </span>
                       )}
                       <span className='btn no-animation my-auto h-full w-60 min-w-fit self-center rounded-lg bg-emerald-200 p-[1px] text-center align-middle'>
+                        {selectedDeveloper.organization_type || 'NA'}
+                      </span>
+                      <span className='btn no-animation my-auto h-full w-60 min-w-fit self-center rounded-lg bg-emerald-200 p-[1px] text-center align-middle'>
                         {selectedDeveloper.gst_number || 'NA'}
                       </span>
                       <span className='btn no-animation my-auto h-full w-24 self-center rounded-lg bg-emerald-200 p-[1px] text-center align-middle'>
@@ -860,7 +903,10 @@ export default function Page() {
                     type='checkbox'
                     className='toggle'
                     checked={isMutation}
-                    onChange={(e) => setIsMutation(e.target.checked)}
+                    onChange={(e) => {
+                      setIsMutation(e.target.checked);
+                      setSelectedDevelopers([]);
+                    }}
                   />
                   <span>Is Mutation</span>
                 </div>

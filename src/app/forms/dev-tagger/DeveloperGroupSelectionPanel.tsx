@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
 import TanstackReactTable from './Table';
 import { createColumnHelper } from '@tanstack/react-table';
+import toast from 'react-hot-toast';
 
 const columnHelper = createColumnHelper<GroupSelectorTableRow>();
 export type GroupSelectorTableRow = {
@@ -63,82 +64,11 @@ export function DeveloperGroupSelectionPanel({
       value: string;
     }>
   >({ label: 'Select Developer Group', value: '' });
-  const [inputValue, setInputValue] = useState('');
-  const [developerGroupEditingIndex, setDeveloperGroupEditingIndex] =
-    useState<number>(-1);
-  const [developerGroupInputValue, setDevelopergroupInputValue] =
-    useState<string>('');
-  function handleDoubleClickToEditDeveloperGroup(index: number, value: string) {
-    console.log('double click Developer Group', index, value);
-    setDeveloperGroupEditingIndex(index);
-    setDevelopergroupInputValue(value);
-    const inp = document.getElementById('keywords-edit-input') as
-      | HTMLInputElement
-      | undefined;
-    if (inp) {
-      inp?.focus();
-      const end = inp?.value.length;
-      inp.setSelectionRange(end, end);
-    }
-  }
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-
-  function handleOnBlur() {
-    if (editingIndex != null) {
-      setDeveloperGroupMembers((prev) => {
-        return prev.map((ele, i) => {
-          if (i === editingIndex) {
-            return {
-              ...ele,
-              party: inputValue,
-            };
-          }
-          return ele;
-        });
-      });
-      setEditingIndex(null);
-    }
-  }
-  function handleOnKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-    console.log('handleOnDeveloperGroupKeyDown', developerGroupEditingIndex);
-    if (e.key === 'Enter' || e.key === 'Escape') {
-      handleOnBlur();
-    } else if (e.key === 'Tab' && developerGroupEditingIndex != null) {
-      e.preventDefault();
-      if (selectedRows.length === developerGroupEditingIndex + 1) {
-        handleOnBlur();
-      } else {
-        handleOnBlur();
-        setDeveloperGroupEditingIndex(developerGroupEditingIndex + 1);
-        setInputValue(
-          selectedRows[developerGroupEditingIndex + 1].developerName
-        );
-      }
-    }
-  }
-
-  function handleOnInputBlur() {
-    console.log('handleOnDeveloperGroupInputBlur', developerGroupEditingIndex);
-    if (developerGroupEditingIndex != null) {
-      setDeveloperGroupMembers((prev) => {
-        return prev.map((ele, i) => {
-          if (i === developerGroupEditingIndex) {
-            return {
-              ...ele,
-              developerName: developerGroupInputValue,
-            };
-          }
-          return ele;
-        });
-      });
-      setDeveloperGroupEditingIndex(-1);
-      setDevelopergroupInputValue('');
-    }
-  }
 
   const {
     data: developerGroupOptions,
     isLoading: loadingDeveloperGroupOptions,
+    refetch: refetchDeveloperGroupOptions,
   } = useQuery({
     queryKey: ['developer-group-options'],
     queryFn: async () => {
@@ -155,6 +85,25 @@ export function DeveloperGroupSelectionPanel({
       return developerGroupOptions;
     },
   });
+
+  const { data: developersToGroup, refetch: refetchDevelopersToGroup } =
+    useQuery({
+      queryKey: ['developer-to-group-options'],
+      queryFn: async () => {
+        const res = await axiosClient.get<{
+          data: {
+            id: string;
+            name: string;
+          }[];
+        }>('/developers/developers-to-group');
+        console.log(res.data.data);
+        const developersToGroup = res.data.data.map((item) => ({
+          developerName: item.name,
+          developerId: item.id,
+        }));
+        return developersToGroup;
+      },
+    });
   return (
     <div
       id='developer-group'
@@ -183,7 +132,7 @@ export function DeveloperGroupSelectionPanel({
           options={developerGroupOptions || []}
           isLoading={loadingDeveloperGroupOptions}
           value={selectedDeveloperGroup}
-          isDisabled={selectedDevelopers.length > 1}
+          isDisabled={!isMutation && selectedDevelopers.length > 1}
           isClearable
           onChange={(e) => {
             console.log(e);
@@ -244,7 +193,7 @@ export function DeveloperGroupSelectionPanel({
       {selectingGroupMembers ? (
         <div className='flex max-h-[60%] flex-1 flex-col gap-2 overflow-y-auto py-2'>
           <TanstackReactTable
-            data={developerSelectorTableData}
+            data={developersToGroup || []}
             columns={columns}
             setSelectedRows={setSelectedRows}
             rowSelection={rowSelection}
@@ -254,58 +203,33 @@ export function DeveloperGroupSelectionPanel({
         </div>
       ) : (
         <>
-          {developerGroupMembers.length > 0 && (
-            <ul className='flex flex-1 flex-col gap-2 overflow-y-auto py-2'>
-              {developerGroupMembers?.map((selectedRow, index) => (
-                <li
-                  className='flex flex-row items-stretch justify-between gap-2 text-pretty'
-                  key={index}
+          <ul className='flex flex-1 flex-col gap-2 overflow-y-auto py-2'>
+            {developerGroupMembers?.map((selectedRow, index) => (
+              <li
+                className='flex flex-row items-center justify-between gap-2 text-pretty'
+                key={index}
+              >
+                <span className='btn btn-sm h-full max-w-[80%] flex-[4] justify-start !whitespace-break-spaces !break-all py-2 !text-left font-normal leading-5 hover:bg-slate-50'>
+                  {selectedRow.developerName}
+                </span>
+                <span className='btn no-animation my-auto h-full w-60 min-w-fit self-center rounded-lg bg-emerald-200 p-[1px] text-center align-middle'>
+                  {selectedRow.developerId || 'N'}
+                </span>
+                <button
+                  onClick={() =>
+                    setDeveloperGroupMembers((prev) => {
+                      return prev.filter(
+                        (item, item_index) => item_index !== index
+                      );
+                    })
+                  }
+                  className='btn no-animation rounded-lg bg-emerald-200 p-[1px] text-3xl'
                 >
-                  {developerGroupEditingIndex === index ? (
-                    <input
-                      id='keywords-edit-input'
-                      className='input input-bordered w-full flex-[4]'
-                      type='text'
-                      onChange={(e) => {
-                        setDevelopergroupInputValue(e.target.value);
-                      }}
-                      value={developerGroupInputValue}
-                      onBlur={handleOnInputBlur}
-                      onKeyDown={handleOnKeyDown}
-                      autoFocus
-                    />
-                  ) : (
-                    <span
-                      className='btn btn-sm h-fit max-w-[80%] flex-[4] self-start !whitespace-break-spaces !break-all py-2 text-left font-normal leading-5 hover:bg-slate-50'
-                      onDoubleClick={() => {
-                        handleDoubleClickToEditDeveloperGroup(
-                          index,
-                          selectedRow.developerName
-                        );
-                      }}
-                    >
-                      {selectedRow.developerName}
-                    </span>
-                  )}
-                  <span className='rounded-lg bg-emerald-200 p-[1px] text-xl'>
-                    {selectedRow.developerId || 'N'}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setDeveloperGroupMembers((prev) => {
-                        return prev.filter(
-                          (item, item_index) => item_index !== index
-                        );
-                      })
-                    }
-                    className='flex-1 rounded-lg bg-emerald-200 p-[1px] text-3xl'
-                  >
-                    ❌
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+                  ❌
+                </button>
+              </li>
+            ))}
+          </ul>
         </>
       )}
       <button
@@ -323,8 +247,6 @@ export function DeveloperGroupSelectionPanel({
             ];
             setDeveloperGroupMembers(res);
             setSelectingGroupMembers(false);
-            setSelectedRows([]);
-            setRowSelection({});
           } else {
             setSelectingGroupMembers(true);
           }
@@ -336,8 +258,32 @@ export function DeveloperGroupSelectionPanel({
       </button>
       <button
         className='btn-rezy w-40 self-center'
-        onClick={() => {
-          console.log;
+        onClick={async () => {
+          if (!selectedDeveloperGroupId) {
+            toast.error('Select a group first.');
+            return;
+          }
+          if (!selectedRows.length) {
+            toast.error('Select developers first.');
+            return;
+          }
+          const to_post = {
+            developer_group_id: selectedDeveloperGroupId,
+            developer_ids: selectedRows.map((item) => item.developerId),
+            group_name: cleanDeveloperGroupName,
+          };
+
+          await axiosClient.post('/developers/attach-to-group', to_post);
+          toast.success('Developers attached to group.');
+          await refetchDeveloperGroupOptions();
+          await refetchDevelopersToGroup();
+          setSelectingGroupMembers(true);
+          setSelectedRows([]);
+          setRowSelection({});
+          setDeveloperGroupMembers([]);
+          setSelectedDeveloperGroup(null);
+          setCleanDeveloperGroupName('');
+          setSelectedDeveloperGroupId(null);
         }}
       >
         Submit
