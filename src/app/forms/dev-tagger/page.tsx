@@ -9,7 +9,6 @@ import TanstackReactTable from './Table';
 import { createColumnHelper } from '@tanstack/react-table';
 // @ts-expect-error  third party
 import SelectVirtualized from 'react-select-virtualized';
-import { submitKeywords } from './utils';
 import toast from 'react-hot-toast';
 const columnHelper = createColumnHelper<GroupSelectorTableRow>();
 type GroupSelectorTableRow = {
@@ -934,9 +933,6 @@ export default function Page() {
                     className='toggle'
                     checked={isMutation}
                     onChange={(e) => setIsMutation(e.target.checked)}
-                    disabled={selectedDevelopers.some((item) =>
-                      item.value.startsWith('M')
-                    )}
                   />
                   <span>Is Mutation</span>
                 </div>
@@ -1108,7 +1104,7 @@ export default function Page() {
               </>
             )}
             <button
-              className='btn btn-ghost bg-violet-500'
+              className='btn-rezy'
               onClick={() => {
                 if (selectingGroupMembers) {
                   console.log(selectedRows, developerGroupMembers);
@@ -1136,14 +1132,24 @@ export default function Page() {
           </div>
         </div>
         {/* button to submit above data to api */}
-        <button
-          className='btn w-40 self-center'
-          onClick={() => {
-            console.log;
-          }}
-        >
-          Submit
-        </button>
+        <div className='flex w-full justify-around'>
+          <button
+            className='btn-rezy w-40 self-center'
+            onClick={() => {
+              console.log;
+            }}
+          >
+            Submit
+          </button>
+          <button
+            className='btn-rezy w-40 self-center'
+            onClick={() => {
+              console.log;
+            }}
+          >
+            Submit
+          </button>
+        </div>
       </div>
     </>
   );
