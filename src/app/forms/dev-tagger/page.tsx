@@ -317,7 +317,27 @@ export default function Page() {
       }
     );
   }
-
+  const {
+    data: developersToGroup,
+    isLoading: loadingDevelopersToGroup,
+    refetch: refetchDevelopersToGroup,
+  } = useQuery({
+    queryKey: ['developer-to-group-options'],
+    queryFn: async () => {
+      const res = await axiosClient.get<{
+        data: {
+          id: string;
+          name: string;
+        }[];
+      }>('/developers/developers-to-group');
+      console.log(res.data.data);
+      const developersToGroup = res.data.data.map((item) => ({
+        developerName: item.name,
+        developerId: item.id,
+      }));
+      return developersToGroup;
+    },
+  });
   return (
     <>
       <div className='mb-8 mt-10 flex flex-col justify-center'>
@@ -652,10 +672,14 @@ export default function Page() {
           selectedTempProject={selectedTempProject}
           selectedDevelopers={selectedDevelopers}
           setSelectedDevelopers={setSelectedDevelopers}
+          refetchDevelopersToGroup={refetchDevelopersToGroup}
         />
         <DeveloperGroupSelectionPanel
           isMutation={isMutation}
           selectedDevelopers={selectedDevelopers}
+          loadingDevelopersToGroup={loadingDevelopersToGroup}
+          developersToGroup={developersToGroup}
+          refetchDevelopersToGroup={refetchDevelopersToGroup}
         />
       </div>
     </>

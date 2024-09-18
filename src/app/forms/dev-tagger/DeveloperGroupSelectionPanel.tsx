@@ -39,9 +39,20 @@ const columns = [
 export function DeveloperGroupSelectionPanel({
   isMutation,
   selectedDevelopers,
+  loadingDevelopersToGroup,
+  developersToGroup,
+  refetchDevelopersToGroup,
 }: {
   isMutation: boolean;
   selectedDevelopers: SingleValue<{ label: string; value: string }>[];
+  loadingDevelopersToGroup: boolean;
+  developersToGroup:
+    | {
+        developerName: string;
+        developerId: string;
+      }[]
+    | undefined;
+  refetchDevelopersToGroup: () => void;
 }) {
   const [selectedDeveloperGroupId, setSelectedDeveloperGroupId] = useState<
     string | null
@@ -85,27 +96,6 @@ export function DeveloperGroupSelectionPanel({
     },
   });
 
-  const {
-    data: developersToGroup,
-    isLoading: loadingDevelopersToGroup,
-    refetch: refetchDevelopersToGroup,
-  } = useQuery({
-    queryKey: ['developer-to-group-options'],
-    queryFn: async () => {
-      const res = await axiosClient.get<{
-        data: {
-          id: string;
-          name: string;
-        }[];
-      }>('/developers/developers-to-group');
-      console.log(res.data.data);
-      const developersToGroup = res.data.data.map((item) => ({
-        developerName: item.name,
-        developerId: item.id,
-      }));
-      return developersToGroup;
-    },
-  });
   return loadingDevelopersToGroup || loadingDeveloperGroupOptions ? (
     <>
       {' '}

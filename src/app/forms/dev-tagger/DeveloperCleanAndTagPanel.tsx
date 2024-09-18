@@ -20,6 +20,7 @@ export function DeveloperCleanAndTagPanel({
   selectedTempProject,
   selectedDevelopers,
   setSelectedDevelopers,
+  refetchDevelopersToGroup,
 }: {
   isMutation: boolean;
   setIsMutation: Dispatch<SetStateAction<boolean>>;
@@ -45,6 +46,7 @@ export function DeveloperCleanAndTagPanel({
       }[]
     >
   >;
+  refetchDevelopersToGroup: () => void;
 }) {
   const [selectedDeveloperId, setSelectedDeveloperId] = useState<string>('');
   const [JVName, setJVName] = useState<string>('');
@@ -201,7 +203,7 @@ export function DeveloperCleanAndTagPanel({
                     registered_state: string | null;
                     director_names: string | null;
                   };
-                }>('/developers/' + e.value)
+                }>('/developers/' + e.value.replace('M', ''))
               ).data.data;
               gst_number = res?.gst_number;
               organization_type = res?.organization_type;
@@ -387,6 +389,7 @@ export function DeveloperCleanAndTagPanel({
             }
           );
           setSelectedDevelopers([]);
+          refetchDevelopersToGroup();
           refetchDevelopers();
         }}
       >
