@@ -1,10 +1,11 @@
-import { KeyboardEvent, useState } from 'react';
-import Select, { SingleValue } from 'react-select';
-import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
-import TanstackReactTable from './Table';
+import { useQuery } from '@tanstack/react-query';
 import { createColumnHelper } from '@tanstack/react-table';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { LuLoader2 } from 'react-icons/lu';
+import Select, { SingleValue } from 'react-select';
+import TanstackReactTable from './Table';
 
 const columnHelper = createColumnHelper<GroupSelectorTableRow>();
 export type GroupSelectorTableRow = {
@@ -38,11 +39,9 @@ const columns = [
 export function DeveloperGroupSelectionPanel({
   isMutation,
   selectedDevelopers,
-  developerSelectorTableData,
 }: {
   isMutation: boolean;
   selectedDevelopers: SingleValue<{ label: string; value: string }>[];
-  developerSelectorTableData: GroupSelectorTableRow[];
 }) {
   const [selectedDeveloperGroupId, setSelectedDeveloperGroupId] = useState<
     string | null
@@ -86,25 +85,36 @@ export function DeveloperGroupSelectionPanel({
     },
   });
 
-  const { data: developersToGroup, refetch: refetchDevelopersToGroup } =
-    useQuery({
-      queryKey: ['developer-to-group-options'],
-      queryFn: async () => {
-        const res = await axiosClient.get<{
-          data: {
-            id: string;
-            name: string;
-          }[];
-        }>('/developers/developers-to-group');
-        console.log(res.data.data);
-        const developersToGroup = res.data.data.map((item) => ({
-          developerName: item.name,
-          developerId: item.id,
-        }));
-        return developersToGroup;
-      },
-    });
-  return (
+  const {
+    data: developersToGroup,
+    isLoading: loadingDevelopersToGroup,
+    refetch: refetchDevelopersToGroup,
+  } = useQuery({
+    queryKey: ['developer-to-group-options'],
+    queryFn: async () => {
+      const res = await axiosClient.get<{
+        data: {
+          id: string;
+          name: string;
+        }[];
+      }>('/developers/developers-to-group');
+      console.log(res.data.data);
+      const developersToGroup = res.data.data.map((item) => ({
+        developerName: item.name,
+        developerId: item.id,
+      }));
+      return developersToGroup;
+    },
+  });
+  return loadingDevelopersToGroup || loadingDeveloperGroupOptions ? (
+    <>
+      {' '}
+      <div className='flex h-screen flex-col items-center justify-center'>
+        <LuLoader2 size={40} className='animate-spin' />
+        <div className='text-2xl font-bold'>Loading Developer Groups...</div>
+      </div>
+    </>
+  ) : (
     <div
       id='developer-group'
       className='relative mb-2 flex h-[90dvh] w-full flex-col justify-between gap-2 border border-solid p-5'

@@ -2,16 +2,12 @@
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
 import { uniqWith } from 'lodash';
-import { ChangeEvent, KeyboardEvent, useState } from 'react';
+import { KeyboardEvent, useState } from 'react';
+import toast from 'react-hot-toast';
 import { LuLoader, LuMoveRight } from 'react-icons/lu';
 import Select, { SingleValue } from 'react-select';
-import toast from 'react-hot-toast';
-// @ts-expect-error  third party
-import SelectVirtualized from 'react-select-virtualized';
-import {
-  DeveloperGroupSelectionPanel,
-  GroupSelectorTableRow,
-} from './DeveloperGroupSelectionPanel';
+import { DeveloperGroupSelectionPanel } from './DeveloperGroupSelectionPanel';
+import { DeveloperCleanAndTagPanel } from './DeveloperCleanAndTagPanel';
 export default function Page() {
   // states
   const [selectedDistrict, setSelectedDistrict] = useState<{
@@ -96,9 +92,6 @@ export default function Page() {
 
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState('');
-  const [developerEditingIndex, setDeveloperEditingIndex] =
-    useState<number>(-1);
-  const [developerInputValue, setDeveloperInputValue] = useState<string>('');
 
   const [isMutation, setIsMutation] = useState<boolean>(true);
   useState<number>(-1);
@@ -111,11 +104,6 @@ export default function Page() {
     }[]
   >([]);
 
-  const [developerSelectorTableData, setDeveloperSelectorTableData] = useState<
-    GroupSelectorTableRow[]
-  >([]);
-  const [selectedDeveloperId, setSelectedDeveloperId] = useState<string>('');
-  const [JVName, setJVName] = useState<string>('');
   // queries
   const { isLoading } = useQuery({
     queryKey: ['village-project-cleaner'],
@@ -163,7 +151,10 @@ export default function Page() {
           id: string;
           name: string;
         }[];
-      }>('/temp-projects?village_id=' + selectedVillage?.value);
+      }>(
+        '/temp-projects/developer-tagger/get-projects-to-tag-keywords?village_id=' +
+          selectedVillage?.value
+      );
       const tempProjects = res.data.data.map((item) => ({
         label: `${item.id}:${item.name}`,
         value: item.id,
@@ -196,51 +187,11 @@ export default function Page() {
     },
   });
 
-  const { data: developerOptions, isLoading: loadingDevelopers } = useQuery({
-    queryKey: ['developers'],
-    queryFn: async () => {
-      const res = await axiosClient.get<{
-        data: {
-          developer_id: string;
-          developer_name: string;
-        }[];
-      }>('/developers');
-      const developers = res.data.data.map((item) => ({
-        label: `${item.developer_id}:${item.developer_name}`,
-        value: item.developer_id,
-      }));
-
-      const developerSelectorTableData = res.data.data.map((item) => ({
-        developerName: item.developer_name,
-        developerId: item.developer_id,
-      }));
-      setDeveloperSelectorTableData(developerSelectorTableData);
-      return developers;
-    },
-    staleTime: 12031,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
-
   // handlers
 
   const handleDoubleClickToEdit = (index: number, value: string) => {
     setEditingIndex(index);
     setInputValue(value);
-    const inp = document.getElementById('keywords-edit-input') as
-      | HTMLInputElement
-      | undefined;
-    if (inp) {
-      inp?.focus();
-      const end = inp?.value.length;
-      inp.setSelectionRange(end, end);
-    }
-  };
-
-  const handleDoubleClickToEditDeveloper = (index: number, value: string) => {
-    console.log('double click Developer', index, value);
-    setDeveloperEditingIndex(index);
-    setDeveloperInputValue(value);
     const inp = document.getElementById('keywords-edit-input') as
       | HTMLInputElement
       | undefined;
@@ -322,24 +273,6 @@ export default function Page() {
     }
   }
 
-  function handleOnDeveloperKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-    console.log('handleOnDeveloperKeyDown', developerEditingIndex, e);
-    if (e.key === 'Enter' || e.key === 'Escape') {
-      handleOnDeveloperInputBlur();
-    } else if (e.key === 'Tab' && developerEditingIndex != null) {
-      e.preventDefault();
-      if (selectedDevelopers.length === developerEditingIndex + 1) {
-        handleOnDeveloperInputBlur();
-      } else {
-        handleOnDeveloperInputBlur();
-        setDeveloperEditingIndex(developerEditingIndex + 1);
-        setDeveloperInputValue(
-          selectedDevelopers[developerEditingIndex + 1].label
-        );
-      }
-    }
-  }
-
   function handleOnBlur() {
     if (editingIndex != null) {
       setTaggedKeywords((prev) => {
@@ -354,25 +287,6 @@ export default function Page() {
         });
       });
       setEditingIndex(null);
-    }
-  }
-
-  function handleOnDeveloperInputBlur() {
-    console.log('handleOnDeveloperInputBlur', developerEditingIndex);
-    if (developerEditingIndex != null) {
-      setSelectedDevelopers((prev) => {
-        return prev.map((ele, i) => {
-          if (i === developerEditingIndex) {
-            return {
-              ...ele,
-              label: developerInputValue,
-            };
-          }
-          return ele;
-        });
-      });
-      setDeveloperEditingIndex(-1);
-      setDeveloperInputValue('');
     }
   }
 
@@ -401,10 +315,6 @@ export default function Page() {
         error: 'Error',
       }
     );
-  }
-
-  function handleOnDeveloperRadioChange(e: ChangeEvent<HTMLInputElement>) {
-    setSelectedDeveloperId(e.target.value);
   }
 
   return (
@@ -720,246 +630,20 @@ export default function Page() {
       ) : null}
       <div className='mx-10 flex flex-col gap-5'>
         {/* card to select exisitng developers and/or new ones */}
-        <div className='flex h-[80dvh] w-full justify-between gap-16 border border-solid'>
-          <div
-            id='developer'
-            className='flex h-full w-full flex-col justify-between gap-5 border border-solid p-5'
-          >
-            {loadingDevelopers ? (
-              <>
-                {' '}
-                <div className='flex h-[50dvh] flex-col items-center justify-center'>
-                  <LuLoader size={40} className='animate-spin' />
-                  <div className='text-2xl font-bold'>
-                    Loading Developers...
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <h3 className='text-center text-2xl font-semibold'>
-                  Select Developers to Tag to This Project or to Create
-                  Mutations
-                </h3>
-                <SelectVirtualized
-                  className='w-full self-start'
-                  key={'developer-name-filler'}
-                  options={
-                    developerOptions
-                      ?.filter((ele) => {
-                        return (
-                          (!isMutation &&
-                            (ele.value.startsWith('M') ||
-                              (selectedTempProject &&
-                                ele.value.startsWith('J')))) ||
-                          isMutation
-                        );
-                      })
-                      .filter(
-                        (item) =>
-                          !selectedDevelopers.some(
-                            (ele) => ele.value === item.value
-                          )
-                      ) || []
-                  }
-                  // closeMenuOnSelect={false}
-                  onChange={async (
-                    e: SingleValue<{
-                      label: string;
-                      value: string;
-                    }>
-                  ) => {
-                    if (e) {
-                      let gst_number: string | null;
-                      let organization_type: string | null;
-                      if (e.value.startsWith('R')) {
-                        const res = (
-                          await axiosClient.get<{
-                            data: {
-                              developer_id: string;
-                              developer_name: string;
-                              organization_type: string;
-                              gst_number: string | null;
-                              mca_id: string | null;
-                              police_case_flag: boolean;
-                              court_cases_flag: boolean;
-                              case_numbers: string | null;
-                              registered_state: string | null;
-                              director_names: string | null;
-                            };
-                          }>('/developers/' + e.value)
-                        ).data.data;
-                        gst_number = res?.gst_number;
-                        organization_type = res?.organization_type;
-                      }
-                      setSelectedDevelopers((prev) => [
-                        ...prev,
-                        {
-                          label: e.label.split(':')[1],
-                          value: e.value,
-                          gst_number: gst_number,
-                          organization_type: organization_type,
-                        },
-                      ]);
-                    }
-                  }}
-                  isDisabled={
-                    selectedDevelopers.filter((ele) =>
-                      ele.value.startsWith('J')
-                    ).length > 0 || selectedTempProject?.value === ''
-                  }
-                  // menuIsOpen
-                />
-                {!isMutation && selectedDevelopers.length > 0 && (
-                  <label
-                    htmlFor='jv-name'
-                    className='flex items-center justify-center gap-3 self-center'
-                  >
-                    <span className='text-balance text-center text-base font-semibold md:text-xl'>
-                      Enter JV Name :
-                    </span>
-                    <input
-                      type='text'
-                      className='input input-bordered w-96'
-                      name='jv-name'
-                      value={JVName}
-                      onChange={(e) => {
-                        setJVName(e.target.value);
-                      }}
-                    />
-                  </label>
-                )}
-                <ul className='flex flex-1 flex-col gap-2 overflow-y-auto py-2'>
-                  {selectedDevelopers?.map((selectedDeveloper, index) => (
-                    <li
-                      className='flex flex-row items-center justify-between gap-2 text-pretty'
-                      key={index}
-                    >
-                      {isMutation ? (
-                        <input
-                          type='radio'
-                          className='radio checked:bg-violet-600'
-                          name='developer-radio'
-                          value={selectedDeveloper.value}
-                          checked={
-                            selectedDeveloper.value === selectedDeveloperId
-                          }
-                          onChange={handleOnDeveloperRadioChange}
-                        />
-                      ) : null}
-                      {developerEditingIndex === index ? (
-                        <input
-                          id='keywords-edit-input'
-                          className='input input-bordered w-full flex-[4]'
-                          type='text'
-                          onChange={(e) => {
-                            setDeveloperInputValue(e.target.value);
-                          }}
-                          value={developerInputValue}
-                          onBlur={handleOnDeveloperInputBlur}
-                          onKeyDown={handleOnDeveloperKeyDown}
-                          autoFocus
-                        />
-                      ) : (
-                        <span
-                          className='btn btn-sm h-fit max-w-[80%] flex-[4] self-start !whitespace-break-spaces !break-all py-2 text-left font-normal leading-5 hover:bg-slate-50'
-                          onDoubleClick={() => {
-                            handleDoubleClickToEditDeveloper(
-                              index,
-                              selectedDeveloper.label
-                            );
-                          }}
-                        >
-                          {selectedDeveloper.label}
-                        </span>
-                      )}
-                      <span className='btn no-animation my-auto h-full w-60 min-w-fit self-center rounded-lg bg-emerald-200 p-[1px] text-center align-middle'>
-                        {selectedDeveloper.organization_type || 'NA'}
-                      </span>
-                      <span className='btn no-animation my-auto h-full w-60 min-w-fit self-center rounded-lg bg-emerald-200 p-[1px] text-center align-middle'>
-                        {selectedDeveloper.gst_number || 'NA'}
-                      </span>
-                      <span className='btn no-animation my-auto h-full w-24 self-center rounded-lg bg-emerald-200 p-[1px] text-center align-middle'>
-                        {selectedDeveloper.value || 'N'}
-                      </span>
-                      <button
-                        onClick={() =>
-                          setSelectedDevelopers((prev) => {
-                            return prev.filter(
-                              (item, item_index) => item_index !== index
-                            );
-                          })
-                        }
-                        className='btn no-animation rounded-lg bg-emerald-200 p-[1px] text-3xl'
-                      >
-                        ❌
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-                <div className='flex w-full flex-row justify-center gap-2'>
-                  <span>IS JV</span>
-                  <input
-                    type='checkbox'
-                    className='toggle'
-                    checked={isMutation}
-                    onChange={(e) => {
-                      setIsMutation(e.target.checked);
-                      setSelectedDevelopers([]);
-                    }}
-                  />
-                  <span>Is Mutation</span>
-                </div>
-                <button
-                  className='btn w-full'
-                  onClick={() => {
-                    const to_set = [
-                      ...selectedDevelopers.filter((item) => item.label !== ''),
-                      {
-                        label: '',
-                        value: '',
-                      },
-                    ];
-                    setSelectedDevelopers(to_set);
-                    setDeveloperEditingIndex(to_set.length);
-                    setDeveloperInputValue('');
-                  }}
-                >
-                  Add Developer
-                </button>
-                <button
-                  className='btn-rezy w-40 self-center'
-                  onClick={() => {
-                    console.log({
-                      selectedDevelopers,
-                      mutationPriority: selectedDeveloperId,
-                    });
-                  }}
-                >
-                  Submit
-                </button>
-              </>
-            )}
-          </div>
-          {/* card to add jlv partners for the developer ^ */}
-        </div>
-        {loadingDevelopers ? (
-          <>
-            {' '}
-            <div className='flex h-screen flex-col items-center justify-center'>
-              <LuLoader size={40} className='animate-spin' />
-              <div className='text-2xl font-bold'>
-                Loading Developer Groups...
-              </div>
-            </div>
-          </>
-        ) : (
-          <DeveloperGroupSelectionPanel
-            isMutation={isMutation}
-            selectedDevelopers={selectedDevelopers}
-            developerSelectorTableData={developerSelectorTableData}
-          />
-        )}
+        {/* card to add jlv partners for the developer ^ */}
+        (
+        <DeveloperCleanAndTagPanel
+          isMutation={isMutation}
+          setIsMutation={setIsMutation}
+          selectedTempProject={selectedTempProject}
+          selectedDevelopers={selectedDevelopers}
+          setSelectedDevelopers={setSelectedDevelopers}
+        />
+        )
+        <DeveloperGroupSelectionPanel
+          isMutation={isMutation}
+          selectedDevelopers={selectedDevelopers}
+        />
       </div>
     </>
   );
