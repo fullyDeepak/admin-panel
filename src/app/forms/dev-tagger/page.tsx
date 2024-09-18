@@ -290,33 +290,6 @@ export default function Page() {
       setEditingIndex(null);
     }
   }
-
-  if (isLoading) {
-    return (
-      <div className='flex h-[50dvh] flex-col items-center justify-center'>
-        <LuLoader size={40} className='animate-spin' />
-        <div className='text-5xl font-bold'>Loading DMVs...</div>
-      </div>
-    );
-  }
-
-  async function submitKeywords(data: {
-    project_id?: string;
-    keywords: typeof taggedKeywords;
-  }) {
-    await toast.promise(
-      axiosClient.post('/temp-projects/developer-tagger/post-keywords', data),
-      {
-        loading: 'Submitting keywords...',
-        success: () => {
-          setTaggedKeywords([]);
-          setSelectedTempProject(null);
-          return 'Keyword Submitted';
-        },
-        error: 'Error',
-      }
-    );
-  }
   const {
     data: developersToGroup,
     isLoading: loadingDevelopersToGroup,
@@ -338,7 +311,31 @@ export default function Page() {
       return developersToGroup;
     },
   });
-  return (
+
+  async function submitKeywords(data: {
+    project_id?: string;
+    keywords: typeof taggedKeywords;
+  }) {
+    await toast.promise(
+      axiosClient.post('/temp-projects/developer-tagger/post-keywords', data),
+      {
+        loading: 'Submitting keywords...',
+        success: () => {
+          setTaggedKeywords([]);
+          setSelectedTempProject(null);
+          return 'Keyword Submitted';
+        },
+        error: 'Error',
+      }
+    );
+  }
+
+  return isLoading ? (
+    <div className='flex h-[50dvh] flex-col items-center justify-center'>
+      <LuLoader size={40} className='animate-spin' />
+      <div className='text-5xl font-bold'>Loading DMVs...</div>
+    </div>
+  ) : (
     <>
       <div className='mb-8 mt-10 flex flex-col justify-center'>
         <h1 className='mb-4 text-center text-3xl font-semibold underline'>
