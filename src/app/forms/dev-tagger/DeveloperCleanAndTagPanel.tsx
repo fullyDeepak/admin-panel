@@ -182,6 +182,25 @@ export function DeveloperCleanAndTagPanel({
                     registered_state: string | null;
                     director_names: string | null;
                   };
+                }>('/developers/' + e.value + '?type=rera')
+              ).data.data;
+              gst_number = res?.gst_number;
+              organization_type = res?.organization_type;
+            } else if (e.value.startsWith('M')) {
+              const res = (
+                await axiosClient.get<{
+                  data: {
+                    developer_id: string;
+                    developer_name: string;
+                    organization_type: string;
+                    gst_number: string | null;
+                    mca_id: string | null;
+                    police_case_flag: boolean;
+                    court_cases_flag: boolean;
+                    case_numbers: string | null;
+                    registered_state: string | null;
+                    director_names: string | null;
+                  };
                 }>('/developers/' + e.value)
               ).data.data;
               gst_number = res?.gst_number;
