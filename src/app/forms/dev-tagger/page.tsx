@@ -163,6 +163,7 @@ export default function Page() {
       setTaggedKeywords([]);
       return res.data.data;
     },
+    refetchOnWindowFocus: false,
   });
 
   const { isLoading: loadingKeywords } = useQuery({

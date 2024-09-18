@@ -1,5 +1,6 @@
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import {
   Dispatch,
   SetStateAction,
@@ -7,6 +8,7 @@ import {
   ChangeEvent,
   KeyboardEvent,
 } from 'react';
+import toast from 'react-hot-toast';
 import { LuLoader2 } from 'react-icons/lu';
 import { SingleValue } from 'react-select';
 // @ts-expect-error  third party
@@ -303,12 +305,20 @@ export function DeveloperCleanAndTagPanel({
             ...selectedDevelopers.filter((item) => item.label !== ''),
             {
               label: '',
-              value: '',
+              value: 'N' + selectedDevelopers.length,
             },
           ];
           setSelectedDevelopers(to_set);
-          setDeveloperEditingIndex(to_set.length);
+          setDeveloperEditingIndex(to_set.length - 1);
           setDeveloperInputValue('');
+          const inp = document.getElementById('keywords-edit-input') as
+            | HTMLInputElement
+            | undefined;
+          if (inp) {
+            inp?.focus();
+            const end = inp?.value.length;
+            inp.setSelectionRange(end, end);
+          }
         }}
       >
         Add Developer
@@ -316,6 +326,10 @@ export function DeveloperCleanAndTagPanel({
       <button
         className='btn-rezy w-40 self-center'
         onClick={async () => {
+          if (isMutation && !selectedDeveloperId) {
+            toast.error('Select a dominant developer first.');
+            return;
+          }
           const toPost = {
             project_id: selectedTempProject?.value,
             is_mutation: isMutation,
@@ -329,7 +343,25 @@ export function DeveloperCleanAndTagPanel({
             }),
             mutationPriority: selectedDeveloperId,
           };
-          await axiosClient.post('/developers/attach-to-project', toPost);
+          toast.promise(
+            axiosClient.post('/developers/attach-to-project', toPost),
+            {
+              error: (e) => {
+                return (
+                  'Failed to Submit : ' +
+                    (
+                      e as AxiosError<{
+                        message: string;
+                      }>
+                    ).response?.data.message || 'Error'
+                );
+              },
+              loading: 'Tagging developers...',
+              success: () => {
+                return 'Developers attached to project.';
+              },
+            }
+          );
         }}
       >
         Submit
