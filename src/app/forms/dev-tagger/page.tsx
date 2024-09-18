@@ -339,6 +339,7 @@ export default function Page() {
                 }>
               ) => {
                 setSelectedDistrict(e);
+                console.log('district changed', e);
                 if (e) {
                   const mandalOpts = dmvData
                     ?.find((item) => item.district_id === e.value)
@@ -346,10 +347,12 @@ export default function Page() {
                       label: `${item.mandal_id}:${item.mandal_name}`,
                       value: item.mandal_id,
                     }));
+                  console.log('mandal options', mandalOpts);
                   setMandalOptions(mandalOpts || []);
                 } else {
                   setMandalOptions([]);
                 }
+                setSelectedMandal(null);
               }}
             />
           </label>
@@ -367,14 +370,25 @@ export default function Page() {
                 }>
               ) => {
                 setSelectedMandal(e);
+                console.log('mandal changed', e);
                 if (e) {
+                  console.log(
+                    dmvData
+                      ?.find(
+                        (item) => item.district_id === selectedDistrict?.value
+                      )
+                      ?.mandals.find((item) => item.mandal_id === e.value)
+                  );
                   const villageOpts = dmvData
-                    ?.find((item) => item.district_id === e.value)
+                    ?.find(
+                      (item) => item.district_id === selectedDistrict?.value
+                    )
                     ?.mandals.find((item) => item.mandal_id === e.value)
                     ?.villages.map((item) => ({
                       label: `${item.village_id}:${item.village_name}`,
                       value: item.village_id,
                     }));
+                  console.log('village options', villageOpts);
                   setVillageOptions(villageOpts || []);
                 } else {
                   setVillageOptions([]);
