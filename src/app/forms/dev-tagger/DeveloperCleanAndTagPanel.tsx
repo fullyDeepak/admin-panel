@@ -103,7 +103,11 @@ export function DeveloperCleanAndTagPanel({
     }
   };
 
-  const { data: developerOptions, isLoading: loadingDevelopers } = useQuery({
+  const {
+    data: developerOptions,
+    isLoading: loadingDevelopers,
+    refetch: refetchDevelopers,
+  } = useQuery({
     queryKey: ['developers'],
     queryFn: async () => {
       const res = await axiosClient.get<{
@@ -363,6 +367,8 @@ export function DeveloperCleanAndTagPanel({
               },
             }
           );
+          setSelectedDevelopers([]);
+          refetchDevelopers();
         }}
       >
         Submit
