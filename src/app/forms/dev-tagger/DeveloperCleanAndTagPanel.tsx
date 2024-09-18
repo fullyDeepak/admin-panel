@@ -333,6 +333,7 @@ export function DeveloperCleanAndTagPanel({
           const toPost = {
             project_id: selectedTempProject?.value,
             is_mutation: isMutation,
+            JVName: JVName,
             developers: selectedDevelopers.map((ele) => {
               const developer_name = ele.label;
               const root_developer_id = ele.value;

@@ -646,7 +646,6 @@ export default function Page() {
       <div className='mx-10 flex flex-col gap-5'>
         {/* card to select exisitng developers and/or new ones */}
         {/* card to add jlv partners for the developer ^ */}
-        (
         <DeveloperCleanAndTagPanel
           isMutation={isMutation}
           setIsMutation={setIsMutation}
@@ -654,7 +653,6 @@ export default function Page() {
           selectedDevelopers={selectedDevelopers}
           setSelectedDevelopers={setSelectedDevelopers}
         />
-        )
         <DeveloperGroupSelectionPanel
           isMutation={isMutation}
           selectedDevelopers={selectedDevelopers}

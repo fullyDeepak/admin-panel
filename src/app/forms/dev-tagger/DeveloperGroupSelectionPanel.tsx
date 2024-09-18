@@ -137,7 +137,7 @@ export function DeveloperGroupSelectionPanel({
             : 'Select developers to add as Sibling Organizations to the Developer group'}
         </span>
         <Select
-          className='w-1/2'
+          className='z-50 w-1/2'
           key={'developer-jlv-selection'}
           options={developerGroupOptions || []}
           isLoading={loadingDeveloperGroupOptions}
