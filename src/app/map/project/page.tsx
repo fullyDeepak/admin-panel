@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
-import { ProjectList, useProjectMapStore } from './useProjectMapStore';
+import { ProjectListItem, useProjectMapStore } from './useProjectMapStore';
 import axiosClient from '@/utils/AxiosClient';
 import ProjectListings from './ProjectListings';
 import { useEffect } from 'react';
@@ -19,7 +19,7 @@ export default function Page() {
     queryKey: [currentBoundArea],
     queryFn: async () => {
       try {
-        const res = await axiosClient.post<{ data: ProjectList[] }>(
+        const res = await axiosClient.post<{ data: ProjectListItem[] }>(
           '/map/projects',
           currentBoundArea
         );

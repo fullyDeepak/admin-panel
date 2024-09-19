@@ -8,9 +8,10 @@ import {
   TileLayer,
   GeoJSON,
   GeoJSONProps,
+  Tooltip,
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Icon, LatLngTuple } from 'leaflet';
+import { divIcon, Icon, LatLngTuple } from 'leaflet';
 import './leaflet.css';
 import MapBound from './MapBound';
 import { useProjectMapStore } from './useProjectMapStore';
@@ -23,7 +24,7 @@ import L, { MarkerCluster } from 'leaflet';
 
 export default function MapInterface() {
   // 17.405554296679586, lng: 78.47234601561512
-  const center: LatLngTuple = [17.4, 78.47];
+  const center: LatLngTuple = [17.418136769166217, 78.33019660095187];
   const mapLayer = [
     {
       name: 'Google Terrain',
@@ -51,10 +52,12 @@ export default function MapInterface() {
     },
   ];
 
-  const { projectList } = useProjectMapStore();
-  const projectIcon = new Icon({
-    iconUrl: projectPin.src,
-    iconSize: [38, 38],
+  const projectList = useProjectMapStore((state) => state.projectList);
+  const projectIcon = divIcon({
+    html: `<span></span>`,
+    className:
+      'bg-[#f9a898] pulse-dot hover:z-50 anim duration-300 transition-all shadow-[0px_0px_3px_0px_#00000024] hover:bg-[#a45e52] font-gsans border-2 border-[#a45e52] rounded-full',
+    iconSize: L.point(16, 16),
   });
   const villaIcon = new Icon({
     iconUrl: villaPin.src,
@@ -70,7 +73,7 @@ export default function MapInterface() {
     return L.divIcon({
       html: `<span>${newCount}</span>`,
       className:
-        'bg-[#a45e52]/70 leading-[45px] font-gsans border-4 border-[#a45e52] rounded-full text-white text-lg text-center',
+        'bg-[#a45e52]/70 duration-300 transition-all shadow-[0px_0px_3px_0px_#00000024] hover:bg-[#a45e52] leading-[45px] font-gsans border border-[#a45e52] rounded-full text-white text-lg text-center',
       iconSize: L.point(50, 50, true),
     });
   };
@@ -97,7 +100,7 @@ export default function MapInterface() {
             chunkedLoading
             showCoverageOnHover={false}
             removeOutsideVisibleBounds={true}
-            disableClusteringAtZoom={16} //discuss this
+            disableClusteringAtZoom={14} //discuss this
           >
             {projectList.map((project, index) => (
               <Marker
@@ -105,7 +108,12 @@ export default function MapInterface() {
                 icon={
                   project.display_project_type === 'APARTMENT'
                     ? projectIcon
-                    : villaIcon
+                    : divIcon({
+                        html: `<span>&#8377;123k</span>`,
+                        className:
+                          'bg-[#a45e52] pulse-dot text-center text-white duration-300 transition-all shadow-[0px_0px_3px_0px_#00000024] hover:bg-[#a45e52] font-gsans border-2 border-[#a45e52] rounded-full',
+                        iconSize: L.point(50, 20, true),
+                      })
                 }
                 key={'marker' + index}
                 eventHandlers={{
@@ -119,6 +127,10 @@ export default function MapInterface() {
                     projectType={project.display_project_type}
                   />
                 </Popup>
+
+                {/* <Tooltip permanent direction='center'>
+                  TOOLTIP
+                </Tooltip> */}
               </Marker>
             ))}
           </MarkerClusterGroup>

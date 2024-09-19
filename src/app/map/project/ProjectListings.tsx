@@ -1,6 +1,6 @@
-import { ProjectList } from './useProjectMapStore';
+import { ProjectListItem } from './useProjectMapStore';
 
-type Props = { projectData: ProjectList[] };
+type Props = { projectData: ProjectListItem[] };
 
 export default function ProjectListings({ projectData }: Props) {
   return (

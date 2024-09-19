@@ -19,3 +19,25 @@
   height: 100%;
   z-index: 0;
 }
+
+@keyframes pulse-outline {
+  0% {
+    outline-style: solid;
+    outline-color: white;
+    outline-width: 3px;
+  }
+  50% {
+    outline-style: solid;
+    outline-color: white;
+    outline-width: 7px;
+  }
+  100% {
+    outline-style: solid;
+    outline-color: white;
+    outline-width: 3px;
+  }
+}
+
+.pulse-dot:hover {
+  animation: pulse-outline 1s infinite;
+}

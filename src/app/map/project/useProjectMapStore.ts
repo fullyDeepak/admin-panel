@@ -2,7 +2,7 @@ import { AllGeoJSON } from '@turf/helpers';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
-export type ProjectList = {
+export type ProjectListItem = {
   id: number;
   name: string;
   lng: number;
@@ -18,7 +18,7 @@ type State = {
     ne_lng: number;
     ne_lat: number;
   };
-  projectList: ProjectList[];
+  projectList: ProjectListItem[];
 };
 
 type Actions = {
@@ -27,10 +27,10 @@ type Actions = {
 };
 
 const INITIAL_BOUND_AREA = {
-  sw_lng: 78.31913051868275,
-  sw_lat: 17.395241363571785,
-  ne_lng: 78.33433327937918,
-  ne_lat: 17.400759645571647,
+  sw_lng: 78.21192348305861,
+  sw_lat: 17.346385140857983,
+  ne_lng: 78.4532793790547,
+  ne_lat: 17.50951109963415,
 };
 
 export const useProjectMapStore = create<State & Actions>()(
