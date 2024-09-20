@@ -106,7 +106,7 @@ export default function Page() {
 
   // queries
   const { isLoading } = useQuery({
-    queryKey: ['village-project-cleaner'],
+    queryKey: ['village-project-cleaner-developer-tagger'],
     queryFn: async () => {
       const res = await axiosClient.get<{
         data: {
@@ -138,6 +138,7 @@ export default function Page() {
     },
     staleTime: Infinity,
   });
+
   const {
     isLoading: loadingTempProjects,
     isError,
@@ -150,13 +151,14 @@ export default function Page() {
         data: {
           id: string;
           name: string;
+          occurrence_count: number;
         }[];
       }>(
         '/temp-projects/developer-tagger/get-projects-to-tag-keywords?village_id=' +
           selectedVillage?.value
       );
       const tempProjects = res.data.data.map((item) => ({
-        label: `${item.id}:${item.name}`,
+        label: `${item.id}:${item.name} (${item.occurrence_count})`,
         value: item.id,
       }));
       setTempProjectOptions(tempProjects);
@@ -339,7 +341,7 @@ export default function Page() {
     <>
       <div className='mb-8 mt-10 flex flex-col justify-center'>
         <h1 className='mb-4 text-center text-3xl font-semibold underline'>
-          Village Project Cleaner
+          Developer Tagger Cleaner
         </h1>
         <div className='z-10 mt-5 flex w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
           <label className='flex items-center justify-between gap-5'>
