@@ -276,7 +276,7 @@ export function DeveloperGroupSelectionPanel({
           await axiosClient.post('/developers/attach-to-group', to_post);
           toast.success('Developers attached to group.');
           await refetchDeveloperGroupOptions();
-          await refetchDevelopersToGroup();
+          refetchDevelopersToGroup();
           setSelectingGroupMembers(true);
           setSelectedRows([]);
           setRowSelection({});

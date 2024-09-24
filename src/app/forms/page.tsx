@@ -59,6 +59,12 @@ export default function FormHomePage() {
           >
             Developer Tagger
           </Link>
+          <Link
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+            href={'/forms/root-doc-verification'}
+          >
+            Root Doc Verification
+          </Link>
         </div>
         <div className='flex w-fit flex-col gap-4 text-gray-500'>
           <h2 className='text-center text-xl font-semibold'>
