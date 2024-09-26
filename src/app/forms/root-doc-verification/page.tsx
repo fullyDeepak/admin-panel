@@ -131,7 +131,7 @@ export default function Page() {
     refetchOnWindowFocus: false,
   });
 
-  const { isLoading: loadingRootDocs } = useQuery({
+  const { data: rootDocs, isLoading: loadingRootDocs } = useQuery({
     queryKey: ['projects-root-docs', selectedProject],
     queryFn: async () => {
       if (!selectedProject) return null;
@@ -303,15 +303,19 @@ export default function Page() {
           <LuLoader2 size={40} className='animate-spin' />
           <span>Loading Root Docs</span>
         </div>
+      ) : !rootDocs ? (
+        <div className='flex flex-col items-center justify-center text-2xl font-semibold'>
+          <span>No Root Docs found</span>
+        </div>
       ) : (
         <div className='m-5 overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
           <table className='relative w-full border-collapse bg-white text-sm text-gray-700'>
             <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50'>
               <tr>
-                <th className='z-0 max-w-7xl px-4 py-4 font-semibold text-gray-900'>
+                <th className='z-0 w-36 max-w-7xl px-4 py-4 font-semibold text-gray-900'>
                   Doc ID
                 </th>
-                <th className='z-0 max-w-7xl px-4 py-4 font-semibold text-gray-900'>
+                <th className='z-0 w-40 max-w-7xl px-4 py-4 font-semibold text-gray-900'>
                   Doc ID Schedule
                 </th>
                 <th className='z-0 max-w-7xl px-4 py-4 font-semibold text-gray-900'>
