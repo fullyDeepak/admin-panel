@@ -347,7 +347,10 @@ export default function Page() {
                     await axiosClient.post(
                       '/cleaners/toggle-root-doc-attach-status',
                       {
-                        project_id: selectedProject?.value,
+                        project_id:
+                          selectedProject?.value.charAt(0) === 'O'
+                            ? selectedProject?.value.replace('O', '')
+                            : selectedProject?.value,
                         project_type:
                           selectedProject?.value.charAt(0) === 'O'
                             ? 'ONBOARDED'
