@@ -1,5 +1,5 @@
 import { createColumnHelper } from '@tanstack/react-table';
-
+import _ from 'lodash';
 export type RawAptDataRow = {
   district_name: string;
   district_id: string;
@@ -31,7 +31,17 @@ export const rawAptSelectionColumns = [
     meta: {
       filterVariant: 'text',
     },
-    filterFn: 'includesString',
+    filterFn: (row, columnId, filter: string) => {
+      const negativeSearchTerm = filter.startsWith('!');
+      const searchTerm = negativeSearchTerm ? filter.slice(1) : filter;
+      if (searchTerm) {
+        const match = (row.getValue(columnId) as string)
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+        return negativeSearchTerm ? !match : match;
+      }
+      return true;
+    },
   }),
   columnHelper.accessor('clean_survey', {
     header: 'Clean Survey',
