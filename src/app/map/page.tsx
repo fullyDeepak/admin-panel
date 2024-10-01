@@ -25,6 +25,14 @@ export default function MapPage() {
             Project Map
           </Link>
         </div>
+        <div className='flex w-fit flex-col gap-4 text-gray-500'>
+          <Link
+            href={'/map/draw'}
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+          >
+            Draw on Map
+          </Link>
+        </div>
       </div>
     </div>
   );
