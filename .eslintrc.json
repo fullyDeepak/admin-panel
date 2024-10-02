@@ -21,5 +21,9 @@
         "ignoreRestSiblings": true
       }
     ]
+  },
+  "globals": {
+    "React": "readonly",
+    "JSX": true
   }
 }

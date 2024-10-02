@@ -77,6 +77,12 @@ export default function FormHomePage() {
             Onboard Project
           </Link>
           <Link
+            href={'/forms/onboard-new-project'}
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+          >
+            Onboard Project (NEW)
+          </Link>
+          <Link
             href={'/forms/project-tower-edit'}
             className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
