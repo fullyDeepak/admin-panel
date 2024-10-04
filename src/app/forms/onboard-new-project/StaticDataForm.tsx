@@ -1,10 +1,13 @@
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
 import { SingleValue } from 'react-select';
 import _ from 'lodash';
+import dynamic from 'next/dynamic';
+import ChipInput from '@/components/ui/Chip';
+import ProjectMatcherSection from './ProjectMatcherSection';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
@@ -150,6 +153,15 @@ export default function StaticDataForm() {
     },
     staleTime: Infinity,
   });
+  const MapInterface = useMemo(
+    () =>
+      dynamic(() => import('./MapInterface'), {
+        ssr: false,
+      }),
+    []
+  );
+  const [layoutTags, setLayoutTags] = useState<string[]>([]);
+  const [colonyTags, setColonyTags] = useState<string[]>([]);
   return (
     <div className='z-10 mt-5 flex min-h-screen w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
       <label className='flex items-center justify-between gap-5'>
@@ -418,15 +430,15 @@ export default function StaticDataForm() {
       </label>
       <label className='flex items-center justify-between gap-5'>
         <span>Layout/Micromarket/Colony Tags : </span>
-        <span>Chips</span>
+        <ChipInput chips={layoutTags} updateChipsFn={setLayoutTags} />
       </label>
       <label className='flex items-center justify-between gap-5'>
         <span>Colony Tags: </span>
-        <span>Chips</span>
+        <ChipInput chips={colonyTags} updateChipsFn={setColonyTags} />
       </label>
-      <label className='flex items-center justify-between gap-5'>
+      <label className='flex flex-col items-start justify-between gap-5'>
         <span>Map Layers/ Shape File / Location : </span>
-        ....
+        <MapInterface />
       </label>
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>Project Type:</span>
@@ -494,6 +506,7 @@ export default function StaticDataForm() {
         <span className='flex-[2] text-base md:text-xl'>Luxury Project?:</span>
         <input type='checkbox' className='toggle toggle-primary' />
       </label>
+      <ProjectMatcherSection />
     </div>
   );
 }
