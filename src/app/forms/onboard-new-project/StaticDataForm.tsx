@@ -8,6 +8,8 @@ import _ from 'lodash';
 import dynamic from 'next/dynamic';
 import ChipInput from '@/components/ui/Chip';
 import ProjectMatcherSection from './ProjectMatcherSection';
+import ETLTagData from './ETLTagData';
+import { useProjectStore } from './useProjectStore';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
@@ -162,6 +164,12 @@ export default function StaticDataForm() {
   );
   const [layoutTags, setLayoutTags] = useState<string[]>([]);
   const [colonyTags, setColonyTags] = useState<string[]>([]);
+  const {
+    addProjectETLTagCard,
+    deleteProjectETLTagCard,
+    projectFormETLTagData,
+    updateProjectETLTagData,
+  } = useProjectStore();
   return (
     <div className='z-10 mt-5 flex min-h-screen w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
       <label className='flex items-center justify-between gap-5'>
@@ -507,6 +515,14 @@ export default function StaticDataForm() {
         <input type='checkbox' className='toggle toggle-primary' />
       </label>
       <ProjectMatcherSection />
+      <ETLTagData
+        addProjectETLCard={addProjectETLTagCard}
+        deleteProjectETLCard={deleteProjectETLTagCard}
+        formProjectETLTagData={projectFormETLTagData}
+        updateProjectETLFormData={updateProjectETLTagData}
+        villageOptions={villageOptions}
+        isUpdateForm={true}
+      />
     </div>
   );
 }
