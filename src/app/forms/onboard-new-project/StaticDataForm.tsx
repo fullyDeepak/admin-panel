@@ -4,6 +4,10 @@ import { useState } from 'react';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
 import { SingleValue } from 'react-select';
+import _ from 'lodash';
+
+const inputBoxClass =
+  'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
 export default function StaticDataForm() {
   const [selectedDistrict, setSelectedDistrict] = useState<{
@@ -48,6 +52,10 @@ export default function StaticDataForm() {
       }[]
     | null
   >(null);
+  const [selectedProjectType, setSelectedProjectType] = useState<SingleValue<{
+    label: string;
+    value: string;
+  }> | null>(null);
   const [selectedProjectSourceType, setSelectedProjectSourceType] =
     useState<SingleValue<{ label: string; value: string }> | null>(null);
   const [selectedProjects, setSelectedProjects] = useState<
@@ -56,6 +64,16 @@ export default function StaticDataForm() {
       value: string;
     }[]
   >([]);
+  const [selectedReraProjects, setSelectedReraProjects] = useState<
+    {
+      label: string;
+      value: string;
+    }[]
+  >([]);
+  const [recommendedReraProjects, setRecommendedReraProjects] = useState<
+    string[]
+  >([]);
+  const [mainProjectName, setMainProjectName] = useState<string>('');
   const { isLoading: isLoadingDMV, isError: isErrorDMV } = useQuery({
     queryKey: ['village-project-cleaner-developer-tagger'],
     queryFn: async () => {
@@ -87,14 +105,8 @@ export default function StaticDataForm() {
       setDistrictOptions(districtOpts);
       return res.data.data;
     },
-    staleTime: Infinity,
   });
-  const {
-    data: tempProjects,
-    isLoading: isLoadingProjects,
-    isError: isErrorProjects,
-    error: errorProjects,
-  } = useQuery({
+  const { data: tempProjects, isLoading: isLoadingProjects } = useQuery({
     queryKey: ['sourceProjects', selectedVillage],
     queryFn: async () => {
       if (!selectedVillage) return [];
@@ -111,6 +123,28 @@ export default function StaticDataForm() {
       console.log(res.data.data);
       return res.data.data.map((e) => ({
         label: `${e.id}:${e.name}`,
+        value: e.id,
+      }));
+    },
+    staleTime: Infinity,
+  });
+  const { data: reraProjects, isLoading: isLoadingReraProjects } = useQuery({
+    queryKey: ['sourceProjects', selectedVillage],
+    queryFn: async () => {
+      if (!selectedVillage) return [];
+      const res = await axiosClient.get<{
+        data: {
+          id: string;
+          project_name: string;
+        }[];
+      }>('/onboarding/rera-projects', {
+        params: {
+          village_id: selectedVillage?.value,
+        },
+      });
+      console.log(res.data.data);
+      return res.data.data.map((e) => ({
+        label: `${e.id}:${e.project_name}`,
         value: e.id,
       }));
     },
@@ -247,19 +281,14 @@ export default function StaticDataForm() {
           key={'tempProject'}
           options={tempProjects || []}
           isLoading={isLoadingProjects}
-          menuIsOpen={true}
           styles={{
-            menu: (baseStyles: any, state: any) => ({
+            menu: (baseStyles: any, _state: any) => ({
               ...baseStyles,
-              height: '20vh',
+              height: '15vh',
               overflowY: 'scroll',
             }),
-            menuList: (baseStyles: any, state: any) => ({
-              ...baseStyles,
-              height: '20vh',
-            }),
           }}
-          onChange={(
+          onChange={async (
             e: SingleValue<{
               label: string;
               value: string;
@@ -270,7 +299,78 @@ export default function StaticDataForm() {
                 return [
                   ...prev,
                   {
-                    label: e.label.split(':')[1].trim(),
+                    label: e.label,
+                    value: e.value,
+                  },
+                ];
+              });
+              const res = await axiosClient.get<{
+                data?: { temp_project_id: string; rera_ids: string[] };
+              }>('/onboarding/rera-matches-for-temp-project', {
+                params: {
+                  project_id: e.value,
+                },
+              });
+              console.log(res.data.data);
+              setRecommendedReraProjects((prev) =>
+                _.uniq([...prev, ...(res.data?.data?.rera_ids || [])])
+              );
+              if (!mainProjectName) {
+                setMainProjectName(e.label.split(':')[1].trim());
+              }
+            }
+          }}
+          isDisabled={Boolean(!selectedVillage)}
+        />
+      </label>
+      <div className='flex flex-wrap gap-5'>
+        Selected Source Projects to Inherit from:{' '}
+        {selectedProjects.map((e) => {
+          return (
+            <span
+              className='btn btn-error btn-sm max-w-fit self-center text-white'
+              key={e.value}
+              onClick={() => {
+                setSelectedProjects((prev) =>
+                  prev.filter((item) => item.value !== e.value)
+                );
+                // remove recommended projects
+                // change main project name
+              }}
+            >
+              {e.label.split(':')[1].trim()}
+            </span>
+          );
+        })}
+      </div>
+      <label className='flex items-center justify-between gap-5'>
+        <span className='flex-[2] text-base md:text-xl'>
+          Select Rera Projects:
+        </span>
+        <Select
+          className='w-full flex-[5]'
+          key={'reraSourceProjects'}
+          options={reraProjects || []}
+          isLoading={isLoadingReraProjects}
+          styles={{
+            menu: (baseStyles: any, _state: any) => ({
+              ...baseStyles,
+              height: '15vh',
+              overflowY: 'scroll',
+            }),
+          }}
+          onChange={(
+            e: SingleValue<{
+              label: string;
+              value: string;
+            }>
+          ) => {
+            if (e) {
+              setSelectedReraProjects((prev) => {
+                return [
+                  ...prev,
+                  {
+                    label: e.label,
                     value: e.value,
                   },
                 ];
@@ -281,10 +381,119 @@ export default function StaticDataForm() {
         />
       </label>
       <span>
-        Selected Source Projects:{' '}
-        {selectedProjects.map((e) => e.label).join(', ')}
+        Recommended Rera Projects to Inherit From :{' '}
+        {recommendedReraProjects.join(', ')}
       </span>
-      adasdasd
+      <span>
+        Selected Rera Projects to Inherit From :{' '}
+        {selectedReraProjects.map((e) => e.label).join(', ')}
+      </span>
+      <label className='flex items-center justify-between gap-5'>
+        <span className='flex-[2] text-base md:text-xl'>
+          Assign Main Project Name:
+        </span>
+        <input
+          className={`${inputBoxClass} !ml-0`}
+          type='text'
+          value={mainProjectName}
+          onChange={(e) => setMainProjectName(e.target.value)}
+          placeholder='Enter Main Project Name'
+        />
+      </label>
+      <label className='flex items-center justify-between gap-5'>
+        <span className='flex-[2] text-base md:text-xl'>
+          Phase or Cluster Name:
+        </span>
+        <input
+          className={`${inputBoxClass} !ml-0`}
+          type='text'
+          value={mainProjectName}
+          onChange={(e) => setMainProjectName(e.target.value)}
+          placeholder='Enter Main Project Name'
+        />
+      </label>
+      <label className='flex items-center justify-between gap-5'>
+        <span>GeoCoded Address : </span>
+        <span>GeoCoded Address here from DB</span>
+      </label>
+      <label className='flex items-center justify-between gap-5'>
+        <span>Layout/Micromarket/Colony Tags : </span>
+        <span>Chips</span>
+      </label>
+      <label className='flex items-center justify-between gap-5'>
+        <span>Colony Tags: </span>
+        <span>Chips</span>
+      </label>
+      <label className='flex items-center justify-between gap-5'>
+        <span>Map Layers/ Shape File / Location : </span>
+        ....
+      </label>
+      <label className='flex items-center justify-between gap-5'>
+        <span className='flex-[2] text-base md:text-xl'>Project Type:</span>
+        <Select
+          className='w-full flex-[5]'
+          key={'project-source-type'}
+          options={[
+            {
+              label: 'Residential',
+              value: 'RESIDENTIAL',
+            },
+            {
+              label: 'Commercial',
+              value: 'COMMERCIAL',
+            },
+            {
+              label: 'Mixed',
+              value: 'MIXED',
+            },
+          ]}
+          value={selectedProjectType}
+          onChange={(
+            e: SingleValue<{
+              label: string;
+              value: string;
+            }>
+          ) => {
+            setSelectedProjectType(e);
+          }}
+          isDisabled={Boolean(!selectedVillage)}
+        />
+      </label>
+      <label className='flex items-center justify-between gap-5'>
+        <span className='flex-[2] text-base md:text-xl'>Project Sub-Type:</span>
+        <Select
+          className='w-full flex-[5]'
+          key={'project-source-type'}
+          options={[
+            {
+              label: 'Residential',
+              value: 'RESIDENTIAL',
+            },
+            {
+              label: 'Commercial',
+              value: 'COMMERCIAL',
+            },
+            {
+              label: 'Mixed',
+              value: 'MIXED',
+            },
+          ]}
+          value={selectedProjectType}
+          onChange={(
+            e: SingleValue<{
+              label: string;
+              value: string;
+            }>
+          ) => {
+            setSelectedProjectType(e);
+          }}
+          isDisabled={Boolean(!selectedVillage)}
+        />
+      </label>
+      <label className='flex items-center justify-between gap-5'>
+        <span className='flex-[2] text-base md:text-xl'>Luxury Project?:</span>
+        <input type='checkbox' className='toggle toggle-primary' />
+      </label>
     </div>
   );
 }
