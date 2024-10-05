@@ -406,7 +406,23 @@ export default function StaticDataForm() {
       </span>
       <span>
         Selected Rera Projects to Inherit From :{' '}
-        {selectedReraProjects.map((e) => e.label).join(', ')}
+        {selectedReraProjects.map((e) => {
+          return (
+            <span
+              className='btn btn-error btn-sm max-w-fit self-center text-white'
+              key={e.value}
+              onClick={() => {
+                setSelectedReraProjects((prev) =>
+                  prev.filter((item) => item.value !== e.value)
+                );
+                // remove recommended projects
+                // change main project name
+              }}
+            >
+              {e.label.split(':')[1].trim()}
+            </span>
+          );
+        })}
       </span>
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>

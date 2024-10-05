@@ -2,6 +2,7 @@
 
 import React from 'react';
 import StaticDataForm from './StaticDataForm';
+import DeveloperTagging from './DeveloperTagging';
 
 export default function Page() {
   return (
@@ -15,6 +16,7 @@ export default function Page() {
           id='projectTowerForm'
         >
           <StaticDataForm />
+          <DeveloperTagging />
         </div>
       </div>
     </>
