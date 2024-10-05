@@ -10,11 +10,13 @@ import ChipInput from '@/components/ui/Chip';
 import ProjectMatcherSection from './ProjectMatcherSection';
 import ETLTagData from './ETLTagData';
 import { useProjectStore } from './useProjectStore';
+import { useOnboardingDataStore } from './useOnboardingDataStore';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
 export default function StaticDataForm() {
+  const { onboardingData } = useOnboardingDataStore();
   const [selectedDistrict, setSelectedDistrict] = useState<{
     label: string;
     value: number;
@@ -116,7 +118,7 @@ export default function StaticDataForm() {
     },
   });
   const { data: tempProjects, isLoading: isLoadingProjects } = useQuery({
-    queryKey: ['sourceProjects', selectedVillage],
+    queryKey: ['tempProjects', selectedVillage],
     queryFn: async () => {
       if (!selectedVillage) return [];
       const res = await axiosClient.get<{
@@ -138,7 +140,7 @@ export default function StaticDataForm() {
     staleTime: Infinity,
   });
   const { data: reraProjects, isLoading: isLoadingReraProjects } = useQuery({
-    queryKey: ['sourceProjects', selectedVillage],
+    queryKey: ['reraProjects', selectedVillage],
     queryFn: async () => {
       if (!selectedVillage) return [];
       const res = await axiosClient.get<{
