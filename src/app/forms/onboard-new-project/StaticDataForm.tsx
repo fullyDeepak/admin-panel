@@ -57,7 +57,11 @@ export default function StaticDataForm() {
       }[]
     | null
   >(null);
-  const [selectedProjectType, setSelectedProjectType] = useState<SingleValue<{
+  const [projectType, setProjectType] = useState<SingleValue<{
+    label: string;
+    value: string;
+  }> | null>(null);
+  const [projectSubType, setProjectSubType] = useState<SingleValue<{
     label: string;
     value: string;
   }> | null>(null);
@@ -483,14 +487,14 @@ export default function StaticDataForm() {
               value: 'MIXED',
             },
           ]}
-          value={selectedProjectType}
+          value={projectType}
           onChange={(
             e: SingleValue<{
               label: string;
               value: string;
             }>
           ) => {
-            setSelectedProjectType(e);
+            setProjectType(e);
           }}
           isDisabled={Boolean(!selectedVillage)}
         />
@@ -501,27 +505,25 @@ export default function StaticDataForm() {
           className='w-full flex-[5]'
           key={'project-source-type'}
           options={[
-            {
-              label: 'Residential',
-              value: 'RESIDENTIAL',
-            },
-            {
-              label: 'Commercial',
-              value: 'COMMERCIAL',
-            },
-            {
-              label: 'Mixed',
-              value: 'MIXED',
-            },
-          ]}
-          value={selectedProjectType}
+            'Apartment - Gated',
+            'Apartment -Standalone',
+            'Villa',
+            'Mixed Residential',
+            'Other',
+          ].map((e) => {
+            return {
+              label: e,
+              value: e.toUpperCase(),
+            };
+          })}
+          value={projectSubType}
           onChange={(
             e: SingleValue<{
               label: string;
               value: string;
             }>
           ) => {
-            setSelectedProjectType(e);
+            setProjectSubType(e);
           }}
           isDisabled={Boolean(!selectedVillage)}
         />
