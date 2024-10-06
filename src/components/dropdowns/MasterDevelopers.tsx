@@ -16,11 +16,11 @@ export function MasterDevelopers(props: Props) {
         }>('/developers/master-developers-jv');
         return [
           ...res.data.data.developers.map((item) => ({
-            label: `${item.id}:${item.name}`,
+            label: `M:${item.id}:${item.name}`,
             value: `DEVELOPER:${item.id}`,
           })),
           ...res.data.data.jvs.map((item) => ({
-            label: `${item.id}:${item.name}`,
+            label: `J:${item.id}:${item.name}`,
             value: `JV:${item.id}`,
           })),
         ];

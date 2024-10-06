@@ -1,34 +1,27 @@
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import CreatableSelect from 'react-select/creatable';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
-import { SingleValue } from 'react-select';
-import _ from 'lodash';
+import { MultiValue, SingleValue } from 'react-select';
+import _, { update } from 'lodash';
 import dynamic from 'next/dynamic';
 import ChipInput from '@/components/ui/Chip';
 import ProjectMatcherSection from './ProjectMatcherSection';
 import ETLTagData from './ETLTagData';
 import { useProjectStore } from './useProjectStore';
-import { useOnboardingDataStore } from './useOnboardingDataStore';
+import {
+  TempProjectSourceData,
+  useOnboardingDataStore,
+} from './useOnboardingDataStore';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
 export default function StaticDataForm() {
-  const { onboardingData } = useOnboardingDataStore();
-  const [selectedDistrict, setSelectedDistrict] = useState<{
-    label: string;
-    value: number;
-  } | null>();
-  const [selectedMandal, setSelectedMandal] = useState<{
-    label: string;
-    value: number;
-  } | null>();
-  const [selectedVillage, setSelectedVillage] = useState<{
-    label: string;
-    value: number;
-  } | null>();
+  const { onboardingData, updateOnboardingData, addTempProjectSourceData } =
+    useOnboardingDataStore();
   const [districtOptions, setDistrictOptions] = useState<
     {
       label: string;
@@ -59,33 +52,10 @@ export default function StaticDataForm() {
       }[]
     | null
   >(null);
-  const [projectType, setProjectType] = useState<SingleValue<{
-    label: string;
-    value: string;
-  }> | null>(null);
-  const [projectSubType, setProjectSubType] = useState<SingleValue<{
-    label: string;
-    value: string;
-  }> | null>(null);
-  const [selectedProjectSourceType, setSelectedProjectSourceType] =
-    useState<SingleValue<{ label: string; value: string }> | null>(null);
-  const [selectedProjects, setSelectedProjects] = useState<
-    {
-      label: string;
-      value: string;
-    }[]
-  >([]);
-  const [selectedReraProjects, setSelectedReraProjects] = useState<
-    {
-      label: string;
-      value: string;
-    }[]
-  >([]);
-  const [recommendedReraProjects, setRecommendedReraProjects] = useState<
-    string[]
-  >([]);
-  const [mainProjectName, setMainProjectName] = useState<string>('');
-  const { isLoading: isLoadingDMV, isError: isErrorDMV } = useQuery({
+  const [reraForTempProjects, setReraForTempProjects] = useState<{
+    [key: string]: string[];
+  }>({});
+  const { isLoading: isLoadingDMV } = useQuery({
     queryKey: ['village-project-cleaner-developer-tagger'],
     queryFn: async () => {
       const res = await axiosClient.get<{
@@ -118,31 +88,46 @@ export default function StaticDataForm() {
     },
   });
   const { data: tempProjects, isLoading: isLoadingProjects } = useQuery({
-    queryKey: ['tempProjects', selectedVillage],
+    queryKey: ['tempProjects', onboardingData.selectedVillage],
     queryFn: async () => {
-      if (!selectedVillage) return [];
+      if (!onboardingData.selectedVillage) return [];
       const res = await axiosClient.get<{
         data: {
           id: string;
           name: string;
+          occurrence_count: number;
         }[];
       }>('/temp-projects', {
         params: {
-          village_id: selectedVillage?.value,
+          village_id: onboardingData.selectedVillage?.value,
         },
       });
       console.log(res.data.data);
-      return res.data.data.map((e) => ({
-        label: `${e.id}:${e.name}`,
-        value: e.id,
-      }));
+      return res.data.data
+        .sort((a, b) => b.occurrence_count - a.occurrence_count)
+        .map((e) => ({
+          label: `${e.id}:${e.name} (${e.occurrence_count})`,
+          value: e.id,
+        }));
     },
     staleTime: Infinity,
   });
-  const { data: reraProjects, isLoading: isLoadingReraProjects } = useQuery({
-    queryKey: ['reraProjects', selectedVillage],
+  const { data: amenitiesOptions, isLoading: loadingAmenities } = useQuery({
+    queryKey: ['amenitiesOptions'],
     queryFn: async () => {
-      if (!selectedVillage) return [];
+      const data = await axiosClient.get('/forms/amenities');
+      const amenities: { id: number; amenity: string }[] = data.data?.data;
+      const amenitiesOptions = amenities.map((item) => ({
+        label: item.amenity,
+        value: item.id,
+      }));
+      return amenitiesOptions;
+    },
+  });
+  const { data: reraProjects, isLoading: isLoadingReraProjects } = useQuery({
+    queryKey: ['reraProjects', onboardingData.selectedVillage],
+    queryFn: async () => {
+      if (!onboardingData.selectedVillage) return [];
       const res = await axiosClient.get<{
         data: {
           id: string;
@@ -150,7 +135,7 @@ export default function StaticDataForm() {
         }[];
       }>('/onboarding/rera-projects', {
         params: {
-          village_id: selectedVillage?.value,
+          village_id: onboardingData.selectedVillage?.value,
         },
       });
       console.log(res.data.data);
@@ -168,8 +153,6 @@ export default function StaticDataForm() {
       }),
     []
   );
-  const [layoutTags, setLayoutTags] = useState<string[]>([]);
-  const [colonyTags, setColonyTags] = useState<string[]>([]);
   const {
     addProjectETLTagCard,
     deleteProjectETLTagCard,
@@ -178,21 +161,24 @@ export default function StaticDataForm() {
   } = useProjectStore();
   return (
     <div className='z-10 mt-5 flex min-h-screen w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
+      {/*  DISTRICT SELECTION */}
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>District:</span>
         <Select
           className='w-full flex-[5]'
           key={'district'}
           options={districtOptions || []}
-          value={selectedDistrict}
+          value={onboardingData.selectedDistrict}
+          isLoading={isLoadingDMV}
           onChange={(
             e: SingleValue<{
               label: string;
               value: number;
             }>
           ) => {
-            setSelectedDistrict(e);
-            console.log('district changed', e);
+            updateOnboardingData({
+              selectedDistrict: e,
+            });
             if (e) {
               const mandalOpts = dmvData
                 ?.find((item) => item.district_id === e.value)
@@ -205,66 +191,74 @@ export default function StaticDataForm() {
             } else {
               setMandalOptions([]);
             }
-            setSelectedMandal(null);
+            updateOnboardingData({ selectedMandal: null });
           }}
         />
       </label>
+
+      {/* MANDAL SELECTION */}
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>Mandal:</span>
         <Select
           className='w-full flex-[5]'
           key={'mandal'}
           options={mandalOptions || []}
-          value={selectedMandal}
+          value={onboardingData.selectedMandal}
+          isLoading={isLoadingDMV}
           onChange={(
             e: SingleValue<{
               label: string;
               value: number;
             }>
           ) => {
-            setSelectedMandal(e);
-            console.log('mandal changed', e);
+            updateOnboardingData({ selectedMandal: e });
             if (e) {
-              console.log(
-                dmvData
-                  ?.find((item) => item.district_id === selectedDistrict?.value)
-                  ?.mandals.find((item) => item.mandal_id === e.value)
-              );
               const villageOpts = dmvData
-                ?.find((item) => item.district_id === selectedDistrict?.value)
+                ?.find(
+                  (item) =>
+                    item.district_id === onboardingData.selectedDistrict?.value
+                )
                 ?.mandals.find((item) => item.mandal_id === e.value)
                 ?.villages.map((item) => ({
                   label: `${item.village_id}:${item.village_name}`,
                   value: item.village_id,
                 }));
-              console.log('village options', villageOpts);
               setVillageOptions(villageOpts || []);
             } else {
               setVillageOptions([]);
             }
-            setSelectedVillage(null);
+            updateOnboardingData({ selectedVillage: null });
           }}
-          isDisabled={Boolean(!selectedDistrict)}
+          isDisabled={Boolean(!onboardingData.selectedDistrict)}
         />
       </label>
+
+      {/* VILLAGE SELECTION */}
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>Village:</span>
         <Select
           className='w-full flex-[5]'
           key={'village'}
           options={villageOptions || []}
-          value={selectedMandal ? selectedVillage : null}
+          value={
+            onboardingData.selectedMandal
+              ? onboardingData.selectedVillage
+              : null
+          }
+          isLoading={isLoadingDMV}
           onChange={(
             e: SingleValue<{
               label: string;
               value: number;
             }>
           ) => {
-            setSelectedVillage(e);
+            updateOnboardingData({ selectedVillage: e });
           }}
-          isDisabled={Boolean(!selectedMandal)}
+          isDisabled={Boolean(!onboardingData.selectedMandal)}
         />
       </label>
+
+      {/* PROJECT SOURCE TYPE */}
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>
           Project Source Type:
@@ -286,21 +280,23 @@ export default function StaticDataForm() {
               value: 'HYBRID',
             },
           ]}
-          value={selectedProjectSourceType}
+          value={onboardingData.projectSourceType}
           onChange={(
             e: SingleValue<{
               label: string;
-              value: string;
+              value: 'RERA' | 'TEMP' | 'HYBRID';
             }>
           ) => {
-            setSelectedProjectSourceType(e);
+            updateOnboardingData({ projectSourceType: e?.value });
           }}
-          isDisabled={Boolean(!selectedVillage)}
+          isDisabled={Boolean(!onboardingData.selectedVillage)}
         />
       </label>
+
+      {/* SELECT Source Temp Projects */}
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>
-          Select Project Name:
+          Select Temp Projects:
         </span>
         <Select
           className='w-full flex-[5]'
@@ -321,14 +317,17 @@ export default function StaticDataForm() {
             }>
           ) => {
             if (e) {
-              setSelectedProjects((prev) => {
-                return [
-                  ...prev,
-                  {
-                    label: e.label,
-                    value: e.value,
-                  },
-                ];
+              updateOnboardingData({
+                selectedTempProjects: _.uniqBy(
+                  [
+                    ...onboardingData.selectedTempProjects,
+                    {
+                      label: e.label,
+                      value: e.value,
+                    },
+                  ],
+                  (ele) => ele.value
+                ),
               });
               const res = await axiosClient.get<{
                 data?: { temp_project_id: string; rera_ids: string[] };
@@ -337,31 +336,51 @@ export default function StaticDataForm() {
                   project_id: e.value,
                 },
               });
-              console.log(res.data.data);
-              setRecommendedReraProjects((prev) =>
-                _.uniq([...prev, ...(res.data?.data?.rera_ids || [])])
-              );
-              if (!mainProjectName) {
-                setMainProjectName(e.label.split(':')[1].trim());
+              if (res.data?.data?.rera_ids && res.data?.data?.rera_ids.length) {
+                setReraForTempProjects((prev) => {
+                  return { ...prev, [e.value]: res.data?.data?.rera_ids || [] };
+                });
+              }
+              const tempProjectData = await axiosClient.get<{
+                data: TempProjectSourceData;
+              }>(`/temp-projects/${e.value}`);
+              addTempProjectSourceData(e.value, tempProjectData.data.data);
+              if (!onboardingData.mainProjectName) {
+                updateOnboardingData({
+                  mainProjectName: e.label.split(':')[1].trim(),
+                });
               }
             }
           }}
-          isDisabled={Boolean(!selectedVillage)}
+          isDisabled={Boolean(!onboardingData.selectedVillage)}
         />
       </label>
       <div className='flex flex-wrap gap-5'>
         Selected Source Projects to Inherit from:{' '}
-        {selectedProjects.map((e) => {
+        {onboardingData.selectedTempProjects.map((e) => {
           return (
             <span
               className='btn btn-error btn-sm max-w-fit self-center text-white'
               key={e.value}
               onClick={() => {
-                setSelectedProjects((prev) =>
-                  prev.filter((item) => item.value !== e.value)
-                );
-                // remove recommended projects
-                // change main project name
+                updateOnboardingData({
+                  selectedTempProjects:
+                    onboardingData.selectedTempProjects.filter(
+                      (item) => item.value !== e.value
+                    ),
+                  mainProjectName: onboardingData.selectedTempProjects
+                    .filter((item) => item.value !== e.value)[0]
+                    ?.label.split(':')[1]
+                    .trim(),
+                });
+                //! remove recommended projects
+                setReraForTempProjects((prev) => {
+                  return Object.fromEntries(
+                    Object.entries(prev).filter(
+                      ([key, _val]) => key !== e.value
+                    )
+                  );
+                });
               }}
             >
               {e.label.split(':')[1].trim()}
@@ -392,40 +411,73 @@ export default function StaticDataForm() {
             }>
           ) => {
             if (e) {
-              setSelectedReraProjects((prev) => {
-                return [
-                  ...prev,
-                  {
-                    label: e.label,
-                    value: e.value,
-                  },
-                ];
+              updateOnboardingData({
+                selectedReraProjects: _.uniqBy(
+                  [
+                    ...onboardingData.selectedReraProjects,
+                    {
+                      label: e.label,
+                      value: e.value,
+                    },
+                  ],
+                  (ele) => ele.value
+                ),
               });
             }
           }}
-          isDisabled={Boolean(!selectedVillage)}
+          isDisabled={Boolean(!onboardingData.selectedVillage)}
         />
       </label>
       <span>
         Recommended Rera Projects to Inherit From :{' '}
-        {recommendedReraProjects.join(', ')}
+        {Object.entries(reraForTempProjects).map(([key, val]) => {
+          return (
+            <span
+              className='btn btn-neutral btn-sm mx-4 max-w-fit self-center text-white'
+              key={key + val}
+              onClick={() => {
+                const toAppend = reraProjects?.find((item) =>
+                  val.includes(item.value)
+                );
+                console.log(toAppend);
+                if (toAppend) {
+                  updateOnboardingData({
+                    selectedReraProjects: _.uniqBy(
+                      [
+                        ...onboardingData.selectedReraProjects,
+                        {
+                          label: toAppend.label,
+                          value: toAppend.value,
+                        },
+                      ],
+                      (ele) => ele.value
+                    ),
+                  });
+                }
+              }}
+            >{`${key}: ${val.join(', ')}`}</span>
+          );
+        })}
       </span>
       <span>
         Selected Rera Projects to Inherit From :{' '}
-        {selectedReraProjects.map((e) => {
+        {onboardingData.selectedReraProjects.map((e) => {
           return (
             <span
               className='btn btn-error btn-sm max-w-fit self-center text-white'
               key={e.value}
               onClick={() => {
-                setSelectedReraProjects((prev) =>
-                  prev.filter((item) => item.value !== e.value)
-                );
+                updateOnboardingData({
+                  selectedReraProjects:
+                    onboardingData.selectedReraProjects.filter(
+                      (item) => item.value !== e.value
+                    ),
+                });
                 // remove recommended projects
                 // change main project name
               }}
             >
-              {e.label.split(':')[1].trim()}
+              {e.label.split(':')[1].trim().split('(')[0]}
             </span>
           );
         })}
@@ -437,20 +489,10 @@ export default function StaticDataForm() {
         <input
           className={`${inputBoxClass} !ml-0`}
           type='text'
-          value={mainProjectName}
-          onChange={(e) => setMainProjectName(e.target.value)}
-          placeholder='Enter Main Project Name'
-        />
-      </label>
-      <label className='flex items-center justify-between gap-5'>
-        <span className='flex-[2] text-base md:text-xl'>
-          Phase or Cluster Name:
-        </span>
-        <input
-          className={`${inputBoxClass} !ml-0`}
-          type='text'
-          value={mainProjectName}
-          onChange={(e) => setMainProjectName(e.target.value)}
+          value={onboardingData.mainProjectName}
+          onChange={(e) =>
+            updateOnboardingData({ mainProjectName: e.target.value })
+          }
           placeholder='Enter Main Project Name'
         />
       </label>
@@ -460,11 +502,57 @@ export default function StaticDataForm() {
       </label>
       <label className='flex items-center justify-between gap-5'>
         <span>Layout/Micromarket/Colony Tags : </span>
-        <ChipInput chips={layoutTags} updateChipsFn={setLayoutTags} />
+        <CreatableSelect
+          className='w-full flex-[5]'
+          options={[]} //{micromarketOptions || []}
+          isLoading={true}
+          value={onboardingData.layoutTags}
+          isClearable
+          isMulti
+          instanceId={'micromarket-selector'}
+          onChange={(
+            e: MultiValue<{
+              label: string;
+              value: string | number;
+              __isNew__?: boolean | undefined;
+            }>
+          ) => {
+            updateOnboardingData({
+              layoutTags: e as {
+                label: string;
+                value: string | number;
+                __isNew__?: boolean;
+              }[], //? to fix type error since it thinks it is readonly
+            });
+          }}
+        />
       </label>
       <label className='flex items-center justify-between gap-5'>
         <span>Colony Tags: </span>
-        <ChipInput chips={colonyTags} updateChipsFn={setColonyTags} />
+        <CreatableSelect
+          className='w-full flex-[5]'
+          options={[]} //{streetTagOptions || []}
+          isLoading={true} // {loadingStreetTags}
+          value={onboardingData.layoutTags}
+          isClearable
+          isMulti
+          instanceId={'colony-selector'}
+          onChange={(
+            e: MultiValue<{
+              label: string;
+              value: string | number;
+              __isNew__?: boolean | undefined;
+            }>
+          ) => {
+            updateOnboardingData({
+              colonyTags: e as {
+                label: string;
+                value: string | number;
+                __isNew__?: boolean;
+              }[], //? to fix type error since it thinks it is readonly
+            });
+          }}
+        />
       </label>
       <label className='flex flex-col items-start justify-between gap-5'>
         <span>Map Layers/ Shape File / Location : </span>
@@ -489,16 +577,16 @@ export default function StaticDataForm() {
               value: 'MIXED',
             },
           ]}
-          value={projectType}
+          value={onboardingData.projectType}
           onChange={(
             e: SingleValue<{
               label: string;
               value: string;
             }>
           ) => {
-            setProjectType(e);
+            updateOnboardingData({ projectType: e });
           }}
-          isDisabled={Boolean(!selectedVillage)}
+          isDisabled={Boolean(!onboardingData.selectedVillage)}
         />
       </label>
       <label className='flex items-center justify-between gap-5'>
@@ -508,31 +596,64 @@ export default function StaticDataForm() {
           key={'project-source-type'}
           options={[
             'Apartment - Gated',
-            'Apartment -Standalone',
+            'Apartment - Standalone',
             'Villa',
             'Mixed Residential',
             'Other',
           ].map((e) => {
             return {
               label: e,
-              value: e.toUpperCase(),
+              value: e
+                .toUpperCase()
+                .replace(' - ', '-')
+                .replace(' ', '_')
+                .replace('-', '_'),
             };
           })}
-          value={projectSubType}
+          value={onboardingData.projectSubType}
           onChange={(
             e: SingleValue<{
               label: string;
               value: string;
             }>
           ) => {
-            setProjectSubType(e);
+            updateOnboardingData({ projectSubType: e });
           }}
-          isDisabled={Boolean(!selectedVillage)}
+          isDisabled={Boolean(!onboardingData.selectedVillage)}
         />
       </label>
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>Luxury Project?:</span>
+        No
         <input type='checkbox' className='toggle toggle-primary' />
+        Yes
+      </label>
+      <label className='flex items-center justify-between gap-5'>
+        <span className='flex-[2]'>Amenities Tags:</span>
+        <CreatableSelect
+          className='w-full flex-[5]'
+          options={amenitiesOptions || []}
+          isLoading={loadingAmenities}
+          value={onboardingData.amenities}
+          isClearable
+          isMulti
+          instanceId={'amenities-selector'}
+          onChange={(
+            e: MultiValue<{
+              label: string;
+              value: string | number;
+              __isNew__?: boolean | undefined;
+            }>
+          ) => {
+            updateOnboardingData({
+              amenities: e as {
+                label: string;
+                value: string | number;
+                __isNew__?: boolean;
+              }[], //? to fix type error since it thinks it is readonly
+            });
+          }}
+        />
       </label>
       <ProjectMatcherSection />
       <ETLTagData

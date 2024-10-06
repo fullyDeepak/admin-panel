@@ -50,6 +50,10 @@ export default function ProjectMatcherSection() {
           hasSelectAll={false}
         />
       </div>
+      <div>
+        Core Door Number String:{' '}
+        <input type='text' className='input input-bordered' />
+      </div>
     </>
   );
 }

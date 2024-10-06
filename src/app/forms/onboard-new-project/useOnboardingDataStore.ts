@@ -3,15 +3,15 @@ import { SingleValue } from 'react-select';
 import { immer } from 'zustand/middleware/immer';
 
 export interface OnboardingDataType {
-  district: SingleValue<{
+  selectedDistrict: SingleValue<{
     label: string;
     value: number;
   }> | null;
-  mandal: SingleValue<{
+  selectedMandal: SingleValue<{
     label: string;
     value: number;
   }> | null;
-  village: SingleValue<{
+  selectedVillage: SingleValue<{
     label: string;
     value: number;
   }> | null;
@@ -23,8 +23,8 @@ export interface OnboardingDataType {
     label: string;
     value: string;
   }> | null;
-  projectSourceType: 'RERA' | 'TEMP' | 'HYBRID';
-  selectedProjects: {
+  projectSourceType: 'RERA' | 'TEMP' | 'HYBRID' | null;
+  selectedTempProjects: {
     label: string;
     value: string;
   }[];
@@ -32,10 +32,22 @@ export interface OnboardingDataType {
     label: string;
     value: string;
   }[];
+  amenities: {
+    label: string;
+    value: string | number;
+    __isNew__?: boolean;
+  }[];
   mainProjectName: string;
-  layoutTags: string[];
-  geocodedAddress: string;
-  colonyTags: string[];
+  layoutTags: {
+    label: string;
+    value: string | number;
+    __isNew__?: boolean;
+  }[];
+  colonyTags: {
+    label: string;
+    value: string | number;
+    __isNew__?: boolean;
+  }[];
   mapLayers: string[];
   isLuxuryProject: boolean;
   HouseMasterLocalities: string[];
@@ -48,26 +60,118 @@ export interface OnboardingDataType {
   developerKeywords: string[];
 }
 
+export interface TempProjectSourceData {
+  id: string;
+  name: string;
+  is_rera_approved: boolean;
+  project_category: string;
+  project_subtype: string;
+  developer_id: any;
+  village_id: number;
+  land_area: any;
+  total_unit_count: any;
+  status: any;
+  display_project_type: string;
+  developers: Developer[];
+  keywords: Keyword[];
+  party_keywords: PartyKeyword[];
+  root_docs: RootDoc[];
+  municipal_door_numbers: MunicipalDoorNumber[];
+  geojson_data: GeojsonDaum[];
+}
+
+export interface Developer {
+  temp_project_id: string;
+  developer_id: number;
+  jv_id: any;
+  is_jv: boolean;
+}
+
+export interface Keyword {
+  project_id: string;
+  keyword: string;
+  keyword_type: string;
+  attached: boolean;
+}
+
+export interface PartyKeyword {
+  project_id: string;
+  keyword_type: string;
+  keywords: string[];
+}
+
+export interface RootDoc {
+  project_id: string;
+  doc_id: string;
+  deed_type: string;
+  occurrence_count: string;
+  cp1: string;
+  cp2: string;
+  extent: string;
+  area_attach: boolean;
+  doc_id_schedule: string;
+  project_attach: boolean;
+}
+
+export interface MunicipalDoorNumber {
+  project_id: string;
+  core_string: string;
+  unit_numbers: string[];
+  occurrence_count: number;
+}
+
+export interface GeojsonDaum {
+  project_id: string;
+  village_id: number;
+  place_id: string;
+  full_address: string;
+  road: any;
+  colony: any;
+  locality: any;
+  city: any;
+  pin_code: number;
+  geom_point: GeomPoint;
+}
+
+export interface GeomPoint {
+  type: string;
+  crs: Crs;
+  coordinates: number[];
+}
+
+export interface Crs {
+  type: string;
+  properties: Properties;
+}
+
+export interface Properties {
+  name: string;
+}
+
 interface Actions {
   updateOnboardingData: (_newDetails: Partial<OnboardingDataType>) => void;
+  addTempProjectSourceData: (
+    projectId: string,
+    _newData: TempProjectSourceData
+  ) => void;
 }
 
 interface Store extends Actions {
   onboardingData: OnboardingDataType;
+  tempProjectSourceData: { [temp_project_id: string]: TempProjectSourceData };
 }
 
 const INITIAL_STATE: OnboardingDataType = {
-  district: null,
-  mandal: null,
-  village: null,
+  selectedDistrict: null,
+  selectedMandal: null,
+  selectedVillage: null,
   projectType: null,
   projectSubType: null,
-  projectSourceType: 'RERA',
-  selectedProjects: [],
+  projectSourceType: null,
+  selectedTempProjects: [],
   selectedReraProjects: [],
   mainProjectName: '',
   layoutTags: [],
-  geocodedAddress: '',
   colonyTags: [],
   mapLayers: [],
   isLuxuryProject: false,
@@ -76,15 +180,23 @@ const INITIAL_STATE: OnboardingDataType = {
   keywordType: null,
   landlordKeywords: [],
   developerKeywords: [],
+  amenities: [],
 };
 
 export const useOnboardingDataStore = create<Store>()(
   immer((set) => ({
     onboardingData: INITIAL_STATE,
+    tempProjectSourceData: {},
+    addTempProjectSourceData: (project_id, newData) =>
+      set((prev) => {
+        prev.tempProjectSourceData = {
+          ...prev.tempProjectSourceData,
+          [project_id]: newData,
+        };
+      }),
     updateOnboardingData: (newDetails) =>
-      set(
-        (prev) =>
-          (prev.onboardingData = { ...prev.onboardingData, ...newDetails })
-      ),
+      set((prev) => {
+        prev.onboardingData = { ...prev.onboardingData, ...newDetails };
+      }),
   }))
 );
