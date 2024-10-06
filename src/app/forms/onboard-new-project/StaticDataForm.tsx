@@ -310,6 +310,7 @@ export default function StaticDataForm() {
           key={'tempProject'}
           options={tempProjects || []}
           isLoading={isLoadingProjects}
+          value={null}
           styles={{
             menu: (baseStyles: any, _state: any) => ({
               ...baseStyles,
@@ -404,6 +405,7 @@ export default function StaticDataForm() {
           key={'reraSourceProjects'}
           options={reraProjects || []}
           isLoading={isLoadingReraProjects}
+          value={null}
           styles={{
             menu: (baseStyles: any, _state: any) => ({
               ...baseStyles,
