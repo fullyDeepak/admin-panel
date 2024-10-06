@@ -16,18 +16,18 @@ export default function Keywords() {
     queryKey: [
       'keywords',
       onboardingData.keywordType,
-      onboardingData.selectedProjects,
+      onboardingData.selectedTempProjects,
     ],
     queryFn: async () => {
       if (
         !onboardingData.keywordType ||
-        onboardingData.selectedProjects.length === 0
+        onboardingData.selectedTempProjects.length === 0
       ) {
         return undefined;
       }
       const data = {
         project_ids: JSON.stringify(
-          onboardingData.selectedProjects.map((item) => +item.value)
+          onboardingData.selectedTempProjects.map((item) => +item.value)
         ),
         type: onboardingData.keywordType.value,
       };

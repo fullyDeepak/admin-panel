@@ -50,7 +50,7 @@ export interface OnboardingDataType {
   }[];
   mapLayers: string[];
   isLuxuryProject: boolean;
-  HouseMasterLocalities: string[];
+  houseMasterLocalities: string[];
   core_door_number_string: string;
   keywordType: {
     label: string;
@@ -58,6 +58,7 @@ export interface OnboardingDataType {
   } | null;
   landlordKeywords: string[];
   developerKeywords: string[];
+  clubhouse_area: string;
 }
 
 export interface TempProjectSourceData {
@@ -151,7 +152,7 @@ export interface Properties {
 interface Actions {
   updateOnboardingData: (_newDetails: Partial<OnboardingDataType>) => void;
   addTempProjectSourceData: (
-    projectId: string,
+    _projectId: string,
     _newData: TempProjectSourceData
   ) => void;
 }
@@ -175,12 +176,13 @@ const INITIAL_STATE: OnboardingDataType = {
   colonyTags: [],
   mapLayers: [],
   isLuxuryProject: false,
-  HouseMasterLocalities: [],
+  houseMasterLocalities: [],
   core_door_number_string: '',
   keywordType: null,
   landlordKeywords: [],
   developerKeywords: [],
   amenities: [],
+  clubhouse_area: '',
 };
 
 export const useOnboardingDataStore = create<Store>()(

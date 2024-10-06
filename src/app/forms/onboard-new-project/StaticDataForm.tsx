@@ -20,8 +20,12 @@ const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
 export default function StaticDataForm() {
-  const { onboardingData, updateOnboardingData, addTempProjectSourceData } =
-    useOnboardingDataStore();
+  const {
+    onboardingData,
+    updateOnboardingData,
+    addTempProjectSourceData,
+    tempProjectSourceData,
+  } = useOnboardingDataStore();
   const [districtOptions, setDistrictOptions] = useState<
     {
       label: string;
@@ -132,6 +136,7 @@ export default function StaticDataForm() {
         data: {
           id: string;
           project_name: string;
+          unit_count: number;
         }[];
       }>('/onboarding/rera-projects', {
         params: {
@@ -139,10 +144,12 @@ export default function StaticDataForm() {
         },
       });
       console.log(res.data.data);
-      return res.data.data.map((e) => ({
-        label: `${e.id}:${e.project_name}`,
-        value: e.id,
-      }));
+      return res.data.data
+        .sort((a, b) => b.unit_count - a.unit_count)
+        .map((e) => ({
+          label: `${e.id}:${e.project_name} (${e.unit_count})`,
+          value: e.id,
+        }));
     },
     staleTime: Infinity,
   });
@@ -360,7 +367,7 @@ export default function StaticDataForm() {
         {onboardingData.selectedTempProjects.map((e) => {
           return (
             <span
-              className='btn btn-error btn-sm max-w-fit self-center text-white'
+              className='btn btn-error btn-sm max-w-fit self-center text-white hover:bg-red-200 hover:text-black'
               key={e.value}
               onClick={() => {
                 updateOnboardingData({
@@ -433,7 +440,7 @@ export default function StaticDataForm() {
         {Object.entries(reraForTempProjects).map(([key, val]) => {
           return (
             <span
-              className='btn btn-neutral btn-sm mx-4 max-w-fit self-center text-white'
+              className='btn btn-neutral btn-sm mx-4 max-w-fit self-center text-white hover:bg-red-200 hover:text-black'
               key={key + val}
               onClick={() => {
                 const toAppend = reraProjects?.find((item) =>
@@ -498,7 +505,13 @@ export default function StaticDataForm() {
       </label>
       <label className='flex items-center justify-between gap-5'>
         <span>GeoCoded Address : </span>
-        <span>GeoCoded Address here from DB</span>
+        {Object.entries(tempProjectSourceData).map(([projectId, data]) => {
+          return (
+            <span className='border' key={projectId}>
+              {projectId} : {data.geojson_data[0].full_address}
+            </span>
+          );
+        })}
       </label>
       <label className='flex items-center justify-between gap-5'>
         <span>Layout/Micromarket/Colony Tags : </span>
@@ -655,6 +668,22 @@ export default function StaticDataForm() {
           }}
         />
       </label>
+      {onboardingData.amenities.find((ele) =>
+        ele.label.toUpperCase().includes('CLUBHOUSE')
+      ) && (
+        <label className='flex items-center justify-between gap-5'>
+          <span className='flex-[2]'>Club House Area:</span>
+          <input
+            className={`${inputBoxClass} !ml-0`}
+            type='number'
+            value={onboardingData.clubhouse_area}
+            onChange={(e) =>
+              updateOnboardingData({ clubhouse_area: e.target.value })
+            }
+            placeholder='Enter Clubhouse Amenities'
+          />
+        </label>
+      )}
       <ProjectMatcherSection />
       <ETLTagData
         addProjectETLCard={addProjectETLTagCard}
