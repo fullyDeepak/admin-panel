@@ -15,6 +15,8 @@ import {
   TempProjectSourceData,
   useOnboardingDataStore,
 } from './useOnboardingDataStore';
+import toast from 'react-hot-toast';
+import { ProjectCordWithinVillage } from '../village-project-cleaner/MapUI';
 
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
@@ -166,6 +168,31 @@ export default function StaticDataForm() {
     projectFormETLTagData,
     updateProjectETLTagData,
   } = useProjectStore();
+  async function handleShowOnMap() {
+    if (!onboardingData.selectedVillage) return;
+    updateOnboardingData({ mapData: null });
+    const res = axiosClient.get<ProjectCordWithinVillage>(
+      '/map/project-cord-within-village',
+      {
+        params: {
+          village_id: onboardingData.selectedVillage.value,
+          query: `${onboardingData.mapInputValue} ${onboardingData.selectedVillage.label.split(':')[1]}`,
+        },
+      }
+    );
+    toast.promise(
+      res,
+      {
+        loading: 'Loading...',
+        success: (data) => {
+          updateOnboardingData({ mapData: data.data.data });
+          return `Successfully loaded ${data.data.data.length} projects.`;
+        },
+        error: 'Error',
+      },
+      { duration: 5000 }
+    );
+  }
   return (
     <div className='z-10 mt-5 flex min-h-screen w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
       {/*  DISTRICT SELECTION */}
@@ -569,10 +596,30 @@ export default function StaticDataForm() {
           }}
         />
       </label>
-      <label className='flex flex-col items-start justify-between gap-5'>
-        <span>Map Layers/ Shape File / Location : </span>
+      <div className='flex flex-col items-start justify-between gap-5'>
+        <div className='flex items-center gap-5'>
+          <span>Map Layers/ Shape File / Location : </span>
+          <input
+            type='text'
+            className={inputBoxClass}
+            placeholder='Search on Map'
+            value={onboardingData.mapInputValue}
+            onChange={(e) =>
+              updateOnboardingData({ mapInputValue: e.target.value })
+            }
+          />
+          <button
+            className='btn btn-neutral'
+            onClick={() => {
+              handleShowOnMap();
+            }}
+          >
+            Search
+          </button>
+        </div>
+
         <MapInterface />
-      </label>
+      </div>
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>Project Type:</span>
         <Select

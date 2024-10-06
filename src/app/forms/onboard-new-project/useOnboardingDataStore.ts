@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 import { immer } from 'zustand/middleware/immer';
+import { ProjectCordWithinVillage } from '../village-project-cleaner/MapUI';
 
 export interface OnboardingDataType {
   selectedDistrict: SingleValue<{
@@ -59,6 +60,8 @@ export interface OnboardingDataType {
   landlordKeywords: string[];
   developerKeywords: string[];
   clubhouse_area: string;
+  mapData: ProjectCordWithinVillage['data'] | null;
+  mapInputValue: string;
 }
 
 export interface TempProjectSourceData {
@@ -183,6 +186,8 @@ const INITIAL_STATE: OnboardingDataType = {
   developerKeywords: [],
   amenities: [],
   clubhouse_area: '',
+  mapData: [],
+  mapInputValue: '',
 };
 
 export const useOnboardingDataStore = create<Store>()(
