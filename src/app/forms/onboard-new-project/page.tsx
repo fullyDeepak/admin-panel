@@ -1,14 +1,18 @@
 'use client';
 
 import React from 'react';
-import StaticDataForm from './StaticDataForm';
+import StaticDataForm from './steps/1/StaticDataForm';
 import DeveloperTagging from './DeveloperTagging';
 import { useOnboardingDataStore } from './useOnboardingDataStore';
 import StepsUI from './StepsUI';
 import PreviewData from './PreviewData';
 
 export default function Page() {
-  const { formSteps, formStepsList, setFormSteps } = useOnboardingDataStore();
+  const {
+    currentFormStep: formSteps,
+    formStepsList,
+    setFormSteps,
+  } = useOnboardingDataStore();
 
   return (
     <>
@@ -24,6 +28,8 @@ export default function Page() {
           {formSteps === 'Step 1' && <StaticDataForm />}
           {formSteps === 'Step 2' && <DeveloperTagging />}
           {formSteps === 'Preview' && <PreviewData />}
+
+          {/* PAGINATORS */}
           <div className='mx-auto flex w-[50%] justify-between'>
             <button
               className='btn-rezy btn w-28'

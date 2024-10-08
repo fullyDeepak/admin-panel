@@ -2,22 +2,18 @@ import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import CreatableSelect from 'react-select/creatable';
+import _ from 'lodash';
+import dynamic from 'next/dynamic';
+import toast from 'react-hot-toast';
+import { MultiValue, SingleValue } from 'react-select';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
-import { MultiValue, SingleValue } from 'react-select';
-import _, { update } from 'lodash';
-import dynamic from 'next/dynamic';
-import ChipInput from '@/components/ui/Chip';
-import ProjectMatcherSection from './ProjectMatcherSection';
-import ETLTagData from './ETLTagData';
-import { useProjectStore } from './useProjectStore';
+import { ProjectCordWithinVillage } from '../../../village-project-cleaner/MapUI';
 import {
   TempProjectSourceData,
   useOnboardingDataStore,
-} from './useOnboardingDataStore';
-import toast from 'react-hot-toast';
-import { ProjectCordWithinVillage } from '../village-project-cleaner/MapUI';
-
+} from '../../useOnboardingDataStore';
+import useDMVDataStore from '../../useDMVDataStore';
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
@@ -28,36 +24,16 @@ export default function StaticDataForm() {
     addTempProjectSourceData,
     tempProjectSourceData,
   } = useOnboardingDataStore();
-  const [districtOptions, setDistrictOptions] = useState<
-    {
-      label: string;
-      value: number;
-    }[]
-  >([]);
-  const [mandalOptions, setMandalOptions] = useState<
-    {
-      label: string;
-      value: number;
-    }[]
-  >([]);
-  const [villageOptions, setVillageOptions] = useState<
-    {
-      label: string;
-      value: number;
-    }[]
-  >([]);
-  const [dmvData, setDmvData] = useState<
-    | {
-        district_id: number;
-        district_name: string;
-        mandals: {
-          mandal_id: number;
-          mandal_name: string;
-          villages: { village_id: number; village_name: string }[];
-        }[];
-      }[]
-    | null
-  >(null);
+  const {
+    setDMVData,
+    DMVData,
+    districtOptions,
+    mandalOptions,
+    setDistrictOptions,
+    setMandalOptions,
+    setVillageOptions,
+    villageOptions,
+  } = useDMVDataStore();
   const [reraForTempProjects, setReraForTempProjects] = useState<{
     [key: string]: string[];
   }>({});
@@ -84,7 +60,7 @@ export default function StaticDataForm() {
         (item) => item.state_id === 36
       )?.districts;
       if (!telanganaData) return null;
-      setDmvData(telanganaData);
+      setDMVData(telanganaData);
       const districtOpts = telanganaData.map((item) => ({
         label: `${item.district_id}:${item.district_name}`,
         value: item.district_id,
@@ -131,9 +107,18 @@ export default function StaticDataForm() {
     },
   });
   const { data: reraProjects, isLoading: isLoadingReraProjects } = useQuery({
-    queryKey: ['reraProjects', onboardingData.selectedVillage],
+    queryKey: [
+      'reraProjects',
+      onboardingData.selectedVillage,
+      onboardingData.projectSourceType,
+    ],
     queryFn: async () => {
       if (!onboardingData.selectedVillage) return [];
+      console.log(
+        'Gettging Rera Projects for',
+        onboardingData.selectedVillage,
+        onboardingData.projectSourceType
+      );
       const res = await axiosClient.get<{
         data: {
           id: string;
@@ -143,6 +128,7 @@ export default function StaticDataForm() {
       }>('/onboarding/rera-projects', {
         params: {
           village_id: onboardingData.selectedVillage?.value,
+          filter_onboarded: onboardingData.projectSourceType === 'RERA',
         },
       });
       console.log(res.data.data);
@@ -162,12 +148,7 @@ export default function StaticDataForm() {
       }),
     []
   );
-  const {
-    addProjectETLTagCard,
-    deleteProjectETLTagCard,
-    projectFormETLTagData,
-    updateProjectETLTagData,
-  } = useProjectStore();
+
   async function handleShowOnMap() {
     if (!onboardingData.selectedVillage) return;
     updateOnboardingData({ mapData: null });
@@ -214,12 +195,12 @@ export default function StaticDataForm() {
               selectedDistrict: e,
             });
             if (e) {
-              const mandalOpts = dmvData
-                ?.find((item) => item.district_id === e.value)
-                ?.mandals.map((item) => ({
-                  label: `${item.mandal_id}:${item.mandal_name}`,
-                  value: item.mandal_id,
-                }));
+              const mandalOpts = DMVData?.find(
+                (item) => item.district_id === e.value
+              )?.mandals.map((item) => ({
+                label: `${item.mandal_id}:${item.mandal_name}`,
+                value: item.mandal_id,
+              }));
               console.log('mandal options', mandalOpts);
               setMandalOptions(mandalOpts || []);
             } else {
@@ -247,11 +228,10 @@ export default function StaticDataForm() {
           ) => {
             updateOnboardingData({ selectedMandal: e });
             if (e) {
-              const villageOpts = dmvData
-                ?.find(
-                  (item) =>
-                    item.district_id === onboardingData.selectedDistrict?.value
-                )
+              const villageOpts = DMVData?.find(
+                (item) =>
+                  item.district_id === onboardingData.selectedDistrict?.value
+              )
                 ?.mandals.find((item) => item.mandal_id === e.value)
                 ?.villages.map((item) => ({
                   label: `${item.village_id}:${item.village_name}`,
@@ -262,6 +242,7 @@ export default function StaticDataForm() {
               setVillageOptions([]);
             }
             updateOnboardingData({ selectedVillage: null });
+            setReraForTempProjects({});
           }}
           isDisabled={Boolean(!onboardingData.selectedDistrict)}
         />
@@ -300,6 +281,7 @@ export default function StaticDataForm() {
         <Select
           className='w-full flex-[5]'
           key={'project-source-type'}
+          isClearable={false}
           options={[
             {
               label: 'RERA',
@@ -314,14 +296,25 @@ export default function StaticDataForm() {
               value: 'HYBRID',
             },
           ]}
-          value={onboardingData.projectSourceType}
+          value={
+            onboardingData.projectSourceType && {
+              label: onboardingData.projectSourceType,
+              value: onboardingData.projectSourceType,
+            }
+          }
           onChange={(
             e: SingleValue<{
               label: string;
               value: 'RERA' | 'TEMP' | 'HYBRID';
             }>
           ) => {
+            console.log(e);
             updateOnboardingData({ projectSourceType: e?.value });
+            setReraForTempProjects({});
+            updateOnboardingData({
+              selectedReraProjects: [],
+              selectedTempProject: null,
+            });
           }}
           isDisabled={Boolean(!onboardingData.selectedVillage)}
         />
@@ -337,7 +330,7 @@ export default function StaticDataForm() {
           key={'tempProject'}
           options={tempProjects || []}
           isLoading={isLoadingProjects}
-          value={null}
+          value={onboardingData.selectedTempProject}
           styles={{
             menu: (baseStyles: any, _state: any) => ({
               ...baseStyles,
@@ -353,16 +346,7 @@ export default function StaticDataForm() {
           ) => {
             if (e) {
               updateOnboardingData({
-                selectedTempProjects: _.uniqBy(
-                  [
-                    ...onboardingData.selectedTempProjects,
-                    {
-                      label: e.label,
-                      value: e.value,
-                    },
-                  ],
-                  (ele) => ele.value
-                ),
+                selectedTempProject: e,
               });
               const res = await axiosClient.get<{
                 data?: { temp_project_id: string; rera_ids: string[] };
@@ -375,6 +359,44 @@ export default function StaticDataForm() {
                 setReraForTempProjects((prev) => {
                   return { ...prev, [e.value]: res.data?.data?.rera_ids || [] };
                 });
+                console.log(
+                  res.data?.data?.rera_ids
+                    .map((ele) => {
+                      const reraProject = reraProjects?.find((project) => {
+                        return project.value === ele;
+                      });
+                      console.log(reraProject);
+                      return reraProject;
+                    })
+                    .filter((ele) => !ele) as {
+                    label: string;
+                    value: string;
+                  }[]
+                );
+                const reraProjectsToSelect = res.data?.data?.rera_ids
+                  .map((ele) => {
+                    const reraProject = reraProjects?.find((project) => {
+                      return project.value === ele;
+                    });
+                    console.log(reraProject);
+                    return reraProject;
+                  })
+                  .filter((ele) => !!ele) as {
+                  label: string;
+                  value: string;
+                }[];
+                console.log(reraProjectsToSelect);
+                if (reraProjectsToSelect) {
+                  updateOnboardingData({
+                    selectedReraProjects: _.uniqBy(
+                      [
+                        ...onboardingData.selectedReraProjects,
+                        ...reraProjectsToSelect,
+                      ],
+                      (ele) => ele.value
+                    ),
+                  });
+                }
               }
               const tempProjectData = await axiosClient.get<{
                 data: TempProjectSourceData;
@@ -385,17 +407,27 @@ export default function StaticDataForm() {
                   mainProjectName: e.label.split(':')[1].trim(),
                 });
               }
+            } else {
+              // cleanup
+              updateOnboardingData({
+                selectedReraProjects: [],
+                selectedTempProject: null,
+              });
+              setReraForTempProjects({});
             }
           }}
-          isDisabled={Boolean(!onboardingData.selectedVillage)}
+          isDisabled={
+            Boolean(!onboardingData.projectSourceType) ||
+            onboardingData.projectSourceType === 'RERA'
+          }
         />
       </label>
-      <div className='flex flex-wrap gap-5'>
+      {/* <div className='flex flex-wrap gap-5'>
         Selected Source Projects to Inherit from:{' '}
         {onboardingData.selectedTempProjects.map((e) => {
           return (
             <span
-              className='btn btn-error btn-sm max-w-fit self-center text-white hover:bg-red-200 hover:text-black'
+              className='btn btn-error btn-sm mx-2 max-w-fit self-center text-white hover:bg-red-200 hover:text-black'
               key={e.value}
               onClick={() => {
                 updateOnboardingData({
@@ -422,7 +454,7 @@ export default function StaticDataForm() {
             </span>
           );
         })}
-      </div>
+      </div> */}
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>
           Select Rera Projects:
@@ -461,7 +493,7 @@ export default function StaticDataForm() {
               });
             }
           }}
-          isDisabled={Boolean(!onboardingData.selectedVillage)}
+          isDisabled={Boolean(!onboardingData.projectSourceType)}
         />
       </label>
       <span>
@@ -469,7 +501,7 @@ export default function StaticDataForm() {
         {Object.entries(reraForTempProjects).map(([key, val]) => {
           return (
             <span
-              className='btn btn-neutral btn-sm mx-4 max-w-fit self-center text-white hover:bg-red-200 hover:text-black'
+              className='btn btn-neutral btn-sm mx-2 max-w-fit self-center text-white hover:bg-red-200 hover:text-black'
               key={key + val}
               onClick={() => {
                 const toAppend = reraProjects?.find((item) =>
@@ -500,7 +532,7 @@ export default function StaticDataForm() {
         {onboardingData.selectedReraProjects.map((e) => {
           return (
             <span
-              className='btn btn-error btn-sm max-w-fit self-center text-white'
+              className='btn btn-error btn-sm mx-2 max-w-fit self-center text-white hover:bg-red-200 hover:text-black'
               key={e.value}
               onClick={() => {
                 updateOnboardingData({
@@ -519,11 +551,11 @@ export default function StaticDataForm() {
         })}
       </span>
       <label className='flex items-center justify-between gap-5'>
-        <span className='flex-[2] text-base md:text-xl'>
+        <span className='flex-[2] text-wrap break-words md:text-xl'>
           Assign Main Project Name:
         </span>
         <input
-          className={`${inputBoxClass} !ml-0`}
+          className={`${inputBoxClass}`}
           type='text'
           value={onboardingData.mainProjectName}
           onChange={(e) =>
@@ -543,11 +575,12 @@ export default function StaticDataForm() {
         })}
       </label>
       <label className='flex items-center justify-between gap-5'>
-        <span>Layout/Micromarket/Colony Tags : </span>
+        <span className='flex-[2] text-wrap break-words md:text-xl'>
+          Layout / Micromarket Tags :{' '}
+        </span>
         <CreatableSelect
           className='w-full flex-[5]'
           options={[]} //{micromarketOptions || []}
-          isLoading={true}
           value={onboardingData.layoutTags}
           isClearable
           isMulti
@@ -570,12 +603,12 @@ export default function StaticDataForm() {
         />
       </label>
       <label className='flex items-center justify-between gap-5'>
-        <span>Colony Tags: </span>
+        <span className='flex-[2] text-base md:text-xl'>Colony Tags: </span>
         <CreatableSelect
           className='w-full flex-[5]'
           options={[]} //{streetTagOptions || []}
-          isLoading={true} // {loadingStreetTags}
-          value={onboardingData.layoutTags}
+          // {loadingStreetTags}
+          value={onboardingData.colonyTags}
           isClearable
           isMulti
           instanceId={'colony-selector'}
@@ -648,7 +681,7 @@ export default function StaticDataForm() {
           ) => {
             updateOnboardingData({ projectType: e });
           }}
-          isDisabled={Boolean(!onboardingData.selectedVillage)}
+          isDisabled={Boolean(!onboardingData.projectSourceType)}
         />
       </label>
       <label className='flex items-center justify-between gap-5'>
@@ -681,7 +714,7 @@ export default function StaticDataForm() {
           ) => {
             updateOnboardingData({ projectSubType: e });
           }}
-          isDisabled={Boolean(!onboardingData.selectedVillage)}
+          isDisabled={Boolean(!onboardingData.projectSourceType)}
         />
       </label>
       <label className='flex items-center justify-between gap-5'>
@@ -691,7 +724,7 @@ export default function StaticDataForm() {
         Yes
       </label>
       <label className='flex items-center justify-between gap-5'>
-        <span className='flex-[2]'>Amenities Tags:</span>
+        <span className='flex-[2] text-base md:text-xl'>Amenities Tags:</span>
         <CreatableSelect
           className='w-full flex-[5]'
           options={amenitiesOptions || []}
@@ -733,15 +766,6 @@ export default function StaticDataForm() {
           />
         </label>
       )}
-      <ProjectMatcherSection />
-      <ETLTagData
-        addProjectETLCard={addProjectETLTagCard}
-        deleteProjectETLCard={deleteProjectETLTagCard}
-        formProjectETLTagData={projectFormETLTagData}
-        updateProjectETLFormData={updateProjectETLTagData}
-        villageOptions={villageOptions}
-        isUpdateForm={true}
-      />
     </div>
   );
 }

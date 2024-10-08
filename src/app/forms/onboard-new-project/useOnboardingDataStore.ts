@@ -25,10 +25,10 @@ export interface OnboardingDataType {
     value: string;
   }> | null;
   projectSourceType: 'RERA' | 'TEMP' | 'HYBRID' | null;
-  selectedTempProjects: {
+  selectedTempProject: {
     label: string;
     value: string;
-  }[];
+  } | null;
   selectedReraProjects: {
     label: string;
     value: string;
@@ -163,9 +163,9 @@ interface Actions {
 interface Store extends Actions {
   onboardingData: OnboardingDataType;
   formStepsList: ['Step 1', 'Step 2', 'Preview'];
-  formSteps: 'Step 1' | 'Step 2' | 'Preview';
+  currentFormStep: 'Step 1' | 'Step 2' | 'Preview';
   tempProjectSourceData: { [temp_project_id: string]: TempProjectSourceData };
-  setFormSteps: (_step: Store['formSteps']) => void;
+  setFormSteps: (_step: Store['currentFormStep']) => void;
 }
 
 const INITIAL_STATE: OnboardingDataType = {
@@ -175,7 +175,7 @@ const INITIAL_STATE: OnboardingDataType = {
   projectType: null,
   projectSubType: null,
   projectSourceType: null,
-  selectedTempProjects: [],
+  selectedTempProject: null,
   selectedReraProjects: [],
   mainProjectName: '',
   layoutTags: [],
@@ -196,7 +196,7 @@ const INITIAL_STATE: OnboardingDataType = {
 export const useOnboardingDataStore = create<Store>()(
   immer((set) => ({
     onboardingData: INITIAL_STATE,
-    formSteps: 'Step 1' as Store['formSteps'],
+    currentFormStep: 'Step 1' as Store['currentFormStep'],
     formStepsList: ['Step 1', 'Step 2', 'Preview'] as Store['formStepsList'],
     tempProjectSourceData: {},
     addTempProjectSourceData: (project_id, newData) =>
@@ -210,6 +210,6 @@ export const useOnboardingDataStore = create<Store>()(
       set((prev) => {
         prev.onboardingData = { ...prev.onboardingData, ...newDetails };
       }),
-    setFormSteps: (step) => set({ formSteps: step }),
+    setFormSteps: (step) => set({ currentFormStep: step }),
   }))
 );

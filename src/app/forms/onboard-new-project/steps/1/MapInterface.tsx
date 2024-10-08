@@ -10,11 +10,11 @@ import {
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon, LatLngBounds, LatLngTuple } from 'leaflet';
-import GeomanDrawer from './GeomanDrawer';
-import { useOnboardingDataStore } from './useOnboardingDataStore';
-import { ProjectCordWithinVillage } from '../village-project-cleaner/MapUI';
-import projectPin from '../village-project-cleaner/project-marker.png';
-import selectPin from '../village-project-cleaner/select-pin.png';
+import GeomanDrawer from '../../GeomanDrawer';
+import { useOnboardingDataStore } from '../../useOnboardingDataStore';
+import { ProjectCordWithinVillage } from '../../../village-project-cleaner/MapUI';
+import projectPin from '../../../village-project-cleaner/project-marker.png';
+import selectPin from '../../../village-project-cleaner/select-pin.png';
 
 export default function MapInterface() {
   const center: LatLngTuple = [17.418136769166217, 78.33019660095187];
