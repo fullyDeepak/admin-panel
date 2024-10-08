@@ -162,8 +162,8 @@ interface Actions {
 
 interface Store extends Actions {
   onboardingData: OnboardingDataType;
-  formStepsList: ['Step 1', 'Step 2', 'Preview'];
-  currentFormStep: 'Step 1' | 'Step 2' | 'Preview';
+  formStepsList: ['Step 1', 'Step 2', 'Step 3', 'Preview'];
+  currentFormStep: 'Step 1' | 'Step 2' | 'Step 3' | 'Preview';
   tempProjectSourceData: { [temp_project_id: string]: TempProjectSourceData };
   setFormSteps: (_step: Store['currentFormStep']) => void;
 }
@@ -197,7 +197,12 @@ export const useOnboardingDataStore = create<Store>()(
   immer((set) => ({
     onboardingData: INITIAL_STATE,
     currentFormStep: 'Step 1' as Store['currentFormStep'],
-    formStepsList: ['Step 1', 'Step 2', 'Preview'] as Store['formStepsList'],
+    formStepsList: [
+      'Step 1',
+      'Step 2',
+      'Step 3',
+      'Preview',
+    ] as Store['formStepsList'],
     tempProjectSourceData: {},
     addTempProjectSourceData: (project_id, newData) =>
       set((prev) => {

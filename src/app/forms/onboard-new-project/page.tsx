@@ -6,6 +6,7 @@ import DeveloperTagging from './DeveloperTagging';
 import { useOnboardingDataStore } from './useOnboardingDataStore';
 import StepsUI from './StepsUI';
 import PreviewData from './PreviewData';
+import { TagETLDataForm } from './steps/2/TagETLDataForm';
 
 export default function Page() {
   const {
@@ -26,7 +27,8 @@ export default function Page() {
         >
           <StepsUI stepValue={formSteps} />
           {formSteps === 'Step 1' && <StaticDataForm />}
-          {formSteps === 'Step 2' && <DeveloperTagging />}
+          {formSteps === 'Step 2' && <TagETLDataForm />}
+          {formSteps === 'Step 3' && <DeveloperTagging />}
           {formSteps === 'Preview' && <PreviewData />}
 
           {/* PAGINATORS */}
