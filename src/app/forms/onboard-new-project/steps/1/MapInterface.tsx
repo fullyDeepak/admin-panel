@@ -1,5 +1,7 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import { Icon, LatLngBounds, LatLngTuple } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { useEffect, useState } from 'react';
 import {
   LayersControl,
   MapContainer,
@@ -8,13 +10,10 @@ import {
   TileLayer,
   useMap,
 } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import { Icon, LatLngBounds, LatLngTuple } from 'leaflet';
-import GeomanDrawer from '../../GeomanDrawer';
-import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import { ProjectCordWithinVillage } from '../../../village-project-cleaner/MapUI';
-import projectPin from '../../../village-project-cleaner/project-marker.png';
 import selectPin from '../../../village-project-cleaner/select-pin.png';
+import { useOnboardingDataStore } from '../../useOnboardingDataStore';
+import GeomanDrawer from './GeomanDrawer';
 
 export default function MapInterface() {
   const center: LatLngTuple = [17.418136769166217, 78.33019660095187];
@@ -49,10 +48,6 @@ export default function MapInterface() {
   ];
 
   const [geoJsonData, setGeoJsonData] = useState<any[]>([]);
-  const projectIcon = new Icon({
-    iconUrl: projectPin.src,
-    iconSize: [38, 38],
-  });
 
   const selectIcon = new Icon({
     iconUrl: selectPin.src,

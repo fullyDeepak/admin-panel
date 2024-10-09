@@ -76,12 +76,13 @@ export interface TempProjectSourceData {
   total_unit_count: any;
   status: any;
   display_project_type: string;
-  developers: Developer[];
-  keywords: Keyword[];
-  party_keywords: PartyKeyword[];
-  root_docs: RootDoc[];
-  municipal_door_numbers: MunicipalDoorNumber[];
-  geojson_data: GeojsonDaum[];
+  raw_apartment_names: string[];
+  developers?: Developer[];
+  keywords?: Keyword[];
+  party_keywords?: PartyKeyword[];
+  root_docs?: RootDoc[];
+  municipal_door_numbers?: MunicipalDoorNumber[];
+  geojson_data?: GeojsonDaum[];
 }
 
 export interface Developer {
@@ -105,20 +106,11 @@ export interface PartyKeyword {
 }
 
 export interface RootDoc {
-  project_id: string;
   doc_id: string;
-  deed_type: string;
   occurrence_count: string;
-  cp1: string;
-  cp2: string;
-  extent: string;
-  area_attach: boolean;
-  doc_id_schedule: string;
-  project_attach: boolean;
 }
 
 export interface MunicipalDoorNumber {
-  project_id: string;
   core_string: string;
   unit_numbers: string[];
   occurrence_count: number;
@@ -166,6 +158,7 @@ interface Store extends Actions {
   currentFormStep: 'Step 1' | 'Step 2' | 'Step 3' | 'Preview';
   tempProjectSourceData: { [temp_project_id: string]: TempProjectSourceData };
   setFormSteps: (_step: Store['currentFormStep']) => void;
+  resetData: () => void;
 }
 
 const INITIAL_STATE: OnboardingDataType = {
@@ -216,5 +209,31 @@ export const useOnboardingDataStore = create<Store>()(
         prev.onboardingData = { ...prev.onboardingData, ...newDetails };
       }),
     setFormSteps: (step) => set({ currentFormStep: step }),
+    resetData: () =>
+      set((prev) => ({
+        onboardingData: {
+          ...prev.onboardingData,
+          projectType: null,
+          projectSubType: null,
+          projectSourceType: null,
+          selectedTempProject: null,
+          selectedReraProjects: [],
+          mainProjectName: '',
+          layoutTags: [],
+          colonyTags: [],
+          mapLayers: [],
+          isLuxuryProject: false,
+          houseMasterLocalities: [],
+          core_door_number_string: '',
+          keywordType: null,
+          landlordKeywords: [],
+          developerKeywords: [],
+          amenities: [],
+          clubhouse_area: '',
+          mapData: [],
+          mapInputValue: '',
+        },
+        tempProjectSourceData: {},
+      })),
   }))
 );

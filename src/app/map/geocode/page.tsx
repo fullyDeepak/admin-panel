@@ -11,8 +11,8 @@ type Response = {
 };
 
 export default function Page() {
-  const [inputValue, setValue] = useState('');
-  const [selectedValue, setSelectedValue] = useState(null);
+  const [_inputValue, setValue] = useState('');
+  const [selectedValue, _setSelectedValue] = useState(null);
 
   async function loadSuggestions(inputValue: string) {
     if (inputValue.length < 3) {

@@ -1,26 +1,22 @@
 'use client';
-import React from 'react';
+import { orrOutline } from '@/data/data';
+import L, { divIcon, Icon, LatLngTuple, MarkerCluster } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import {
+  GeoJSON,
+  GeoJSONProps,
   LayersControl,
   MapContainer,
   Marker,
   Popup,
   TileLayer,
-  GeoJSON,
-  GeoJSONProps,
-  Tooltip,
 } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import { divIcon, Icon, LatLngTuple } from 'leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
+import CustomPopup from './CustomPopup';
 import './leaflet.css';
 import MapBound from './MapBound';
 import { useProjectMapStore } from './useProjectMapStore';
-import projectPin from './project-marker.png';
 import villaPin from './villa-marker.png';
-import CustomPopup from './CustomPopup';
-import MarkerClusterGroup from 'react-leaflet-cluster';
-import { orrOutline } from '@/data/data';
-import L, { MarkerCluster } from 'leaflet';
 
 export default function MapInterface() {
   // 17.405554296679586, lng: 78.47234601561512
@@ -58,10 +54,6 @@ export default function MapInterface() {
     className:
       'bg-[#f9a898] pulse-dot hover:z-50 anim duration-300 transition-all shadow-[0px_0px_3px_0px_#00000024] hover:bg-[#a45e52] font-gsans border-2 border-[#a45e52] rounded-full',
     iconSize: L.point(16, 16),
-  });
-  const villaIcon = new Icon({
-    iconUrl: villaPin.src,
-    iconSize: [38, 38],
   });
 
   const createClusterCustomIcon = function (cluster: MarkerCluster) {

@@ -1,40 +1,33 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import ChipInput from '@/components/ui/Chip';
-import { FormProjectETLTagDataType } from '@/types/types';
+import { nanoid } from 'nanoid';
 import RcSelect, { Option } from 'rc-select';
-import Select, { SingleValue } from 'react-select';
-import { BiInfoCircle, BiPlus } from 'react-icons/bi';
+import { BiCopy, BiInfoCircle, BiPlus, BiReset } from 'react-icons/bi';
 import { FaRegCopy } from 'react-icons/fa';
 import { MdContentPaste } from 'react-icons/md';
-import { BiReset } from 'react-icons/bi';
-import { nanoid } from 'nanoid';
+import Select, { SingleValue } from 'react-select';
+import useDMVDataStore from '../../useDMVDataStore';
+import useETLDataStore from '../../useETLDataStore';
+import _ from 'lodash';
 
 interface ETLTagDataType {
-  formProjectETLTagData: FormProjectETLTagDataType[];
-  //   firstSelectedVillage: SingleValue<{ label: string; value: number }>;
-  updateProjectETLFormData: (_id: number, _key: string, _value: any) => void;
-  deleteProjectETLCard: (_etlCardId: number) => void;
-  addProjectETLCard: (_newDetails: FormProjectETLTagDataType) => void;
   showHeading?: boolean;
-  villageOptions:
-    | {
-        label: string;
-        value: number;
-      }[]
-    | undefined;
   isUpdateForm?: boolean;
 }
 
 export default function ETLTagData({
-  formProjectETLTagData,
-  updateProjectETLFormData,
-  //   firstSelectedVillage,
-  deleteProjectETLCard,
   isUpdateForm,
-  addProjectETLCard,
   showHeading = true,
-  villageOptions,
 }: ETLTagDataType) {
+  const {
+    addProjectETLTagCard: addProjectETLCard,
+    deleteProjectETLTagCard: deleteProjectETLCard,
+    projectFormETLTagData: formProjectETLTagData,
+    updateProjectETLTagData: updateProjectETLFormData,
+    addNewProjectETLTagCard,
+  } = useETLDataStore();
+  const { villageOptions } = useDMVDataStore();
+
   const docIdPattern: RegExp =
     /^(100\d|10[1-9]\d|1[1-9]\d{2}|[2-9]\d{3})-(19[0-9][0-9]|2[0][0-9]{2})-([1-9]\d{1,5}|[1-9])$/gm;
   const notDocIdPattern: RegExp =
@@ -43,13 +36,14 @@ export default function ETLTagData({
   return (
     <>
       {showHeading && (
-        <h3 className='my-4 text-2xl font-semibold'>Section: ETL Tag Data</h3>
+        <h3 className='my-4 text-2xl font-semibold'>ETL Project Tag Data</h3>
       )}
       {formProjectETLTagData.map((etlTagData, index) => (
         <div
           className='moveTransition tower-card relative mb-14 flex flex-col gap-3 rounded-2xl p-10 shadow-[0_0px_8px_rgb(139,92,246,0.6)]'
           key={index}
         >
+          {JSON.stringify(etlTagData)}
           <button
             className='btn btn-circle btn-ghost btn-sm absolute right-2 top-2'
             type='button'
@@ -373,6 +367,27 @@ export default function ETLTagData({
               />
             </div>
           </div>
+          <div className='flex gap-5'>
+            <span className='flex flex-[2] items-center'>
+              <span>Recommended Municipal Door Numbers:</span>
+            </span>
+
+            {etlTagData.suggestedDoorNumberStartsWith.map((item, index) => (
+              <span
+                className='btn btn-neutral btn-sm max-w-fit self-center text-white hover:bg-red-200 hover:text-black'
+                key={index}
+                onClick={() =>
+                  updateProjectETLFormData(
+                    etlTagData.id,
+                    'doorNoStartWith',
+                    _.uniq([...etlTagData.doorNoStartWith, item.split(':')[0]])
+                  )
+                }
+              >
+                {item}
+              </span>
+            ))}
+          </div>
           <label className='flex flex-wrap items-center justify-between gap-5'>
             <span className='flex flex-[2] items-center'>
               <span>Door no. start with:</span>
@@ -413,7 +428,21 @@ export default function ETLTagData({
               regexPattern={notDocIdPattern}
             />
           </label>
-          <div className='absolute -bottom-6 -left-5 z-10 w-full'>
+          <div className='absolute -bottom-6 -left-5 z-10 flex w-full px-28'>
+            <button
+              type='button'
+              className='btn btn-md mx-auto flex items-center border-none bg-violet-300 hover:bg-violet-400'
+              onClick={() => {
+                const newData = {
+                  id:
+                    Math.max(...formProjectETLTagData.map((data) => data.id)) +
+                    1,
+                };
+                addNewProjectETLTagCard(newData);
+              }}
+            >
+              <BiPlus size={30} /> <span>Add</span>
+            </button>
             <button
               type='button'
               className='btn btn-md mx-auto flex items-center border-none bg-violet-300 hover:bg-violet-400'
@@ -428,7 +457,7 @@ export default function ETLTagData({
                 addProjectETLCard(newData);
               }}
             >
-              <BiPlus size={30} /> <span>Duplicate</span>
+              <BiCopy size={30} /> <span>Duplicate</span>
             </button>
           </div>
         </div>

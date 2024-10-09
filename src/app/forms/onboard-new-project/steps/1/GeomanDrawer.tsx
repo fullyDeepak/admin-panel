@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-import markerPin from '../../map/project/project-marker.png';
+import markerPin from '../../../../map/project/project-marker.png';
 import { Icon } from 'leaflet';
 import L from 'leaflet';
 

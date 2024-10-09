@@ -2,7 +2,7 @@
 
 import React from 'react';
 import StaticDataForm from './steps/1/StaticDataForm';
-import DeveloperTagging from './DeveloperTagging';
+import DeveloperTagging from './steps/3/DeveloperTagging';
 import { useOnboardingDataStore } from './useOnboardingDataStore';
 import StepsUI from './StepsUI';
 import PreviewData from './PreviewData';
@@ -25,7 +25,7 @@ export default function Page() {
           className='mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
           id='projectTowerForm'
         >
-          <StepsUI stepValue={formSteps} />
+          <StepsUI stepValue={formSteps} steps={formStepsList} />
           {formSteps === 'Step 1' && <StaticDataForm />}
           {formSteps === 'Step 2' && <TagETLDataForm />}
           {formSteps === 'Step 3' && <DeveloperTagging />}

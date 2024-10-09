@@ -2,7 +2,7 @@ import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
-import { useOnboardingDataStore } from './useOnboardingDataStore';
+import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 
 export default function ProjectMatcherSection() {
   const { onboardingData, updateOnboardingData } = useOnboardingDataStore();

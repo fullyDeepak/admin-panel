@@ -1,19 +1,22 @@
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-import CreatableSelect from 'react-select/creatable';
 import _ from 'lodash';
 import dynamic from 'next/dynamic';
+import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { MultiValue, SingleValue } from 'react-select';
+import CreatableSelect from 'react-select/creatable';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
 import { ProjectCordWithinVillage } from '../../../village-project-cleaner/MapUI';
+import useDMVDataStore from '../../useDMVDataStore';
+import useETLDataStore, {
+  INITIAL_DATA as ETL_INITIAL_DATA,
+} from '../../useETLDataStore';
 import {
   TempProjectSourceData,
   useOnboardingDataStore,
 } from '../../useOnboardingDataStore';
-import useDMVDataStore from '../../useDMVDataStore';
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
@@ -23,6 +26,7 @@ export default function StaticDataForm() {
     updateOnboardingData,
     addTempProjectSourceData,
     tempProjectSourceData,
+    resetData,
   } = useOnboardingDataStore();
   const {
     setDMVData,
@@ -34,6 +38,7 @@ export default function StaticDataForm() {
     setVillageOptions,
     villageOptions,
   } = useDMVDataStore();
+  const { setData, resetAllProjectData } = useETLDataStore();
   const [reraForTempProjects, setReraForTempProjects] = useState<{
     [key: string]: string[];
   }>({});
@@ -268,6 +273,7 @@ export default function StaticDataForm() {
             }>
           ) => {
             updateOnboardingData({ selectedVillage: e });
+            resetData();
           }}
           isDisabled={Boolean(!onboardingData.selectedMandal)}
         />
@@ -309,9 +315,9 @@ export default function StaticDataForm() {
             }>
           ) => {
             console.log(e);
-            updateOnboardingData({ projectSourceType: e?.value });
             setReraForTempProjects({});
             updateOnboardingData({
+              projectSourceType: e?.value,
               selectedReraProjects: [],
               selectedTempProject: null,
             });
@@ -368,10 +374,7 @@ export default function StaticDataForm() {
                       console.log(reraProject);
                       return reraProject;
                     })
-                    .filter((ele) => !ele) as {
-                    label: string;
-                    value: string;
-                  }[]
+                    .filter((ele) => !ele)
                 );
                 const reraProjectsToSelect = res.data?.data?.rera_ids
                   .map((ele) => {
@@ -406,6 +409,61 @@ export default function StaticDataForm() {
                 updateOnboardingData({
                   mainProjectName: e.label.split(':')[1].trim(),
                 });
+                setData([
+                  {
+                    id: 1,
+                    village: villageOptions.find(
+                      (ele) =>
+                        ele.value === onboardingData.selectedVillage?.value
+                    ),
+                    docId:
+                      tempProjectData.data.data.root_docs?.map(
+                        (item) => item.doc_id
+                      ) || [],
+                    rootDocs:
+                      tempProjectData.data.data.root_docs?.map(
+                        (item) => item.doc_id
+                      ) || [],
+                    apartmentContains:
+                      tempProjectData.data.data.raw_apartment_names,
+                    aptNameNotContains: [],
+                    aptSurveyPlotDetails: false,
+                    counterpartyContains: [], // ! couterpartykeywords?
+                    counterpartySurveyPlotDetails: false,
+                    docIdNotEquals: [],
+                    suggestedDoorNumberStartsWith:
+                      tempProjectData.data.data.municipal_door_numbers?.map(
+                        (ele) => {
+                          return `${ele.core_string} : ${ele.unit_numbers.join(', ')} : ${ele.occurrence_count}`;
+                        }
+                      ) || [],
+                    doorNoStartWith:
+                      tempProjectData.data.data.municipal_door_numbers?.map(
+                        (ele) => ele.core_string
+                      ) || [],
+                    etlPattern: '',
+                    localityContains: [],
+                    localityPlot: [],
+                    plotContains: [],
+                    surveyContains: [],
+                    singleUnit: false,
+                    wardBlock: [],
+                    surveyEquals:
+                      tempProjectData.data.data.keywords
+                        ?.filter(
+                          (ele) =>
+                            ele.keyword_type === 'SURVEY_EQUALS' && ele.attached
+                        )
+                        .map((ele) => ele.keyword) || [],
+                    plotEquals:
+                      tempProjectData.data.data.keywords
+                        ?.filter(
+                          (ele) =>
+                            ele.keyword_type === 'PLOT_EQUALS' && ele.attached
+                        )
+                        .map((ele) => ele.keyword) || [],
+                  },
+                ]);
               }
             } else {
               // cleanup
@@ -569,7 +627,7 @@ export default function StaticDataForm() {
         {Object.entries(tempProjectSourceData).map(([projectId, data]) => {
           return (
             <span className='border' key={projectId}>
-              {projectId} : {data.geojson_data[0].full_address}
+              {projectId} : {data.geojson_data?.[0].full_address}
             </span>
           );
         })}
