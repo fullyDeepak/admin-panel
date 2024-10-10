@@ -43,7 +43,6 @@ export default function ETLTagData({
           className='moveTransition tower-card relative mb-14 flex flex-col gap-3 rounded-2xl p-10 shadow-[0_0px_8px_rgb(139,92,246,0.6)]'
           key={index}
         >
-          {JSON.stringify(etlTagData)}
           <button
             className='btn btn-circle btn-ghost btn-sm absolute right-2 top-2'
             type='button'

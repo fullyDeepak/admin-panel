@@ -10,9 +10,7 @@ import CreatableSelect from 'react-select/creatable';
 import Select from 'react-select-virtualized';
 import { ProjectCordWithinVillage } from '../../../village-project-cleaner/MapUI';
 import useDMVDataStore from '../../useDMVDataStore';
-import useETLDataStore, {
-  INITIAL_DATA as ETL_INITIAL_DATA,
-} from '../../useETLDataStore';
+import useETLDataStore from '../../useETLDataStore';
 import {
   TempProjectSourceData,
   useOnboardingDataStore,
@@ -38,7 +36,7 @@ export default function StaticDataForm() {
     setVillageOptions,
     villageOptions,
   } = useDMVDataStore();
-  const { setData, resetAllProjectData } = useETLDataStore();
+  const { setData } = useETLDataStore();
   const [reraForTempProjects, setReraForTempProjects] = useState<{
     [key: string]: string[];
   }>({});
@@ -143,6 +141,58 @@ export default function StaticDataForm() {
           label: `${e.id}:${e.project_name} (${e.unit_count})`,
           value: e.id,
         }));
+    },
+    staleTime: Infinity,
+  });
+  const { data: _reraForTemp } = useQuery({
+    queryKey: ['reraProjects', onboardingData.selectedTempProject],
+    queryFn: async () => {
+      if (!onboardingData.selectedTempProject) return [];
+      const res = await axiosClient.get<{
+        data?: { temp_project_id: string; rera_ids: string[] };
+      }>('/onboarding/rera-matches-for-temp-project', {
+        params: {
+          project_id: onboardingData.selectedTempProject.value,
+        },
+      });
+      if (res.data?.data?.rera_ids && res.data?.data?.rera_ids.length) {
+        setReraForTempProjects({
+          [onboardingData.selectedTempProject.value]:
+            res.data?.data?.rera_ids || [],
+        });
+        console.log(
+          res.data?.data?.rera_ids
+            .map((ele) => {
+              const reraProject = reraProjects?.find((project) => {
+                return project.value === ele;
+              });
+              console.log(reraProject);
+              return reraProject;
+            })
+            .filter((ele) => !ele)
+        );
+        const reraProjectsToSelect = res.data?.data?.rera_ids
+          .map((ele) => {
+            const reraProject = reraProjects?.find((project) => {
+              return project.value === ele;
+            });
+            console.log(reraProject);
+            return reraProject;
+          })
+          .filter((ele) => !!ele) as {
+          label: string;
+          value: string;
+        }[];
+        console.log(reraProjectsToSelect);
+        if (reraProjectsToSelect) {
+          updateOnboardingData({
+            selectedReraProjects: _.uniqBy(
+              [...onboardingData.selectedReraProjects, ...reraProjectsToSelect],
+              (ele) => ele.value
+            ),
+          });
+        }
+      }
     },
     staleTime: Infinity,
   });
@@ -353,54 +403,9 @@ export default function StaticDataForm() {
             if (e) {
               updateOnboardingData({
                 selectedTempProject: e,
+                selectedReraProjects: [],
               });
-              const res = await axiosClient.get<{
-                data?: { temp_project_id: string; rera_ids: string[] };
-              }>('/onboarding/rera-matches-for-temp-project', {
-                params: {
-                  project_id: e.value,
-                },
-              });
-              if (res.data?.data?.rera_ids && res.data?.data?.rera_ids.length) {
-                setReraForTempProjects((prev) => {
-                  return { ...prev, [e.value]: res.data?.data?.rera_ids || [] };
-                });
-                console.log(
-                  res.data?.data?.rera_ids
-                    .map((ele) => {
-                      const reraProject = reraProjects?.find((project) => {
-                        return project.value === ele;
-                      });
-                      console.log(reraProject);
-                      return reraProject;
-                    })
-                    .filter((ele) => !ele)
-                );
-                const reraProjectsToSelect = res.data?.data?.rera_ids
-                  .map((ele) => {
-                    const reraProject = reraProjects?.find((project) => {
-                      return project.value === ele;
-                    });
-                    console.log(reraProject);
-                    return reraProject;
-                  })
-                  .filter((ele) => !!ele) as {
-                  label: string;
-                  value: string;
-                }[];
-                console.log(reraProjectsToSelect);
-                if (reraProjectsToSelect) {
-                  updateOnboardingData({
-                    selectedReraProjects: _.uniqBy(
-                      [
-                        ...onboardingData.selectedReraProjects,
-                        ...reraProjectsToSelect,
-                      ],
-                      (ele) => ele.value
-                    ),
-                  });
-                }
-              }
+              setReraForTempProjects({});
               const tempProjectData = await axiosClient.get<{
                 data: TempProjectSourceData;
               }>(`/temp-projects/${e.value}`);
@@ -625,9 +630,13 @@ export default function StaticDataForm() {
       <label className='flex items-center justify-between gap-5'>
         <span>GeoCoded Address : </span>
         {Object.entries(tempProjectSourceData).map(([projectId, data]) => {
-          return (
+          return data.geojson_data?.[0].full_address ? (
             <span className='border' key={projectId}>
               {projectId} : {data.geojson_data?.[0].full_address}
+            </span>
+          ) : (
+            <span className='rounded-xl border px-8' key={projectId}>
+              N/A
             </span>
           );
         })}

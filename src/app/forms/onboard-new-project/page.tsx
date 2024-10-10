@@ -1,12 +1,11 @@
 'use client';
 
-import React from 'react';
-import StaticDataForm from './steps/1/StaticDataForm';
-import DeveloperTagging from './steps/3/DeveloperTagging';
-import { useOnboardingDataStore } from './useOnboardingDataStore';
-import StepsUI from './StepsUI';
 import PreviewData from './PreviewData';
-import { TagETLDataForm } from './steps/2/TagETLDataForm';
+import StaticDataForm from './steps/1/StaticDataForm';
+import DeveloperTagging from './steps/2/DeveloperTagging';
+import { TagETLDataForm } from './steps/3/TagETLDataForm';
+import StepsUI from './StepsUI';
+import { useOnboardingDataStore } from './useOnboardingDataStore';
 
 export default function Page() {
   const {
@@ -27,8 +26,8 @@ export default function Page() {
         >
           <StepsUI stepValue={formSteps} steps={formStepsList} />
           {formSteps === 'Step 1' && <StaticDataForm />}
-          {formSteps === 'Step 2' && <TagETLDataForm />}
-          {formSteps === 'Step 3' && <DeveloperTagging />}
+          {formSteps === 'Step 2' && <DeveloperTagging />}
+          {formSteps === 'Step 3' && <TagETLDataForm />}
           {formSteps === 'Preview' && <PreviewData />}
 
           {/* PAGINATORS */}

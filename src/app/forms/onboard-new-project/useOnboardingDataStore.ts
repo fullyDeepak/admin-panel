@@ -154,7 +154,12 @@ interface Actions {
 
 interface Store extends Actions {
   onboardingData: OnboardingDataType;
-  formStepsList: ['Step 1', 'Step 2', 'Step 3', 'Preview'];
+  formStepsList: ['Step 1', 'Step 2', 'Step 3', 'Preview']; // [
+  //   'Static Data',
+  //   'Developer Tagging',
+  //   'ETL TAG Source For Project',
+  //   'Preview',
+  // ];
   currentFormStep: 'Step 1' | 'Step 2' | 'Step 3' | 'Preview';
   tempProjectSourceData: { [temp_project_id: string]: TempProjectSourceData };
   setFormSteps: (_step: Store['currentFormStep']) => void;
@@ -200,7 +205,6 @@ export const useOnboardingDataStore = create<Store>()(
     addTempProjectSourceData: (project_id, newData) =>
       set((prev) => {
         prev.tempProjectSourceData = {
-          ...prev.tempProjectSourceData,
           [project_id]: newData,
         };
       }),
