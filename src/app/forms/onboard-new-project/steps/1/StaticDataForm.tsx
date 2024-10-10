@@ -1,14 +1,11 @@
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
 import _ from 'lodash';
-import dynamic from 'next/dynamic';
-import { useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
+import { useState } from 'react';
 import { MultiValue, SingleValue } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
-import { ProjectCordWithinVillage } from '../../../village-project-cleaner/MapUI';
 import useDMVDataStore from '../../useDMVDataStore';
 import useETLDataStore from '../../useETLDataStore';
 import {
@@ -196,41 +193,9 @@ export default function StaticDataForm() {
     },
     staleTime: Infinity,
   });
-  const MapInterface = useMemo(
-    () =>
-      dynamic(() => import('./MapInterface'), {
-        ssr: false,
-      }),
-    []
-  );
 
-  async function handleShowOnMap() {
-    if (!onboardingData.selectedVillage) return;
-    updateOnboardingData({ mapData: null });
-    const res = axiosClient.get<ProjectCordWithinVillage>(
-      '/map/project-cord-within-village',
-      {
-        params: {
-          village_id: onboardingData.selectedVillage.value,
-          query: `${onboardingData.mapInputValue} ${onboardingData.selectedVillage.label.split(':')[1]}`,
-        },
-      }
-    );
-    toast.promise(
-      res,
-      {
-        loading: 'Loading...',
-        success: (data) => {
-          updateOnboardingData({ mapData: data.data.data });
-          return `Successfully loaded ${data.data.data.length} projects.`;
-        },
-        error: 'Error',
-      },
-      { duration: 5000 }
-    );
-  }
   return (
-    <div className='z-10 mt-5 flex min-h-screen w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
+    <div className='z-10 mt-5 flex min-h-screen w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none'>
       {/*  DISTRICT SELECTION */}
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>District:</span>
@@ -696,30 +661,7 @@ export default function StaticDataForm() {
           }}
         />
       </label>
-      <div className='flex flex-col items-start justify-between gap-5'>
-        <div className='flex items-center gap-5'>
-          <span>Map Layers/ Shape File / Location : </span>
-          <input
-            type='text'
-            className={inputBoxClass}
-            placeholder='Search on Map'
-            value={onboardingData.mapInputValue}
-            onChange={(e) =>
-              updateOnboardingData({ mapInputValue: e.target.value })
-            }
-          />
-          <button
-            className='btn btn-neutral'
-            onClick={() => {
-              handleShowOnMap();
-            }}
-          >
-            Search
-          </button>
-        </div>
 
-        <MapInterface />
-      </div>
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>Project Type:</span>
         <Select

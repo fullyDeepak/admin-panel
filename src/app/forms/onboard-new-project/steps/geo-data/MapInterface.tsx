@@ -1,12 +1,12 @@
 'use client';
-import { Icon, LatLngBounds, LatLngTuple } from 'leaflet';
+import { Icon, LatLngBounds, LatLngBoundsExpression, LatLngTuple, Layer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 import {
   LayersControl,
   MapContainer,
   Marker,
-  Popup,
+  Popup,GeoJSON,
   TileLayer,
   useMap,
 } from 'react-leaflet';
@@ -14,11 +14,14 @@ import { ProjectCordWithinVillage } from '../../../village-project-cleaner/MapUI
 import selectPin from '../../../village-project-cleaner/select-pin.png';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import GeomanDrawer from './GeomanDrawer';
+import bboxCalculator from '@turf/bbox';
+import { AllGeoJSON } from '@turf/helpers';
+import * as geojson from 'geojson';
 
 export default function MapInterface() {
   const center: LatLngTuple = [17.418136769166217, 78.33019660095187];
-  const mapData = useOnboardingDataStore(
-    (state) => state.onboardingData.mapData
+  const {mapData, mapGeojsonData} = useOnboardingDataStore(
+    (state) => ({mapData:state.onboardingData.mapData, mapGeojsonData:state.onboardingData.mapGeojsonData})
   );
   const mapLayer = [
     {
@@ -72,13 +75,42 @@ export default function MapInterface() {
       // Fly to the bounds of the markers
       map.flyToBounds(bounds, { duration: 1.9 });
     }, [mapData, map]);
-
+    
+    useEffect(() => {
+      if (!mapGeojsonData) return;
+      if (mapGeojsonData) {
+        const bbox = bboxCalculator(mapGeojsonData as AllGeoJSON);
+        const boundArea: LatLngBoundsExpression = [
+          [bbox[1], bbox[2]],
+          [bbox[3], bbox[0]],
+        ];
+        map.flyToBounds(boundArea, {
+          duration: 1.9,
+        });
+      }
+    }, [mapGeojsonData, map]);
     return null;
   };
 
+  function renderLabel(
+    feature: geojson.Feature<
+      {
+        type: 'Polygon';
+        coordinates: [number, number][][];
+      },
+      {
+        id: number;
+        name: string;
+      }
+    >,
+    layer: Layer
+  ) {
+    layer.bindPopup(feature.properties?.name);
+  }
+
   return (
     <div className='mb-5 flex w-full flex-col items-center justify-center'>
-      <div className='mx-auto flex h-[70vh] w-full max-w-[90%] gap-2'>
+      <div className='mx-auto flex h-[70vh] w-full max-w-[100%] gap-2'>
         <MapContainer
           center={center}
           zoom={12}
@@ -116,6 +148,17 @@ export default function MapInterface() {
               </Marker>
             </>
           ))}
+            {mapGeojsonData && (
+              mapGeojsonData?.features?.map((feature, index) => (
+                <GeoJSON
+                  data={feature}
+                  key={index}
+                  style={{ color: 'dodgerblue' }} 
+                  onEachFeature={renderLabel}
+                />
+              ))
+             
+            )}
           <LayersControl>
             {mapLayer?.map((item, i) => (
               <LayersControl.BaseLayer

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 import { immer } from 'zustand/middleware/immer';
 import { ProjectCordWithinVillage } from '../village-project-cleaner/MapUI';
+import { FeatureCollection} from 'geojson';
 
 export interface OnboardingDataType {
   selectedDistrict: SingleValue<{
@@ -62,6 +63,7 @@ export interface OnboardingDataType {
   clubhouse_area: string;
   mapData: ProjectCordWithinVillage['data'] | null;
   mapInputValue: string;
+  mapGeojsonData: FeatureCollection | null;
 }
 
 export interface TempProjectSourceData {
@@ -154,13 +156,13 @@ interface Actions {
 
 interface Store extends Actions {
   onboardingData: OnboardingDataType;
-  formStepsList: ['Step 1', 'Step 2', 'Step 3', 'Preview']; // [
+  formStepsList: ['Step 1', 'Geo-Data', 'Step 2', 'Step 3', 'Preview']; // [
   //   'Static Data',
   //   'Developer Tagging',
   //   'ETL TAG Source For Project',
   //   'Preview',
   // ];
-  currentFormStep: 'Step 1' | 'Step 2' | 'Step 3' | 'Preview';
+  currentFormStep: Store['formStepsList'][number];
   tempProjectSourceData: { [temp_project_id: string]: TempProjectSourceData };
   setFormSteps: (_step: Store['currentFormStep']) => void;
   resetData: () => void;
@@ -189,6 +191,7 @@ const INITIAL_STATE: OnboardingDataType = {
   clubhouse_area: '',
   mapData: [],
   mapInputValue: '',
+  mapGeojsonData: null,
 };
 
 export const useOnboardingDataStore = create<Store>()(
@@ -197,6 +200,7 @@ export const useOnboardingDataStore = create<Store>()(
     currentFormStep: 'Step 1' as Store['currentFormStep'],
     formStepsList: [
       'Step 1',
+      'Geo-Data',
       'Step 2',
       'Step 3',
       'Preview',
