@@ -69,7 +69,8 @@ export default function Page() {
       cp2: string;
       extent: string;
       occurrence_count: number;
-      attached: boolean;
+      project_attached: boolean;
+      area_attached: boolean;
     }[]
   >([]);
   // queries
@@ -144,7 +145,8 @@ export default function Page() {
           cp2: string;
           extent: string;
           occurrence_count: number;
-          attached: boolean;
+          project_attached: boolean;
+          area_attached: boolean;
         }[];
       }>(
         '/cleaners/root-docs?project_id=' +
@@ -334,7 +336,10 @@ export default function Page() {
                   Occurrence Count
                 </th>
                 <th className='z-0 max-w-7xl px-4 py-4 font-semibold text-gray-900'>
-                  Attached
+                  Project Attached
+                </th>
+                <th className='z-0 max-w-7xl px-4 py-4 font-semibold text-gray-900'>
+                  Area Attached
                 </th>
               </tr>
             </thead>
@@ -342,34 +347,7 @@ export default function Page() {
               {rootDocOptions.map((item, index) => (
                 <tr
                   key={item.doc_id_schedule}
-                  className={`max-w-7xl cursor-pointer border-b ${item.attached ? 'bg-sky-100 hover:bg-opacity-50' : 'bg-none hover:bg-gray-100'} select-none`}
-                  onClick={async () => {
-                    await axiosClient.post(
-                      '/cleaners/toggle-root-doc-attach-status',
-                      {
-                        project_id:
-                          selectedProject?.value.charAt(0) === 'O'
-                            ? selectedProject?.value.replace('O', '')
-                            : selectedProject?.value,
-                        project_type:
-                          selectedProject?.value.charAt(0) === 'O'
-                            ? 'ONBOARDED'
-                            : 'TEMP',
-                        root_doc_id: item.doc_id,
-                      }
-                    );
-                    setRootDocOptions((prev) => {
-                      return prev.map((ele, i) => {
-                        if (i === index) {
-                          return {
-                            ...ele,
-                            attached: !ele.attached,
-                          };
-                        }
-                        return ele;
-                      });
-                    });
-                  }}
+                  className={`max-w-7xl cursor-pointer border-b ${item.project_attached || item.area_attached ? 'bg-sky-100 hover:bg-opacity-50' : 'bg-none hover:bg-gray-100'} select-none`}
                 >
                   <td className='max-w-7xl px-4 py-3'>{item.doc_id}</td>
                   <td className='max-w-7xl px-4 py-3'>
@@ -385,8 +363,8 @@ export default function Page() {
                   <td className='max-w-7xl px-4 py-3'>
                     <input
                       type='checkbox'
-                      name='attached'
-                      checked={item.attached}
+                      name='project_attached'
+                      checked={item.project_attached}
                       className='checkbox cursor-pointer'
                       onChange={(e) => {
                         setRootDocOptions((prev) => {
@@ -394,7 +372,28 @@ export default function Page() {
                             if (i === index) {
                               return {
                                 ...ele,
-                                attached: e.target.checked,
+                                project_attached: e.target.checked,
+                              };
+                            }
+                            return ele;
+                          });
+                        });
+                      }}
+                    />
+                  </td>
+                  <td className='max-w-7xl px-4 py-3'>
+                    <input
+                      type='checkbox'
+                      name='area_attached'
+                      checked={item.area_attached}
+                      className='checkbox cursor-pointer'
+                      onChange={(e) => {
+                        setRootDocOptions((prev) => {
+                          return prev.map((ele, i) => {
+                            if (i === index) {
+                              return {
+                                ...ele,
+                                area_attached: e.target.checked,
                               };
                             }
                             return ele;
@@ -409,6 +408,25 @@ export default function Page() {
           </table>
         </div>
       )}
+      <div className='my-4 flex justify-center'>
+        <button
+          className='btn btn-md'
+          onClick={async () => {
+            await axiosClient.post('/cleaners/update-root-doc-attach-status', {
+              project_id:
+                selectedProject?.value.charAt(0) === 'O'
+                  ? selectedProject?.value.replace('O', '')
+                  : selectedProject?.value,
+              project_type:
+                selectedProject?.value.charAt(0) === 'O' ? 'ONBOARDED' : 'TEMP',
+              docs: rootDocOptions,
+            });
+            alert('Updated');
+          }}
+        >
+          Submit
+        </button>
+      </div>
     </>
   );
 }

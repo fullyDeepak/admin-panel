@@ -386,10 +386,7 @@ export default function StaticDataForm() {
                       (ele) =>
                         ele.value === onboardingData.selectedVillage?.value
                     ),
-                    docId:
-                      tempProjectData.data.data.root_docs?.map(
-                        (item) => item.doc_id
-                      ) || [],
+                    docId: [],
                     rootDocs:
                       tempProjectData.data.data.root_docs?.map(
                         (item) => item.doc_id
@@ -407,10 +404,7 @@ export default function StaticDataForm() {
                           return `${ele.core_string} : ${ele.unit_numbers.join(', ')} : ${ele.occurrence_count}`;
                         }
                       ) || [],
-                    doorNoStartWith:
-                      tempProjectData.data.data.municipal_door_numbers?.map(
-                        (ele) => ele.core_string
-                      ) || [],
+                    doorNoStartWith: [],
                     etlPattern: '',
                     localityContains: [],
                     localityPlot: [],
@@ -424,14 +418,16 @@ export default function StaticDataForm() {
                           (ele) =>
                             ele.keyword_type === 'SURVEY_EQUALS' && ele.attached
                         )
-                        .map((ele) => ele.keyword) || [],
+                        .map((ele) => ele.keyword.split('|'))
+                        .reduce((acc, val) => acc.concat(val), []) || [],
                     plotEquals:
                       tempProjectData.data.data.keywords
                         ?.filter(
                           (ele) =>
                             ele.keyword_type === 'PLOT_EQUALS' && ele.attached
                         )
-                        .map((ele) => ele.keyword) || [],
+                        .map((ele) => ele.keyword.split('|'))
+                        .reduce((acc, val) => acc.concat(val), []) || [],
                   },
                 ]);
               }
