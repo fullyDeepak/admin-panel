@@ -1,10 +1,11 @@
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
+import ChipInput from '@/components/ui/Chip';
+import _ from 'lodash';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
-import { useOnboardingDataStore } from '../../useOnboardingDataStore';
-import { inputBoxClass } from '@/app/constants/tw-class';
 import useETLDataStore from '../../useETLDataStore';
+import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 
 export default function ProjectMatcherSection() {
   const { projectFormETLTagData: formProjectETLTagData } = useETLDataStore();
@@ -121,8 +122,20 @@ export default function ProjectMatcherSection() {
         <span className='flex-[2] text-wrap break-words md:text-xl'>
           Core Door Number String:{' '}
         </span>
-
-        <input type='text' className={`${inputBoxClass}`} />
+        <ChipInput
+          chips={onboardingData.coreDoorNumberString}
+          updateFormData={(_id, _key, value) => {
+            updateOnboardingData({
+              coreDoorNumberString: _.uniq([
+                ...value,
+                ...onboardingData.coreDoorNumberString,
+              ]),
+            });
+          }}
+          updateId={0}
+          updateKey='coorDoorNumberString'
+        />
+        {JSON.stringify(onboardingData.coreDoorNumberString)}
       </div>
     </>
   );

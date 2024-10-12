@@ -36,11 +36,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
 # local test
-src/app/table/page.tsx 
+src/app/table/page.tsx
 src/components/tables/pagination.txt
 src/components/ui/YearPicker.tsx
 
-
 .gitignore
+admin_panel.code-workspace

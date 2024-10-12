@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 import { immer } from 'zustand/middleware/immer';
 import { ProjectCordWithinVillage } from '../village-project-cleaner/MapUI';
-import { FeatureCollection} from 'geojson';
+import { FeatureCollection } from 'geojson';
 
 export interface OnboardingDataType {
   selectedDistrict: SingleValue<{
@@ -64,6 +64,7 @@ export interface OnboardingDataType {
   mapData: ProjectCordWithinVillage['data'] | null;
   mapInputValue: string;
   mapGeojsonData: FeatureCollection | null;
+  coreDoorNumberString: string[];
 }
 
 export interface TempProjectSourceData {
@@ -192,6 +193,7 @@ const INITIAL_STATE: OnboardingDataType = {
   mapData: [],
   mapInputValue: '',
   mapGeojsonData: null,
+  coreDoorNumberString: [],
 };
 
 export const useOnboardingDataStore = create<Store>()(
