@@ -5,25 +5,28 @@ import axiosClient from '@/utils/AxiosClient';
 import { useState } from 'react';
 import LoadingCircle from '@/components/ui/LoadingCircle';
 import { startCase } from 'lodash';
-import EditableList from './EditableList';
-import { useOnboardingDataStore } from './useOnboardingDataStore';
+import EditableList from '../../EditableList';
+import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 
 export default function Keywords() {
   // const { updateProjectFormDataRera, projectFormDataRera } =
   // useProjectStoreRera();
-  const { updateOnboardingData, onboardingData } = useOnboardingDataStore();
-  const { data: keywordList, isLoading: loadingKeywords } = useQuery({
+  const { updateOnboardingData, onboardingData, tempProjectSourceData } =
+    useOnboardingDataStore();
+  const { data: reraKeyWordList, isLoading: loadingReraKeywords } = useQuery({
     queryKey: [
       'keywords',
       onboardingData.keywordType,
-      onboardingData.selectedTempProject,
+      onboardingData.selectedReraProjects,
     ],
     queryFn: async () => {
       if (!onboardingData.keywordType || onboardingData.selectedTempProject) {
         return undefined;
       }
       const data = {
-        project_ids: JSON.stringify(onboardingData.selectedTempProject),
+        project_ids: JSON.stringify(
+          onboardingData.selectedReraProjects.map((item) => item.value)
+        ),
         type: onboardingData.keywordType.value,
       };
 
@@ -58,12 +61,12 @@ export default function Keywords() {
           onChange={(e) => updateOnboardingData({ keywordType: e })}
         />
       </label>
-      {loadingKeywords && (
+      {loadingReraKeywords && (
         <div className='flex items-center justify-center'>
           <LoadingCircle circleColor='violet' size='large' />
         </div>
       )}
-      {onboardingData.keywordType?.value && keywordList && (
+      {onboardingData.keywordType?.value && reraKeyWordList && (
         <div className='flex w-full'>
           <ul className='mr-5 flex max-h-[90vh] w-full max-w-[400px] flex-col gap-1 rounded-box bg-violet-100 py-4'>
             <li className='menu-title text-center text-xl text-violet-600'>
@@ -74,7 +77,7 @@ export default function Keywords() {
               type='button'
               onClick={() => {
                 let names: string[] = [];
-                keywordList.rera.map((projectKeywords) => {
+                reraKeyWordList.rera.map((projectKeywords) => {
                   names = names.concat(projectKeywords.keyword_list);
                 });
                 if (onboardingData.keywordType?.value === 'landlord') {
@@ -97,7 +100,7 @@ export default function Keywords() {
               Select All
             </button>
             <div className='flex flex-col gap-y-1 overflow-y-auto'>
-              {keywordList?.rera?.map((projectKeywords) =>
+              {reraKeyWordList?.rera?.map((projectKeywords) =>
                 projectKeywords.keyword_list.map((keyword, index) => (
                   <label key={index} className='ml-3 flex flex-col'>
                     <input
@@ -123,6 +126,39 @@ export default function Keywords() {
             <li className='menu-title text-center text-xl text-violet-600'>
               Transaction {startCase(onboardingData.keywordType.value)}
             </li>
+            {Object.entries(tempProjectSourceData)
+              .map(([_projectId, data]) => {
+                return data.party_keywords?.filter(
+                  (ele) =>
+                    ele.keyword_type ===
+                    (onboardingData.keywordType &&
+                    onboardingData.keywordType.value === 'landlord'
+                      ? 'LANDLORD'
+                      : 'DEVELOPER')
+                );
+              })
+              .map((ele) => ele?.map((ele) => ele.keywords))
+              .filter((ele) => !!ele)
+              .reduce((acc, val) => acc.concat(val), [])
+              .reduce((acc, val) => acc.concat(val), [])
+              .map((keyword, index) => (
+                <label key={index} className='ml-3 flex flex-col'>
+                  <input
+                    type='checkbox'
+                    className='peer'
+                    hidden
+                    name='rera-keyword-list'
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedKeyword((prev) => [keyword, ...prev]);
+                      }
+                    }}
+                  />
+                  <span className='btn btn-ghost btn-sm !block h-full max-w-[90%] flex-row justify-normal gap-0 self-start whitespace-break-spaces py-2 text-left font-normal leading-5 peer-checked:bg-green-500'>
+                    {keyword}
+                  </span>
+                </label>
+              ))}
           </ul>
           <div className='flex flex-col items-center justify-center gap-5'>
             <button
