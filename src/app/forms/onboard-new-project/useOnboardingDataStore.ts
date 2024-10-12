@@ -99,7 +99,7 @@ export interface Keyword {
   project_id: string;
   keyword: string;
   keyword_type: string;
-  attached: boolean;
+  is_attached: boolean;
 }
 
 export interface PartyKeyword {

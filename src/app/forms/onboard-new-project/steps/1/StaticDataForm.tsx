@@ -417,7 +417,8 @@ export default function StaticDataForm() {
                       tempProjectData.data.data.keywords
                         ?.filter(
                           (ele) =>
-                            ele.keyword_type === 'SURVEY_EQUALS' && ele.attached
+                            ele.keyword_type === 'SURVEY_EQUALS' &&
+                            ele.is_attached
                         )
                         .map((ele) => ele.keyword.split('|'))
                         .reduce((acc, val) => acc.concat(val), []) || [],
@@ -425,7 +426,8 @@ export default function StaticDataForm() {
                       tempProjectData.data.data.keywords
                         ?.filter(
                           (ele) =>
-                            ele.keyword_type === 'PLOT_EQUALS' && ele.attached
+                            ele.keyword_type === 'PLOT_EQUALS' &&
+                            ele.is_attached
                         )
                         .map((ele) => ele.keyword.split('|'))
                         .reduce((acc, val) => acc.concat(val), []) || [],
