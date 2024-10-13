@@ -21,6 +21,8 @@ type Props = {
       (RawAptDataRow & {
         clean_apt_name: string;
         selected_project_id: string;
+        project_category: string;
+        project_subtype: string;
       })[]
     >
   ) => void;
@@ -259,6 +261,8 @@ export default function MatchAttachMap({
                           ...item,
                           clean_apt_name: cleanAptName,
                           selected_project_id: idToBeAssign,
+                          project_category: '',
+                          project_subtype: '',
                         })),
                       ];
                     });

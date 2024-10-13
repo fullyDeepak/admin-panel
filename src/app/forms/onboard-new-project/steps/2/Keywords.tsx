@@ -1,4 +1,4 @@
-import Select from 'react-select';
+import Select, { SingleValue } from 'react-select';
 import { FiChevronRight } from 'react-icons/fi';
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
@@ -11,23 +11,25 @@ import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 export default function Keywords() {
   // const { updateProjectFormDataRera, projectFormDataRera } =
   // useProjectStoreRera();
+  const [keywordType, setKeywordType] = useState<
+    SingleValue<{
+      label: string;
+      value: string;
+    }>
+  >({ label: 'Select Keyword Type', value: '' });
   const { updateOnboardingData, onboardingData, tempProjectSourceData } =
     useOnboardingDataStore();
   const { data: reraKeyWordList, isLoading: loadingReraKeywords } = useQuery({
-    queryKey: [
-      'keywords',
-      onboardingData.keywordType,
-      onboardingData.selectedReraProjects,
-    ],
+    queryKey: ['keywords', keywordType, onboardingData.selectedReraProjects],
     queryFn: async () => {
-      if (!onboardingData.keywordType || onboardingData.selectedTempProject) {
+      if (!keywordType || onboardingData.selectedTempProject) {
         return undefined;
       }
       const data = {
         project_ids: JSON.stringify(
           onboardingData.selectedReraProjects.map((item) => item.value)
         ),
-        type: onboardingData.keywordType.value,
+        type: keywordType.value,
       };
 
       const response = await axiosClient.get<{
@@ -57,8 +59,8 @@ export default function Keywords() {
             { label: 'Landlord', value: 'landlord' },
             { label: 'Developer', value: 'developer' },
           ]}
-          value={onboardingData.keywordType}
-          onChange={(e) => updateOnboardingData({ keywordType: e })}
+          value={keywordType}
+          onChange={(e) => setKeywordType(e)}
         />
       </label>
       {loadingReraKeywords && (
@@ -66,11 +68,11 @@ export default function Keywords() {
           <LoadingCircle circleColor='violet' size='large' />
         </div>
       )}
-      {onboardingData.keywordType?.value && reraKeyWordList && (
+      {keywordType?.value && reraKeyWordList && (
         <div className='flex w-full'>
           <ul className='mr-5 flex max-h-[90vh] w-full max-w-[400px] flex-col gap-1 rounded-box bg-violet-100 py-4'>
             <li className='menu-title text-center text-xl text-violet-600'>
-              RERA {startCase(onboardingData.keywordType.value)}
+              RERA {startCase(keywordType.value)}
             </li>
             <button
               className='btn btn-warning btn-sm max-w-fit self-center'
@@ -80,14 +82,14 @@ export default function Keywords() {
                 reraKeyWordList.rera.map((projectKeywords) => {
                   names = names.concat(projectKeywords.keyword_list);
                 });
-                if (onboardingData.keywordType?.value === 'landlord') {
+                if (keywordType?.value === 'landlord') {
                   updateOnboardingData({
                     landlordKeywords: [
                       ...onboardingData.landlordKeywords,
                       ...names,
                     ],
                   });
-                } else if (onboardingData.keywordType?.value === 'developer') {
+                } else if (keywordType?.value === 'developer') {
                   updateOnboardingData({
                     developerKeywords: [
                       ...onboardingData.developerKeywords,
@@ -124,15 +126,14 @@ export default function Keywords() {
           </ul>
           <ul className='menu mr-2 max-h-[90vh] w-full max-w-[300px] flex-nowrap overflow-y-auto rounded-box bg-violet-100 py-4'>
             <li className='menu-title text-center text-xl text-violet-600'>
-              Transaction {startCase(onboardingData.keywordType.value)}
+              Transaction {startCase(keywordType.value)}
             </li>
             {Object.entries(tempProjectSourceData)
               .map(([_projectId, data]) => {
                 return data.party_keywords?.filter(
                   (ele) =>
                     ele.keyword_type ===
-                    (onboardingData.keywordType &&
-                    onboardingData.keywordType.value === 'landlord'
+                    (keywordType && keywordType.value === 'landlord'
                       ? 'LANDLORD'
                       : 'DEVELOPER')
                 );
@@ -175,7 +176,7 @@ export default function Keywords() {
                   'keyword-editor'
                 ) as HTMLInputElement;
                 editor.focus();
-                if (onboardingData.keywordType?.value === 'developer') {
+                if (keywordType?.value === 'developer') {
                   updateOnboardingData({
                     developerKeywords: [
                       ...selectedKeyword,
@@ -183,7 +184,7 @@ export default function Keywords() {
                     ],
                   });
                   setSelectedKeyword([]);
-                } else if (onboardingData.keywordType?.value === 'landlord') {
+                } else if (keywordType?.value === 'landlord') {
                   updateOnboardingData({
                     landlordKeywords: [
                       ...selectedKeyword,
@@ -199,12 +200,12 @@ export default function Keywords() {
           </div>
           <ul className='ml-2 flex max-h-[90vh] w-full max-w-[400px] flex-col gap-4 rounded-box bg-green-100 py-4'>
             <li className='menu-title text-center text-xl text-green-600'>
-              Tagged Keywords: {startCase(onboardingData.keywordType.value)}
+              Tagged Keywords: {startCase(keywordType.value)}
             </li>
-            {onboardingData.keywordType?.value === 'developer' && (
+            {keywordType?.value === 'developer' && (
               <EditableList keywordType='developerKeywords' />
             )}
-            {onboardingData.keywordType?.value === 'landlord' && (
+            {keywordType?.value === 'landlord' && (
               <EditableList keywordType='landlordKeywords' />
             )}
           </ul>

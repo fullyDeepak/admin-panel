@@ -12,7 +12,6 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import React from 'react';
 import { HTMLProps, useEffect, useRef, useState } from 'react';
 import { GoArrowDown, GoArrowSwitch, GoArrowUp } from 'react-icons/go';
 import {

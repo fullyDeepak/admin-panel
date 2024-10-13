@@ -1,5 +1,6 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import _ from 'lodash';
+import Select, { SingleValue } from 'react-select';
 export type RawAptDataRow = {
   district_name: string;
   district_id: string;
@@ -17,7 +18,12 @@ export type RawAptDataRow = {
 
 const columnHelper = createColumnHelper<RawAptDataRow>();
 const cleaningColumnHelper = createColumnHelper<
-  RawAptDataRow & { clean_apt_name: string; selected_project_id: string }
+  RawAptDataRow & {
+    clean_apt_name: string;
+    selected_project_id: string;
+    project_category: string;
+    project_subtype: string;
+  }
 >();
 
 export const rawAptSelectionColumns = [
@@ -130,6 +136,22 @@ export const cleanedRowsColumns = [
     cell: ({ row }) => (
       <p className='max-w-7xl text-pretty break-all'>
         {row.getValue('selected_project_id')}
+      </p>
+    ),
+  }),
+  cleaningColumnHelper.accessor('project_category', {
+    header: 'Project Category',
+    cell: ({ row }) => (
+      <p className='max-w-7xl text-pretty break-all'>
+        {row.getValue('project_category')}
+      </p>
+    ),
+  }),
+  cleaningColumnHelper.accessor('project_subtype', {
+    header: 'Project Sub-Type',
+    cell: ({ row }) => (
+      <p className='max-w-7xl text-pretty break-all'>
+        {row.getValue('project_subtype')}
       </p>
     ),
   }),

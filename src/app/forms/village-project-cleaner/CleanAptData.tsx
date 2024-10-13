@@ -9,11 +9,15 @@ type Props = {
   cleanedRows: (RawAptDataRow & {
     clean_apt_name: string;
     selected_project_id: string;
+    project_category: string;
+    project_subtype: string;
   })[];
   cleanedRowsColumns: AccessorKeyColumnDef<
     RawAptDataRow & {
       clean_apt_name: string;
       selected_project_id: string;
+      project_category: string;
+      project_subtype: string;
     },
     string
   >[];
@@ -22,6 +26,8 @@ type Props = {
       (RawAptDataRow & {
         clean_apt_name: string;
         selected_project_id: string;
+        project_category: string;
+        project_subtype: string;
       })[]
     >
   ) => void;
@@ -37,7 +43,12 @@ export default function CleanAptData({
   const { selectedDMV, submitMapData } = useVillageProjectCleanerStore();
   const queryClient = useQueryClient();
   const [selectedCleanedRows, setSelectedCleanedRows] = useState<
-    (RawAptDataRow & { clean_apt_name: string; selected_project_id: string })[]
+    (RawAptDataRow & {
+      clean_apt_name: string;
+      selected_project_id: string;
+      project_category: string;
+      project_subtype: string;
+    })[]
   >([]);
   const [cleanRowSelection, setCleanRowSelection] = useState({});
   return (

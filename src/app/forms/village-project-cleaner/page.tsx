@@ -9,6 +9,8 @@ import { RawAptDataRow, cleanedRowsColumns } from './table-columns';
 import { useVillageProjectCleanerStore } from './useVillageProjectCleanerStore';
 import DMVDropdown from './DMVDropdown';
 import CleanAptData from './CleanAptData';
+import Select, { SingleValue } from 'react-select';
+import _ from 'lodash';
 
 export default function Page() {
   const { selectedDMV, setDMVOptions } = useVillageProjectCleanerStore();
@@ -26,11 +28,27 @@ export default function Page() {
     | null
   >(null);
   const [cleanedRows, setCleanedRows] = useState<
-    (RawAptDataRow & { clean_apt_name: string; selected_project_id: string })[]
+    (RawAptDataRow & {
+      clean_apt_name: string;
+      selected_project_id: string;
+      project_category: string;
+      project_subtype: string;
+    })[]
   >([]);
 
   const [rawAptNames, setRawAptNames] = useState<RawAptDataRow[]>([]);
-
+  const [projectType, setProjectType] = useState<{
+    [project_id: string]: SingleValue<{
+      label: string;
+      value: string;
+    }>;
+  }>({});
+  const [projectSubType, setProjectSubType] = useState<{
+    [project_id: string]: SingleValue<{
+      label: string;
+      value: string;
+    }>;
+  }>({});
   const { isLoading } = useQuery({
     queryKey: ['village-project-cleaner'],
     queryFn: async () => {
@@ -151,6 +169,122 @@ export default function Page() {
             rawAptNames={rawAptNames}
             setCleanedRows={setCleanedRows}
           />
+          <div className='mt-5 flex flex-col gap-5 px-4'>
+            <h2 className='text-center text-2xl font-semibold'>
+              Select Project Type and Sub-Type For Projects
+            </h2>
+            {_.uniq(cleanedRows.map((ele) => ele.selected_project_id)).map(
+              (project_id) => {
+                return (
+                  <div
+                    key={project_id}
+                    className='flex w-full justify-center gap-5'
+                  >
+                    <span className='md:text-l w-full flex-[2] text-2xl'>
+                      {project_id}
+                    </span>
+                    <label className='flex w-full items-center justify-between gap-5'>
+                      <span className='md:text-l flex-[2] text-base'>
+                        Project Type:
+                      </span>
+                      <Select
+                        className='z-40 w-full flex-[5]'
+                        key={'project-source-type'}
+                        options={[
+                          {
+                            label: 'Residential',
+                            value: 'RESIDENTIAL',
+                          },
+                          {
+                            label: 'Commercial',
+                            value: 'COMMERCIAL',
+                          },
+                          {
+                            label: 'Mixed',
+                            value: 'MIXED',
+                          },
+                        ]}
+                        value={projectType[project_id]}
+                        onChange={(
+                          e: SingleValue<{
+                            label: string;
+                            value: string;
+                          }>
+                        ) => {
+                          if (!e) return;
+                          setProjectType((prev) => ({
+                            ...prev,
+                            [project_id]: e,
+                          }));
+                          setCleanedRows((prev) => {
+                            return prev.map((ele) => {
+                              if (ele.selected_project_id === project_id) {
+                                return {
+                                  ...ele,
+                                  project_category: e.value,
+                                };
+                              }
+                              return ele;
+                            });
+                          });
+                        }}
+                      />
+                    </label>
+                    <label className='flex w-full items-center justify-between gap-5'>
+                      <span className='md:text-l flex-[2] text-base'>
+                        Project Sub-Type:
+                      </span>
+                      <Select
+                        className='z-30 w-full flex-[5]'
+                        key={'project-source-type'}
+                        options={[
+                          'Apartment - Gated',
+                          'Apartment - Standalone',
+                          'Villa',
+                          'Mixed Residential',
+                          'Other',
+                        ].map((e) => {
+                          return {
+                            label: e,
+                            value: e
+                              .toUpperCase()
+                              .replace(' - ', '-')
+                              .replace(' ', '_')
+                              .replace('-', '_'),
+                          };
+                        })}
+                        value={projectSubType[project_id]}
+                        onChange={(
+                          e: SingleValue<{
+                            label: string;
+                            value: string;
+                          }>
+                        ) => {
+                          if (!e) return;
+                          setProjectSubType((prev) => ({
+                            ...prev,
+                            [project_id]: e,
+                          }));
+                          setCleanedRows((prev) => {
+                            return prev.map((ele) => {
+                              if (ele.selected_project_id === project_id) {
+                                return {
+                                  ...ele,
+                                  project_subtype: e.value,
+                                };
+                              }
+                              return ele;
+                            });
+                          });
+                        }}
+                      />
+                    </label>
+                  </div>
+                );
+              }
+            )}
+          </div>
+
           <CleanAptData
             cleanedRows={cleanedRows}
             cleanedRowsColumns={cleanedRowsColumns}
