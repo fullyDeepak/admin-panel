@@ -157,7 +157,15 @@ interface Actions {
 
 interface Store extends Actions {
   onboardingData: OnboardingDataType;
-  formStepsList: ['Step 1', 'Geo-Data', 'Step 2', 'Step 3', 'Preview']; // [
+  formStepsList: [
+    'Static Data',
+    'Geo-Data',
+    'Developer Tagging',
+    'ETL For Project',
+    'Tower - Unit',
+    'HM Matcher',
+    'Preview',
+  ]; // [
   //   'Static Data',
   //   'Developer Tagging',
   //   'ETL TAG Source For Project',
@@ -199,12 +207,14 @@ const INITIAL_STATE: OnboardingDataType = {
 export const useOnboardingDataStore = create<Store>()(
   immer((set) => ({
     onboardingData: INITIAL_STATE,
-    currentFormStep: 'Step 1' as Store['currentFormStep'],
+    currentFormStep: 'Static Data' as Store['currentFormStep'],
     formStepsList: [
-      'Step 1',
+      'Static Data',
       'Geo-Data',
-      'Step 2',
-      'Step 3',
+      'Developer Tagging',
+      'ETL For Project',
+      'Tower - Unit',
+      'HM Matcher',
       'Preview',
     ] as Store['formStepsList'],
     tempProjectSourceData: {},
