@@ -165,12 +165,7 @@ interface Store extends Actions {
     'Tower - Unit',
     'HM Matcher',
     'Preview',
-  ]; // [
-  //   'Static Data',
-  //   'Developer Tagging',
-  //   'ETL TAG Source For Project',
-  //   'Preview',
-  // ];
+  ];
   currentFormStep: Store['formStepsList'][number];
   tempProjectSourceData: { [temp_project_id: string]: TempProjectSourceData };
   setFormSteps: (_step: Store['currentFormStep']) => void;

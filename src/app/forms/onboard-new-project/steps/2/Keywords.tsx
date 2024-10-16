@@ -46,6 +46,7 @@ export default function Keywords() {
     staleTime: Infinity,
     refetchOnWindowFocus: false,
   });
+
   const [selectedKeyword, setSelectedKeyword] = useState<string[]>([]);
   return (
     <>
