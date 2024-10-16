@@ -7,12 +7,10 @@ import CreatableSelect from 'react-select/creatable';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
 import useDMVDataStore from '../../useDMVDataStore';
-import useETLDataStore from '../../useETLDataStore';
-import {
-  TempProjectSourceData,
-  useOnboardingDataStore,
-} from '../../useOnboardingDataStore';
+import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import ProjectMatcherSection from './ProjectMatcherSection';
+import ReraSection from './ReraSection';
+import { fetchTempProjectDetails } from './utils';
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
@@ -20,7 +18,6 @@ export default function StaticDataForm() {
   const {
     onboardingData,
     updateOnboardingData,
-    addTempProjectSourceData,
     tempProjectSourceData,
     resetData,
   } = useOnboardingDataStore();
@@ -34,7 +31,6 @@ export default function StaticDataForm() {
     setVillageOptions,
     villageOptions,
   } = useDMVDataStore();
-  const { setData } = useETLDataStore();
   const [reraForTempProjects, setReraForTempProjects] = useState<{
     [key: string]: string[];
   }>({});
@@ -360,237 +356,24 @@ export default function StaticDataForm() {
               overflowY: 'scroll',
             }),
           }}
-          onChange={async (
-            e: SingleValue<{
-              label: string;
-              value: string;
-            }>
-          ) => {
-            if (e) {
-              updateOnboardingData({
-                selectedTempProject: e,
-                selectedReraProjects: [],
-              });
-              setReraForTempProjects({});
-              const tempProjectData = await axiosClient.get<{
-                data: TempProjectSourceData;
-              }>(`/temp-projects/${e.value}`);
-              addTempProjectSourceData(e.value, tempProjectData.data.data);
-              if (!onboardingData.mainProjectName) {
-                updateOnboardingData({
-                  mainProjectName: e.label.split(':')[1].trim(),
-                });
-                setData([
-                  {
-                    id: 1,
-                    village: villageOptions.find(
-                      (ele) =>
-                        ele.value === onboardingData.selectedVillage?.value
-                    ),
-                    docId: [],
-                    rootDocs:
-                      tempProjectData.data.data.root_docs?.map(
-                        (item) => item.doc_id
-                      ) || [],
-                    apartmentContains:
-                      tempProjectData.data.data.raw_apartment_names,
-                    aptNameNotContains: [],
-                    aptSurveyPlotDetails: false,
-                    counterpartyContains: [], // ! couterpartykeywords?
-                    counterpartySurveyPlotDetails: false,
-                    docIdNotEquals: [],
-                    suggestedDoorNumberStartsWith:
-                      tempProjectData.data.data.municipal_door_numbers?.map(
-                        (ele) => {
-                          return `${ele.core_string} : ${ele.unit_numbers.join(', ')} : ${ele.occurrence_count}`;
-                        }
-                      ) || [],
-                    doorNoStartWith: [],
-                    etlPattern: '',
-                    localityContains: [],
-                    localityPlot: [],
-                    plotContains: [],
-                    surveyContains: [],
-                    singleUnit: false,
-                    wardBlock: [],
-                    surveyEquals:
-                      tempProjectData.data.data.keywords
-                        ?.filter(
-                          (ele) =>
-                            ele.keyword_type === 'SURVEY_EQUALS' &&
-                            ele.is_attached
-                        )
-                        .map((ele) => ele.keyword.split('|'))
-                        .reduce((acc, val) => acc.concat(val), []) || [],
-                    plotEquals:
-                      tempProjectData.data.data.keywords
-                        ?.filter(
-                          (ele) =>
-                            ele.keyword_type === 'PLOT_EQUALS' &&
-                            ele.is_attached
-                        )
-                        .map((ele) => ele.keyword.split('|'))
-                        .reduce((acc, val) => acc.concat(val), []) || [],
-                  },
-                ]);
-              }
-            } else {
-              // cleanup
-              updateOnboardingData({
-                selectedReraProjects: [],
-                selectedTempProject: null,
-              });
-              setReraForTempProjects({});
-            }
-          }}
+          onChange={(e: SingleValue<{ label: string; value: string }>) =>
+            fetchTempProjectDetails({
+              e,
+              setReraForTempProjects,
+              villageOptions,
+            })
+          }
           isDisabled={
             Boolean(!onboardingData.projectSourceType) ||
             onboardingData.projectSourceType === 'RERA'
           }
         />
       </label>
-      {/* <div className='flex flex-wrap gap-5'>
-        Selected Source Projects to Inherit from:{' '}
-        {onboardingData.selectedTempProjects.map((e) => {
-          return (
-            <span
-              className='btn btn-error btn-sm mx-2 max-w-fit self-center text-white hover:bg-red-200 hover:text-black'
-              key={e.value}
-              onClick={() => {
-                updateOnboardingData({
-                  selectedTempProjects:
-                    onboardingData.selectedTempProjects.filter(
-                      (item) => item.value !== e.value
-                    ),
-                  mainProjectName: onboardingData.selectedTempProjects
-                    .filter((item) => item.value !== e.value)[0]
-                    ?.label.split(':')[1]
-                    .trim(),
-                });
-                //! remove recommended projects
-                setReraForTempProjects((prev) => {
-                  return Object.fromEntries(
-                    Object.entries(prev).filter(
-                      ([key, _val]) => key !== e.value
-                    )
-                  );
-                });
-              }}
-            >
-              {e.label.split(':')[1].trim()}
-            </span>
-          );
-        })}
-      </div> */}
-      <label className='flex items-center justify-between gap-5'>
-        <span className='flex-[2] text-base md:text-xl'>
-          Select Rera Projects:
-        </span>
-        <Select
-          className='w-full flex-[5]'
-          key={'reraSourceProjects'}
-          options={reraProjects || []}
-          isLoading={isLoadingReraProjects}
-          value={null}
-          styles={{
-            menu: (baseStyles: any, _state: any) => ({
-              ...baseStyles,
-              height: '15vh',
-              overflowY: 'scroll',
-            }),
-          }}
-          onChange={(
-            e: SingleValue<{
-              label: string;
-              value: string;
-            }>
-          ) => {
-            if (e) {
-              updateOnboardingData({
-                selectedReraProjects: _.uniqBy(
-                  [
-                    ...onboardingData.selectedReraProjects,
-                    {
-                      label: e.label,
-                      value: e.value,
-                    },
-                  ],
-                  (ele) => ele.value
-                ),
-              });
-            }
-          }}
-          isDisabled={Boolean(!onboardingData.projectSourceType)}
-        />
-      </label>
-      <span>
-        Recommended Rera Projects to Inherit From :{' '}
-        {Object.entries(reraForTempProjects).map(([key, val]) => {
-          return (
-            <span
-              className='btn btn-neutral btn-sm mx-2 max-w-fit self-center text-white hover:bg-red-200 hover:text-black'
-              key={key + val}
-              onClick={() => {
-                const toAppend = reraProjects?.find((item) =>
-                  val.includes(item.value)
-                );
-                console.log(toAppend);
-                if (toAppend) {
-                  updateOnboardingData({
-                    selectedReraProjects: _.uniqBy(
-                      [
-                        ...onboardingData.selectedReraProjects,
-                        {
-                          label: toAppend.label,
-                          value: toAppend.value,
-                        },
-                      ],
-                      (ele) => ele.value
-                    ),
-                  });
-                }
-              }}
-            >{`${key}: ${val.join(', ')}`}</span>
-          );
-        })}
-      </span>
-      <span>
-        Selected Rera Projects to Inherit From :{' '}
-        {onboardingData.selectedReraProjects.map((e) => {
-          return (
-            <span
-              className='btn btn-error btn-sm mx-2 max-w-fit self-center text-white hover:bg-red-200 hover:text-black'
-              key={e.value}
-              onClick={() => {
-                updateOnboardingData({
-                  selectedReraProjects:
-                    onboardingData.selectedReraProjects.filter(
-                      (item) => item.value !== e.value
-                    ),
-                });
-                // remove recommended projects
-                // change main project name
-              }}
-            >
-              {e.label.split(':')[1].trim().split('(')[0]}
-            </span>
-          );
-        })}
-      </span>
-      <label className='flex items-center justify-between gap-5'>
-        <span className='flex-[2] text-wrap break-words md:text-xl'>
-          Assign Main Project Name:
-        </span>
-        <input
-          className={`${inputBoxClass}`}
-          type='text'
-          value={onboardingData.mainProjectName}
-          onChange={(e) =>
-            updateOnboardingData({ mainProjectName: e.target.value })
-          }
-          placeholder='Enter Main Project Name'
-        />
-      </label>
+      <ReraSection
+        isLoadingReraProjects={isLoadingReraProjects}
+        reraProjects={reraProjects}
+        reraForTempProjects={reraForTempProjects}
+      />
       <label className='flex items-center justify-between gap-5'>
         <span>GeoCoded Address : </span>
         {Object.entries(tempProjectSourceData).map(([projectId, data]) => {
