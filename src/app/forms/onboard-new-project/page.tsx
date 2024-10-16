@@ -3,7 +3,7 @@
 import PreviewData from './PreviewData';
 import StaticDataForm from './steps/1/StaticDataForm';
 import DeveloperTagging from './steps/2/DeveloperTagging';
-import { TagETLDataForm } from './steps/3/TagETLDataForm';
+import ETLTagData from './steps/3/ETLTagData';
 import GeoData from './steps/geo-data/GeoData';
 import TowerPage from './steps/tower-unit/TowerPage';
 import StepsUI from './StepsUI';
@@ -34,7 +34,9 @@ export default function Page() {
           {formSteps === 'Static Data' && <StaticDataForm />}
           {formSteps === 'Geo-Data' && <GeoData />}
           {formSteps === 'Developer Tagging' && <DeveloperTagging />}
-          {formSteps === 'ETL For Project' && <TagETLDataForm />}
+          {formSteps === 'ETL For Project' && (
+            <ETLTagData isUpdateForm={true} />
+          )}
           {formSteps === 'Tower - Unit' && <TowerPage />}
           {formSteps === 'Preview' && <PreviewData />}
 

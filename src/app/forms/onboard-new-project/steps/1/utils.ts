@@ -39,9 +39,33 @@ export async function fetchTempProjectDetails({
     }>(`/temp-projects/${e.value}`);
     addTempProjectSourceData(e.value, tempProjectData.data.data);
     if (!onboardingData.mainProjectName) {
+      const geoData = tempProjectData.data.data.geojson_data;
       updateOnboardingData({
         mainProjectName: e.label.split(':')[1].trim(),
       });
+      if (geoData && geoData?.length > 0) {
+        updateOnboardingData({
+          mapData: [
+            {
+              name: '',
+              description: geoData[0].full_address,
+              pincode: geoData[0].pin_code + '',
+              place_id: geoData[0].place_id,
+              types: '',
+              geometry: {
+                location: {
+                  lng: geoData[0].geom_point.coordinates[0],
+                  lat: geoData[0].geom_point.coordinates[1],
+                },
+                viewport: {
+                  northeast: { lat: 0, lng: 0 },
+                  southwest: { lat: 0, lng: 0 },
+                },
+              },
+            },
+          ],
+        });
+      }
       setData([
         {
           id: 1,
