@@ -6,7 +6,10 @@ export type TowerUnitDetailType = {
   id: number;
   projectPhase: number;
   reraId: string;
-  towerType: string;
+  towerType: SingleValue<{
+    label: string;
+    value: string;
+  }> | null;
   displayTowerType: SingleValue<{
     label: string;
     value: string;
@@ -48,7 +51,7 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
     id: 1,
     projectPhase: 1,
     reraId: '',
-    towerType: '',
+    towerType: null,
     displayTowerType: null,
     reraTowerId: '',
     towerNameETL: '',
@@ -76,6 +79,16 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
 
 type Store = {
   towerFormData: TowerUnitDetailType[];
+  existingUnitTypeOption: SingleValue<{
+    label: string;
+    value: string;
+  }>[];
+  setExistingUnitTypeOption: (
+    _data: SingleValue<{
+      label: string;
+      value: string;
+    }>[]
+  ) => void;
   updateTowerFormData: (
     _towerCardId: number,
     _newDetails: Partial<TowerUnitDetailType>
@@ -85,6 +98,9 @@ type Store = {
     _unitCardId: number,
     _newDetails: Partial<UnitCardType>
   ) => void;
+  addNewTowerCard: () => void;
+  setTowerFormData: (_data: TowerUnitDetailType[]) => void;
+  deleteTowerCard: (_id: number) => void;
   copyUnitCard: (_towerCardId: number, _newDetails: UnitCardType) => void;
   addNewUnitCard: (_towerCardId: number) => void;
   deleteUnitCard: (_towerCardId: number, _unitCardId: number) => void;
@@ -93,6 +109,11 @@ type Store = {
 export const useTowerUnitStore = create<Store>()(
   immer((set) => ({
     towerFormData: INITIAL_STATE,
+    existingUnitTypeOption: [] as SingleValue<{
+      label: string;
+      value: string;
+    }>[],
+    setExistingUnitTypeOption: (data) => set({ existingUnitTypeOption: data }),
     updateTowerFormData: (id, newDetails) =>
       set((prev) => {
         const idx = prev.towerFormData.findIndex((data) => data.id === id);
@@ -103,6 +124,29 @@ export const useTowerUnitStore = create<Store>()(
           };
         }
       }),
+
+    addNewTowerCard: () =>
+      set((prev) => {
+        prev.towerFormData.push({
+          id: prev.towerFormData.length + 1,
+          projectPhase: 1,
+          reraId: '',
+          towerType: null,
+          displayTowerType: null,
+          reraTowerId: '',
+          towerNameDisplay: '',
+          towerNameETL: '',
+          towerDoorNoString: '',
+          unitCards: [],
+        });
+      }),
+    deleteTowerCard: (id) =>
+      set((prev) => {
+        prev.towerFormData = prev.towerFormData.filter(
+          (data) => data.id !== id
+        );
+      }),
+    setTowerFormData: (data) => set({ towerFormData: data }),
     updateUnitCard: (towerCardId, unitCardId, newDetails) =>
       set((prev) => {
         const towerIdx = prev.towerFormData.findIndex(

@@ -6,6 +6,8 @@ import { isEqual, uniq, uniqBy, uniqWith } from 'lodash';
 import { inputBoxClass } from '@/app/constants/tw-class';
 import axiosClient from '@/utils/AxiosClient';
 import { useState } from 'react';
+import LoadingCircle from '@/components/ui/LoadingCircle';
+import { useTowerUnitStore } from '../../useTowerUnitStore';
 
 type Props = {
   reraProjects:
@@ -25,52 +27,96 @@ export default function ReraSection({
   isLoadingReraProjects,
   reraForTempProjects,
 }: Props) {
-  const { onboardingData, updateOnboardingData, resetData } =
-    useOnboardingDataStore();
+  const { onboardingData, updateOnboardingData } = useOnboardingDataStore();
+  const { setTowerFormData } = useTowerUnitStore();
   const [loadingProjectDetails, setLoadingProjectDetails] = useState(false);
 
   async function fetchProjectsDetails() {
-    resetData();
     const selectedProjectIds = onboardingData.selectedReraProjects.map(
       (item) => +item.value
     );
     setLoadingProjectDetails(true);
     const response = await axiosClient.get<{
-      data: [
-        {
-          project_id: string;
-          project_name: string;
-          project_type: string;
-          project_subtype: string;
-          village_id: string;
-          survey_number: string;
-          plot_number: string;
-          rera_id: string;
-          developer_name: string;
-          tower_count: number;
-          tower_id: string;
-          tower_name: string;
-          tower_type: string;
-          max_floor_id: string;
-          min_floor: number;
-          gf_max_unit_count: string;
-          typical_floor_max_unit: string;
-          etl_unit_configs: {
-            configName: string;
-            minArea: number;
-            maxArea: number;
-          }[];
-        },
-      ];
+      data: {
+        project_id: string;
+        project_name: string;
+        project_type: string;
+        project_subtype: string;
+        village_id: string;
+        survey_number: string;
+        plot_number: string;
+        rera_id: string;
+        developer_name: string;
+        tower_count: number;
+        tower_id: string;
+        tower_name: string;
+        tower_type: string;
+        max_floor_id: string;
+        min_floor: number;
+        gf_max_unit_count: string;
+        typical_floor_max_unit: string;
+        etl_unit_configs: {
+          configName: string;
+          minArea: number;
+          maxArea: number;
+        }[];
+      }[];
     }>('/forms/rera/getProjectsDetails', {
       params: { projectIds: JSON.stringify(selectedProjectIds) },
     });
     const data = response.data.data;
     const developers = uniq(data.map((item) => item.developer_name));
+    updateOnboardingData({
+      suggestedPlot: uniq(data.map((item) => item.plot_number)),
+      suggestedSurvey: uniq(data.map((item) => item.survey_number)),
+    });
 
     const phases: Record<number, number> = {};
     const projectIds = uniq(data.map((item) => +item.project_id));
     projectIds.map((num, index) => (phases[num] = index + 1));
+    const towersData = data.map((item, index) => {
+      let gfMin = null;
+      let gfMax = null;
+      let unitMin = null;
+      let unitMax = null;
+      let reraTowerId = null;
+      gfMin = item.min_floor == 0 ? '1' : '';
+      gfMax = item.min_floor == 0 ? item.gf_max_unit_count : '';
+      unitMin = '1';
+      unitMax = `${item.typical_floor_max_unit}`;
+      reraTowerId = item.tower_id;
+
+      return {
+        id: index + 1,
+        projectPhase: phases[+item.project_id],
+        reraId: item.rera_id || '',
+        reraTowerId: reraTowerId,
+        towerTypeSuggestion: item.tower_type || '',
+        towerType: {
+          label: '',
+          value: '',
+        },
+        displayTowerType: null,
+        towerNameDisplay: item.tower_name,
+        towerNameETL: item.tower_name,
+        etlUnitConfigs: uniqWith(item.etl_unit_configs, isEqual),
+        towerDoorNo: '',
+        minFloor: item.min_floor == 0 ? '0' : item.min_floor || '',
+        maxFloor: item.max_floor_id || '',
+        validTowerUnits: null,
+        groundFloorName: '',
+        groundFloorUnitNoMin: gfMin,
+        groundFloorUnitNoMax: gfMax,
+        typicalFloorUnitNoMin: unitMin,
+        typicalFloorUnitNoMax: unitMax,
+        deleteFullUnitNos: '',
+        exceptionUnitNos: '',
+        towerDoorNoString: '',
+        unitCards: [],
+      };
+    });
+    setTowerFormData(towersData);
+    setLoadingProjectDetails(false);
   }
   return (
     <>
@@ -175,9 +221,16 @@ export default function ReraSection({
         <button
           className='btn btn-error btn-sm text-white'
           onClick={fetchProjectsDetails}
-          disabled={onboardingData.selectedReraProjects.length === 0}
+          disabled={
+            onboardingData.selectedReraProjects.length === 0 ||
+            loadingProjectDetails
+          }
         >
-          Fetch Rera Project Details
+          {loadingProjectDetails ? (
+            <LoadingCircle size='medium' tailwindClass='bg-white' />
+          ) : (
+            'Fetch Rera Project Details'
+          )}
         </button>
       </div>
       <label className='flex items-center justify-between gap-5'>

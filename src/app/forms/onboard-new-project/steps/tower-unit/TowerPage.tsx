@@ -6,6 +6,9 @@ import { nanoid } from 'nanoid';
 import { BiPlus } from 'react-icons/bi';
 import UnitSection from './UnitSection';
 import { useTowerUnitStore } from '../../useTowerUnitStore';
+import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { Minus, Plus } from 'lucide-react';
 
 export default function TowerPage() {
   const {
@@ -14,12 +17,67 @@ export default function TowerPage() {
     updateUnitCard,
     updateTowerFormData,
     towerFormData,
+    addNewTowerCard,
+    deleteTowerCard,
+    setTowerFormData,
+    setExistingUnitTypeOption,
   } = useTowerUnitStore();
+  const [towerCardCount, setTowerCardCount] = useState<number>(0);
+  useEffect(() => {
+    let options: {
+      label: string;
+      value: string;
+    }[] = [];
+    towerFormData.map((tower) => {
+      tower.unitCards.map((unitCard) => {
+        options.push({
+          label: `T${tower.id}:U${unitCard.id}`,
+          value: `T${tower.id}:U${unitCard.id}`,
+        });
+      });
+    });
+    setExistingUnitTypeOption(options);
+  }, [towerFormData]);
   return (
     <div>
-      <label className='mb-5 flex flex-wrap items-center justify-between gap-5'>
-        <span className='flex-[2]'>Tower Card Count:</span>
-        <input className={inputBoxClass} type='number' min={1} />
+      <label className='mx-auto mb-5 flex max-w-[600px] flex-wrap items-center justify-between gap-5'>
+        <input
+          placeholder='Enter Tower Card Count'
+          className={cn(inputBoxClass, 'max-w-[220px]')}
+          type='number'
+          value={towerCardCount || ''}
+          onChange={(e) => setTowerCardCount(+e.target.value)}
+          min={1}
+        />
+        <button
+          className='flex size-10 items-center justify-center rounded-full bg-cyan-400'
+          onClick={() => setTowerCardCount(towerCardCount + 1)}
+        >
+          <Plus strokeWidth={3} />
+        </button>
+        <button
+          className='flex size-10 items-center justify-center rounded-full bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50'
+          onClick={() => setTowerCardCount(towerCardCount - 1)}
+          disabled={towerCardCount === 0}
+        >
+          <Minus strokeWidth={3} />
+        </button>
+        <button
+          onClick={() => {
+            setTowerFormData([]);
+            if (towerCardCount > 0) {
+              Array.from({ length: towerCardCount }).forEach(() =>
+                addNewTowerCard()
+              );
+            }
+          }}
+          className='btn-rezy flex-[2]'
+          disabled={towerCardCount === 0}
+        >
+          {towerFormData.length === 0
+            ? 'Generate Tower Card'
+            : 'Delete and Regenerate Tower Card'}
+        </button>
       </label>
       {towerFormData.map((tower) => (
         <div
@@ -33,6 +91,7 @@ export default function TowerPage() {
             <button
               className='btn btn-circle btn-ghost btn-sm absolute right-2 top-2'
               type='button'
+              onClick={() => deleteTowerCard(tower.id)}
             >
               ✕
             </button>
@@ -66,14 +125,23 @@ export default function TowerPage() {
             </label>
             <label className='flex flex-wrap items-center justify-between gap-5'>
               <span className='flex-[2]'>Tower Type:</span>
-              <input
-                className={inputBoxClass}
-                defaultValue={tower.towerType}
-                onChange={(e) => {
-                  updateTowerFormData(tower.id, { towerType: e.target.value });
-                  console.log({ towerFormData });
-                }}
-              />
+              <div className='flex flex-[5]'>
+                <Select
+                  className='w-full flex-1'
+                  name='projectSubType1'
+                  instanceId={nanoid()}
+                  options={[
+                    { label: 'Apartment', value: 'apartment' },
+                    { label: 'Apartment-Single', value: 'apartmentSingle' },
+                    { label: 'Villa', value: 'villa' },
+                    { label: 'Mixed', value: 'mixed' },
+                  ]}
+                  defaultValue={tower.towerType}
+                  onChange={(e) =>
+                    updateTowerFormData(tower.id, { towerType: e })
+                  }
+                />
+              </div>
             </label>
             <label className='flex flex-wrap items-center justify-between gap-5'>
               <span className='flex-[2]'>Display Tower Type:</span>
