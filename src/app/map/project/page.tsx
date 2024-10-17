@@ -41,7 +41,7 @@ export default function Page() {
   }, [data]);
 
   return (
-    <div className='mt-5 flex'>
+    <div className='mt-5 flex flex-col md:flex-row'>
       <div className='flex-1'>
         {isLoading ? (
           <div className='flex h-[50dvh] items-center justify-center'>

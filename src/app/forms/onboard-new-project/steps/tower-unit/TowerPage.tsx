@@ -19,7 +19,7 @@ export default function TowerPage() {
     towerFormData,
     addNewTowerCard,
     deleteTowerCard,
-    setTowerFormData,
+    setTowerFormData,deleteUnitCard,
     setExistingUnitTypeOption,
   } = useTowerUnitStore();
   const [towerCardCount, setTowerCardCount] = useState<number>(0);
@@ -248,6 +248,7 @@ export default function TowerPage() {
               towerId={tower.id}
               copyUnitCard={copyUnitCard}
               addNewUnitCard={addNewUnitCard}
+              deleteUnitCard={deleteUnitCard}
             />
           </div>
         </div>

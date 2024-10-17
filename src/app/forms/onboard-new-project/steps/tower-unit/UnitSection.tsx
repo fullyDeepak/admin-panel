@@ -18,6 +18,7 @@ type Props = {
   towerId: number;
   copyUnitCard: (_towerCardId: number, _newDetails: UnitCardType) => void;
   addNewUnitCard: (_towerCardId: number) => void;
+  deleteUnitCard: (_towerCardId: number, _unitCardId: number) => void;
 };
 
 export default function UnitSection({
@@ -26,6 +27,7 @@ export default function UnitSection({
   updateUnitCard,
   copyUnitCard,
   addNewUnitCard,
+  deleteUnitCard,
 }: Props) {
   const { existingUnitTypeOption } = useTowerUnitStore();
   return (
@@ -44,7 +46,8 @@ export default function UnitSection({
               className='absolute right-2 top-0 m-2 size-8 rounded-full text-sm hover:bg-gray-300'
               type='button'
               onClick={() => {
-                confirm('Are you sure?');
+                confirm('Are you sure?') &&
+                  deleteUnitCard(towerId, unitData.id);
               }}
             >
               ✕

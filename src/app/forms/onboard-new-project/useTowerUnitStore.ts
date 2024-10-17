@@ -206,13 +206,19 @@ export const useTowerUnitStore = create<Store>()(
       }),
     deleteUnitCard: (towerCardId, unitCardId) =>
       set((prev) => {
-        prev.towerFormData.forEach((data) => {
-          if (data.id === towerCardId) {
-            prev.towerFormData[towerCardId].unitCards = prev.towerFormData[
-              towerCardId
+        const towerIdx = prev.towerFormData.findIndex(
+          (data) => data.id === towerCardId
+        );
+        if (towerIdx !== -1) {
+          const unitCardIdx = prev.towerFormData[towerIdx].unitCards.findIndex(
+            (unitCard) => unitCard.id === unitCardId
+          );
+          if (unitCardIdx !== -1) {
+            prev.towerFormData[towerIdx].unitCards = prev.towerFormData[
+              towerIdx
             ].unitCards.filter((unitCard) => unitCard.id !== unitCardId);
           }
-        });
+        }
       }),
   }))
 );

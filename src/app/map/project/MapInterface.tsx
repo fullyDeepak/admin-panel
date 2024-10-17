@@ -1,6 +1,6 @@
 'use client';
 import { orrOutline } from '@/data/data';
-import L, { divIcon, Icon, LatLngTuple, MarkerCluster } from 'leaflet';
+import L, { divIcon, LatLngTuple, MarkerCluster } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
   GeoJSON,
@@ -16,7 +16,6 @@ import CustomPopup from './CustomPopup';
 import './leaflet.css';
 import MapBound from './MapBound';
 import { useProjectMapStore } from './useProjectMapStore';
-import villaPin from './villa-marker.png';
 
 export default function MapInterface() {
   // 17.405554296679586, lng: 78.47234601561512
@@ -65,7 +64,7 @@ export default function MapInterface() {
     return L.divIcon({
       html: `<span>${newCount}</span>`,
       className:
-        'bg-[#a45e52]/70 duration-300 transition-all shadow-[0px_0px_3px_0px_#00000024] hover:bg-[#a45e52] leading-[45px] font-gsans border border-[#a45e52] rounded-full text-white text-lg text-center',
+        'bg-[#a45e52]/70 hover-trigger duration-300 transition-all shadow-[0px_0px_3px_0px_#00000024] hover:bg-[#a45e52] leading-[45px] font-gsans border border-[#a45e52] rounded-full text-white text-lg text-center',
       iconSize: L.point(50, 50, true),
     });
   };
@@ -78,7 +77,7 @@ export default function MapInterface() {
         </span>
       </div>
       <div className=''></div>
-      <div className='mx-auto h-[70vh] w-[93%]'>
+      <div className='dragg mx-auto h-[70vh] w-[93%]'>
         <MapContainer
           center={center}
           zoom={12}
@@ -110,19 +109,15 @@ export default function MapInterface() {
                 key={'marker' + index}
                 eventHandlers={{
                   mouseover: (event) => event.target.openPopup(),
-                  mouseout: (event) => event.target.closePopup(),
+                  // mouseout: (event) => event.target.closePopup(),
                 }}
               >
-                <Popup>
+                <Popup keepInView>
                   <CustomPopup
                     projectName={project.name}
                     projectType={project.display_project_type}
                   />
                 </Popup>
-
-                {/* <Tooltip permanent direction='center'>
-                  TOOLTIP
-                </Tooltip> */}
               </Marker>
             ))}
           </MarkerClusterGroup>
