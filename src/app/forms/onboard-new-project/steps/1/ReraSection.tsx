@@ -7,7 +7,7 @@ import { inputBoxClass } from '@/app/constants/tw-class';
 import axiosClient from '@/utils/AxiosClient';
 import { useState } from 'react';
 import LoadingCircle from '@/components/ui/LoadingCircle';
-import { useTowerUnitStore } from '../../useTowerUnitStore';
+import { UnitCardType, useTowerUnitStore } from '../../useTowerUnitStore';
 
 type Props = {
   reraProjects:
@@ -59,6 +59,17 @@ export default function ReraSection({
           configName: string;
           minArea: number;
           maxArea: number;
+          facing:
+            | 'EAST'
+            | 'EF'
+            | 'NF'
+            | 'NORTH'
+            | 'SF'
+            | 'SOUTH'
+            | 'WEST'
+            | 'WF'
+            | null;
+          corner: boolean;
         }[];
       }[];
     }>('/forms/rera/getProjectsDetails', {
@@ -66,9 +77,47 @@ export default function ReraSection({
     });
     const data = response.data.data;
     const developers = uniq(data.map((item) => item.developer_name));
+    let projectSubType = { value: '', label: '' };
+    let projectType = { value: '', label: '' };
+    if (
+      data[0].project_type === 'Mixed Development (Residential & Commercial)'
+    ) {
+      projectType = {
+        value: 'MIXED',
+        label: 'Mixed',
+      };
+    } else if (data[0].project_type === 'Residential') {
+      projectType = {
+        value: 'RESIDENTIAL',
+        label: 'Residential',
+      };
+    } else if (data[0].project_type === 'Commercial') {
+      projectType = {
+        value: 'COMMERCIAL',
+        label: 'Commercial',
+      };
+    }
+    if (data[0].project_subtype === 'Residential - Apartment') {
+      projectSubType = {
+        value: 'APARTMENT - GATED',
+        label: 'Apartment - Gated',
+      };
+    } else if (data[0].project_subtype === 'Residential - Villa') {
+      projectSubType = {
+        value: 'VILLA',
+        label: 'Villa',
+      };
+    } else if (data[0].project_subtype === 'Residential - Mixed') {
+      projectSubType = {
+        value: 'MIXED RESIDENTIAL',
+        label: 'Mixed Residential',
+      };
+    }
     updateOnboardingData({
       suggestedPlot: uniq(data.map((item) => item.plot_number)),
       suggestedSurvey: uniq(data.map((item) => item.survey_number)),
+      projectType: projectType,
+      projectSubType: projectSubType,
     });
 
     const phases: Record<number, number> = {};
@@ -85,6 +134,25 @@ export default function ReraSection({
       unitMin = '1';
       unitMax = `${item.typical_floor_max_unit}`;
       reraTowerId = item.tower_id;
+      const unitCards: UnitCardType[] = [];
+      item.etl_unit_configs.map((etl, idx) => {
+        unitCards.push({
+          id: idx + 1,
+          reraUnitType: null,
+          existingUnitType: null,
+          towerFloorName: '',
+          salableAreaMin: etl.minArea,
+          salableAreaMax: etl.maxArea,
+          extentMin: 0,
+          extentMax: 0,
+          facing: etl.facing?.substring(0, 1) || null,
+          corner: false,
+          configName: null,
+          configVerified: true,
+          unitFloorCount: 0,
+          unitNos: '',
+        });
+      });
 
       return {
         id: index + 1,
@@ -97,6 +165,7 @@ export default function ReraSection({
           value: '',
         },
         displayTowerType: null,
+        singleUnit: false,
         towerNameDisplay: item.tower_name,
         towerNameETL: item.tower_name,
         etlUnitConfigs: uniqWith(item.etl_unit_configs, isEqual),
@@ -112,7 +181,7 @@ export default function ReraSection({
         deleteFullUnitNos: '',
         exceptionUnitNos: '',
         towerDoorNoString: '',
-        unitCards: [],
+        unitCards: unitCards,
       };
     });
     setTowerFormData(towersData);

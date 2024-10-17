@@ -349,13 +349,13 @@ export default function StaticDataForm() {
           options={tempProjects || []}
           isLoading={isLoadingProjects}
           value={onboardingData.selectedTempProject}
-          styles={{
-            menu: (baseStyles: any, _state: any) => ({
-              ...baseStyles,
-              height: '15vh',
-              overflowY: 'scroll',
-            }),
-          }}
+          // styles={{
+          //   menu: (baseStyles: any, _state: any) => ({
+          //     ...baseStyles,
+          //     height: '15vh',
+          //     overflowY: 'scroll',
+          //   }),
+          // }}
           onChange={(e: SingleValue<{ label: string; value: string }>) =>
             fetchTempProjectDetails({
               e,

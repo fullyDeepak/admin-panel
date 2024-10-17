@@ -89,9 +89,11 @@ export default function TowerPage() {
               Tower Card id: {tower.id}
             </span>
             <button
-              className='btn btn-circle btn-ghost btn-sm absolute right-2 top-2'
+              className='absolute right-2 top-2 m-2 size-10 rounded-full hover:bg-gray-300'
               type='button'
-              onClick={() => deleteTowerCard(tower.id)}
+              onClick={() => {
+                confirm('Are you sure?') && deleteTowerCard(tower.id);
+              }}
             >
               ✕
             </button>
@@ -171,6 +173,22 @@ export default function TowerPage() {
                 defaultValue={tower.reraTowerId}
                 onChange={(e) =>
                   updateTowerFormData(tower.id, { reraTowerId: e.target.value })
+                }
+              />
+            </label>
+            <label className='flex flex-wrap items-center justify-start gap-5'>
+              <span className='flex flex-1 items-center'>
+                <span>Single Unit:</span>
+              </span>
+              <input
+                className='toggle toggle-success border-2'
+                name='singleUnit'
+                type='checkbox'
+                defaultChecked={tower.singleUnit}
+                onChange={(e) =>
+                  updateTowerFormData(tower.id, {
+                    singleUnit: e.target.checked,
+                  })
                 }
               />
             </label>

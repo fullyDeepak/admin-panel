@@ -6,6 +6,7 @@ import _ from 'lodash';
 import Select from 'react-select-virtualized';
 import useETLDataStore from '../../useETLDataStore';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
+import { inputBoxClass } from '@/app/constants/tw-class';
 
 export default function ProjectMatcherSection() {
   const { projectFormETLTagData: formProjectETLTagData } = useETLDataStore();
@@ -122,20 +123,14 @@ export default function ProjectMatcherSection() {
         <span className='flex-[2] text-wrap break-words md:text-xl'>
           Core Door Number String:{' '}
         </span>
-        <ChipInput
-          chips={onboardingData.coreDoorNumberString}
-          updateFormData={(_id, _key, value) => {
-            updateOnboardingData({
-              coreDoorNumberString: _.uniq([
-                ...value,
-                ...onboardingData.coreDoorNumberString,
-              ]),
-            });
-          }}
-          updateId={0}
-          updateKey='coorDoorNumberString'
+        <input
+          type='text'
+          className={inputBoxClass}
+          value={onboardingData.coreDoorNumberString}
+          onChange={(e) =>
+            updateOnboardingData({ coreDoorNumberString: e.target.value })
+          }
         />
-        {JSON.stringify(onboardingData.coreDoorNumberString)}
       </div>
     </>
   );

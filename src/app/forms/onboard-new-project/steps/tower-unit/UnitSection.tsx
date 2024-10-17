@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { TbMapEast, TbMapNorth, TbMapSouth, TbMapWest } from 'react-icons/tb';
 import { BiCopy, BiPlus } from 'react-icons/bi';
 import { UnitCardType, useTowerUnitStore } from '../../useTowerUnitStore';
+import { CornerIcon } from './CornerIcon';
 
 type Props = {
   unitCards: UnitCardType[];
@@ -39,6 +40,15 @@ export default function UnitSection({
             <p className='text-center font-semibold'>
               Unit Type Card id: {unitData.id}
             </p>
+            <button
+              className='absolute right-2 top-0 m-2 size-8 rounded-full text-sm hover:bg-gray-300'
+              type='button'
+              onClick={() => {
+                confirm('Are you sure?');
+              }}
+            >
+              ✕
+            </button>
             <label className='flex flex-wrap items-center justify-between gap-5'>
               <span className='flex-[2]'>Rera Unit Type:</span>
               <div className='flex flex-[5]'>
@@ -122,87 +132,114 @@ export default function UnitSection({
                 />
               </div>
             </label>
-            <label className='flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[2]'>Facing:</span>
-              <div className='flex flex-[5] items-center gap-2'>
-                <label
-                  className={cn(
-                    'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
-                    unitData.facing === 'N' &&
-                      'border-amber-800 bg-amber-600 text-white'
-                  )}
-                >
-                  <input
-                    type='radio'
-                    name='facing'
-                    className='hidden'
-                    onClick={() =>
-                      updateUnitCard(towerId, unitData.id, {
-                        facing: 'N',
-                      })
-                    }
-                  />
-                  <TbMapNorth size={40} strokeWidth={1.3} />
-                </label>
-                <label
-                  className={cn(
-                    'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
-                    unitData.facing === 'S' &&
-                      'border-amber-800 bg-amber-600 text-white'
-                  )}
-                >
-                  <input
-                    type='radio'
-                    name='facing'
-                    className='hidden'
-                    onClick={() =>
-                      updateUnitCard(towerId, unitData.id, {
-                        facing: 'S',
-                      })
-                    }
-                  />
-                  <TbMapSouth size={40} strokeWidth={1.3} />
-                </label>
-                <label
-                  className={cn(
-                    'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
-                    unitData.facing === 'E' &&
-                      'border-amber-800 bg-amber-600 text-white'
-                  )}
-                >
-                  <input
-                    type='radio'
-                    name='facing'
-                    className='hidden'
-                    onClick={() =>
-                      updateUnitCard(towerId, unitData.id, {
-                        facing: 'E',
-                      })
-                    }
-                  />
-                  <TbMapEast size={40} strokeWidth={1.3} />
-                </label>
-                <label
-                  className={cn(
-                    'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
-                    unitData.facing === 'W' &&
-                      'border-amber-800 bg-amber-600 text-white'
-                  )}
-                >
-                  <input
-                    type='radio'
-                    name='facing'
-                    className='hidden'
-                    onClick={() =>
-                      updateUnitCard(towerId, unitData.id, {
-                        facing: 'W',
-                      })
-                    }
-                  />
-                  <TbMapWest size={40} strokeWidth={1.3} />
-                </label>
+
+            <div className='flex flex-wrap items-center justify-between gap-5'>
+              <span className='flex-[2]'>Facing and Corner:</span>
+              <div className='flex flex-[5]'>
+                <div className='flex items-center gap-2'>
+                  <label
+                    className={cn(
+                      'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
+                      unitData.facing === 'N' &&
+                        'border-amber-800 bg-amber-600 text-white'
+                    )}
+                  >
+                    <input
+                      type='radio'
+                      name='facing'
+                      className='hidden'
+                      onClick={() =>
+                        updateUnitCard(towerId, unitData.id, {
+                          facing: 'N',
+                        })
+                      }
+                    />
+                    <TbMapNorth size={40} strokeWidth={1.3} />
+                  </label>
+                  <label
+                    className={cn(
+                      'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
+                      unitData.facing === 'S' &&
+                        'border-amber-800 bg-amber-600 text-white'
+                    )}
+                  >
+                    <input
+                      type='radio'
+                      name='facing'
+                      className='hidden'
+                      onClick={() =>
+                        updateUnitCard(towerId, unitData.id, {
+                          facing: 'S',
+                        })
+                      }
+                    />
+                    <TbMapSouth size={40} strokeWidth={1.3} />
+                  </label>
+                  <label
+                    className={cn(
+                      'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
+                      unitData.facing === 'E' &&
+                        'border-amber-800 bg-amber-600 text-white'
+                    )}
+                  >
+                    <input
+                      type='radio'
+                      name='facing'
+                      className='hidden'
+                      onClick={() =>
+                        updateUnitCard(towerId, unitData.id, {
+                          facing: 'E',
+                        })
+                      }
+                    />
+                    <TbMapEast size={40} strokeWidth={1.3} />
+                  </label>
+                  <label
+                    className={cn(
+                      'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
+                      unitData.facing === 'W' &&
+                        'border-amber-800 bg-amber-600 text-white'
+                    )}
+                  >
+                    <input
+                      type='radio'
+                      name='facing'
+                      className='hidden'
+                      onClick={() =>
+                        updateUnitCard(towerId, unitData.id, {
+                          facing: 'W',
+                        })
+                      }
+                    />
+                    <TbMapWest size={40} strokeWidth={1.3} />
+                  </label>
+                </div>
+                <div className='ml-60 flex items-center gap-2'>
+                  <label
+                    className={cn(
+                      'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
+                      unitData.corner &&
+                        'border-amber-800 bg-amber-600 text-white'
+                    )}
+                    title='Corner flag'
+                  >
+                    <input
+                      type='checkbox'
+                      name='corner'
+                      className='hidden'
+                      defaultChecked={unitData.corner}
+                      onChange={(e) =>
+                        updateUnitCard(towerId, unitData.id, {
+                          corner: e.target.checked,
+                        })
+                      }
+                    />
+                    <CornerIcon className='size-9' />
+                  </label>
+                </div>
               </div>
-            </label>
+            </div>
+
             <div className='flex items-center gap-2'>
               <span className='flex-[2]'>Config:</span>
               <div className='ml-3 flex w-full flex-[5] items-center gap-2'>

@@ -15,6 +15,7 @@ export type TowerUnitDetailType = {
     value: string;
   }> | null;
   reraTowerId: string;
+  singleUnit: boolean;
   towerNameDisplay: string;
   towerNameETL: string;
   towerDoorNoString: string;
@@ -36,7 +37,8 @@ export type UnitCardType = {
   salableAreaMax: number;
   extentMin: number;
   extentMax: number;
-  facing: string;
+  facing: string | null;
+  corner: boolean;
   configName: SingleValue<{
     label: string;
     value: string;
@@ -52,6 +54,7 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
     projectPhase: 1,
     reraId: '',
     towerType: null,
+    singleUnit: false,
     displayTowerType: null,
     reraTowerId: '',
     towerNameETL: '',
@@ -67,7 +70,8 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
         salableAreaMax: 0,
         extentMin: 0,
         extentMax: 0,
-        facing: '',
+        facing: null,
+        corner: false,
         configName: null,
         configVerified: true,
         unitFloorCount: 0,
@@ -131,6 +135,7 @@ export const useTowerUnitStore = create<Store>()(
           id: prev.towerFormData.length + 1,
           projectPhase: 1,
           reraId: '',
+          singleUnit: false,
           towerType: null,
           displayTowerType: null,
           reraTowerId: '',
@@ -191,6 +196,7 @@ export const useTowerUnitStore = create<Store>()(
             extentMin: 0,
             extentMax: 0,
             facing: '',
+            corner: false,
             configName: null,
             configVerified: true,
             unitFloorCount: 0,

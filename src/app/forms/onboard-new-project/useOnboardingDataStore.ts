@@ -64,7 +64,7 @@ export interface OnboardingDataType {
   mapData: ProjectCordWithinVillage['data'] | null;
   mapInputValue: string;
   mapGeojsonData: FeatureCollection | null;
-  coreDoorNumberString: string[];
+  coreDoorNumberString: string;
   suggestedSurvey: string[];
   suggestedPlot: string[];
 }
@@ -198,7 +198,7 @@ const INITIAL_STATE: OnboardingDataType = {
   mapData: [],
   mapInputValue: '',
   mapGeojsonData: null,
-  coreDoorNumberString: [],
+  coreDoorNumberString: '',
   suggestedSurvey: [],
   suggestedPlot: [],
 };
