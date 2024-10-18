@@ -46,7 +46,27 @@ export default function Keywords() {
     staleTime: Infinity,
     refetchOnWindowFocus: false,
   });
-
+  const { data: transactionKeywords, isLoading: loadingTransactionKeywords } =
+    useQuery({
+      queryKey: ['keywords', onboardingData.selectedTempProject],
+      queryFn: async () => {
+        if (!onboardingData.selectedTempProject?.value) return null;
+        const res = await axiosClient.get<{
+          data: {
+            deed_type: string;
+            parties: {
+              party: string;
+              count: number;
+            }[];
+          }[];
+        }>(
+          '/temp-projects/developer-tagger/get-parties?temp_project_id=' +
+            onboardingData.selectedTempProject?.value
+        );
+        const keywords = res.data.data;
+        return keywords;
+      },
+    });
   const [selectedKeyword, setSelectedKeyword] = useState<string[]>([]);
   return (
     <>
@@ -61,8 +81,8 @@ export default function Keywords() {
             { label: 'Developer', value: 'developer' },
           ]}
           value={
-            !onboardingData.selectedTempProject &&
-            !onboardingData.selectedReraProjects.length
+            onboardingData.selectedTempProject ||
+            onboardingData.selectedReraProjects.length
               ? keywordType
               : {
                   label: 'Select Keyword Type',
@@ -87,7 +107,7 @@ export default function Keywords() {
           <LoadingCircle circleColor='violet' size='large' />
         </div>
       )}
-      {keywordType?.value && reraKeyWordList && (
+      {keywordType?.value && (
         <div className='flex w-full'>
           <ul className='mr-5 flex max-h-[90vh] w-full max-w-[400px] flex-col gap-1 rounded-box bg-violet-100 py-4'>
             <li className='menu-title text-center text-xl text-violet-600'>
@@ -98,7 +118,7 @@ export default function Keywords() {
               type='button'
               onClick={() => {
                 let names: string[] = [];
-                reraKeyWordList.rera.map((projectKeywords) => {
+                reraKeyWordList?.rera.map((projectKeywords) => {
                   names = names.concat(projectKeywords.keyword_list);
                 });
                 if (keywordType?.value === 'landlord') {
@@ -143,42 +163,105 @@ export default function Keywords() {
               )}
             </div>
           </ul>
-          <ul className='menu mr-2 max-h-[90vh] w-full max-w-[300px] flex-nowrap overflow-y-auto rounded-box bg-violet-100 py-4'>
+          <ul className='menu mr-2 max-h-[90vh] w-full max-w-[400px] flex-nowrap overflow-y-auto rounded-box bg-violet-100 py-4'>
             <li className='menu-title text-center text-xl text-violet-600'>
               Transaction {startCase(keywordType.value)}
             </li>
-            {Object.entries(tempProjectSourceData)
-              .map(([_projectId, data]) => {
-                return data.party_keywords?.filter(
-                  (ele) =>
-                    ele.keyword_type ===
-                    (keywordType && keywordType.value === 'landlord'
-                      ? 'LANDLORD'
-                      : 'DEVELOPER')
+            <button
+              className='btn btn-warning btn-sm max-w-fit self-center'
+              type='button'
+              onClick={() => {
+                let names: string[] = [];
+                transactionKeywords?.map((transData) =>
+                  transData.parties.map((partyName) => {
+                    names = names.concat(partyName.party);
+                  })
                 );
-              })
-              .map((ele) => ele?.map((ele) => ele.keywords))
-              .filter((ele) => !!ele)
-              .reduce((acc, val) => acc.concat(val), [])
-              .reduce((acc, val) => acc.concat(val), [])
-              .map((keyword, index) => (
-                <label key={index} className='ml-3 flex flex-col'>
-                  <input
-                    type='checkbox'
-                    className='peer'
-                    hidden
-                    name='rera-keyword-list'
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedKeyword((prev) => [keyword, ...prev]);
-                      }
-                    }}
-                  />
-                  <span className='btn btn-ghost btn-sm !block h-full max-w-[90%] flex-row justify-normal gap-0 self-start whitespace-break-spaces py-2 text-left font-normal leading-5 peer-checked:bg-green-500'>
-                    {keyword}
-                  </span>
-                </label>
-              ))}
+                if (keywordType?.value === 'landlord') {
+                  updateOnboardingData({
+                    landlordKeywords: [
+                      ...onboardingData.landlordKeywords,
+                      ...names,
+                    ],
+                  });
+                } else if (keywordType?.value === 'developer') {
+                  updateOnboardingData({
+                    developerKeywords: [
+                      ...onboardingData.developerKeywords,
+                      ...names,
+                    ],
+                  });
+                }
+              }}
+            >
+              Select All
+            </button>
+            {transactionKeywords?.map((transData, index) => (
+              <li key={index}>
+                <details open={index === 0 ? true : false}>
+                  <summary className=''>{transData.deed_type}</summary>
+                  <div className='flex items-center justify-center'>
+                    <button
+                      className='btn btn-warning btn-xs mx-auto max-w-fit'
+                      type='button'
+                      onClick={() => {
+                        let names: string[] = [];
+                        transData.parties.map((partyName) => {
+                          names = names.concat(partyName.party);
+                        });
+                        if (keywordType?.value === 'landlord') {
+                          updateOnboardingData({
+                            landlordKeywords: [
+                              ...onboardingData.landlordKeywords,
+                              ...names,
+                            ],
+                          });
+                        } else if (keywordType?.value === 'developer') {
+                          updateOnboardingData({
+                            developerKeywords: [
+                              ...onboardingData.developerKeywords,
+                              ...names,
+                            ],
+                          });
+                        }
+                      }}
+                    >
+                      Select this deed type
+                    </button>
+                  </div>
+
+                  <ul className='flex flex-col gap-y-1'>
+                    {transData.parties.map((countNamesItem) => (
+                      <label
+                        key={countNamesItem.party}
+                        className='ml-3 flex flex-col'
+                      >
+                        <input
+                          type='checkbox'
+                          className='group peer'
+                          hidden
+                          name='transaction-keyword-list'
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedKeyword((prev) => [
+                                countNamesItem.party,
+                                ...prev,
+                              ]);
+                            }
+                          }}
+                        />
+                        <span className='btn btn-ghost btn-sm !block h-full max-w-[200px] flex-row justify-normal gap-0 self-start whitespace-break-spaces py-2 text-left font-normal leading-5 peer-checked:bg-green-500'>
+                          {countNamesItem.party}{' '}
+                          <span className='font-medium'>
+                            ({countNamesItem.count})
+                          </span>
+                        </span>
+                      </label>
+                    ))}
+                  </ul>
+                </details>
+              </li>
+            ))}
           </ul>
           <div className='flex flex-col items-center justify-center gap-5'>
             <button
@@ -191,10 +274,6 @@ export default function Keywords() {
                 checkBoxes.forEach((item) => {
                   item.checked = false;
                 });
-                const editor = document.getElementById(
-                  'keyword-editor'
-                ) as HTMLInputElement;
-                editor.focus();
                 if (keywordType?.value === 'developer') {
                   updateOnboardingData({
                     developerKeywords: [
