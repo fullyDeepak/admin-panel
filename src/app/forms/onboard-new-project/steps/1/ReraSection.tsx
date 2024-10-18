@@ -75,6 +75,7 @@ export default function ReraSection({
     }>('/forms/rera/getProjectsDetails', {
       params: { projectIds: JSON.stringify(selectedProjectIds) },
     });
+
     const data = response.data.data;
     const developers = uniq(data.map((item) => item.developer_name));
     let projectSubType = { value: '', label: '' };

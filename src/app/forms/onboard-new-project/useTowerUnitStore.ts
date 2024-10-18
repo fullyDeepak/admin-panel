@@ -39,7 +39,7 @@ export type UnitCardType = {
   extentMax: number;
   facing: string | null;
   corner: boolean;
-  configName: string| null;
+  configName: string | null;
   configVerified: boolean;
   unitFloorCount: string | null;
   unitNos: string;
@@ -77,9 +77,27 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
     ],
   },
 ];
+export type ReraRefTable = {
+  tower_id: string;
+  unit_count: number;
+  floor_list: string;
+  unit_type: string;
+  unit_numbers: string;
+};
 
+export type TMRefTable = {
+  apt_name: string;
+  unit_type: string;
+  freq: string;
+  floors: string;
+  unit_numbers: string;
+};
 type Store = {
   towerFormData: TowerUnitDetailType[];
+  reraRefTable: ReraRefTable[];
+  tmRefTable: TMRefTable[];
+  updateReraRefTable: (_data: ReraRefTable[]) => void;
+  updateTMRefTable: (_data: TMRefTable[]) => void;
   existingUnitTypeOption: SingleValue<{
     label: string;
     value: string;
@@ -111,10 +129,14 @@ type Store = {
 export const useTowerUnitStore = create<Store>()(
   immer((set) => ({
     towerFormData: INITIAL_STATE,
+    reraRefTable: [] as ReraRefTable[],
+    tmRefTable: [] as TMRefTable[],
+    updateReraRefTable: (data) => set({ reraRefTable: data }),
     existingUnitTypeOption: [] as SingleValue<{
       label: string;
       value: string;
     }>[],
+    updateTMRefTable: (data) => set({ tmRefTable: data }),
     setExistingUnitTypeOption: (data) => set({ existingUnitTypeOption: data }),
     updateTowerFormData: (id, newDetails) =>
       set((prev) => {

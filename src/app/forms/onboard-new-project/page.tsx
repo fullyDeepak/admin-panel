@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import PreviewData from './PreviewData';
 import StaticDataForm from './steps/1/StaticDataForm';
 import DeveloperTagging from './steps/2/DeveloperTagging';
@@ -23,7 +24,10 @@ export default function Page() {
           Project Onboarder v3.0
         </h1>
         <div
-          className='mb-40 mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
+          className={cn(
+            'mb-40 mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]',
+            formSteps === 'Tower - Unit' && 'md:max-w-[100%]'
+          )}
           id='projectTowerForm'
         >
           <StepsUI
