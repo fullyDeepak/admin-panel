@@ -7,24 +7,92 @@ import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
 import { DocAttachTable } from './DocAttachTable';
 import { createColumnHelper } from '@tanstack/react-table';
+import TanstackReactTable from './Table';
 
-const columnHelper = createColumnHelper<
-  {
-    execution_date: string;
-    project_id: string;
-    doc_id: string;
-    deed_type: string;
-    occurrence_count: string;
-    cp1: string;
-    cp2: string;
-    extent: string;
-    area_attached: boolean;
-    doc_id_schedule: string;
-    project_attached: boolean;
-  }[]
->();
+const columnHelper = createColumnHelper<{
+  execution_date: string;
+  project_id: string;
+  doc_id: string;
+  deed_type: string;
+  occurrence_count: string;
+  cp1: string;
+  cp2: string;
+  extent: string;
+  area_attached: boolean;
+  doc_id_schedule: string;
+  project_attached: boolean;
+}>();
 
-const docColumns = [];
+const docColumns = [
+  columnHelper.accessor('doc_id', {
+    header: 'Doc Id',
+    cell: ({ row }) => <p className='w-[100px]'>{row.getValue('doc_id')}</p>,
+  }),
+  columnHelper.accessor('doc_id_schedule', {
+    header: 'Doc Id Schedule',
+    cell: ({ row }) => (
+      <p className='w-full whitespace-break-spaces text-justify text-xs tabular-nums'>
+        {row.getValue('doc_id_schedule')}
+      </p>
+    ),
+  }),
+  columnHelper.accessor('deed_type', {
+    header: 'Deed Type',
+    cell: ({ row }) => (
+      <p className='w-full whitespace-break-spaces text-justify text-xs'>
+        {row.getValue('deed_type')}
+      </p>
+    ),
+  }),
+  columnHelper.accessor('cp1', {
+    header: 'CP1',
+    cell: ({ row }) => (
+      <p className='w-full whitespace-break-spaces text-justify text-xs'>
+        {row.getValue('cp1')}
+      </p>
+    ),
+  }),
+  columnHelper.accessor('cp2', {
+    header: 'CP2',
+    cell: ({ row }) => (
+      <p className='w-full whitespace-break-spaces text-justify text-xs'>
+        {row.getValue('cp2')}
+      </p>
+    ),
+  }),
+  columnHelper.accessor('extent', {
+    header: 'Extent',
+    cell: ({ row }) => (
+      <p className='w-full whitespace-break-spaces text-justify text-xs'>
+        {row.getValue('extent')}
+      </p>
+    ),
+  }),
+  columnHelper.accessor('occurrence_count', {
+    header: 'Occurrence Count',
+    cell: ({ row }) => (
+      <p className='w-full whitespace-break-spaces text-justify text-xs'>
+        {row.getValue('occurrence_count')}
+      </p>
+    ),
+  }),
+  columnHelper.accessor('project_attached', {
+    header: 'Project Attached',
+    cell: ({ row }) => (
+      <p className='w-full whitespace-break-spaces text-justify text-xs tabular-nums'>
+        {row.getValue('project_attached')}
+      </p>
+    ),
+  }),
+  columnHelper.accessor('area_attached', {
+    header: 'Area Attached',
+    cell: ({ row }) => (
+      <p className='w-full whitespace-break-spaces text-justify text-xs tabular-nums'>
+        {row.getValue('area_attached')}
+      </p>
+    ),
+  }),
+];
 export default function DeveloperTagging() {
   // 3 queries
   const { onboardingData } = useOnboardingDataStore();
@@ -120,9 +188,11 @@ export default function DeveloperTagging() {
             Development Agreements
           </h2>
           <div className='max-h-[80dvh] overflow-y-auto'>
-            <DocAttachTable
+            <TanstackReactTable
               data={developmentAgreements}
-              setData={setDevelopmentAgreements}
+              columns={docColumns}
+              enableSearch={true}
+              showPagination={true}
             />
           </div>
           {/* Linked Docs : /onboarding/root_docs/linked-docs*/}

@@ -19,9 +19,13 @@ export default function Keywords() {
   >();
   const { updateOnboardingData, onboardingData } = useOnboardingDataStore();
   const { data: reraKeyWordList, isLoading: loadingReraKeywords } = useQuery({
-    queryKey: ['keywords', keywordType, onboardingData.selectedReraProjects],
+    queryKey: [
+      'rera-keywords',
+      keywordType,
+      onboardingData.selectedReraProjects,
+    ],
     queryFn: async () => {
-      if (!keywordType?.value || onboardingData.selectedTempProject) {
+      if (!keywordType?.value || !onboardingData.selectedReraProjects.length) {
         return undefined;
       }
       const data = {
@@ -47,7 +51,7 @@ export default function Keywords() {
   });
   const { data: transactionKeywords, isLoading: _loadingTransactionKeywords } =
     useQuery({
-      queryKey: ['keywords', onboardingData.selectedTempProject],
+      queryKey: ['transaction-keywords', onboardingData.selectedTempProject],
       queryFn: async () => {
         if (!onboardingData.selectedTempProject?.value) return null;
         const res = await axiosClient.get<{

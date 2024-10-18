@@ -366,59 +366,6 @@ export default function ETLTagData({
               />
             </div>
           </div>
-          <div className='flex flex-col gap-5'>
-            <span className='flex flex-[2] items-center'>
-              <span>Recommended Municipal Door Numbers:</span>
-            </span>
-            <table>
-              <thead>
-                <tr>
-                  <th className='border border-solid border-slate-400'>
-                    Door No.
-                  </th>
-                  <th className='border border-solid border-slate-400'>
-                    Unit Numbers
-                  </th>
-                  <th className='border border-solid border-slate-400'>
-                    Occurrence
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {etlTagData.suggestedDoorNumberStartsWith
-                  .sort(
-                    (a, b) =>
-                      -(parseInt(a.split(':')[2]) - parseInt(b.split(':')[2]))
-                  )
-                  .map((item, index) => (
-                    <tr
-                      className='border-collapse cursor-pointer hover:bg-slate-50'
-                      key={index}
-                      onClick={() =>
-                        updateProjectETLFormData(
-                          etlTagData.id,
-                          'doorNoStartWith',
-                          _.uniq([
-                            ...etlTagData.doorNoStartWith,
-                            item.split(':')[0],
-                          ])
-                        )
-                      }
-                    >
-                      <td className='border border-solid border-slate-400'>
-                        {item.split(':')[0]}
-                      </td>
-                      <td className='border border-solid border-slate-400'>
-                        {item.split(':')[1]}
-                      </td>
-                      <td className='border border-solid border-slate-400'>
-                        {item.split(':')[2]}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
           <label className='flex flex-wrap items-center justify-between gap-5'>
             <span className='flex flex-[2] items-center'>
               <span>Door no. start with:</span>

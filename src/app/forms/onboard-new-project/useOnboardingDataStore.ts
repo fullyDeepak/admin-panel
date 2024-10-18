@@ -64,7 +64,7 @@ export interface OnboardingDataType {
   mapData: ProjectCordWithinVillage['data'] | null;
   mapInputValue: string;
   mapGeojsonData: FeatureCollection | null;
-  coreDoorNumberString: string;
+  coreDoorNumberStrings: string[];
   suggestedSurvey: string[];
   suggestedPlot: string[];
   developerMasterId: string | null;
@@ -199,7 +199,7 @@ const INITIAL_STATE: OnboardingDataType = {
   mapData: [],
   mapInputValue: '',
   mapGeojsonData: null,
-  coreDoorNumberString: '',
+  coreDoorNumberStrings: [],
   suggestedSurvey: [],
   suggestedPlot: [],
   developerMasterId: null,
@@ -252,6 +252,7 @@ export const useOnboardingDataStore = create<Store>()(
           clubhouse_area: '',
           mapData: [],
           mapInputValue: '',
+          developerMasterId: null,
         },
         tempProjectSourceData: {},
       })),

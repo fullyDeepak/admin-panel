@@ -12,6 +12,7 @@ import ProjectMatcherSection from './ProjectMatcherSection';
 import ReraSection from './ReraSection';
 import { fetchTempProjectDetails } from './utils';
 import { MasterDevelopers } from '@/components/dropdowns/MasterDevelopers';
+import useETLDataStore from '../../useETLDataStore';
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
@@ -22,6 +23,7 @@ export default function StaticDataForm() {
     tempProjectSourceData,
     resetData,
   } = useOnboardingDataStore();
+  const { resetAllProjectData } = useETLDataStore();
   const {
     setDMVData,
     DMVData,
@@ -172,7 +174,7 @@ export default function StaticDataForm() {
               return project.value === ele;
             });
             console.log(reraProject);
-            return reraProject;
+            return reraProject || [];
           })
           .filter((ele) => !!ele) as {
           label: string;
@@ -188,6 +190,7 @@ export default function StaticDataForm() {
           });
         }
       }
+      return [];
     },
     staleTime: Infinity,
   });
@@ -287,6 +290,7 @@ export default function StaticDataForm() {
           ) => {
             updateOnboardingData({ selectedVillage: e });
             resetData();
+            resetAllProjectData();
           }}
           isDisabled={Boolean(!onboardingData.selectedMandal)}
         />
@@ -333,6 +337,7 @@ export default function StaticDataForm() {
               projectSourceType: e?.value,
             });
             resetData();
+            resetAllProjectData();
           }}
           isDisabled={Boolean(!onboardingData.selectedVillage)}
         />

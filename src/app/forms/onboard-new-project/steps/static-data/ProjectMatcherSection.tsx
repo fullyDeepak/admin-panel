@@ -1,15 +1,17 @@
+import ChipInput from '@/components/ui/Chip';
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
-import ChipInput from '@/components/ui/Chip';
 import _ from 'lodash';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
 import useETLDataStore from '../../useETLDataStore';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
-import { inputBoxClass } from '@/app/constants/tw-class';
 
 export default function ProjectMatcherSection() {
-  const { projectFormETLTagData: formProjectETLTagData } = useETLDataStore();
+  const {
+    projectFormETLTagData: formProjectETLTagData,
+    updateProjectETLTagData,
+  } = useETLDataStore();
   const { onboardingData, updateOnboardingData } = useOnboardingDataStore();
   const { data: localitiesOptions, isLoading: loadingLocalities } = useQuery({
     queryKey: ['localitiesOptions'],
@@ -82,6 +84,7 @@ export default function ProjectMatcherSection() {
           <span className='flex flex-[2] items-center'>
             <span>Recommended Municipal Door Numbers:</span>
           </span>
+
           <table>
             <thead>
               <tr>
@@ -106,7 +109,26 @@ export default function ProjectMatcherSection() {
                     -(parseInt(a.split(':')[2]) - parseInt(b.split(':')[2]))
                 )
                 .map((item, index) => (
-                  <tr className='border-collapse hover:bg-slate-50' key={index}>
+                  <tr
+                    className='border-collapse cursor-pointer hover:bg-slate-50'
+                    key={index}
+                    onClick={() => {
+                      updateOnboardingData({
+                        coreDoorNumberStrings: _.uniq([
+                          ...onboardingData.coreDoorNumberStrings,
+                          item.split(':')[0],
+                        ]),
+                      });
+                      updateProjectETLTagData(
+                        1,
+                        'doorNoStartWith',
+                        _.uniq([
+                          ...onboardingData.coreDoorNumberStrings,
+                          item.split(':')[0],
+                        ])
+                      );
+                    }}
+                  >
                     <td className='border border-solid border-slate-400'>
                       {item.split(':')[0]}
                     </td>
@@ -126,13 +148,17 @@ export default function ProjectMatcherSection() {
         <span className='flex-[2] text-wrap break-words md:text-xl'>
           Core Door Number String:{' '}
         </span>
-        <input
-          type='text'
-          className={inputBoxClass}
-          value={onboardingData.coreDoorNumberString}
-          onChange={(e) =>
-            updateOnboardingData({ coreDoorNumberString: e.target.value })
-          }
+        <ChipInput
+          chips={onboardingData.coreDoorNumberStrings}
+          updateFormData={(id, key, val) => {
+            updateOnboardingData({
+              coreDoorNumberStrings: val,
+            });
+            console.log(id, key, val);
+            updateProjectETLTagData(id, key, val);
+          }}
+          updateId={1}
+          updateKey='doorNoStartWith'
         />
       </div>
     </>

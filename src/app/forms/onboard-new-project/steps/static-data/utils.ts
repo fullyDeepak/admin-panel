@@ -33,18 +33,58 @@ export async function fetchTempProjectDetails({
     updateOnboardingData({
       selectedTempProject: e,
       selectedReraProjects: [],
+      houseMasterLocalities: [],
     });
     setReraForTempProjects({});
     const tempProjectData = await axiosClient.get<{
       data: TempProjectSourceData;
     }>(`/temp-projects/${e.value}`);
     addTempProjectSourceData(e.value, tempProjectData.data.data);
+    const subtype = [
+      'Apartment - Gated',
+      'Apartment - Standalone',
+      'Villa',
+      'Mixed Residential',
+      'Other',
+    ].find(
+      (ele) =>
+        tempProjectData.data.data.project_subtype.toUpperCase() ===
+        ele.toUpperCase()
+    );
     updateOnboardingData({
       mainProjectName: e.label.split(':')[1].trim(),
       developerMasterId: tempProjectData.data.data.developers?.is_jv
         ? 'JV:' + tempProjectData.data.data.developers?.jv_id?.toString()
         : 'DEVELOPER:' +
           tempProjectData.data.data.developers?.developer_id?.toString(),
+      projectType: [
+        {
+          label: 'Residential',
+          value: 'RESIDENTIAL',
+        },
+        {
+          label: 'Commercial',
+          value: 'COMMERCIAL',
+        },
+        {
+          label: 'Mixed',
+          value: 'MIXED',
+        },
+      ].find(
+        (ele) =>
+          tempProjectData.data.data.project_category.toUpperCase() ===
+          ele.value.toUpperCase()
+      ),
+      projectSubType: subtype
+        ? {
+            label: subtype,
+            value: subtype
+              .toUpperCase()
+              .replace(' - ', '-')
+              .replace(' ', '_')
+              .replace('-', '_'),
+          }
+        : null,
     });
     const geoData = tempProjectData.data.data.geojson_data;
     if (geoData && geoData?.length > 0) {
