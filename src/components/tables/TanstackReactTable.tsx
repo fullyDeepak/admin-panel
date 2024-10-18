@@ -10,7 +10,7 @@ import {
   SortingState,
   getFilteredRowModel,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GoArrowDown, GoArrowUp, GoArrowSwitch } from 'react-icons/go';
 import {
   MdOutlineFirstPage,
@@ -24,6 +24,7 @@ interface TableProps {
   columns: ColumnDef<object, any>[];
   showPagination?: boolean;
   enableSearch?: boolean;
+  showAllRows?: boolean;
 }
 
 export default function TanstackReactTable({
@@ -31,6 +32,7 @@ export default function TanstackReactTable({
   columns,
   showPagination = true,
   enableSearch = true,
+  showAllRows = false,
 }: TableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filtering, setFiltering] = useState('');
@@ -49,6 +51,12 @@ export default function TanstackReactTable({
     onSortingChange: setSorting,
     onGlobalFilterChange: setFiltering,
   });
+
+  useEffect(() => {
+    if (showAllRows) {
+      table.setPageSize(Number(table.getRowCount()));
+    }
+  }, [showAllRows]);
   return (
     <div className='mx-auto flex flex-col'>
       {/* <div>
