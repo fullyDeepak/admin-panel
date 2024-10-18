@@ -32,7 +32,7 @@ export type UnitCardType = {
     label: string;
     value: string;
   }> | null;
-  towerFloorName: string;
+  floorNos: string;
   salableAreaMin: number;
   salableAreaMax: number;
   extentMin: number;
@@ -44,7 +44,10 @@ export type UnitCardType = {
     value: string;
   }> | null;
   configVerified: boolean;
-  unitFloorCount: number;
+  unitFloorCount: SingleValue<{
+    label: string;
+    value: string;
+  }> | null;
   unitNos: string;
 };
 
@@ -65,7 +68,7 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
         id: 1,
         reraUnitType: null,
         existingUnitType: null,
-        towerFloorName: '',
+        floorNos: '',
         salableAreaMin: 0,
         salableAreaMax: 0,
         extentMin: 0,
@@ -74,7 +77,7 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
         corner: false,
         configName: null,
         configVerified: true,
-        unitFloorCount: 0,
+        unitFloorCount: null,
         unitNos: '',
       },
     ],
@@ -103,6 +106,7 @@ type Store = {
     _newDetails: Partial<UnitCardType>
   ) => void;
   addNewTowerCard: () => void;
+  duplicateTowerCard: (_towerCardId: number) => void;
   setTowerFormData: (_data: TowerUnitDetailType[]) => void;
   deleteTowerCard: (_id: number) => void;
   copyUnitCard: (_towerCardId: number, _newDetails: UnitCardType) => void;
@@ -144,6 +148,20 @@ export const useTowerUnitStore = create<Store>()(
           towerDoorNoString: '',
           unitCards: [],
         });
+      }),
+
+    duplicateTowerCard: (towerCardId) =>
+      set((prev) => {
+        const tower = prev.towerFormData.find(
+          (data) => data.id === towerCardId
+        );
+        if (tower) {
+          const newTowerCard = {
+            ...tower,
+            id: Math.max(...prev.towerFormData.map((data) => data.id)) + 1,
+          };
+          prev.towerFormData.push(newTowerCard);
+        }
       }),
     deleteTowerCard: (id) =>
       set((prev) => {
@@ -190,7 +208,7 @@ export const useTowerUnitStore = create<Store>()(
             id: prev.towerFormData[towerIdx].unitCards.length + 1,
             reraUnitType: null,
             existingUnitType: null,
-            towerFloorName: '',
+            floorNos: '',
             salableAreaMin: 0,
             salableAreaMax: 0,
             extentMin: 0,
@@ -199,7 +217,7 @@ export const useTowerUnitStore = create<Store>()(
             corner: false,
             configName: null,
             configVerified: true,
-            unitFloorCount: 0,
+            unitFloorCount: null,
             unitNos: '',
           });
         }

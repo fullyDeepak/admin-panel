@@ -3,7 +3,7 @@
 import Select from 'react-select';
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { nanoid } from 'nanoid';
-import { BiPlus } from 'react-icons/bi';
+import { BiCopy } from 'react-icons/bi';
 import UnitSection from './UnitSection';
 import { useTowerUnitStore } from '../../useTowerUnitStore';
 import { useEffect, useState } from 'react';
@@ -19,8 +19,10 @@ export default function TowerPage() {
     towerFormData,
     addNewTowerCard,
     deleteTowerCard,
-    setTowerFormData,deleteUnitCard,
+    setTowerFormData,
+    deleteUnitCard,
     setExistingUnitTypeOption,
+    duplicateTowerCard,
   } = useTowerUnitStore();
   const [towerCardCount, setTowerCardCount] = useState<number>(0);
   useEffect(() => {
@@ -38,6 +40,7 @@ export default function TowerPage() {
     });
     setExistingUnitTypeOption(options);
   }, [towerFormData]);
+
   return (
     <div>
       <label className='mx-auto mb-5 flex max-w-[600px] flex-wrap items-center justify-between gap-5'>
@@ -89,7 +92,7 @@ export default function TowerPage() {
               Tower Card id: {tower.id}
             </span>
             <button
-              className='absolute right-2 top-2 m-2 size-10 rounded-full hover:bg-gray-300'
+              className='absolute right-2 top-2 m-2 size-10 rounded-full font-semibold hover:bg-gray-300'
               type='button'
               onClick={() => {
                 confirm('Are you sure?') && deleteTowerCard(tower.id);
@@ -234,12 +237,15 @@ export default function TowerPage() {
                 }
               />
             </label>
-            <div className='absolute -bottom-6 -left-5 z-10 w-full'>
+            <div className='absolute -bottom-6 -left-5 w-full'>
               <button
                 type='button'
                 className='btn btn-md mx-auto flex items-center border-none bg-violet-300 hover:bg-violet-400'
+                onClick={() => {
+                  duplicateTowerCard(tower.id);
+                }}
               >
-                <BiPlus size={30} /> <span>Duplicate</span>
+                <BiCopy size={30} /> <span>Duplicate</span>
               </button>
             </div>
             <UnitSection

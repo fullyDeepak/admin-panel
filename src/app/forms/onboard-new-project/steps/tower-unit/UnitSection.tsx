@@ -30,20 +30,22 @@ export default function UnitSection({
   deleteUnitCard,
 }: Props) {
   const { existingUnitTypeOption } = useTowerUnitStore();
+
   return (
     <div>
       {unitCards && unitCards.length > 0 ? (
         unitCards.map((unitData) => (
           <div
-            className='relative my-10 space-y-3 rounded-lg bg-amber-50 p-5 pb-10 shadow-[0px_0px_3px_2px_#b7791f]'
+            className='relative my-10 space-y-3 rounded-lg bg-amber-50 p-5 pb-10 text-sm shadow-[0px_0px_3px_2px_#b7791f]'
             key={unitData.id}
           >
             <h2 className='text-xl font-semibold'>Section: Unit Card</h2>
             <p className='text-center font-semibold'>
-              Unit Type Card id: {unitData.id}
+              Tower Card id: {towerId} &nbsp; &nbsp; &nbsp; &nbsp; Unit Type
+              Card id: {unitData.id}
             </p>
             <button
-              className='absolute right-2 top-0 m-2 size-8 rounded-full text-sm hover:bg-gray-300'
+              className='absolute right-2 top-0 m-2 size-8 rounded-full text-sm font-semibold hover:bg-gray-300'
               type='button'
               onClick={() => {
                 confirm('Are you sure?') &&
@@ -142,89 +144,121 @@ export default function UnitSection({
                 <div className='flex items-center gap-2'>
                   <label
                     className={cn(
-                      'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
+                      'tooltip flex cursor-pointer items-center gap-2 rounded border-2 p-1',
                       unitData.facing === 'N' &&
                         'border-amber-800 bg-amber-600 text-white'
                     )}
+                    data-tip='North'
                   >
                     <input
-                      type='radio'
+                      type='checkbox'
                       name='facing'
                       className='hidden'
-                      onClick={() =>
-                        updateUnitCard(towerId, unitData.id, {
-                          facing: 'N',
-                        })
-                      }
+                      checked={unitData.facing === 'N'}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          updateUnitCard(towerId, unitData.id, {
+                            facing: 'N',
+                          });
+                        } else {
+                          updateUnitCard(towerId, unitData.id, {
+                            facing: null,
+                          });
+                        }
+                      }}
                     />
-                    <TbMapNorth size={40} strokeWidth={1.3} />
+                    <TbMapNorth size={30} strokeWidth={1.3} />
                   </label>
                   <label
                     className={cn(
-                      'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
+                      'tooltip tooltip-bottom flex cursor-pointer items-center gap-2 rounded border-2 p-1',
                       unitData.facing === 'S' &&
                         'border-amber-800 bg-amber-600 text-white'
                     )}
+                    data-tip='South'
                   >
                     <input
-                      type='radio'
+                      type='checkbox'
                       name='facing'
                       className='hidden'
-                      onClick={() =>
-                        updateUnitCard(towerId, unitData.id, {
-                          facing: 'S',
-                        })
-                      }
+                      checked={unitData.facing === 'S'}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          updateUnitCard(towerId, unitData.id, {
+                            facing: 'S',
+                          });
+                        } else {
+                          updateUnitCard(towerId, unitData.id, {
+                            facing: null,
+                          });
+                        }
+                      }}
                     />
-                    <TbMapSouth size={40} strokeWidth={1.3} />
+                    <TbMapSouth size={30} strokeWidth={1.3} />
                   </label>
                   <label
                     className={cn(
-                      'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
+                      'tooltip tooltip-right flex cursor-pointer items-center gap-2 rounded border-2 p-1',
                       unitData.facing === 'E' &&
                         'border-amber-800 bg-amber-600 text-white'
                     )}
+                    data-tip='East'
                   >
                     <input
-                      type='radio'
+                      type='checkbox'
                       name='facing'
                       className='hidden'
-                      onClick={() =>
-                        updateUnitCard(towerId, unitData.id, {
-                          facing: 'E',
-                        })
-                      }
+                      checked={unitData.facing === 'E'}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          updateUnitCard(towerId, unitData.id, {
+                            facing: 'E',
+                          });
+                        } else {
+                          updateUnitCard(towerId, unitData.id, {
+                            facing: null,
+                          });
+                        }
+                      }}
                     />
-                    <TbMapEast size={40} strokeWidth={1.3} />
+                    <TbMapEast size={30} strokeWidth={1.3} />
                   </label>
                   <label
                     className={cn(
-                      'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
+                      'tooltip tooltip-left flex cursor-pointer items-center gap-2 rounded border-2 p-1',
                       unitData.facing === 'W' &&
                         'border-amber-800 bg-amber-600 text-white'
                     )}
+                    data-tip='West'
                   >
                     <input
-                      type='radio'
+                      type='checkbox'
                       name='facing'
                       className='hidden'
-                      onClick={() =>
-                        updateUnitCard(towerId, unitData.id, {
-                          facing: 'W',
-                        })
-                      }
+                      checked={unitData.facing === 'W'}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          updateUnitCard(towerId, unitData.id, {
+                            facing: 'W',
+                          });
+                        } else {
+                          updateUnitCard(towerId, unitData.id, {
+                            facing: null,
+                          });
+                        }
+                      }}
                     />
-                    <TbMapWest size={40} strokeWidth={1.3} />
+                    <TbMapWest size={30} strokeWidth={1.3} />
                   </label>
                 </div>
                 <div className='ml-60 flex items-center gap-2'>
                   <label
                     className={cn(
-                      'flex cursor-pointer items-center gap-2 rounded border-2 p-1',
+                      'tooltip flex cursor-pointer items-center gap-2 rounded border-2 p-1',
                       unitData.corner &&
                         'border-amber-800 bg-amber-600 text-white'
                     )}
-                    title='Corner flag'
+                    data-tip='Corner flag'
                   >
                     <input
                       type='checkbox'
@@ -237,31 +271,67 @@ export default function UnitSection({
                         })
                       }
                     />
-                    <CornerIcon className='size-9' />
+                    <CornerIcon className='size-6' />
                   </label>
                 </div>
               </div>
             </div>
 
             <div className='flex items-center gap-2'>
-              <span className='flex-[2]'>Config:</span>
+              <span className='flex-[2]'>Config and Unit Floor Count:</span>
               <div className='ml-3 flex w-full flex-[5] items-center gap-2'>
                 <Select
-                  className='w-full'
+                  className='flex-1'
                   instanceId={nanoid()}
-                  options={[]}
                   defaultValue={unitData.configName}
-                  onChange={(e) =>
-                    updateUnitCard(towerId, unitData.id, { configName: e })
-                  }
+                  onChange={(e) => {
+                    updateUnitCard(towerId, unitData.id, { configName: e });
+                  }}
+                  options={[
+                    {
+                      value: 'Studio',
+                      label: 'Studio',
+                    },
+                    {
+                      value: '1BHK',
+                      label: '1BHK',
+                    },
+                    {
+                      value: '2BHK',
+                      label: '2BHK',
+                    },
+                    {
+                      value: '2.5BHK',
+                      label: '2.5BHK',
+                    },
+                    {
+                      value: '3BHK',
+                      label: '3BHK',
+                    },
+                    {
+                      value: '3.5BHK',
+                      label: '3.5BHK',
+                    },
+                    {
+                      value: '4BHK',
+                      label: '4BHK',
+                    },
+                    {
+                      value: '4BHK, Maid',
+                      label: '4BHK, Maid',
+                    },
+                  ]}
                 />
-                <span title='Is this configuration verified?'>
+                <span
+                  className='tooltip'
+                  data-tip='Is this configuration verified?'
+                >
                   <BadgeCheckIcon className='size-8' />
                 </span>
                 <input
                   type='checkbox'
                   defaultChecked={unitData.configVerified}
-                  className='toggle toggle-success'
+                  className='toggle toggle-success border-2'
                   title='Is this configuration verified?'
                   onChange={(e) =>
                     updateUnitCard(towerId, unitData.id, {
@@ -269,32 +339,63 @@ export default function UnitSection({
                     })
                   }
                 />
+                <Select
+                  className='flex-1'
+                  instanceId={nanoid()}
+                  defaultValue={
+                    unitData.unitFloorCount || {
+                      value: 'Simplex',
+                      label: 'Simplex',
+                    }
+                  }
+                  onChange={(e) =>
+                    updateUnitCard(towerId, unitData.id, {
+                      unitFloorCount: e,
+                    })
+                  }
+                  options={[
+                    {
+                      value: 'Simplex',
+                      label: 'Simplex',
+                    },
+                    {
+                      value: 'Duplex',
+                      label: 'Duplex',
+                    },
+                    {
+                      value: 'Triplex',
+                      label: 'Triplex',
+                    },
+                    {
+                      value: 'G+1',
+                      label: 'G+1',
+                    },
+                    {
+                      value: 'G+2',
+                      label: 'G+2',
+                    },
+                    {
+                      value: 'G+3',
+                      label: 'G+3',
+                    },
+                  ]}
+                />
               </div>
             </div>
+            <label className='flex flex-wrap items-center justify-between gap-5'></label>
             <label className='flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[2]'>Tower Floor Name:</span>
+              <span className='flex-[2]'>Floor Nos:</span>
               <input
                 className={inputBoxClass}
-                defaultValue={unitData.towerFloorName}
+                defaultValue={unitData.floorNos}
                 onChange={(e) =>
                   updateUnitCard(towerId, unitData.id, {
-                    towerFloorName: e.target.value,
+                    floorNos: e.target.value,
                   })
                 }
               />
             </label>
-            <label className='flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[2]'>Unit Floor Count:</span>
-              <input
-                className={inputBoxClass}
-                defaultValue={unitData.unitFloorCount}
-                onChange={(e) =>
-                  updateUnitCard(towerId, unitData.id, {
-                    unitFloorCount: +e.target.value,
-                  })
-                }
-              />
-            </label>
+
             <label className='flex flex-wrap items-center justify-between gap-5'>
               <span className='flex-[2]'>Unit Nos:</span>
               <input
@@ -307,7 +408,8 @@ export default function UnitSection({
                 }
               />
             </label>
-            <div className='absolute -bottom-4 -left-0 z-10 flex w-full items-center'>
+
+            <div className='absolute -bottom-4 -left-0 z-[0] flex w-full items-center'>
               <button
                 type='button'
                 className='btn btn-sm mx-auto flex items-center border-none bg-amber-400 hover:bg-amber-500'
