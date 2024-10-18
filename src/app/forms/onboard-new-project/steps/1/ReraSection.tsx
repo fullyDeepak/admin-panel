@@ -295,20 +295,6 @@ export default function ReraSection({
           )}
         </button>
       </div>
-      <label className='flex items-center justify-between gap-5'>
-        <span className='flex-[2] text-wrap break-words md:text-xl'>
-          Assign Main Project Name:
-        </span>
-        <input
-          className={`${inputBoxClass}`}
-          type='text'
-          value={onboardingData.mainProjectName}
-          onChange={(e) =>
-            updateOnboardingData({ mainProjectName: e.target.value })
-          }
-          placeholder='Enter Main Project Name'
-        />
-      </label>
     </>
   );
 }

@@ -85,7 +85,7 @@ export default function StaticDataForm() {
       return res.data.data
         .sort((a, b) => b.occurrence_count - a.occurrence_count)
         .map((e) => ({
-          label: `${e.id}:${e.name} (${e.occurrence_count})`,
+          label: `${e.id}:${e.name} : (${e.occurrence_count})`,
           value: e.id,
         }));
     },
@@ -373,6 +373,20 @@ export default function StaticDataForm() {
         reraProjects={reraProjects}
         reraForTempProjects={reraForTempProjects}
       />
+      <label className='flex items-center justify-between gap-5'>
+        <span className='flex-[2] text-wrap break-words md:text-xl'>
+          Assign Main Project Name:
+        </span>
+        <input
+          className={`${inputBoxClass}`}
+          type='text'
+          value={onboardingData.mainProjectName}
+          onChange={(e) =>
+            updateOnboardingData({ mainProjectName: e.target.value })
+          }
+          placeholder='Enter Main Project Name'
+        />
+      </label>
       <label className='flex items-center justify-between gap-5'>
         <span>GeoCoded Address : </span>
         {Object.entries(tempProjectSourceData).map(([projectId, data]) => {
