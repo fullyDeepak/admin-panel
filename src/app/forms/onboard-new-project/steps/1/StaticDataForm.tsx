@@ -330,9 +330,8 @@ export default function StaticDataForm() {
             setReraForTempProjects({});
             updateOnboardingData({
               projectSourceType: e?.value,
-              selectedReraProjects: [],
-              selectedTempProject: null,
             });
+            resetData();
           }}
           isDisabled={Boolean(!onboardingData.selectedVillage)}
         />

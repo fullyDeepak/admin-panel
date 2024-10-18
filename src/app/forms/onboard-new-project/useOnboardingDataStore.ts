@@ -234,7 +234,6 @@ export const useOnboardingDataStore = create<Store>()(
           ...prev.onboardingData,
           projectType: null,
           projectSubType: null,
-          projectSourceType: null,
           selectedTempProject: null,
           selectedReraProjects: [],
           mainProjectName: '',

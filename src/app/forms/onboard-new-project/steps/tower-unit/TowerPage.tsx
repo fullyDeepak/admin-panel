@@ -84,7 +84,7 @@ export default function TowerPage() {
       </label>
       {towerFormData.map((tower) => (
         <div
-          className='tower-card-container relative flex flex-col transition-all duration-1000'
+          className='tower-card-container relative z-0 flex flex-col transition-all duration-1000'
           key={tower.id}
         >
           <div className='moveTransition tower-card relative mb-14 flex flex-col gap-3 rounded-2xl p-10 shadow-[0_0px_8px_rgb(139,92,246,0.6)]'>

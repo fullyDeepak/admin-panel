@@ -39,15 +39,9 @@ export type UnitCardType = {
   extentMax: number;
   facing: string | null;
   corner: boolean;
-  configName: SingleValue<{
-    label: string;
-    value: string;
-  }> | null;
+  configName: string| null;
   configVerified: boolean;
-  unitFloorCount: SingleValue<{
-    label: string;
-    value: string;
-  }> | null;
+  unitFloorCount: string | null;
   unitNos: string;
 };
 

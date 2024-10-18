@@ -33,13 +33,13 @@ export default function UnitSection({
 
   return (
     <div>
+      <h2 className='-mb-5 text-xl font-semibold'>Section: Unit Card</h2>
       {unitCards && unitCards.length > 0 ? (
         unitCards.map((unitData) => (
           <div
             className='relative my-10 space-y-1 rounded-lg bg-amber-50 p-5 pb-10 text-sm shadow-[0px_0px_3px_2px_#b7791f]'
             key={unitData.id}
           >
-            <h2 className='text-xl font-semibold'>Section: Unit Card</h2>
             <p className='text-center font-semibold'>
               Tower Card id: {towerId} &nbsp; &nbsp; &nbsp; &nbsp; Unit Type
               Card id: {unitData.id}
@@ -55,7 +55,7 @@ export default function UnitSection({
               ✕
             </button>
             <label className='flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[2]'>Rera Unit Type:</span>
+              <span className='flex-[3]'>Rera Unit Type:</span>
               <div className='flex flex-[5]'>
                 <Select
                   className='w-full flex-1'
@@ -71,7 +71,7 @@ export default function UnitSection({
               </div>
             </label>
             <label className='flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[2]'>Existing Unit Type:</span>
+              <span className='flex-[3]'>Existing Unit Type:</span>
               <div className='flex flex-[5]'>
                 <Select
                   className='w-full flex-1'
@@ -84,7 +84,7 @@ export default function UnitSection({
               </div>
             </label>
             <label className='flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[2]'>Salable Area:</span>
+              <span className='flex-[3]'>Salable Area:</span>
               <div className='flex flex-[5] items-center gap-2'>
                 <input
                   placeholder='Min'
@@ -111,7 +111,7 @@ export default function UnitSection({
               </div>
             </label>
             <label className='flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[2]'>Extent:</span>
+              <span className='flex-[3]'>Extent:</span>
               <div className='flex flex-[5] items-center gap-2'>
                 <input
                   placeholder='Min'
@@ -139,7 +139,7 @@ export default function UnitSection({
             </label>
 
             <div className='flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[2]'>Facing and Corner:</span>
+              <span className='flex-[3]'>Facing and Corner:</span>
               <div className='flex flex-[5]'>
                 <div className='flex items-center gap-2'>
                   <label
@@ -251,7 +251,7 @@ export default function UnitSection({
                     <TbMapWest size={30} strokeWidth={1.3} />
                   </label>
                 </div>
-                <div className='ml-60 flex items-center gap-2'>
+                <div className='ml-10 flex items-center gap-2'>
                   <label
                     className={cn(
                       'tooltip flex cursor-pointer items-center gap-2 rounded border-2 p-1',
@@ -278,50 +278,36 @@ export default function UnitSection({
             </div>
 
             <div className='flex items-center gap-2'>
-              <span className='flex-[2]'>Config and Unit Floor Count:</span>
+              <span className='flex-[3]'>Config and Unit Floor Count:</span>
               <div className='ml-3 flex w-full flex-[5] items-center gap-2'>
-                <Select
-                  className='flex-1'
-                  instanceId={nanoid()}
-                  defaultValue={unitData.configName}
-                  onChange={(e) => {
-                    updateUnitCard(towerId, unitData.id, { configName: e });
-                  }}
-                  options={[
-                    {
-                      value: 'Studio',
-                      label: 'Studio',
-                    },
-                    {
-                      value: '1BHK',
-                      label: '1BHK',
-                    },
-                    {
-                      value: '2BHK',
-                      label: '2BHK',
-                    },
-                    {
-                      value: '2.5BHK',
-                      label: '2.5BHK',
-                    },
-                    {
-                      value: '3BHK',
-                      label: '3BHK',
-                    },
-                    {
-                      value: '3.5BHK',
-                      label: '3.5BHK',
-                    },
-                    {
-                      value: '4BHK',
-                      label: '4BHK',
-                    },
-                    {
-                      value: '4BHK, Maid',
-                      label: '4BHK, Maid',
-                    },
-                  ]}
-                />
+                <select
+                  className='select h-9 min-h-9 flex-1 border-2 border-gray-300 pe-5 ps-3 focus:border-2 focus:border-violet-600 focus:outline-none'
+                  defaultValue={unitData.configName || undefined}
+                  onChange={(e) =>
+                    updateUnitCard(towerId, unitData.id, {
+                      configName: e.target.value,
+                    })
+                  }
+                >
+                  <option disabled selected>
+                    Config
+                  </option>
+                  {[
+                    'Studio',
+                    'LOBBY',
+                    '1BHK',
+                    '2BHK',
+                    '2.5BHK',
+                    '3BHK',
+                    '3.5BHK',
+                    '4BHK',
+                    '4BHK, Maid',
+                  ].map((item, idx) => (
+                    <option value={item} key={idx}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
                 <span
                   className='tooltip'
                   data-tip='Is this configuration verified?'
@@ -339,52 +325,31 @@ export default function UnitSection({
                     })
                   }
                 />
-                <Select
-                  className='flex-1'
-                  instanceId={nanoid()}
-                  defaultValue={
-                    unitData.unitFloorCount || {
-                      value: 'Simplex',
-                      label: 'Simplex',
-                    }
-                  }
+                <select
+                  className='select h-9 min-h-9 flex-1 border-2 border-gray-300 focus:border-2 focus:border-violet-600 focus:outline-none'
+                  defaultValue={unitData.unitFloorCount || undefined}
                   onChange={(e) =>
                     updateUnitCard(towerId, unitData.id, {
-                      unitFloorCount: e,
+                      unitFloorCount: e.target.value,
                     })
                   }
-                  options={[
-                    {
-                      value: 'Simplex',
-                      label: 'Simplex',
-                    },
-                    {
-                      value: 'Duplex',
-                      label: 'Duplex',
-                    },
-                    {
-                      value: 'Triplex',
-                      label: 'Triplex',
-                    },
-                    {
-                      value: 'G+1',
-                      label: 'G+1',
-                    },
-                    {
-                      value: 'G+2',
-                      label: 'G+2',
-                    },
-                    {
-                      value: 'G+3',
-                      label: 'G+3',
-                    },
-                  ]}
-                />
+                >
+                  <option disabled selected>
+                    Unit Floor
+                  </option>
+                  {['Simplex', 'Duplex', 'Triplex', 'G+1', 'G+2', 'G+3'].map(
+                    (item, idx) => (
+                      <option value={item} key={idx}>
+                        {item}
+                      </option>
+                    )
+                  )}
+                </select>
               </div>
             </div>
-            <label className='flex flex-wrap items-center justify-between gap-5'></label>
+
             <div className='flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[2]'>Floor and Unit Nos:</span>
+              <span className='flex-[3]'>Floor and Unit Nos:</span>
               <div className='flex flex-[5] items-center gap-2'>
                 <input
                   className={`${inputBoxClass} !ml-0`}
@@ -437,7 +402,7 @@ export default function UnitSection({
         <div>
           <button
             className={cn(
-              'btn-rezy text-white',
+              'btn-rezy mt-10 text-white',
               '!bg-amber-500 hover:!bg-amber-600'
             )}
             onClick={() => addNewUnitCard(towerId)}

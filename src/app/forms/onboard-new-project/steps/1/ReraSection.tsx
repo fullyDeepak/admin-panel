@@ -147,7 +147,7 @@ export default function ReraSection({
           extentMax: 0,
           facing: etl.facing?.substring(0, 1) || null,
           corner: false,
-          configName: { label: etl.configName, value: etl.configName },
+          configName: etl.configName,
           configVerified: true,
           unitFloorCount: null,
           unitNos: '',
@@ -199,13 +199,6 @@ export default function ReraSection({
           options={reraProjects || []}
           isLoading={isLoadingReraProjects}
           value={null}
-          styles={{
-            menu: (baseStyles: any, _state: any) => ({
-              ...baseStyles,
-              height: '15vh',
-              overflowY: 'scroll',
-            }),
-          }}
           onChange={(
             e: SingleValue<{
               label: string;
