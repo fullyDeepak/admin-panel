@@ -36,7 +36,7 @@ export default function UnitSection({
       {unitCards && unitCards.length > 0 ? (
         unitCards.map((unitData) => (
           <div
-            className='relative my-10 space-y-3 rounded-lg bg-amber-50 p-5 pb-10 text-sm shadow-[0px_0px_3px_2px_#b7791f]'
+            className='relative my-10 space-y-1 rounded-lg bg-amber-50 p-5 pb-10 text-sm shadow-[0px_0px_3px_2px_#b7791f]'
             key={unitData.id}
           >
             <h2 className='text-xl font-semibold'>Section: Unit Card</h2>
@@ -383,32 +383,31 @@ export default function UnitSection({
               </div>
             </div>
             <label className='flex flex-wrap items-center justify-between gap-5'></label>
-            <label className='flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[2]'>Floor Nos:</span>
-              <input
-                className={inputBoxClass}
-                defaultValue={unitData.floorNos}
-                onChange={(e) =>
-                  updateUnitCard(towerId, unitData.id, {
-                    floorNos: e.target.value,
-                  })
-                }
-              />
-            </label>
-
-            <label className='flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[2]'>Unit Nos:</span>
-              <input
-                className={inputBoxClass}
-                defaultValue={unitData.unitNos}
-                onChange={(e) =>
-                  updateUnitCard(towerId, unitData.id, {
-                    unitNos: e.target.value,
-                  })
-                }
-              />
-            </label>
-
+            <div className='flex flex-wrap items-center justify-between gap-5'>
+              <span className='flex-[2]'>Floor and Unit Nos:</span>
+              <div className='flex flex-[5] items-center gap-2'>
+                <input
+                  className={`${inputBoxClass} !ml-0`}
+                  defaultValue={unitData.floorNos}
+                  onChange={(e) =>
+                    updateUnitCard(towerId, unitData.id, {
+                      floorNos: e.target.value,
+                    })
+                  }
+                  placeholder='Enter floor nos'
+                />
+                <input
+                  className={inputBoxClass}
+                  defaultValue={unitData.unitNos}
+                  onChange={(e) =>
+                    updateUnitCard(towerId, unitData.id, {
+                      unitNos: e.target.value,
+                    })
+                  }
+                  placeholder='Enter unit nos'
+                />
+              </div>
+            </div>
             <div className='absolute -bottom-4 -left-0 z-[0] flex w-full items-center'>
               <button
                 type='button'
