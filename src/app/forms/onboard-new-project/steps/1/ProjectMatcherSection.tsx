@@ -77,7 +77,7 @@ export default function ProjectMatcherSection() {
           );
         })}
       </div>
-      {formProjectETLTagData[0].suggestedDoorNumberStartsWith.length > 0 && (
+      {
         <div className='flex flex-col gap-5'>
           <span className='flex flex-[2] items-center'>
             <span>Recommended Municipal Door Numbers:</span>
@@ -97,8 +97,11 @@ export default function ProjectMatcherSection() {
               </tr>
             </thead>
             <tbody>
-              {formProjectETLTagData[0]?.suggestedDoorNumberStartsWith
-                .sort(
+              {formProjectETLTagData
+                .reduce((acc: string[], cur) => {
+                  return [...acc, ...cur.suggestedDoorNumberStartsWith];
+                }, [])
+                ?.sort(
                   (a, b) =>
                     -(parseInt(a.split(':')[2]) - parseInt(b.split(':')[2]))
                 )
@@ -118,7 +121,7 @@ export default function ProjectMatcherSection() {
             </tbody>
           </table>
         </div>
-      )}
+      }
       <div className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-wrap break-words md:text-xl'>
           Core Door Number String:{' '}

@@ -27,8 +27,9 @@ export async function fetchTempProjectDetails({
 }: Props) {
   const { onboardingData, updateOnboardingData, addTempProjectSourceData } =
     useOnboardingDataStore.getState();
-  const { setData } = useETLDataStore.getState();
+  const { setData, resetAllProjectData } = useETLDataStore.getState();
   if (e) {
+    resetAllProjectData();
     updateOnboardingData({
       selectedTempProject: e,
       selectedReraProjects: [],
@@ -40,10 +41,10 @@ export async function fetchTempProjectDetails({
     addTempProjectSourceData(e.value, tempProjectData.data.data);
     updateOnboardingData({
       mainProjectName: e.label.split(':')[1].trim(),
-      developerMasterId: tempProjectData.data.data.developers?.[0].is_jv
-        ? 'JV:' + tempProjectData.data.data.developers?.[0].jv_id?.toString()
+      developerMasterId: tempProjectData.data.data.developers?.is_jv
+        ? 'JV:' + tempProjectData.data.data.developers?.jv_id?.toString()
         : 'DEVELOPER:' +
-          tempProjectData.data.data.developers?.[0].developer_id?.toString(),
+          tempProjectData.data.data.developers?.developer_id?.toString(),
     });
     const geoData = tempProjectData.data.data.geojson_data;
     if (geoData && geoData?.length > 0) {

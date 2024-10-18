@@ -231,33 +231,35 @@ export default function Keywords() {
                   </div>
 
                   <ul className='flex flex-col gap-y-1'>
-                    {transData.parties.map((countNamesItem) => (
-                      <label
-                        key={countNamesItem.party}
-                        className='ml-3 flex flex-col'
-                      >
-                        <input
-                          type='checkbox'
-                          className='group peer'
-                          hidden
-                          name='transaction-keyword-list'
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedKeyword((prev) => [
-                                countNamesItem.party,
-                                ...prev,
-                              ]);
-                            }
-                          }}
-                        />
-                        <span className='btn btn-ghost btn-sm !block h-full max-w-[200px] flex-row justify-normal gap-0 self-start whitespace-break-spaces py-2 text-left font-normal leading-5 peer-checked:bg-green-500'>
-                          {countNamesItem.party}{' '}
-                          <span className='font-medium'>
-                            ({countNamesItem.count})
+                    {transData.parties
+                      .sort((a, b) => b.count - a.count)
+                      .map((countNamesItem) => (
+                        <label
+                          key={countNamesItem.party}
+                          className='ml-3 flex flex-col'
+                        >
+                          <input
+                            type='checkbox'
+                            className='group peer'
+                            hidden
+                            name='transaction-keyword-list'
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedKeyword((prev) => [
+                                  countNamesItem.party,
+                                  ...prev,
+                                ]);
+                              }
+                            }}
+                          />
+                          <span className='btn btn-ghost btn-sm !block h-full max-w-[200px] flex-row justify-normal gap-0 self-start whitespace-break-spaces py-2 text-left font-normal leading-5 peer-checked:bg-green-500'>
+                            {countNamesItem.party}{' '}
+                            <span className='font-medium'>
+                              ({countNamesItem.count})
+                            </span>
                           </span>
-                        </span>
-                      </label>
-                    ))}
+                        </label>
+                      ))}
                   </ul>
                 </details>
               </li>

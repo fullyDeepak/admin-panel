@@ -83,7 +83,7 @@ export interface TempProjectSourceData {
   status: any;
   display_project_type: string;
   raw_apartment_names: string[];
-  developers?: Developer[];
+  developers?: Developer;
   keywords?: Keyword[];
   party_keywords?: PartyKeyword[];
   root_docs?: RootDoc[];
