@@ -17,8 +17,7 @@ export default function Keywords() {
       value: string;
     }>
   >();
-  const { updateOnboardingData, onboardingData, tempProjectSourceData } =
-    useOnboardingDataStore();
+  const { updateOnboardingData, onboardingData } = useOnboardingDataStore();
   const { data: reraKeyWordList, isLoading: loadingReraKeywords } = useQuery({
     queryKey: ['keywords', keywordType, onboardingData.selectedReraProjects],
     queryFn: async () => {
@@ -46,7 +45,7 @@ export default function Keywords() {
     staleTime: Infinity,
     refetchOnWindowFocus: false,
   });
-  const { data: transactionKeywords, isLoading: loadingTransactionKeywords } =
+  const { data: transactionKeywords, isLoading: _loadingTransactionKeywords } =
     useQuery({
       queryKey: ['keywords', onboardingData.selectedTempProject],
       queryFn: async () => {
@@ -98,7 +97,7 @@ export default function Keywords() {
             !onboardingData.selectedTempProject &&
             !onboardingData.selectedReraProjects.length
               ? 'Select a Project First!'
-              : ''
+              : 'Select Keyword Type'
           }
         />
       </label>

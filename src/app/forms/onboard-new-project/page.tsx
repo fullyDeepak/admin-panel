@@ -2,9 +2,9 @@
 
 import { cn } from '@/lib/utils';
 import PreviewData from './PreviewData';
-import StaticDataForm from './steps/1/StaticDataForm';
-import DeveloperTagging from './steps/2/DeveloperTagging';
-import ETLForProjectSection from './steps/3/ETLForProjectSection';
+import StaticDataForm from './steps/static-data/StaticDataForm';
+import DeveloperTagging from './steps/keyword-tagging/DeveloperTagging';
+import ETLForProjectSection from './steps/project-etl-data/ETLForProjectSection';
 import GeoData from './steps/geo-data/GeoData';
 import TowerPage from './steps/tower-unit/TowerPage';
 import StepsUI from './StepsUI';

@@ -2,7 +2,6 @@
 
 import { MasterDevelopers } from '@/components/dropdowns/MasterDevelopers';
 import React, { useState } from 'react';
-import Keywords from './Keywords';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
@@ -112,12 +111,6 @@ export default function DeveloperTagging() {
   return (
     <>
       <div className='mx-auto mt-10 flex w-full flex-col'>
-        <h2 className='self-center text-2xl md:text-3xl'>Keyword Tagger</h2>
-        <div className='z-10 mt-5 flex min-h-screen w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none md:max-w-[80%] md:p-10 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
-          {/* 1 Keyword Tagger to Tag Landlord and Developer Keywords*/}
-          {/* Show Keywords from TM | RERA || mapped */}
-          <Keywords />
-        </div>
         <h2 className='mt-10 self-center text-2xl md:text-3xl'>
           Tag Root Docs
         </h2>
@@ -139,9 +132,9 @@ export default function DeveloperTagging() {
           </div>
 
           {/* Free From attacher based on village/survey/plot input : /onboarding/root_docs/free-doc-search */}
-
+          {/* 
           <input type='text' />
-          <input type='text' />
+          <input type='text' /> */}
         </div>
       </div>
     </>

@@ -140,7 +140,7 @@ export default function StaticDataForm() {
     staleTime: Infinity,
   });
   const { data: _reraForTemp } = useQuery({
-    queryKey: ['reraProjects', onboardingData.selectedTempProject],
+    queryKey: ['reraForTempProjects', onboardingData.selectedTempProject],
     queryFn: async () => {
       if (!onboardingData.selectedTempProject) return [];
       const res = await axiosClient.get<{
