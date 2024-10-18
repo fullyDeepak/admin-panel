@@ -47,6 +47,9 @@ export default function ReraSection({
         plot_number: string;
         rera_id: string;
         developer_name: string;
+        master_developer_id: number | null;
+        jv_id: number | null;
+        is_jv: boolean;
         tower_count: number;
         tower_id: string;
         tower_name: string;
@@ -77,7 +80,9 @@ export default function ReraSection({
     });
 
     const data = response.data.data;
-    const developers = uniq(data.map((item) => item.developer_name));
+    const master_developer_id = data[0].master_developer_id;
+    const is_jv = data[0].is_jv;
+    const jv_id = data[0].jv_id;
     let projectSubType = { value: '', label: '' };
     let projectType = { value: '', label: '' };
     if (
@@ -119,6 +124,9 @@ export default function ReraSection({
       suggestedSurvey: uniq(data.map((item) => item.survey_number)),
       projectType: projectType,
       projectSubType: projectSubType,
+      developerMasterId: is_jv
+        ? 'JV:' + jv_id?.toString()
+        : 'DEVELOPER:' + master_developer_id?.toString(),
     });
 
     const phases: Record<number, number> = {};
@@ -219,6 +227,22 @@ export default function ReraSection({
                   (ele) => ele.value
                 ),
               });
+              if (onboardingData.projectSourceType === 'RERA') {
+                updateOnboardingData({
+                  mainProjectName: uniqBy(
+                    [
+                      ...onboardingData.selectedReraProjects,
+                      {
+                        label: e.label,
+                        value: e.value,
+                      },
+                    ],
+                    (ele) => ele.value
+                  )[0]
+                    .label.split(':')[1]
+                    .trim(),
+                });
+              }
             }
           }}
           isDisabled={Boolean(!onboardingData.projectSourceType)}
@@ -270,6 +294,17 @@ export default function ReraSection({
                         onboardingData.selectedReraProjects.filter(
                           (item) => item.value !== e.value
                         ),
+                      mainProjectName:
+                        onboardingData.projectSourceType === 'RERA'
+                          ? uniqBy(
+                              onboardingData.selectedReraProjects.filter(
+                                (item) => item.value !== e.value
+                              ),
+                              (ele) => ele.value
+                            )?.[0]
+                              ?.label.split(':')[1]
+                              .trim() || ''
+                          : onboardingData.mainProjectName,
                     });
                     // remove recommended projects
                     // change main project name

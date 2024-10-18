@@ -67,6 +67,7 @@ export interface OnboardingDataType {
   coreDoorNumberString: string;
   suggestedSurvey: string[];
   suggestedPlot: string[];
+  developerMasterId: string | null;
 }
 
 export interface TempProjectSourceData {
@@ -201,6 +202,7 @@ const INITIAL_STATE: OnboardingDataType = {
   coreDoorNumberString: '',
   suggestedSurvey: [],
   suggestedPlot: [],
+  developerMasterId: null,
 };
 
 export const useOnboardingDataStore = create<Store>()(

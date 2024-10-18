@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
 import { Props } from 'react-select';
-export function MasterDevelopers(props: Props) {
+export function MasterDevelopers(props: Props & { SetValue: string | null }) {
   const { data: masterDevelopers, isLoading: loadingMasterDevelopers } =
     useQuery({
       queryKey: ['master-developers'],
@@ -32,7 +32,9 @@ export function MasterDevelopers(props: Props) {
         key={'masterDeveloperSelector'}
         options={masterDevelopers || []}
         isLoading={loadingMasterDevelopers}
-        {...props}
+        onChange={props.onChange}
+        value={masterDevelopers?.find((ele) => ele.value === props.SetValue)}
+        className={props.className}
       />
     </>
   );

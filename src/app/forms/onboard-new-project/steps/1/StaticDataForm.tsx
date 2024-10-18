@@ -11,6 +11,7 @@ import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import ProjectMatcherSection from './ProjectMatcherSection';
 import ReraSection from './ReraSection';
 import { fetchTempProjectDetails } from './utils';
+import { MasterDevelopers } from '@/components/dropdowns/MasterDevelopers';
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
@@ -132,7 +133,7 @@ export default function StaticDataForm() {
       return res.data.data
         .sort((a, b) => b.unit_count - a.unit_count)
         .map((e) => ({
-          label: `${e.id}:${e.project_name} (${e.unit_count})`,
+          label: `${e.id}:${e.project_name} : (${e.unit_count})`,
           value: e.id,
         }));
     },
@@ -403,6 +404,24 @@ export default function StaticDataForm() {
       </label>
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-wrap break-words md:text-xl'>
+          Developer :{' '}
+        </span>
+        <MasterDevelopers
+          className='w-full flex-[5]'
+          SetValue={onboardingData.developerMasterId}
+          onChange={(e) => {
+            updateOnboardingData({
+              developerMasterId: (
+                e as SingleValue<{ label: string; value: string }>
+              )?.value,
+            });
+          }}
+          isDisabled={!onboardingData.projectSourceType}
+        />
+      </label>
+
+      <label className='flex items-center justify-between gap-5'>
+        <span className='flex-[2] text-wrap break-words md:text-xl'>
           Layout / Micromarket Tags :{' '}
         </span>
         <CreatableSelect
@@ -427,6 +446,7 @@ export default function StaticDataForm() {
               }[], //? to fix type error since it thinks it is readonly
             });
           }}
+          isDisabled={!onboardingData.projectSourceType}
         />
       </label>
       <label className='flex items-center justify-between gap-5'>
@@ -454,6 +474,7 @@ export default function StaticDataForm() {
               }[], //? to fix type error since it thinks it is readonly
             });
           }}
+          isDisabled={!onboardingData.projectSourceType}
         />
       </label>
 
@@ -552,6 +573,7 @@ export default function StaticDataForm() {
               }[], //? to fix type error since it thinks it is readonly
             });
           }}
+          isDisabled={!onboardingData.projectSourceType}
         />
       </label>
       {onboardingData.amenities.find((ele) =>

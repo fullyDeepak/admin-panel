@@ -16,13 +16,13 @@ export default function Keywords() {
       label: string;
       value: string;
     }>
-  >({ label: 'Select Keyword Type', value: '' });
+  >();
   const { updateOnboardingData, onboardingData, tempProjectSourceData } =
     useOnboardingDataStore();
   const { data: reraKeyWordList, isLoading: loadingReraKeywords } = useQuery({
     queryKey: ['keywords', keywordType, onboardingData.selectedReraProjects],
     queryFn: async () => {
-      if (!keywordType || onboardingData.selectedTempProject) {
+      if (!keywordType?.value || onboardingData.selectedTempProject) {
         return undefined;
       }
       const data = {
@@ -60,8 +60,26 @@ export default function Keywords() {
             { label: 'Landlord', value: 'landlord' },
             { label: 'Developer', value: 'developer' },
           ]}
-          value={keywordType}
+          value={
+            !onboardingData.selectedTempProject &&
+            !onboardingData.selectedReraProjects.length
+              ? keywordType
+              : {
+                  label: 'Select Keyword Type',
+                  value: '',
+                }
+          }
           onChange={(e) => setKeywordType(e)}
+          isDisabled={
+            !onboardingData.selectedTempProject &&
+            !onboardingData.selectedReraProjects.length
+          }
+          placeholder={
+            !onboardingData.selectedTempProject &&
+            !onboardingData.selectedReraProjects.length
+              ? 'Select a Project First!'
+              : ''
+          }
         />
       </label>
       {loadingReraKeywords && (
