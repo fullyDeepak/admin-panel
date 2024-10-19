@@ -58,8 +58,11 @@ export interface OnboardingDataType {
     label: string;
     value: string;
   } | null;
-  landlordKeywords: string[];
-  developerKeywords: string[];
+  taggedKeywords: {
+    party: string;
+    keyword_type: 'developer' | 'landlord';
+    removed: boolean;
+  }[];
   clubhouse_area: string;
   mapData: ProjectCordWithinVillage['data'] | null;
   mapInputValue: string;
@@ -156,6 +159,13 @@ interface Actions {
     _projectId: string,
     _newData: TempProjectSourceData
   ) => void;
+  setTaggedKeywords: (
+    _newDetails: {
+      party: string;
+      keyword_type: 'developer' | 'landlord';
+      removed: boolean;
+    }[]
+  ) => void;
 }
 
 interface Store extends Actions {
@@ -192,8 +202,7 @@ const INITIAL_STATE: OnboardingDataType = {
   houseMasterLocalities: [],
   core_door_number_string: '',
   keywordType: null,
-  landlordKeywords: [],
-  developerKeywords: [],
+  taggedKeywords: [],
   amenities: [],
   clubhouse_area: '',
   mapData: [],
@@ -246,8 +255,7 @@ export const useOnboardingDataStore = create<Store>()(
           houseMasterLocalities: [],
           core_door_number_string: '',
           keywordType: null,
-          landlordKeywords: [],
-          developerKeywords: [],
+          taggedKeywords: [],
           amenities: [],
           clubhouse_area: '',
           mapData: [],
@@ -256,5 +264,9 @@ export const useOnboardingDataStore = create<Store>()(
         },
         tempProjectSourceData: {},
       })),
+    setTaggedKeywords: (newDetails) =>
+      set((prev) => {
+        prev.onboardingData.taggedKeywords = newDetails;
+      }),
   }))
 );
