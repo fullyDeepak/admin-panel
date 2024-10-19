@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useImageFormStore } from './useImageFormStore';
 import { useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 
 type PreviewDocType = {
   previewDocsData: {
@@ -60,6 +61,40 @@ export default function PreviewDocs({
       setLoading(false);
     }
   }
+
+  async function setAsPrimary() {
+    setLoading(true);
+    try {
+      const data = {
+        project_id: previewDocsData.project_id,
+        s3_path: previewDocsData.s3_path,
+      };
+      toast.promise(
+        axiosClient.put('/forms/imgTag/project', data),
+        {
+          loading: 'Setting as primary...',
+          success: () => {
+            setLoading(false);
+            setShowModal(false);
+            (
+              document.getElementById('preview-modal') as HTMLDialogElement
+            ).close();
+            setShowModal(false);
+
+            return 'Primary set successfully.';
+          },
+          error: 'Something went wrong',
+        },
+        {
+          success: {
+            duration: 10000,
+          },
+        }
+      );
+    } catch (error) {
+      setLoading(false);
+    }
+  }
   return (
     <>
       <dialog id={'preview-modal'} className='modal'>
@@ -94,8 +129,8 @@ export default function PreviewDocs({
             <button
               className={`btn-rezy ${loading ? '!text-gray-600' : '!text-white'} btn !rounded-full`}
               onClick={() => {
-                const choise = confirm('Are you sure?');
-                if (choise) {
+                const choice = confirm('Are you cure?');
+                if (choice) {
                   deleteDoc();
                 }
               }}
@@ -104,6 +139,20 @@ export default function PreviewDocs({
             >
               {loading ? 'deleting...' : 'Delete'}
             </button>
+            {previewDocsData.doc_type === 'project_image' && (
+              <button
+                className={`btn-rezy ${loading ? '!text-gray-600' : '!text-white'} btn !rounded-full`}
+                onClick={() => {
+                  const choice = confirm('Are you sure?');
+                  if (choice) {
+                    setAsPrimary();
+                  }
+                }}
+                type='button'
+              >
+                Set as Primary
+              </button>
+            )}
           </div>
           {previewDocsData.file_type === 'pdf' && (
             <iframe
