@@ -1,13 +1,12 @@
 'use client';
 
-import { MasterDevelopers } from '@/components/dropdowns/MasterDevelopers';
 import React, { useState } from 'react';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
-import { DocAttachTable } from './DocAttachTable';
 import { createColumnHelper } from '@tanstack/react-table';
 import TanstackReactTable from './Table';
+import { DocAttachTable } from '../keyword-tagging/DocAttachTable';
 
 const columnHelper = createColumnHelper<{
   execution_date: string;
