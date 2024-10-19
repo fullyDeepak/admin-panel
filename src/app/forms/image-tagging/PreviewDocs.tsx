@@ -4,6 +4,8 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import { useImageFormStore } from './useImageFormStore';
 import { useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { HeartIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type PreviewDocType = {
   previewDocsData: {
@@ -81,7 +83,7 @@ export default function PreviewDocs({
             ).close();
             setShowModal(false);
 
-            return 'Primary set successfully.';
+            return 'Marked as Primary.';
           },
           error: 'Something went wrong',
         },
@@ -141,7 +143,7 @@ export default function PreviewDocs({
             </button>
             {previewDocsData.doc_type === 'project_image' && (
               <button
-                className={`btn-rezy ${loading ? '!text-gray-600' : '!text-white'} btn !rounded-full`}
+                className={cn('btn btn-circle text-rose-600')}
                 onClick={() => {
                   const choice = confirm('Are you sure?');
                   if (choice) {
@@ -150,7 +152,7 @@ export default function PreviewDocs({
                 }}
                 type='button'
               >
-                Set as Primary
+                <HeartIcon className='fill-rose-300' />
               </button>
             )}
           </div>
