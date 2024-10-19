@@ -4,8 +4,11 @@ import Select from 'react-select';
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { nanoid } from 'nanoid';
 import { BiCopy } from 'react-icons/bi';
-import UnitSection from './UnitSection';
-import { useTowerUnitStore } from '../../useTowerUnitStore';
+// import UnitSection from './UnitSection';
+import {
+  TowerUnitDetailType,
+  useTowerUnitStore,
+} from '../../useTowerUnitStore';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Minus, Plus } from 'lucide-react';
@@ -15,95 +18,58 @@ import axiosClient from '@/utils/AxiosClient';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import toast from 'react-hot-toast';
 
-const reraRefTableColumns: ColumnDef<object, any>[] = [
+const hmRefTableColumns: ColumnDef<object, any>[] = [
   {
-    accessorKey: 'tower_id',
-    header: 'Tower Id',
-    cell: ({ row }) => <p className='w-[100px]'>{row.getValue('tower_id')}</p>,
-  },
-  {
-    header: 'Unit Count',
-    accessorKey: 'unit_count',
-  },
-  {
-    header: 'Floor List',
+    accessorKey: 'tower_name',
+    header: 'Tower Name',
     cell: ({ row }) => (
-      <p className='whitespace-break-spaces text-pretty text-justify text-xs'>
-        {row.getValue('floor_list')}
-      </p>
+      <p className='w-[100px]'>{row.getValue('tower_name')}</p>
     ),
-    accessorKey: 'floor_list',
-  },
-  {
-    header: 'Unit Type',
-    accessorKey: 'unit_type',
-    cell: ({ row }) => (
-      <p className='w-full whitespace-break-spaces text-justify text-xs tabular-nums'>
-        {row.getValue('unit_type')}
-      </p>
-    ),
-  },
-  {
-    header: 'Unit Number',
-    accessorKey: 'unit_numbers',
-    cell: ({ row }) => (
-      <p className='w-full whitespace-break-spaces text-justify text-xs tabular-nums'>
-        {row.getValue('unit_numbers')}
-      </p>
-    ),
-  },
-];
-const tmRefTableColumns: ColumnDef<object, any>[] = [
-  {
-    accessorKey: 'apt_name',
-    header: 'Apt name',
-    cell: ({ row }) => <p className='w-[100px]'>{row.getValue('apt_name')}</p>,
-  },
-  {
-    header: 'Unit Type',
-    accessorKey: 'unit_type',
   },
   {
     header: 'Freq',
     accessorKey: 'freq',
   },
   {
-    header: 'Floors',
+    header: 'Unit Numbers',
     cell: ({ row }) => (
       <p className='whitespace-break-spaces text-pretty text-justify text-xs'>
-        {row.getValue('floors')}
-      </p>
-    ),
-    accessorKey: 'floors',
-  },
-  {
-    header: 'Unit Numbers',
-    accessorKey: 'unit_numbers',
-    cell: ({ row }) => (
-      <p className='w-full whitespace-break-spaces text-justify text-xs tabular-nums'>
         {row.getValue('unit_numbers')}
       </p>
     ),
+    accessorKey: 'unit_numbers',
+  },
+];
+const tmRefTableColumns: ColumnDef<object, any>[] = [
+  {
+    accessorKey: 'apt_name',
+    header: 'Apt name',
+    cell: ({ row }) => <p className='w-[150px]'>{row.getValue('apt_name')}</p>,
+  },
+  {
+    header: 'Freq',
+    accessorKey: 'freq',
+    cell: ({ row }) => <p className='w-[50px]'>{row.getValue('freq')}</p>,
   },
 ];
 
 export default function TowerPage() {
   const {
-    copyUnitCard,
-    addNewUnitCard,
-    updateUnitCard,
+    // copyUnitCard,
+    // addNewUnitCard,
+    // updateUnitCard,
     updateTowerFormData,
     towerFormData,
     addNewTowerCard,
     deleteTowerCard,
     setTowerFormData,
-    deleteUnitCard,
+    // deleteUnitCard,
     setExistingUnitTypeOption,
-    reraRefTable,
+    hmRefTable,
     duplicateTowerCard,
     tmRefTable,
     updateTMRefTable,
-    updateReraRefTable,
+    updateHMRefTable,
   } = useTowerUnitStore();
   const [towerCardCount, setTowerCardCount] = useState<number>(0);
   const { onboardingData } = useOnboardingDataStore();
@@ -144,55 +110,86 @@ export default function TowerPage() {
       {
         loading: 'Fetching TM Ref Table...',
         success: (data) => {
-          updateTMRefTable(
-            data.data.data.map((item) => ({
-              apt_name: item.apt_name,
-              unit_type: item.unit_type,
-              freq: item.count,
-              floors: item.floors ? item.floors?.join(', ') : 'N/A',
-              unit_numbers: item.unit_numbers
-                ? item.unit_numbers?.join(', ')
-                : 'N/A',
-            }))
-          );
+          const tableData = data.data.data.map((item) => ({
+            apt_name: item.apt_name,
+            unit_type: item.unit_type,
+            freq: item.count,
+            floors: item.floors ? item.floors?.join(', ') : 'N/A',
+            unit_numbers: item.unit_numbers
+              ? item.unit_numbers?.join(', ')
+              : 'N/A',
+          }));
+          tableData.sort((a, b) => {
+            if (+a.freq > +b.freq) {
+              return -1;
+            }
+            if (+a.freq < +b.freq) {
+              return 1;
+            }
+            return 0;
+          });
+          updateTMRefTable(tableData);
           return 'TM Ref Table fetched';
         },
         error: 'Error',
       },
-      { duration: 5000 }
+      { duration: 8000 }
     );
 
-    const reraProjectTypeRes = axiosClient.get<{
+    const hmProjectTypeRes = axiosClient.get<{
       data: {
-        tower_id: string;
-        unit_count: number;
-        floor_list: number[];
-        unit_type: { built: number; unit_type: string }[];
-        unit_numbers: number[] | null;
+        tower_name: string;
+        freq: string;
+        house_nos: string[];
+        pattern: string;
       }[];
-    }>('/forms/rera/getReraUnitType', {
-      params: { projectIds: JSON.stringify(selectedProjectIds) },
+    }>('/forms/hmReferenceTable', {
+      params: {
+        strings: encodeURIComponent(
+          JSON.stringify(
+            onboardingData.coreDoorNumberStrings.map((item) => item + '%')
+          )
+        ),
+      },
     });
 
     toast.promise(
-      reraProjectTypeRes,
+      hmProjectTypeRes,
       {
-        loading: 'Fetching Rera Ref Table...',
-        success: (data) => {
-          updateReraRefTable(
-            data.data.data.map((item) => ({
-              tower_id: item.tower_id,
-              unit_count: item.unit_count,
-              floor_list: item.floor_list.join(', '),
-              unit_type: item.unit_type
-                .map((unit) => unit.unit_type)
-                .join(', '),
-              unit_numbers: item.unit_numbers
-                ? item.unit_numbers?.join(', ')
-                : 'N/A',
-            }))
+        loading: 'Fetching HM Ref Table...',
+        success: ({ data }) => {
+          const towerCardData: TowerUnitDetailType[] = [];
+          updateHMRefTable(
+            data.data.map((item, idx) => {
+              const unit_numbers: string[] = [];
+              item.house_nos.map((house_no) => {
+                unit_numbers.push(house_no.split('/').pop() || '');
+              });
+              towerCardData.push({
+                id: idx + 1,
+                projectPhase: 1,
+                reraId: '',
+                towerType: null,
+                singleUnit: false,
+                displayTowerType: null,
+                reraTowerId: '',
+                towerNameETL: item.tower_name,
+                towerNameDisplay: item.tower_name,
+                towerDoorNoString:
+                  item.pattern.replace('%', '') + item.tower_name + '/{UUU}',
+                unitCards: [],
+              });
+              return {
+                tower_name: item.tower_name,
+                freq: +item.freq,
+                unit_numbers: unit_numbers.join(', '),
+              };
+            })
           );
-          return 'Rera Ref Table fetched';
+          if (selectedProjectIds.length === 0) {
+            setTowerFormData(towerCardData);
+          }
+          return 'HM Ref Table fetched';
         },
         error: 'Error',
       },
@@ -246,12 +243,14 @@ export default function TowerPage() {
         className='btn-rezy my-4 self-center'
         onClick={() => fetchRefTables()}
       >
-        Fetch Rera and TM Ref Table
+        {onboardingData.selectedReraProjects.length
+          ? 'Fetch Only TM & HM Ref Tables'
+          : 'Fetch TM & HM Ref and Tower Cards'}
       </button>
 
       <div className='flex gap-2'>
         {tmRefTable && tmRefTable.length > 0 && (
-          <div className='sticky top-0 max-h-screen flex-1 overflow-x-auto overflow-y-auto rounded-lg border-2'>
+          <div className='flex- sticky top-1 max-h-[99dvh] overflow-x-auto overflow-y-auto rounded-lg border-2'>
             <p className='mt-2 text-center text-2xl font-semibold'>
               TM Ref Table
             </p>
@@ -265,7 +264,7 @@ export default function TowerPage() {
           </div>
         )}
 
-        <div className='flex-1'>
+        <div className='flex-[2]'>
           {towerFormData.map((tower) => (
             <div
               className='tower-card-container relative z-0 flex flex-col transition-all duration-1000'
@@ -434,26 +433,26 @@ export default function TowerPage() {
                     <BiCopy size={30} /> <span>Duplicate</span>
                   </button>
                 </div>
-                <UnitSection
+                {/* <UnitSection
                   unitCards={tower.unitCards}
                   updateUnitCard={updateUnitCard}
                   towerId={tower.id}
                   copyUnitCard={copyUnitCard}
                   addNewUnitCard={addNewUnitCard}
                   deleteUnitCard={deleteUnitCard}
-                />
+                /> */}
               </div>
             </div>
           ))}
         </div>
-        {reraRefTable && reraRefTable.length > 0 && (
-          <div className='sticky top-0 max-h-screen flex-1 overflow-x-auto overflow-y-auto rounded-lg border-2'>
+        {hmRefTable && hmRefTable.length > 0 && (
+          <div className='sticky top-0 max-h-screen flex-[2] overflow-x-auto overflow-y-auto rounded-lg border-2'>
             <p className='mt-2 text-center text-2xl font-semibold'>
-              Rera Ref Table
+              HM Ref Table
             </p>
             <TanstackReactTable
-              data={reraRefTable}
-              columns={reraRefTableColumns}
+              data={hmRefTable}
+              columns={hmRefTableColumns}
               showPagination={false}
               enableSearch={false}
               showAllRows={true}

@@ -77,11 +77,9 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
     ],
   },
 ];
-export type ReraRefTable = {
-  tower_id: string;
-  unit_count: number;
-  floor_list: string;
-  unit_type: string;
+export type HmRefTable = {
+  tower_name: string;
+  freq: number;
   unit_numbers: string;
 };
 
@@ -94,9 +92,9 @@ export type TMRefTable = {
 };
 type Store = {
   towerFormData: TowerUnitDetailType[];
-  reraRefTable: ReraRefTable[];
+  hmRefTable: HmRefTable[];
   tmRefTable: TMRefTable[];
-  updateReraRefTable: (_data: ReraRefTable[]) => void;
+  updateHMRefTable: (_data: HmRefTable[]) => void;
   updateTMRefTable: (_data: TMRefTable[]) => void;
   existingUnitTypeOption: SingleValue<{
     label: string;
@@ -129,9 +127,9 @@ type Store = {
 export const useTowerUnitStore = create<Store>()(
   immer((set) => ({
     towerFormData: INITIAL_STATE,
-    reraRefTable: [] as ReraRefTable[],
+    hmRefTable: [] as HmRefTable[],
     tmRefTable: [] as TMRefTable[],
-    updateReraRefTable: (data) => set({ reraRefTable: data }),
+    updateHMRefTable: (data) => set({ hmRefTable: data }),
     existingUnitTypeOption: [] as SingleValue<{
       label: string;
       value: string;
