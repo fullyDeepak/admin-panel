@@ -122,6 +122,7 @@ type Store = {
   copyUnitCard: (_towerCardId: number, _newDetails: UnitCardType) => void;
   addNewUnitCard: (_towerCardId: number) => void;
   deleteUnitCard: (_towerCardId: number, _unitCardId: number) => void;
+  resetTowerUnitStore: () => void;
 };
 
 export const useTowerUnitStore = create<Store>()(
@@ -251,6 +252,13 @@ export const useTowerUnitStore = create<Store>()(
             ].unitCards.filter((unitCard) => unitCard.id !== unitCardId);
           }
         }
+      }),
+    resetTowerUnitStore: () =>
+      set({
+        towerFormData: INITIAL_STATE,
+        hmRefTable: [],
+        tmRefTable: [],
+        existingUnitTypeOption: [],
       }),
   }))
 );

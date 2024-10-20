@@ -6,6 +6,8 @@ import {
 import { Dispatch, SetStateAction } from 'react';
 import axiosClient from '@/utils/AxiosClient';
 import useETLDataStore from '../../useETLDataStore';
+import { useTowerUnitStore } from '../../useTowerUnitStore';
+import { useImageStore } from '../../useImageStore';
 
 type Props = {
   e: SingleValue<{ label: string; value: string }>;
@@ -32,8 +34,12 @@ export async function fetchTempProjectDetails({
     resetData,
   } = useOnboardingDataStore.getState();
   const { setData, resetAllProjectData } = useETLDataStore.getState();
+  const { resetTowerUnitStore } = useTowerUnitStore.getState();
+  const { resetImageStore } = useImageStore.getState();
   if (e) {
     resetAllProjectData();
+    resetTowerUnitStore();
+    resetImageStore();
     updateOnboardingData({
       selectedTempProject: e,
       selectedReraProjects: [],
@@ -163,5 +169,7 @@ export async function fetchTempProjectDetails({
     resetData();
     setReraForTempProjects({});
     resetAllProjectData();
+    resetImageStore();
+    resetTowerUnitStore();
   }
 }

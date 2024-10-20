@@ -177,7 +177,7 @@ interface Store extends Actions {
     'Root Doc Tagging',
     'ETL For Project',
     'Tower - Unit',
-    'HM Matcher',
+    'Image Tagging',
     'Preview',
   ];
   currentFormStep: Store['formStepsList'][number];
@@ -226,7 +226,7 @@ export const useOnboardingDataStore = create<Store>()(
       'Root Doc Tagging',
       'ETL For Project',
       'Tower - Unit',
-      'HM Matcher',
+      'Image Tagging',
       'Preview',
     ] as Store['formStepsList'],
     tempProjectSourceData: {},
