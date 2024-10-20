@@ -179,7 +179,7 @@ export default function TowerPage() {
                 towerNameETL: item.tower_name,
                 towerNameDisplay: item.tower_name,
                 towerDoorNoString:
-                  item.pattern.replace('%', '') + item.tower_name + '/{F}{UUU}',
+                  item.pattern.replace('%', '') + item.tower_name + '/{F}{UU}',
                 unitCards: [],
               });
               return {
