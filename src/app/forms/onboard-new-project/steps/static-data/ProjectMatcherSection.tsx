@@ -78,6 +78,7 @@ export default function ProjectMatcherSection() {
           value={null}
         />
       </div>
+
       <div className='flex flex-wrap gap-2'>
         Selected Localities:{' '}
         {onboardingData.houseMasterLocalities.map((item) => {
@@ -99,6 +100,23 @@ export default function ProjectMatcherSection() {
           );
         })}
       </div>
+      <div className='flex items-center justify-between gap-5'>
+        <span className='flex-[2] text-wrap break-words md:text-xl'>
+          Core Door Number String:{' '}
+        </span>
+        <ChipInput
+          chips={onboardingData.coreDoorNumberStrings}
+          updateFormData={(id, key, val) => {
+            updateOnboardingData({
+              coreDoorNumberStrings: val,
+            });
+            console.log(id, key, val);
+            updateProjectETLTagData(id, key, val);
+          }}
+          updateId={1}
+          updateKey='doorNoStartWith'
+        />
+      </div>
       <div className='flex select-none flex-col gap-5'>
         <span className='flex flex-[2] items-center'>
           <span>Recommended Localities And Door Numbers:</span>
@@ -106,7 +124,7 @@ export default function ProjectMatcherSection() {
 
         <div className='max-h-[500px] overflow-y-scroll'>
           <table className='relative w-full border-collapse bg-white text-gray-700'>
-            <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50 ring-1 ring-slate-200'>
+            <thead className='sticky top-0 text-nowrap bg-gray-50 ring-1 ring-slate-200'>
               <tr>
                 <th className='text-nowrap px-6 py-4 text-center font-semibold text-gray-900'>
                   Door No.
@@ -215,24 +233,6 @@ export default function ProjectMatcherSection() {
             </tbody>
           </table>
         </div>
-      </div>
-
-      <div className='flex items-center justify-between gap-5'>
-        <span className='flex-[2] text-wrap break-words md:text-xl'>
-          Core Door Number String:{' '}
-        </span>
-        <ChipInput
-          chips={onboardingData.coreDoorNumberStrings}
-          updateFormData={(id, key, val) => {
-            updateOnboardingData({
-              coreDoorNumberStrings: val,
-            });
-            console.log(id, key, val);
-            updateProjectETLTagData(id, key, val);
-          }}
-          updateId={1}
-          updateKey='doorNoStartWith'
-        />
       </div>
     </>
   );

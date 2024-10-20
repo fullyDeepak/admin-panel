@@ -122,6 +122,13 @@ export async function fetchTempProjectDetails({
         ],
       });
     }
+    const plotsToFill = tempProjectData.data.data.keywords
+      ?.filter((ele) => ele.keyword_type === 'PLOT_EQUALS' && ele.is_attached)
+      .map((ele) => ele.keyword.split('|'))
+      .reduce(
+        (acc, val) => acc.concat(val.filter((ele) => ele !== 'NULL')),
+        []
+      );
     setData([
       {
         id: 1,
@@ -129,8 +136,7 @@ export async function fetchTempProjectDetails({
           (ele) => ele.value === onboardingData.selectedVillage?.value
         ),
         docId: [],
-        rootDocs:
-          tempProjectData.data.data.root_docs?.map((item) => item.doc_id) || [],
+        rootDocs: [],
         apartmentContains: tempProjectData.data.data.raw_apartment_names,
         aptNameNotContains: [],
         aptSurveyPlotDetails: false,
@@ -156,12 +162,7 @@ export async function fetchTempProjectDetails({
             )
             .map((ele) => ele.keyword.split('|'))
             .reduce((acc, val) => acc.concat(val), []) || [],
-        plotEquals: tempProjectData.data.data.keywords
-          ?.filter(
-            (ele) => ele.keyword_type === 'PLOT_EQUALS' && ele.is_attached
-          )
-          .map((ele) => ele.keyword.split('|'))
-          .reduce((acc, val) => acc.concat(val), []) || ['NULL'],
+        plotEquals: plotsToFill?.length ? plotsToFill : ['NULL'],
       },
     ]);
   } else {

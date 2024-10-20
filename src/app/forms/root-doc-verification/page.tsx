@@ -597,7 +597,9 @@ export default function Page() {
                           onChange={(e) => {
                             setRootDocOptions((prev) => {
                               return prev.map((ele, i) => {
-                                if (i === index) {
+                                if (
+                                  ele.doc_id_schedule === item.doc_id_schedule
+                                ) {
                                   return {
                                     ...ele,
                                     project_attached: e.target.checked,

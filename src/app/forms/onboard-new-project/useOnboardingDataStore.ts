@@ -71,6 +71,20 @@ export interface OnboardingDataType {
   suggestedSurvey: string[];
   suggestedPlot: string[];
   developerMasterId: string | null;
+  developmentAgreements: {
+    execution_date: Date;
+    linked_docs: string;
+    project_id: string;
+    doc_id: string;
+    deed_type: string;
+    occurrence_count: string;
+    cp1: string;
+    cp2: string;
+    extent: string;
+    area_attached: boolean;
+    doc_id_schedule: string;
+    project_attached: boolean;
+  }[];
 }
 
 export interface TempProjectSourceData {
@@ -213,6 +227,7 @@ const INITIAL_STATE: OnboardingDataType = {
   suggestedSurvey: [],
   suggestedPlot: [],
   developerMasterId: null,
+  developmentAgreements: [],
 };
 
 export const useOnboardingDataStore = create<Store>()(
@@ -263,6 +278,7 @@ export const useOnboardingDataStore = create<Store>()(
           mapData: [],
           mapInputValue: '',
           developerMasterId: null,
+          developmentAgreements: [],
         },
         tempProjectSourceData: {},
       })),

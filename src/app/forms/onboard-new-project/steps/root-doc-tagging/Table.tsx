@@ -13,7 +13,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { HTMLProps, useEffect, useRef, useState } from 'react';
-import { GoArrowDown, GoArrowSwitch, GoArrowUp } from 'react-icons/go';
+import { GoArrowDown, GoArrowSwitch, GoArrowUp, GoTrash } from 'react-icons/go';
 import {
   MdOutlineFirstPage,
   MdOutlineLastPage,
@@ -25,111 +25,21 @@ interface TableProps<TData> {
   data: TData[];
   columns: ColumnDef<TData, any>[];
   showPagination?: boolean;
-  enableSearch?: boolean;
-  setSelectedRows: (_data: TData[]) => void;
-  rowSelection: { [id: string]: boolean };
-  setRowSelection: OnChangeFn<RowSelectionState>;
-  isMultiSelection?: boolean;
-}
-
-function IndeterminateCheckbox({
-  indeterminate,
-  isRadio = false,
-  ...rest
-}: {
-  indeterminate?: boolean;
-  isRadio?: boolean;
-} & HTMLProps<HTMLInputElement>) {
-  const ref = useRef<HTMLInputElement>(null!);
-
-  useEffect(() => {
-    if (typeof indeterminate === 'boolean') {
-      ref.current.indeterminate = !rest.checked && indeterminate;
-    }
-  }, [ref, indeterminate]);
-
-  return (
-    <>
-      {isRadio ? (
-        <input
-          type='radio'
-          ref={ref}
-          className='radio cursor-pointer'
-          {...rest}
-        />
-      ) : (
-        <input
-          type='checkbox'
-          name='row-selector-box'
-          ref={ref}
-          className='checkbox cursor-pointer'
-          {...rest}
-        />
-      )}
-    </>
-  );
+  // setSelectedRows: (_data: TData[]) => void;
+  // a set state function to update the source data
+  // updateSourceData?: (data: TData[]) => void;
 }
 
 export default function TanstackReactTable<TData>({
   data,
   columns,
   showPagination = true,
-  setSelectedRows,
-  rowSelection,
-  setRowSelection,
-  isMultiSelection = true,
+  // setSelectedRows,
+  // updateSourceData,
 }: TableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const newColumn: ColumnDef<TData, any>[] = [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <>
-          <div className='px-1'>
-            {isMultiSelection ? (
-              <IndeterminateCheckbox
-                {...{
-                  checked: table.getIsAllRowsSelected(),
-                  indeterminate: table.getIsSomeRowsSelected(),
-                  onChange: table.getToggleAllRowsSelectedHandler(),
-                }}
-              />
-            ) : (
-              <>Choose</>
-            )}
-          </div>
-        </>
-      ),
-      cell: ({ row }) => (
-        <>
-          <div className='px-1'>
-            {isMultiSelection ? (
-              <IndeterminateCheckbox
-                {...{
-                  checked: row.getIsSelected(),
-                  disabled: !row.getCanSelect(),
-                  indeterminate: row.getIsSomeSelected(),
-                  onChange: row.getToggleSelectedHandler(),
-                }}
-              />
-            ) : (
-              <IndeterminateCheckbox
-                isRadio={true}
-                {...{
-                  checked: row.getIsSelected(),
-                  disabled: !row.getCanSelect(),
-                  indeterminate: row.getIsSomeSelected(),
-                  onChange: row.getToggleSelectedHandler(),
-                }}
-              />
-            )}
-          </div>
-        </>
-      ),
-    },
-    ...columns,
-  ];
+  const newColumn: ColumnDef<TData, any>[] = [...columns];
 
   const table = useReactTable({
     data,
@@ -138,28 +48,24 @@ export default function TanstackReactTable<TData>({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    enableMultiRowSelection: isMultiSelection,
     state: {
       sorting: sorting,
       columnFilters: columnFilters,
-      rowSelection: rowSelection,
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
   });
   table.getSelectedRowModel;
 
-  useEffect(() => {
-    const ogData = table
-      .getSelectedRowModel()
-      ?.rows?.map((item) => item.original);
-    setSelectedRows(ogData);
-  }, [rowSelection]);
+  // useEffect(() => {
+  //   const ogData = table
+  //     .getSelectedRowModel()
+  //     ?.rows?.map((item) => item.original);
+  //   setSelectedRows(ogData);
+  // }, [rowSelection]);
   return (
-    <div className='mx-auto flex h-[98vh] flex-col justify-between'>
-      <div className='m-5 overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
+    <div className='flex h-[98vh] flex-col justify-between'>
+      <div className='overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
         <table className='relative h-20 w-full border-collapse bg-white text-sm text-gray-700'>
           <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50'>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -204,9 +110,7 @@ export default function TanstackReactTable<TData>({
                             filterVariant: string;
                           }
                         ).filterVariant !== 'checkbox' && (
-                          <div>
-                            <Filter column={header.column} />
-                          </div>
+                          <Filter column={header.column} />
                         )}
                     </div>
                   </th>
@@ -219,11 +123,6 @@ export default function TanstackReactTable<TData>({
               <tr
                 key={row.id}
                 className={`max-w-7xl cursor-pointer border-b ${row.getIsSelected() ? 'bg-sky-100 hover:bg-opacity-50' : 'bg-none hover:bg-gray-100'}`}
-                onClick={() => {
-                  isMultiSelection
-                    ? row.toggleSelected()
-                    : row.toggleSelected(true);
-                }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className='max-w-7xl px-4 py-3'>
@@ -297,7 +196,7 @@ function Filter({ column }: { column: Column<any, unknown> }) {
 
   return filterVariant === 'range' ? (
     <div>
-      <div className='flex space-x-2'>
+      <div className='flex flex-col justify-center'>
         {/* See faceted column filters example for min max values functionality */}
         <input
           type='number'
@@ -309,7 +208,7 @@ function Filter({ column }: { column: Column<any, unknown> }) {
             ])
           }
           placeholder={`Min`}
-          className='block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
+          className='block w-[50px] rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
         />
         <input
           type='number'
@@ -321,10 +220,23 @@ function Filter({ column }: { column: Column<any, unknown> }) {
             ])
           }
           placeholder={`Max`}
-          className='block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
+          className='block w-[50px] rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
         />
       </div>
       <div className='h-1' />
+    </div>
+  ) : filterVariant === 'boolean' ? (
+    <div className='flex w-full justify-evenly'>
+      <input
+        className='checkbox-info checkbox block rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
+        onChange={(e) => column.setFilterValue(e.target.checked)}
+        placeholder={`Search...`}
+        type='checkbox'
+        checked={(columnFilterValue ?? false) as boolean}
+      />
+      <button onClick={() => column.setFilterValue(null)}>
+        <GoTrash height={20} width={20} strokeWidth={1.3} />
+      </button>
     </div>
   ) : (
     <input
@@ -334,6 +246,5 @@ function Filter({ column }: { column: Column<any, unknown> }) {
       type='text'
       value={(columnFilterValue ?? '') as string}
     />
-    // See faceted column filters example for datalist search suggestions
   );
 }

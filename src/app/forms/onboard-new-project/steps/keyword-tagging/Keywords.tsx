@@ -140,7 +140,7 @@ export default function Keywords() {
     staleTime: Infinity,
     refetchOnWindowFocus: false,
   });
-  const { data: transactionKeywords, isLoading: _loadingTransactionKeywords } =
+  const { data: transactionKeywords, isLoading: loadingTransactionKeywords } =
     useQuery({
       queryKey: ['transaction-keywords', onboardingData.selectedTempProject],
       queryFn: async () => {
@@ -163,11 +163,12 @@ export default function Keywords() {
     });
   return (
     <>
-      {loadingReraKeywords && (
-        <div className='flex items-center justify-center'>
-          <LoadingCircle circleColor='violet' size='large' />
-        </div>
-      )}
+      {loadingReraKeywords ||
+        (loadingTransactionKeywords && (
+          <div className='flex items-center justify-center'>
+            <LoadingCircle circleColor='violet' size='large' />
+          </div>
+        ))}
       {(transactionKeywords || reraKeyWordList) && (
         <div className='flex h-[90vh] w-full flex-row items-center justify-between gap-1 p-2 align-middle'>
           {/* keywords for project */}

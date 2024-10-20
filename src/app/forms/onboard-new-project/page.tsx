@@ -10,7 +10,7 @@ import TowerPage from './steps/tower-unit/TowerPage';
 import StepsUI from './StepsUI';
 import { useOnboardingDataStore } from './useOnboardingDataStore';
 import ProjectSection from './steps/image-tagging/ProjectSection';
-import { RootDocTagging } from './RootDocTagging';
+import RootDocTagging from './steps/root-doc-tagging/RootDocTagging';
 
 export default function Page() {
   const {
@@ -28,7 +28,8 @@ export default function Page() {
         <div
           className={cn(
             'mb-40 mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]',
-            formSteps === 'Tower - Unit' && 'md:max-w-[100%]'
+            ['Tower - Unit', 'Root Doc Tagging'].includes(formSteps) &&
+              'md:max-w-[100%]'
           )}
           id='projectTowerForm'
         >
