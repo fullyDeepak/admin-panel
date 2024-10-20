@@ -1,12 +1,10 @@
 import { create } from 'zustand';
 export interface FormProjectETLTagDataType {
   id: number;
-  village:
-    | {
-        label: string;
-        value: number;
-      }
-    | undefined;
+  village: {
+    label: string;
+    value: number;
+  } | null;
   docId: string[];
   docIdNotEquals: string[];
   rootDocs: string[];
@@ -29,10 +27,10 @@ export interface FormProjectETLTagDataType {
 }
 interface FormState {
   projectFormETLTagData: FormProjectETLTagDataType[];
-  updateProjectETLTagData: <T extends keyof FormProjectETLTagDataType>(
+  updateProjectETLTagData: (
     _etlCardId: number,
-    _key: T,
-    _value: FormProjectETLTagDataType[T]
+    _key: string,
+    _value: any
   ) => void;
   addProjectETLTagCard: (_newDetails: FormProjectETLTagDataType) => void;
   addNewProjectETLTagCard: (_newDetails: { id: number }) => void;
@@ -42,7 +40,7 @@ interface FormState {
 }
 
 export const INITIAL_DATA = {
-  village: undefined,
+  village: null,
   surveyEquals: [],
   docId: [],
   rootDocs: [],

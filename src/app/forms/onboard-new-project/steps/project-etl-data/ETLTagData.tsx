@@ -430,7 +430,7 @@ export default function ETLTagData({
                   id:
                     Math.max(...formProjectETLTagData.map((data) => data.id)) +
                     1,
-                  village: undefined,
+                  village: null,
                 };
                 addProjectETLCard(newData);
               }}
