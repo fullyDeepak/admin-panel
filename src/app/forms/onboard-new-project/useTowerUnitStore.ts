@@ -94,6 +94,9 @@ type Store = {
   towerFormData: TowerUnitDetailType[];
   hmRefTable: HmRefTable[];
   tmRefTable: TMRefTable[];
+  showHMRefTable: boolean;
+  showTMRefTable: boolean;
+  toggleRefTable: (_key: 'hm' | 'tm') => void;
   updateHMRefTable: (_data: HmRefTable[]) => void;
   updateTMRefTable: (_data: TMRefTable[]) => void;
   existingUnitTypeOption: SingleValue<{
@@ -130,6 +133,16 @@ export const useTowerUnitStore = create<Store>()(
     towerFormData: INITIAL_STATE,
     hmRefTable: [] as HmRefTable[],
     tmRefTable: [] as TMRefTable[],
+    showHMRefTable: true as boolean,
+    showTMRefTable: true as boolean,
+    toggleRefTable: (key) =>
+      set((prev) => {
+        if (key === 'hm') {
+          prev.showHMRefTable = !prev.showHMRefTable;
+        } else if (key === 'tm') {
+          prev.showTMRefTable = !prev.showTMRefTable;
+        }
+      }),
     updateHMRefTable: (data) => set({ hmRefTable: data }),
     existingUnitTypeOption: [] as SingleValue<{
       label: string;

@@ -70,6 +70,9 @@ export default function TowerPage() {
     tmRefTable,
     updateTMRefTable,
     updateHMRefTable,
+    toggleRefTable,
+    showHMRefTable,
+    showTMRefTable,
   } = useTowerUnitStore();
   const [towerCardCount, setTowerCardCount] = useState<number>(0);
   const { onboardingData } = useOnboardingDataStore();
@@ -239,17 +242,25 @@ export default function TowerPage() {
         </button>
       </label>
 
-      <button
-        className='btn-rezy my-4 self-center'
-        onClick={() => fetchRefTables()}
-      >
-        {onboardingData.selectedReraProjects.length
-          ? 'Fetch Only TM & HM Ref Tables'
-          : 'Fetch TM & HM Ref and Tower Cards'}
-      </button>
+      <div className='flex justify-around'>
+        <button className='btn btn-accent' onClick={() => toggleRefTable('tm')}>
+          Toggle TM Table View
+        </button>
+        <button
+          className='btn-rezy my-4 self-center'
+          onClick={() => fetchRefTables()}
+        >
+          {onboardingData.selectedReraProjects.length
+            ? 'Fetch Only TM & HM Ref Tables'
+            : 'Fetch TM & HM Ref and Tower Cards'}
+        </button>
+        <button className='btn btn-accent' onClick={() => toggleRefTable('hm')}>
+          Toggle HM Table View
+        </button>
+      </div>
 
       <div className='flex gap-2'>
-        {tmRefTable && tmRefTable.length > 0 && (
+        {showTMRefTable && tmRefTable && tmRefTable.length > 0 && (
           <div className='flex- sticky top-1 max-h-[99dvh] overflow-x-auto overflow-y-auto rounded-lg border-2'>
             <p className='mt-2 text-center text-2xl font-semibold'>
               TM Ref Table
@@ -445,7 +456,7 @@ export default function TowerPage() {
             </div>
           ))}
         </div>
-        {hmRefTable && hmRefTable.length > 0 && (
+        {showHMRefTable && hmRefTable && hmRefTable.length > 0 && (
           <div className='sticky top-0 max-h-screen flex-[2] overflow-x-auto overflow-y-auto rounded-lg border-2'>
             <p className='mt-2 text-center text-2xl font-semibold'>
               HM Ref Table
