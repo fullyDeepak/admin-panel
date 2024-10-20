@@ -6,6 +6,7 @@ import _ from 'lodash';
 import Select from 'react-select-virtualized';
 import useETLDataStore from '../../useETLDataStore';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
+import LoadingCircle from '@/components/ui/LoadingCircle';
 
 export default function ProjectMatcherSection() {
   const {
@@ -37,6 +38,28 @@ export default function ProjectMatcherSection() {
     refetchOnWindowFocus: false,
     staleTime: Infinity,
   });
+  const {
+    data: localitiesHouseNumbersData,
+    isLoading: loadingLocalitiesHouseNumbers,
+  } = useQuery({
+    queryKey: ['localitiesHouseNumbers', onboardingData.selectedTempProject],
+    queryFn: async () => {
+      if (!onboardingData.selectedTempProject?.value) return [];
+      const res = await axiosClient.get<{
+        data: {
+          locality: string;
+          house_nos: string[];
+          count: number;
+        }[];
+      }>('/onboarding/suggested-locality-door-number', {
+        params: {
+          temp_project_id: onboardingData.selectedTempProject.value,
+        },
+      });
+      return res.data.data;
+    },
+    staleTime: Infinity,
+  });
   return (
     <>
       <h3 className='my-4 text-2xl font-semibold'>Section: Matcher Data</h3>
@@ -49,10 +72,10 @@ export default function ProjectMatcherSection() {
           onChange={(e: { label: string; value: string }) => {
             if (e) {
               updateOnboardingData({
-                houseMasterLocalities: [
+                houseMasterLocalities: _.uniq([
                   ...onboardingData.houseMasterLocalities,
                   e.value,
-                ],
+                ]),
               });
             }
           }}
@@ -80,13 +103,65 @@ export default function ProjectMatcherSection() {
           );
         })}
       </div>
-      {
-        <div className='flex flex-col gap-5'>
-          <span className='flex flex-[2] items-center'>
-            <span>Recommended Municipal Door Numbers:</span>
-          </span>
+      <div className='flex flex-col gap-5'>
+        <span className='flex flex-[2] items-center'>
+          <span>Recommended Localities And Door Numbers:</span>
+        </span>
 
-          <table>
+        <div className='max-h-[500px] overflow-y-scroll'>
+          <table className='w-full'>
+            <thead>
+              <tr>
+                <th className='border border-solid border-slate-400'>
+                  Door No.
+                </th>
+                <th className='border border-solid border-slate-400'>
+                  Unit Numbers
+                </th>
+                <th className='border border-solid border-slate-400'>
+                  Occurrence
+                </th>
+              </tr>
+            </thead>
+            <tbody className='divide-y divide-gray-100'>
+              {localitiesHouseNumbersData?.map((item, index) => (
+                <tr
+                  className='border-collapse cursor-pointer hover:bg-slate-50'
+                  key={index}
+                  onClick={() => {
+                    updateOnboardingData({
+                      houseMasterLocalities: _.uniq([
+                        ...onboardingData.houseMasterLocalities,
+                        item.locality,
+                      ]),
+                    });
+                  }}
+                >
+                  <td className='border border-solid border-slate-400'>
+                    {item.locality}
+                  </td>
+                  <td className='border border-solid border-slate-400'>
+                    {_.truncate(item.house_nos.join(', '), {
+                      length: 80,
+                    })}
+                  </td>
+                  <td className='border border-solid border-slate-400'>
+                    {item.count}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className='flex flex-col gap-5'>
+        <span className='flex flex-[2] items-center'>
+          <span>Recommended Municipal Door Numbers:</span>
+        </span>
+
+        <div className='max-h-[500px] overflow-y-auto'>
+          <table className='w-full'>
             <thead>
               <tr>
                 <th className='border border-solid border-slate-400'>
@@ -144,7 +219,8 @@ export default function ProjectMatcherSection() {
             </tbody>
           </table>
         </div>
-      }
+      </div>
+
       <div className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-wrap break-words md:text-xl'>
           Core Door Number String:{' '}
