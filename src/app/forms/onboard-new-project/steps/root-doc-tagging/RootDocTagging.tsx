@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import TanstackReactTable from './Table';
 import { parseISO, format, compareAsc } from 'date-fns';
+import useETLDataStore from '../../useETLDataStore';
 const columnHelper = createColumnHelper<{
   execution_date: Date;
   linked_docs: string;
@@ -24,7 +25,9 @@ const columnHelper = createColumnHelper<{
 
 export default function DeveloperTagging() {
   // 3 queries
+  useState(0);
   const { onboardingData, updateOnboardingData } = useOnboardingDataStore();
+  const { projectFormETLTagData, updateProjectETLTagData } = useETLDataStore();
 
   useQuery({
     queryKey: ['development-agreements', onboardingData.selectedTempProject],
@@ -54,8 +57,18 @@ export default function DeveloperTagging() {
           execution_date: parseISO(ele.execution_date),
         })),
       });
+      updateProjectETLTagData(
+        1,
+        'rootDocs',
+        res.data.data
+          .filter((ele) => ele.project_attached)
+          .map((item) => item.doc_id)
+      );
       return res.data.data;
     },
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: Infinity,
   });
 
   const docColumns = [
@@ -125,7 +138,7 @@ export default function DeveloperTagging() {
       header: 'Project',
       cell: ({ row }) => (
         <input
-          onChange={() => {
+          onChange={(e) => {
             updateOnboardingData({
               developmentAgreements: onboardingData.developmentAgreements.map(
                 (ele) => {
@@ -139,6 +152,19 @@ export default function DeveloperTagging() {
                 }
               ),
             });
+            e.target.checked
+              ? updateProjectETLTagData(1, 'rootDocs', [
+                  ...projectFormETLTagData.find((item) => item.id === 1)!
+                    .rootDocs,
+                  row.getValue('doc_id'),
+                ])
+              : updateProjectETLTagData(
+                  1,
+                  'rootDocs',
+                  projectFormETLTagData
+                    .find((item) => item.id === 1)!
+                    .rootDocs.filter((item) => item !== row.getValue('doc_id'))
+                );
           }}
           type='checkbox'
           className='checkbox no-animation cursor-pointer'
@@ -153,7 +179,7 @@ export default function DeveloperTagging() {
       header: 'Area ',
       cell: ({ row }) => (
         <input
-          onChange={() => {
+          onChange={(e) => {
             updateOnboardingData({
               developmentAgreements: onboardingData.developmentAgreements.map(
                 (ele) => {
@@ -167,6 +193,19 @@ export default function DeveloperTagging() {
                 }
               ),
             });
+            if (e.target.checked) {
+              updateOnboardingData({
+                rootDocArea:
+                  onboardingData.rootDocArea +
+                  +(row.getValue('extent') as number),
+              });
+            } else {
+              updateOnboardingData({
+                rootDocArea:
+                  onboardingData.rootDocArea -
+                  +(row.getValue('extent') as number),
+              });
+            }
           }}
           type='checkbox'
           className='checkbox no-animation cursor-pointer'
@@ -232,6 +271,8 @@ export default function DeveloperTagging() {
           <h2 className='mt-10 self-center text-xl md:text-2xl'>
             Development Agreements
           </h2>
+          ROOT DOC AREA: {onboardingData.rootDocArea.toFixed(2)} SQ Yds (approx.{' '}
+          {(onboardingData.rootDocArea / 4840).toFixed(2)} Acres)
           <div>
             <TanstackReactTable
               data={onboardingData.developmentAgreements}
@@ -239,7 +280,6 @@ export default function DeveloperTagging() {
               showPagination={true}
             />
           </div>
-
           {/* Free From attacher based on village/survey/plot input : /onboarding/root_docs/free-doc-search */}
         </div>
       </div>

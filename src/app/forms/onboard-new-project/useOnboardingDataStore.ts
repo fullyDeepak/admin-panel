@@ -85,6 +85,7 @@ export interface OnboardingDataType {
     doc_id_schedule: string;
     project_attached: boolean;
   }[];
+  rootDocArea: number;
 }
 
 export interface TempProjectSourceData {
@@ -228,6 +229,7 @@ const INITIAL_STATE: OnboardingDataType = {
   suggestedPlot: [],
   developerMasterId: null,
   developmentAgreements: [],
+  rootDocArea: 0,
 };
 
 export const useOnboardingDataStore = create<Store>()(

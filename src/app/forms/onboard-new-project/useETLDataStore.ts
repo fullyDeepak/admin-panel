@@ -29,10 +29,10 @@ export interface FormProjectETLTagDataType {
 }
 interface FormState {
   projectFormETLTagData: FormProjectETLTagDataType[];
-  updateProjectETLTagData: (
+  updateProjectETLTagData: <T extends keyof FormProjectETLTagDataType>(
     _etlCardId: number,
-    _key: string,
-    _value: any
+    _key: T,
+    _value: FormProjectETLTagDataType[T]
   ) => void;
   addProjectETLTagCard: (_newDetails: FormProjectETLTagDataType) => void;
   addNewProjectETLTagCard: (_newDetails: { id: number }) => void;
