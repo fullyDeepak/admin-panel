@@ -5,6 +5,7 @@ export type ImageStoreState = {
   masterPlanFile: { name: string; file: File }[];
   primaryImageFile: { name: string; file: File }[];
   otherImageFile: { name: string; file: File }[];
+  otherDocs: { name: string; file: File }[];
 };
 
 type Store = {
@@ -26,6 +27,7 @@ export const useImageStore = create<Store>((set) => ({
     masterPlanFile: [],
     primaryImageFile: [],
     otherImageFile: [],
+    otherDocs: [],
   },
   setImageFile: (key, file) =>
     set((prev) => ({
@@ -49,6 +51,7 @@ export const useImageStore = create<Store>((set) => ({
         masterPlanFile: [],
         primaryImageFile: [],
         otherImageFile: [],
+        otherDocs: [],
       },
     }),
 }));
