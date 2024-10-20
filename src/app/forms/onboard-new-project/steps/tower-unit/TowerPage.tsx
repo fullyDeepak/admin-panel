@@ -189,7 +189,7 @@ export default function TowerPage() {
               };
             })
           );
-          if (selectedProjectIds.length === 0) {
+          if (selectedProjectIds.length === 0 && towerCardData?.length > 0) {
             setTowerFormData(towerCardData);
           }
           return 'HM Ref Table fetched';
