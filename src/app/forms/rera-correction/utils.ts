@@ -1,13 +1,5 @@
 export const sroTableColumns = [
   {
-    header: 'District ID',
-    accessorKey: 'district_id',
-  },
-  {
-    header: 'District Name',
-    accessorKey: 'district_name',
-  },
-  {
     header: 'Mandal ID',
     accessorKey: 'mandal_id',
   },
