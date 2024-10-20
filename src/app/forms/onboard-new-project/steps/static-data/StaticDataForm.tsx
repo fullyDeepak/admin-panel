@@ -140,6 +140,7 @@ export default function StaticDataForm() {
         }));
     },
     staleTime: Infinity,
+    refetchOnMount: false,
   });
   const { data: _reraForTemp } = useQuery({
     queryKey: ['reraForTempProjects', onboardingData.selectedTempProject],

@@ -33,7 +33,9 @@ export function MasterDevelopers(props: Props & { SetValue: string | null }) {
         options={masterDevelopers || []}
         isLoading={loadingMasterDevelopers}
         onChange={props.onChange}
-        value={masterDevelopers?.find((ele) => ele.value === props.SetValue)}
+        value={
+          masterDevelopers?.find((ele) => ele.value === props.SetValue) || null
+        }
         className={props.className}
       />
     </>

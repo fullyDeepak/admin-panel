@@ -317,7 +317,7 @@ export default function ReraSection({
           </span>
         </div>
         <button
-          className='btn btn-error btn-sm text-white'
+          className='btn btn-neutral btn-sm text-white'
           onClick={fetchProjectsDetails}
           disabled={
             onboardingData.selectedReraProjects.length === 0 ||

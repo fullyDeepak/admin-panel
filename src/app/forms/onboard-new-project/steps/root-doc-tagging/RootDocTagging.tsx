@@ -79,7 +79,7 @@ const docColumns = [
     header: 'Project Attached',
     cell: ({ row }) => (
       <p className='w-full whitespace-break-spaces text-justify text-xs tabular-nums'>
-        {row.getValue('project_attached')}
+        <input type='checkbox' checked={row.getValue('project_attached')} />
       </p>
     ),
   }),
@@ -87,7 +87,7 @@ const docColumns = [
     header: 'Area Attached',
     cell: ({ row }) => (
       <p className='w-full whitespace-break-spaces text-justify text-xs tabular-nums'>
-        {row.getValue('area_attached')}
+        <input type='checkbox' checked={row.getValue('area_attached')} />
       </p>
     ),
   }),

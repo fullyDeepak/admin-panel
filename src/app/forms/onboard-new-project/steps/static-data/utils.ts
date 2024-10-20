@@ -34,6 +34,8 @@ export async function fetchTempProjectDetails({
       selectedTempProject: e,
       selectedReraProjects: [],
       houseMasterLocalities: [],
+      developerMasterId: null,
+      coreDoorNumberStrings: [],
     });
     setReraForTempProjects({});
     const tempProjectData = await axiosClient.get<{
@@ -156,8 +158,11 @@ export async function fetchTempProjectDetails({
   } else {
     // cleanup
     updateOnboardingData({
+      selectedTempProject: e,
       selectedReraProjects: [],
-      selectedTempProject: null,
+      houseMasterLocalities: [],
+      developerMasterId: null,
+      coreDoorNumberStrings: [],
     });
     setReraForTempProjects({});
   }

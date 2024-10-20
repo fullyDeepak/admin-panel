@@ -56,6 +56,7 @@ export default function ProjectMatcherSection() {
               });
             }
           }}
+          value={null}
         />
       </div>
       <div className='flex flex-wrap gap-2'>

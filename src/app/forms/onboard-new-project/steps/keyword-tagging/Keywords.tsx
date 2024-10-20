@@ -168,7 +168,7 @@ export default function Keywords() {
           <LoadingCircle circleColor='violet' size='large' />
         </div>
       )}
-      {transactionKeywords && (
+      {(transactionKeywords || reraKeyWordList) && (
         <div className='flex h-[90vh] w-full flex-row items-center justify-between gap-1 border p-2 align-middle'>
           {/* keywords for project */}
           <div className='h-full flex-[3] flex-nowrap overflow-y-auto border border-solid px-4'>
@@ -211,7 +211,7 @@ export default function Keywords() {
           </div>
           <div className='h-full flex-[3] flex-nowrap overflow-y-auto border border-solid px-4'>
             <ul className='menu flex h-[100%] flex-col flex-nowrap gap-2 py-2'>
-              {transactionKeywords.map((keywordGroups, index) => (
+              {transactionKeywords?.map((keywordGroups, index) => (
                 <li key={index}>
                   <details open={index === 0 ? true : false}>
                     <summary className='bg-slate-200'>
