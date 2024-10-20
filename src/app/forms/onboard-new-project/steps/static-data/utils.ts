@@ -135,9 +135,10 @@ export async function fetchTempProjectDetails({
     setData([
       {
         id: 1,
-        village: villageOptions.find(
-          (ele) => ele.value === onboardingData.selectedVillage?.value
-        ),
+        village:
+          villageOptions.find(
+            (ele) => ele.value === onboardingData.selectedVillage?.value
+          ) || null,
         docId: [],
         rootDocs: [],
         apartmentContains: tempProjectData.data.data.raw_apartment_names,
