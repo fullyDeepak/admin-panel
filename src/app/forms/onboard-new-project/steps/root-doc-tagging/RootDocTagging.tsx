@@ -186,14 +186,7 @@ export default function DeveloperTagging() {
           <h2 className='mt-10 self-center text-xl md:text-2xl'>
             Development Agreements
           </h2>
-          <div className='max-h-[80dvh] overflow-y-auto'>
-            <TanstackReactTable
-              data={developmentAgreements}
-              columns={docColumns}
-              enableSearch={true}
-              showPagination={true}
-            />
-          </div>
+          <div className='max-h-[80dvh] overflow-y-auto'></div>
           {/* Linked Docs : /onboarding/root_docs/linked-docs*/}
           <h2 className='mt-10 self-center text-xl md:text-2xl'>Linked Docs</h2>
           <div className='max-h-[80dvh] overflow-y-auto'>
@@ -201,9 +194,6 @@ export default function DeveloperTagging() {
           </div>
 
           {/* Free From attacher based on village/survey/plot input : /onboarding/root_docs/free-doc-search */}
-          {/* 
-          <input type='text' />
-          <input type='text' /> */}
         </div>
       </div>
     </>
