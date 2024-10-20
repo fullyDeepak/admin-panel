@@ -6,7 +6,6 @@ import _ from 'lodash';
 import Select from 'react-select-virtualized';
 import useETLDataStore from '../../useETLDataStore';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
-import LoadingCircle from '@/components/ui/LoadingCircle';
 
 export default function ProjectMatcherSection() {
   const {
@@ -38,10 +37,7 @@ export default function ProjectMatcherSection() {
     refetchOnWindowFocus: false,
     staleTime: Infinity,
   });
-  const {
-    data: localitiesHouseNumbersData,
-    isLoading: loadingLocalitiesHouseNumbers,
-  } = useQuery({
+  const { data: localitiesHouseNumbersData } = useQuery({
     queryKey: ['localitiesHouseNumbers', onboardingData.selectedTempProject],
     queryFn: async () => {
       if (!onboardingData.selectedTempProject?.value) return [];
@@ -103,27 +99,27 @@ export default function ProjectMatcherSection() {
           );
         })}
       </div>
-      <div className='flex flex-col gap-5'>
+      <div className='flex select-none flex-col gap-5'>
         <span className='flex flex-[2] items-center'>
           <span>Recommended Localities And Door Numbers:</span>
         </span>
 
         <div className='max-h-[500px] overflow-y-scroll'>
-          <table className='w-full'>
-            <thead>
+          <table className='relative w-full border-collapse bg-white text-gray-700'>
+            <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50 ring-1 ring-slate-200'>
               <tr>
-                <th className='border border-solid border-slate-400'>
+                <th className='text-nowrap px-6 py-4 text-center font-semibold text-gray-900'>
                   Door No.
                 </th>
-                <th className='border border-solid border-slate-400'>
+                <th className='text-nowrap px-6 py-4 text-center font-semibold text-gray-900'>
                   Unit Numbers
                 </th>
-                <th className='border border-solid border-slate-400'>
+                <th className='text-nowrap px-6 py-4 text-center font-semibold text-gray-900'>
                   Occurrence
                 </th>
               </tr>
             </thead>
-            <tbody className='divide-y divide-gray-100'>
+            <tbody className='divide-y divide-gray-100 border-t border-gray-100'>
               {localitiesHouseNumbersData?.map((item, index) => (
                 <tr
                   className='border-collapse cursor-pointer hover:bg-slate-50'
@@ -137,15 +133,15 @@ export default function ProjectMatcherSection() {
                     });
                   }}
                 >
-                  <td className='border border-solid border-slate-400'>
+                  <td className='border border-solid border-slate-400 px-6 py-4'>
                     {item.locality}
                   </td>
-                  <td className='border border-solid border-slate-400'>
+                  <td className='border border-solid border-slate-400 px-6 py-4'>
                     {_.truncate(item.house_nos.join(', '), {
                       length: 80,
                     })}
                   </td>
-                  <td className='border border-solid border-slate-400'>
+                  <td className='border border-solid border-slate-400 px-6 py-4'>
                     {item.count}
                   </td>
                 </tr>
@@ -155,27 +151,27 @@ export default function ProjectMatcherSection() {
         </div>
       </div>
 
-      <div className='flex flex-col gap-5'>
+      <div className='flex select-none flex-col gap-5'>
         <span className='flex flex-[2] items-center'>
           <span>Recommended Municipal Door Numbers:</span>
         </span>
 
         <div className='max-h-[500px] overflow-y-auto'>
-          <table className='w-full'>
-            <thead>
+          <table className='relative w-full border-collapse bg-white text-gray-700'>
+            <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50 ring-1 ring-slate-200'>
               <tr>
-                <th className='border border-solid border-slate-400'>
+                <th className='text-nowrap px-6 py-4 text-center font-semibold text-gray-900'>
                   Door No.
                 </th>
-                <th className='border border-solid border-slate-400'>
+                <th className='text-nowrap px-6 py-4 text-center font-semibold text-gray-900'>
                   Unit Numbers
                 </th>
-                <th className='border border-solid border-slate-400'>
+                <th className='text-nowrap px-6 py-4 text-center font-semibold text-gray-900'>
                   Occurrence
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className='divide-y divide-gray-100 border-t border-gray-100'>
               {formProjectETLTagData
                 .reduce((acc: string[], cur) => {
                   return [...acc, ...cur.suggestedDoorNumberStartsWith];
@@ -205,13 +201,13 @@ export default function ProjectMatcherSection() {
                       );
                     }}
                   >
-                    <td className='border border-solid border-slate-400'>
+                    <td className='border border-solid border-slate-400 px-6 py-4'>
                       {item.split(':')[0]}
                     </td>
-                    <td className='border border-solid border-slate-400'>
+                    <td className='border border-solid border-slate-400 px-6 py-4'>
                       {item.split(':')[1]}
                     </td>
-                    <td className='border border-solid border-slate-400'>
+                    <td className='border border-solid border-slate-400 px-6 py-4'>
                       {item.split(':')[2]}
                     </td>
                   </tr>

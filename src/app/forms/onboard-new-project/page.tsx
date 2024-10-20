@@ -9,6 +9,7 @@ import GeoData from './steps/geo-data/GeoData';
 import TowerPage from './steps/tower-unit/TowerPage';
 import StepsUI from './StepsUI';
 import { useOnboardingDataStore } from './useOnboardingDataStore';
+import { RootDocTagging } from './RootDocTagging';
 
 export default function Page() {
   const {
@@ -37,7 +38,8 @@ export default function Page() {
           />
           {formSteps === 'Static Data' && <StaticDataForm />}
           {formSteps === 'Geo-Data' && <GeoData />}
-          {formSteps === 'Developer Tagging' && <DeveloperTagging />}
+          {formSteps === 'Keyword Tagging' && <DeveloperTagging />}
+          {formSteps === 'Root Doc Tagging' && <RootDocTagging />}
           {formSteps === 'ETL For Project' && <ETLForProjectSection />}
           {formSteps === 'Tower - Unit' && <TowerPage />}
           {formSteps === 'Preview' && <PreviewData />}

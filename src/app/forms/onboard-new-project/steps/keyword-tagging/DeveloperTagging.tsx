@@ -8,7 +8,7 @@ export default function DeveloperTagging() {
     <>
       <div className='mx-auto mt-10 flex w-full flex-col'>
         <h2 className='self-center text-2xl md:text-3xl'>Keyword Tagger</h2>
-        <div className='z-10 mt-5 flex min-h-screen w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none md:p-5 md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
+        <div className=''>
           {/* 1 Keyword Tagger to Tag Landlord and Developer Keywords*/}
           {/* Show Keywords from TM | RERA || mapped */}
           <Keywords />

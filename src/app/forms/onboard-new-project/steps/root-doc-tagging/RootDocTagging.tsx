@@ -6,7 +6,7 @@ import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
 import { createColumnHelper } from '@tanstack/react-table';
 import TanstackReactTable from './Table';
-import { DocAttachTable } from '../keyword-tagging/DocAttachTable';
+import { DocAttachTable } from './DocAttachTable';
 
 const columnHelper = createColumnHelper<{
   execution_date: string;

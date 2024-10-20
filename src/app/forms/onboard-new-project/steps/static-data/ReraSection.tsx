@@ -1,12 +1,11 @@
+import LoadingCircle from '@/components/ui/LoadingCircle';
+import axiosClient from '@/utils/AxiosClient';
+import { isEqual, uniq, uniqBy, uniqWith } from 'lodash';
+import { useState } from 'react';
+import { SingleValue } from 'react-select';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
-import { SingleValue } from 'react-select';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
-import { isEqual, uniq, uniqBy, uniqWith } from 'lodash';
-import { inputBoxClass } from '@/app/constants/tw-class';
-import axiosClient from '@/utils/AxiosClient';
-import { useState } from 'react';
-import LoadingCircle from '@/components/ui/LoadingCircle';
 import { UnitCardType, useTowerUnitStore } from '../../useTowerUnitStore';
 
 type Props = {

@@ -25,8 +25,12 @@ export async function fetchTempProjectDetails({
   setReraForTempProjects,
   villageOptions,
 }: Props) {
-  const { onboardingData, updateOnboardingData, addTempProjectSourceData } =
-    useOnboardingDataStore.getState();
+  const {
+    onboardingData,
+    updateOnboardingData,
+    addTempProjectSourceData,
+    resetData,
+  } = useOnboardingDataStore.getState();
   const { setData, resetAllProjectData } = useETLDataStore.getState();
   if (e) {
     resetAllProjectData();
@@ -146,24 +150,18 @@ export async function fetchTempProjectDetails({
             )
             .map((ele) => ele.keyword.split('|'))
             .reduce((acc, val) => acc.concat(val), []) || [],
-        plotEquals:
-          tempProjectData.data.data.keywords
-            ?.filter(
-              (ele) => ele.keyword_type === 'PLOT_EQUALS' && ele.is_attached
-            )
-            .map((ele) => ele.keyword.split('|'))
-            .reduce((acc, val) => acc.concat(val), []) || [],
+        plotEquals: tempProjectData.data.data.keywords
+          ?.filter(
+            (ele) => ele.keyword_type === 'PLOT_EQUALS' && ele.is_attached
+          )
+          .map((ele) => ele.keyword.split('|'))
+          .reduce((acc, val) => acc.concat(val), []) || ['NULL'],
       },
     ]);
   } else {
     // cleanup
-    updateOnboardingData({
-      selectedTempProject: e,
-      selectedReraProjects: [],
-      houseMasterLocalities: [],
-      developerMasterId: null,
-      coreDoorNumberStrings: [],
-    });
+    resetData();
     setReraForTempProjects({});
+    resetAllProjectData();
   }
 }

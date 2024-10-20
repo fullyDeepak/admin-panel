@@ -173,7 +173,8 @@ interface Store extends Actions {
   formStepsList: [
     'Static Data',
     'Geo-Data',
-    'Developer Tagging',
+    'Keyword Tagging',
+    'Root Doc Tagging',
     'ETL For Project',
     'Tower - Unit',
     'HM Matcher',
@@ -221,7 +222,8 @@ export const useOnboardingDataStore = create<Store>()(
     formStepsList: [
       'Static Data',
       'Geo-Data',
-      'Developer Tagging',
+      'Keyword Tagging',
+      'Root Doc Tagging',
       'ETL For Project',
       'Tower - Unit',
       'HM Matcher',

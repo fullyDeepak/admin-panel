@@ -169,9 +169,9 @@ export default function Keywords() {
         </div>
       )}
       {(transactionKeywords || reraKeyWordList) && (
-        <div className='flex h-[90vh] w-full flex-row items-center justify-between gap-1 border p-2 align-middle'>
+        <div className='flex h-[90vh] w-full flex-row items-center justify-between gap-1 p-2 align-middle'>
           {/* keywords for project */}
-          <div className='h-full flex-[3] flex-nowrap overflow-y-auto border border-solid px-4'>
+          <div className='mx-2 h-full flex-[3] flex-nowrap overflow-y-auto border border-solid px-4'>
             <ul className='menu flex h-[100%] flex-col flex-nowrap gap-2 py-2'>
               <div className='flex flex-col gap-y-1 overflow-y-auto'>
                 {reraKeyWordList?.map((projectKeywords, index) => (
@@ -209,7 +209,7 @@ export default function Keywords() {
               </div>
             </ul>
           </div>
-          <div className='h-full flex-[3] flex-nowrap overflow-y-auto border border-solid px-4'>
+          <div className='mx-2 h-full flex-[3] flex-nowrap overflow-y-auto border border-solid px-4'>
             <ul className='menu flex h-[100%] flex-col flex-nowrap gap-2 py-2'>
               {transactionKeywords?.map((keywordGroups, index) => (
                 <li key={index}>
