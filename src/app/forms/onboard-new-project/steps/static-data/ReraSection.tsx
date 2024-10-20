@@ -309,6 +309,7 @@ export default function ReraSection({
                     // change main project name
                   }}
                 >
+                  {e.label.split(':')[0].trim()} -{' '}
                   {e.label.split(':')[1].trim().split('(')[0]}
                 </span>
               );

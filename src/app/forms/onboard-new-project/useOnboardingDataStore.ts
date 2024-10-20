@@ -86,6 +86,7 @@ export interface OnboardingDataType {
     project_attached: boolean;
   }[];
   rootDocArea: number;
+  developerGroup: string;
 }
 
 export interface TempProjectSourceData {
@@ -110,10 +111,10 @@ export interface TempProjectSourceData {
 }
 
 export interface Developer {
-  temp_project_id: string;
   developer_id: number;
   jv_id: any;
   is_jv: boolean;
+  developer_group_name: string;
 }
 
 export interface Keyword {
@@ -230,6 +231,7 @@ const INITIAL_STATE: OnboardingDataType = {
   developerMasterId: null,
   developmentAgreements: [],
   rootDocArea: 0,
+  developerGroup: '',
 };
 
 export const useOnboardingDataStore = create<Store>()(
@@ -281,6 +283,7 @@ export const useOnboardingDataStore = create<Store>()(
           mapInputValue: '',
           developerMasterId: null,
           developmentAgreements: [],
+          developerGroup: '',
         },
         tempProjectSourceData: {},
       })),

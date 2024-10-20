@@ -46,6 +46,7 @@ export async function fetchTempProjectDetails({
       houseMasterLocalities: [],
       developerMasterId: null,
       coreDoorNumberStrings: [],
+      developerGroup: '',
     });
     setReraForTempProjects({});
     const tempProjectData = await axiosClient.get<{
@@ -69,6 +70,8 @@ export async function fetchTempProjectDetails({
         ? 'JV:' + tempProjectData.data.data.developers?.jv_id?.toString()
         : 'DEVELOPER:' +
           tempProjectData.data.data.developers?.developer_id?.toString(),
+      developerGroup:
+        tempProjectData.data.data.developers?.developer_group_name,
       projectType: [
         {
           label: 'Residential',

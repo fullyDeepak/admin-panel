@@ -115,7 +115,7 @@ export default function Keywords() {
   }
 
   const { data: reraKeyWordList, isLoading: loadingReraKeywords } = useQuery({
-    queryKey: ['rera-keywords', onboardingData.selectedReraProjects],
+    queryKey: ['rera-party-keywords', onboardingData.selectedReraProjects],
     queryFn: async () => {
       if (!onboardingData.selectedReraProjects.length) {
         return [];
@@ -137,8 +137,6 @@ export default function Keywords() {
 
       return response.data.data;
     },
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
   });
   const { data: transactionKeywords, isLoading: loadingTransactionKeywords } =
     useQuery({

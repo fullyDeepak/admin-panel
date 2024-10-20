@@ -1,7 +1,7 @@
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
 import _ from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MultiValue, SingleValue } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 // @ts-expect-error  third party
@@ -193,7 +193,6 @@ export default function StaticDataForm() {
       }
       return [];
     },
-    staleTime: Infinity,
   });
 
   return (
@@ -420,11 +419,23 @@ export default function StaticDataForm() {
               developerMasterId: (
                 e as SingleValue<{ label: string; value: string }>
               )?.value,
+              developerGroup: (
+                e as SingleValue<{ label: string; value: string }>
+              )?.label.split(':')[3],
             });
           }}
           isDisabled={!onboardingData.projectSourceType}
         />
       </label>
+      {onboardingData.projectSourceType && onboardingData.developerMasterId ? (
+        onboardingData.developerGroup ? (
+          <p className='bg-success text-center'>
+            Developer Group : {onboardingData.developerGroup}
+          </p>
+        ) : (
+          <p className='bg-error text-center'>Developer group Not Attached</p>
+        )
+      ) : null}
 
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-wrap break-words md:text-xl'>

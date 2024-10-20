@@ -10,13 +10,17 @@ export function MasterDevelopers(props: Props & { SetValue: string | null }) {
       queryFn: async () => {
         const res = await axiosClient.get<{
           data: {
-            developers: { id: number; name: string }[];
+            developers: {
+              id: number;
+              name: string;
+              developer_group_name: string;
+            }[];
             jvs: { id: number; name: string }[];
           };
         }>('/developers/master-developers-jv');
         return [
           ...res.data.data.developers.map((item) => ({
-            label: `M:${item.id}:${item.name}`,
+            label: `M:${item.id}:${item.name}:${item.developer_group_name}`,
             value: `DEVELOPER:${item.id}`,
           })),
           ...res.data.data.jvs.map((item) => ({
