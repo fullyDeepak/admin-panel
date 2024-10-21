@@ -23,13 +23,17 @@ export interface FormProjectETLTagDataType {
   doorNoStartWith: string[];
   aptNameNotContains: string[];
   singleUnit: boolean;
-  etlPattern: string;
+  patterns: {
+    pattern: string;
+    type: 'tower' | 'floor' | 'unit';
+    priority: number;
+  }[];
 }
 interface FormState {
   projectFormETLTagData: FormProjectETLTagDataType[];
   updateProjectETLTagData: (
     _etlCardId: number,
-    _key: string,
+    _key: keyof FormProjectETLTagDataType,
     _value: any
   ) => void;
   addProjectETLTagCard: (_newDetails: FormProjectETLTagDataType) => void;
@@ -39,7 +43,7 @@ interface FormState {
   setData: (_data: FormProjectETLTagDataType[]) => void;
 }
 
-export const INITIAL_DATA = {
+export const INITIAL_DATA: Omit<FormProjectETLTagDataType, 'id'> = {
   village: null,
   surveyEquals: [],
   docId: [],
@@ -55,7 +59,23 @@ export const INITIAL_DATA = {
   aptNameNotContains: [],
   docIdNotEquals: [],
   singleUnit: false,
-  etlPattern: '',
+  patterns: [
+    {
+      pattern: '',
+      type: 'tower',
+      priority: 1,
+    },
+    {
+      pattern: '',
+      type: 'floor',
+      priority: 2,
+    },
+    {
+      pattern: '',
+      type: 'unit',
+      priority: 3,
+    },
+  ],
   localityContains: [],
   localityPlot: [],
   wardBlock: [],

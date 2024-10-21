@@ -186,7 +186,7 @@ export default function StaticDataForm() {
           value: string;
         }[];
         console.log(reraProjectsToSelect);
-        if (reraProjectsToSelect) {
+        if (reraProjectsToSelect.length > 0) {
           updateOnboardingData({
             selectedReraProjects: _.uniqBy(
               [...onboardingData.selectedReraProjects, ...reraProjectsToSelect],

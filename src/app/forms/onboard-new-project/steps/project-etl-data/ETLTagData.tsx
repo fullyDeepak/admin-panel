@@ -3,7 +3,7 @@ import ChipInput from '@/components/ui/Chip';
 import { nanoid } from 'nanoid';
 import RcSelect, { Option } from 'rc-select';
 import { BiCopy, BiInfoCircle, BiPlus, BiReset } from 'react-icons/bi';
-import { FaRegCopy } from 'react-icons/fa';
+import { FaRegCopy, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { MdContentPaste } from 'react-icons/md';
 import Select, { SingleValue } from 'react-select';
 import useDMVDataStore from '../../useDMVDataStore';
@@ -135,33 +135,104 @@ export default function ETLTagData({
               <span>Pattern:</span>
             </span>
             <div className='flex w-full flex-[5] items-center gap-5'>
-              <input
-                className={`${inputBoxClass} !ml-0`}
-                name='towerPattern'
-                value={etlTagData.etlPattern}
-                onChange={(e) =>
-                  updateProjectETLFormData(
-                    etlTagData.id,
-                    'etlPattern',
-                    e.target.value
-                  )
-                }
-                placeholder='Tower, Floor, Unit Pattern'
-              />
-              <button
-                className='btn btn-warning flex max-h-11 items-center text-base font-medium'
-                type='button'
-                onClick={() =>
-                  updateProjectETLFormData(
-                    etlTagData.id,
-                    'etlPattern',
-                    '(?<tower>)(?<floor>)(?<unit_number>)'
-                  )
-                }
-              >
-                <BiReset size={20} />
-                Reset
-              </button>
+              {etlTagData.patterns
+                .sort((a, b) => a.priority - b.priority)
+                .map((pattern) => (
+                  <span
+                    key={pattern.type}
+                    className='flex flex-col justify-center'
+                  >
+                    <span className='flex gap-1'>
+                      {pattern.priority != 1 && (
+                        <button
+                          onClick={() =>
+                            updateProjectETLFormData(
+                              etlTagData.id,
+                              'patterns',
+                              [
+                                etlTagData.patterns.find(
+                                  (e) =>
+                                    e.priority !== pattern.priority &&
+                                    e.priority !== pattern.priority - 1
+                                ),
+                                {
+                                  ...pattern,
+                                  priority: pattern.priority - 1,
+                                },
+                                {
+                                  ...etlTagData.patterns.find(
+                                    (e) => e.priority === pattern.priority - 1
+                                  ),
+                                  priority: pattern.priority,
+                                },
+                              ]
+                            )
+                          }
+                        >
+                          <FaArrowLeft />
+                        </button>
+                      )}
+                      <div className='float-label-input-group relative'>
+                        <input
+                          type='text'
+                          id={pattern.type}
+                          value={pattern.pattern}
+                          onChange={(e) =>
+                            updateProjectETLFormData(
+                              etlTagData.id,
+                              'patterns',
+                              [
+                                ...etlTagData.patterns.filter(
+                                  (e) => pattern.type !== e.type
+                                ),
+                                {
+                                  ...pattern,
+                                  pattern: e.target.value,
+                                },
+                              ]
+                            )
+                          }
+                          className='group peer w-full flex-[5] rounded-md border-0 bg-transparent p-2 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
+                        />
+                        <label
+                          className='absolute left-2 top-2 text-gray-300 transition-all duration-300 peer-valid:-top-3 peer-valid:bg-white peer-valid:px-2 peer-valid:text-violet-500 peer-focus:-top-3 peer-focus:bg-white peer-focus:px-2 peer-focus:text-violet-500'
+                          htmlFor={pattern.type}
+                        >
+                          {pattern.type}
+                        </label>
+                      </div>
+                      {pattern.priority != 3 && (
+                        <button
+                          onClick={() =>
+                            updateProjectETLFormData(
+                              etlTagData.id,
+                              'patterns',
+                              [
+                                etlTagData.patterns.find(
+                                  (e) =>
+                                    e.priority !== pattern.priority &&
+                                    e.priority !== pattern.priority + 1
+                                ),
+                                {
+                                  ...pattern,
+                                  priority: pattern.priority + 1,
+                                },
+                                {
+                                  ...etlTagData.patterns.find(
+                                    (e) => e.priority === pattern.priority + 1
+                                  ),
+                                  priority: pattern.priority,
+                                },
+                              ]
+                            )
+                          }
+                        >
+                          <FaArrowRight />
+                        </button>
+                      )}
+                    </span>
+                  </span>
+                ))}
             </div>
           </div>
           <div className='flex flex-wrap items-center justify-between gap-5'>
