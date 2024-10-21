@@ -152,7 +152,23 @@ export async function fetchTempProjectDetails({
             return `${ele.core_string} : ${ele.unit_numbers.join(', ')} : ${ele.occurrence_count}`;
           }) || [],
         doorNoStartWith: [],
-        etlPattern: '',
+        patterns: [
+          {
+            pattern: '',
+            type: 'tower',
+            priority: 1,
+          },
+          {
+            pattern: '',
+            type: 'floor',
+            priority: 2,
+          },
+          {
+            pattern: '',
+            type: 'unit',
+            priority: 3,
+          },
+        ],
         localityContains: [],
         localityPlot: [],
         plotContains: [],
