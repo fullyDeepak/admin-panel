@@ -129,7 +129,7 @@ export default function ProjectMatcherSection() {
                 <th className='text-nowrap px-6 py-4 text-center font-semibold text-gray-900'>
                   Door No.
                 </th>
-                <th className='text-nowrap px-6 py-4 text-center font-semibold text-gray-900'>
+                <th className='select-text text-nowrap px-6 py-4 text-center font-semibold text-gray-900'>
                   Unit Numbers
                 </th>
                 <th className='text-nowrap px-6 py-4 text-center font-semibold text-gray-900'>
@@ -154,7 +154,7 @@ export default function ProjectMatcherSection() {
                   <td className='border border-solid border-slate-400 px-6 py-4'>
                     {item.locality}
                   </td>
-                  <td className='border border-solid border-slate-400 px-6 py-4'>
+                  <td className='select-text border border-solid border-slate-400 px-6 py-4'>
                     {_.truncate(item.house_nos.join(', '), {
                       length: 80,
                     })}
