@@ -8,6 +8,7 @@ import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import TanstackReactTable from './Table';
 import { parseISO, format } from 'date-fns';
 import useETLDataStore from '../../useETLDataStore';
+import ReraDocs from '../project-etl-data/ReraDocs';
 const columnHelper = createColumnHelper<{
   execution_date: Date;
   linked_docs: string;
@@ -263,6 +264,9 @@ export default function DeveloperTagging() {
   return (
     <>
       <div className='mt-10 flex w-full flex-col'>
+        <div className='py-5'>
+          <ReraDocs />
+        </div>
         <h2 className='mt-10 self-center text-2xl md:text-3xl'>
           Tag Root Docs
         </h2>
