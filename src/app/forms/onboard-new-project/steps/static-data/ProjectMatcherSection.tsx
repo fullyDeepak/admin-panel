@@ -142,14 +142,6 @@ export default function ProjectMatcherSection() {
                 <tr
                   className='border-collapse cursor-pointer hover:bg-slate-50'
                   key={index}
-                  onClick={() => {
-                    updateOnboardingData({
-                      houseMasterLocalities: _.uniq([
-                        ...onboardingData.houseMasterLocalities,
-                        item.locality,
-                      ]),
-                    });
-                  }}
                 >
                   <td className='border border-solid border-slate-400 px-6 py-4'>
                     {item.locality}
