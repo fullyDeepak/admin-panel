@@ -6,7 +6,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { useState } from 'react';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import TanstackReactTable from './Table';
-import { parseISO, format, compareAsc } from 'date-fns';
+import { parseISO, format } from 'date-fns';
 import useETLDataStore from '../../useETLDataStore';
 const columnHelper = createColumnHelper<{
   execution_date: Date;

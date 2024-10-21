@@ -1,11 +1,15 @@
 'use client';
 
+import ReraDocs from '../project-etl-data/ReraDocs';
 import Keywords from './Keywords';
 
 export default function DeveloperTagging() {
   // 3 queries
   return (
-    <>
+    <div className='flex flex-col'>
+      <div className='pt-6'>
+        <ReraDocs />
+      </div>
       <div className='mx-auto mt-10 flex w-full flex-col'>
         <h2 className='self-center text-2xl md:text-3xl'>Keyword Tagger</h2>
         <div className=''>
@@ -39,6 +43,6 @@ export default function DeveloperTagging() {
           <input type='text' /> */}
         {/* </div> */}
       </div>
-    </>
+    </div>
   );
 }
