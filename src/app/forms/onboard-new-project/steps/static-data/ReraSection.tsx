@@ -41,6 +41,8 @@ export default function ReraSection({
         project_name: string;
         project_type: string;
         project_subtype: string;
+        total_land_area_sqmt: number;
+        calculated_net_land_area_sqmt: number;
         village_id: string;
         survey_number: string;
         plot_number: string;
@@ -118,19 +120,13 @@ export default function ReraSection({
         label: 'Mixed Residential',
       };
     }
-    updateOnboardingData({
-      suggestedPlot: uniq(data.map((item) => item.plot_number)),
-      suggestedSurvey: uniq(data.map((item) => item.survey_number)),
-      projectType: projectType,
-      projectSubType: projectSubType,
-      developerMasterId: is_jv
-        ? 'JV:' + jv_id?.toString()
-        : 'DEVELOPER:' + master_developer_id?.toString(),
-    });
 
     const phases: Record<number, number> = {};
     const projectIds = uniq(data.map((item) => +item.project_id));
     projectIds.map((num, index) => (phases[num] = index + 1));
+    let reraTotalLandAreaObj: Record<string, number> = {};
+    let reraCalcNetLandAreaObj: Record<string, number> = {};
+
     const towersData = data.map((item, index) => {
       let gfMin = null;
       let gfMax = null;
@@ -143,6 +139,9 @@ export default function ReraSection({
       unitMax = `${item.typical_floor_max_unit}`;
       reraTowerId = item.tower_id;
       const unitCards: UnitCardType[] = [];
+      reraTotalLandAreaObj[item.project_id] = item.total_land_area_sqmt;
+      reraCalcNetLandAreaObj[item.project_id] =
+        item.calculated_net_land_area_sqmt;
       item.etl_unit_configs.map((etl, idx) => {
         unitCards.push({
           id: idx + 1,
@@ -191,6 +190,22 @@ export default function ReraSection({
         towerDoorNoString: '',
         unitCards: unitCards,
       };
+    });
+    console.log({ reraTotalLandAreaObj, reraCalcNetLandAreaObj });
+    updateOnboardingData({
+      suggestedPlot: uniq(data.map((item) => item.plot_number)),
+      suggestedSurvey: uniq(data.map((item) => item.survey_number)),
+      projectType: projectType,
+      projectSubType: projectSubType,
+      developerMasterId: is_jv
+        ? 'JV:' + jv_id?.toString()
+        : 'DEVELOPER:' + master_developer_id?.toString(),
+      reraTotalLandArea: Object.values(reraTotalLandAreaObj)
+        .map((item) => item)
+        .reduce((a, b) => a + b, 0),
+      reraCalcNetLandArea: Object.values(reraCalcNetLandAreaObj)
+        .map((item) => item)
+        .reduce((a, b) => a + b, 0),
     });
     setTowerFormData(towersData);
     setLoadingProjectDetails(false);

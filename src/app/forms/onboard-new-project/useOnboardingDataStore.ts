@@ -86,6 +86,8 @@ export interface OnboardingDataType {
     project_attached: boolean;
   }[];
   rootDocArea: number;
+  reraTotalLandArea: number;
+  reraCalcNetLandArea: number;
   developerGroup: string;
 }
 
@@ -231,6 +233,8 @@ const INITIAL_STATE: OnboardingDataType = {
   developerMasterId: null,
   developmentAgreements: [],
   rootDocArea: 0,
+  reraTotalLandArea: 0,
+  reraCalcNetLandArea: 0,
   developerGroup: '',
 };
 
@@ -284,6 +288,8 @@ export const useOnboardingDataStore = create<Store>()(
           developerMasterId: null,
           developmentAgreements: [],
           developerGroup: '',
+          reraTotalLandArea: 0,
+          reraCalcNetLandArea: 0,
         },
         tempProjectSourceData: {},
       })),

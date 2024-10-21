@@ -275,8 +275,26 @@ export default function DeveloperTagging() {
           <h2 className='mt-10 self-center text-xl md:text-2xl'>
             Development Agreements
           </h2>
-          ROOT DOC AREA: {onboardingData.rootDocArea.toFixed(2)} SQ Yds (approx.{' '}
-          {(onboardingData.rootDocArea / 4840).toFixed(2)} Acres)
+          <div className='flex items-center justify-between'>
+            <p>
+              ROOT DOC AREA: {onboardingData.rootDocArea.toFixed(2)} SQ Yds
+              (approx. {(onboardingData.rootDocArea / 4840).toFixed(2)} Acres)
+            </p>
+            <div className='flex flex-col gap-2'>
+              <span>
+                RERA Net Land Area:{' '}
+                {(onboardingData.reraTotalLandArea * 1.196).toFixed(2)} SQ Yds
+                (approx. {(onboardingData.reraTotalLandArea / 4047).toFixed(2)}{' '}
+                Acres)
+              </span>
+              <span>
+                RERA Calculated Net Land Area:{' '}
+                {(onboardingData.reraCalcNetLandArea * 1.196).toFixed(2)} SQ Yds
+                (approx.{' '}
+                {(onboardingData.reraCalcNetLandArea / 4047).toFixed(2)} Acres)
+              </span>
+            </div>
+          </div>
           <div>
             <TanstackReactTable
               data={onboardingData.developmentAgreements}
