@@ -68,6 +68,8 @@ export default function StaticDataForm() {
       setDistrictOptions(districtOpts);
       return res.data.data;
     },
+    staleTime: Infinity,
+    refetchOnMount: false,
   });
   const { data: tempProjects, isLoading: isLoadingProjects } = useQuery({
     queryKey: ['tempProjects', onboardingData.selectedVillage],
@@ -105,6 +107,8 @@ export default function StaticDataForm() {
       }));
       return amenitiesOptions;
     },
+    staleTime: Infinity,
+    refetchOnMount: false,
   });
   const { data: reraProjects, isLoading: isLoadingReraProjects } = useQuery({
     queryKey: [
@@ -193,6 +197,8 @@ export default function StaticDataForm() {
       }
       return [];
     },
+    staleTime: 0,
+    refetchOnMount: false,
   });
 
   return (

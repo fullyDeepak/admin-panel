@@ -29,6 +29,8 @@ export function MasterDevelopers(props: Props & { SetValue: string | null }) {
           })),
         ];
       },
+      staleTime: Infinity,
+      refetchOnMount: false,
     });
   return (
     <>
