@@ -8,12 +8,76 @@ export default function ReraTableSection() {
   const reraTableColumns = useMemo(
     () => [
       {
+        header: 'Select',
+        cell: ({ row }: any) => (
+          <label>
+            <input type='checkbox' className='checkbox' />
+          </label>
+        ),
+      },
+      {
+        header: 'Submit',
+        cell: ({ row }: any) => (
+          <label>
+            <button className='btn btn-accent btn-sm'>Submit</button>
+          </label>
+        ),
+      },
+      {
+        header: 'Approval Date',
+        accessorKey: 'approval_date',
+      },
+      {
         header: 'Project ID',
         accessorKey: 'id',
       },
       {
         header: 'Project Name',
         accessorKey: 'project_name',
+      },
+      {
+        header: 'Developer',
+        accessorKey: 'dev_name',
+      },
+      {
+        header: 'Agreement Type',
+        accessorKey: 'agreement_type',
+      },
+      {
+        header: 'Developer M ID',
+        cell: ({ row }: any) => (
+          <select name='' id=''>
+            <option value='1'>1</option>
+            <option value='2'>2</option>
+            <option value='3'>3</option>
+          </select>
+        ),
+      },
+      {
+        header: 'Developer G ID',
+        cell: ({ row }: any) => (
+          <select name='' id=''>
+            <option value='1'>1</option>
+            <option value='2'>2</option>
+            <option value='3'>3</option>
+          </select>
+        ),
+      },
+      {
+        header: 'Project Type',
+        accessorKey: 'project_type',
+      },
+      {
+        header: 'Project SubType',
+        accessorKey: 'project_subtype_calculated',
+      },
+      {
+        header: 'Towers',
+        accessorKey: 'tower_count',
+      },
+      {
+        header: 'Units',
+        accessorKey: 'unit_count',
       },
       {
         header: 'District ID',
