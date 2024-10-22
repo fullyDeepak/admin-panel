@@ -1,15 +1,23 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import FetchDocs from './FetchDocs';
 import AdvTable from './AdvTable';
 import 'rc-select/assets/index.css';
 import { MasterDevelopers } from '@/components/dropdowns/MasterDevelopers';
 import { useCorrectionStore } from './useCorrectionStore';
+import CellEditor from './CellEditor';
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import { ReraDMLVTableData } from '@/types/types';
+import { formatISO } from 'date-fns';
 
 export default function ReraTableSection() {
   const [pdfPreviewDivs, setPdfPreviewDivs] = useState<React.JSX.Element[]>([]);
-  const reraTableColumns = useMemo(
+  const { correctionData, updateCurrentTableData } = useCorrectionStore();
+  const [rowSelection, setRowSelection] = useState({});
+  const [selectedRows, setSelectedRows] = useState<unknown[]>([]);
+  const columnHelper = createColumnHelper<ReraDMLVTableData>();
+  const reraTableColumns: ColumnDef<ReraDMLVTableData, any>[] = useMemo(
     () => [
-      {
+      columnHelper.accessor('id', {
         header: 'Submit',
         cell: ({ row }: any) => (
           <label>
@@ -26,26 +34,45 @@ export default function ReraTableSection() {
             </button>
           </label>
         ),
-      },
+      }),
       {
         header: 'Approval Date',
         accessorKey: 'approval_date',
+        meta: {
+          filterVariant: 'date',
+        },
+        cell: ({ row }: any) =>
+          formatISO(new Date(row.original.approval_date), {
+            representation: 'date',
+          }),
       },
       {
         header: 'Project ID',
         accessorKey: 'id',
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Project Name',
         accessorKey: 'project_name',
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Developer',
         accessorKey: 'dev_name',
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Agreement Type',
         accessorKey: 'agreement_type',
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Developer M ID',
@@ -53,9 +80,15 @@ export default function ReraTableSection() {
           <MasterDevelopers
             isDisabled={!row.getIsSelected()}
             SetValue={'DEVELOPER:' + row.original.developer_master_id}
-            onChange={(e) => console.log(e)}
+            onChange={(e) =>
+              // @ts-expect-error
+              updateCurrentTableData(row.original.id, e?.value?.split(':')[1])
+            }
           />
         ),
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Developer G ID',
@@ -66,58 +99,92 @@ export default function ReraTableSection() {
             onChange={(e) => console.log(e)}
           />
         ),
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Project Type',
         accessorKey: 'project_type',
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Project SubType',
         accessorKey: 'project_subtype_calculated',
+        cell: ({ row }: any) => (
+          <CellEditor
+            onChange={() => {}}
+            value={row.original.project_subtype_calculated}
+          />
+        ),
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Towers',
         accessorKey: 'tower_count',
+        meta: {
+          filterVariant: 'range',
+        },
       },
       {
         header: 'Units',
         accessorKey: 'unit_count',
-      },
-      {
-        header: 'District ID',
-        accessorKey: 'district_id',
-      },
-      {
-        header: 'Clean District',
-        accessorKey: 'clean_district_name',
+        meta: {
+          filterVariant: 'range',
+        },
       },
       {
         header: 'Mandal',
         accessorKey: 'mandal',
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Mandal ID',
         accessorKey: 'mandal_id',
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Clean Mandal',
         accessorKey: 'clean_mandal_name',
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Locality',
         accessorKey: 'locality',
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Village',
         accessorKey: 'village',
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Village ID',
         accessorKey: 'village_id',
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'Clean Village',
         accessorKey: 'clean_village_name',
+        meta: {
+          filterVariant: 'text',
+        },
       },
       {
         header: 'RERA Docs',
@@ -132,9 +199,11 @@ export default function ReraTableSection() {
     ],
     []
   );
-  const { correctionData } = useCorrectionStore();
-  const [rowSelection, setRowSelection] = useState({});
-  const [selectedRows, setSelectedRows] = useState<unknown[]>([]);
+
+  useEffect(() => {
+    console.log(selectedRows);
+  }, [selectedRows]);
+
   return (
     <div className='my-5 flex w-full gap-5'>
       <div className='flex-1 rounded-lg border-2 p-2'>

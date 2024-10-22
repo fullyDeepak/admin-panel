@@ -59,6 +59,7 @@ type CorrectionStore = {
     _value: CorrectionStoreState[K]
   ) => void;
   resetAll: () => void;
+  updateCurrentTableData: (_project_id: number, _dev_id: string) => void;
 };
 
 const INITIAL_STATE: CorrectionStoreState = {
@@ -89,6 +90,16 @@ export const useCorrectionStore = create<CorrectionStore>()(
           draft.correctionData[name] = value;
         })
       );
+    },
+    updateCurrentTableData: (pid, dev_id) => {
+      set((prev) => {
+        const idx = prev.correctionData.reraTableData?.findIndex(
+          (ele) => ele.id === pid
+        );
+        if (idx && idx !== -1 && prev.correctionData.reraTableData) {
+          prev.correctionData.reraTableData[idx].developer_master_id = +dev_id;
+        }
+      });
     },
     resetAll: () => {
       set({ correctionData: INITIAL_STATE });

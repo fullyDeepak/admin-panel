@@ -9,6 +9,7 @@ import {
   getFilteredRowModel,
   RowSelectionState,
   OnChangeFn,
+  Column,
 } from '@tanstack/react-table';
 import { HTMLProps, useEffect, useRef, useState } from 'react';
 import { GoArrowDown, GoArrowUp, GoArrowSwitch } from 'react-icons/go';
@@ -23,7 +24,6 @@ interface TableProps<TData> {
   data: TData[];
   columns: ColumnDef<TData, any>[];
   showPagination?: boolean;
-  enableSearch?: boolean;
   setSelectedRows: (_data: TData[]) => void;
   rowSelection: { [id: string]: boolean };
   setRowSelection: OnChangeFn<RowSelectionState>;
@@ -71,7 +71,6 @@ export default function AdvTable<TData>({
   data,
   columns,
   showPagination = true,
-  enableSearch = true,
   setSelectedRows,
   rowSelection,
   setRowSelection,
@@ -156,33 +155,6 @@ export default function AdvTable<TData>({
   }, [rowSelection]);
   return (
     <div className='mx-auto flex flex-col'>
-      {enableSearch && (
-        <div className='relative max-w-xs self-end'>
-          <input
-            type='text'
-            className='block w-full rounded-md border-0 py-1.5 ps-9 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
-            placeholder='Search for items'
-            onChange={(e) => setFiltering(e.target.value)}
-          />
-          <div className='pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3'>
-            <svg
-              className='h-4 w-4 text-gray-400'
-              xmlns='http://www.w3.org/2000/svg'
-              width={24}
-              height={24}
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeWidth={2}
-              strokeLinecap='round'
-              strokeLinejoin='round'
-            >
-              <circle cx={11} cy={11} r={8} />
-              <path d='m21 21-4.3-4.3' />
-            </svg>
-          </div>
-        </div>
-      )}
       <div className='m-5 max-h-screen overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
         <table className='relative !block max-h-[70vh] w-full border-collapse overflow-y-scroll bg-white text-sm text-gray-700'>
           <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50'>
@@ -191,32 +163,45 @@ export default function AdvTable<TData>({
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
                     className='px-4 py-4 font-semibold text-gray-900'
                   >
-                    <div className='flex cursor-pointer select-none items-center gap-1'>
-                      <span className='items-center gap-1 text-base text-black/70'>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                      </span>
-                      {header.id !== 'select' && (
-                        <span className='w-20'>
-                          {
-                            {
-                              asc: <GoArrowUp size={16} />,
-                              desc: <GoArrowDown size={16} />,
-                              false: (
-                                <GoArrowSwitch
-                                  style={{ transform: 'rotate(90deg)' }}
-                                  size={16}
-                                />
-                              ),
-                            }[(header.column.getIsSorted() as string) ?? null]
+                    <div className='flex cursor-pointer select-none flex-col items-center gap-1'>
+                      {header.column.getCanFilter() &&
+                        header.column.columnDef.meta &&
+                        (
+                          header.column.columnDef.meta as {
+                            filterVariant: string;
                           }
+                        ).filterVariant !== 'checkbox' && (
+                          <Filter column={header.column} />
+                        )}
+                      <div
+                        className='flex items-center gap-2'
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        <span className='items-center gap-1 text-base text-black/70'>
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                         </span>
-                      )}
+                        {header.id !== 'select' && (
+                          <span className='w-20'>
+                            {
+                              {
+                                asc: <GoArrowUp size={16} />,
+                                desc: <GoArrowDown size={16} />,
+                                false: (
+                                  <GoArrowSwitch
+                                    style={{ transform: 'rotate(90deg)' }}
+                                    size={16}
+                                  />
+                                ),
+                              }[(header.column.getIsSorted() as string) ?? null]
+                            }
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </th>
                 ))}
@@ -292,4 +277,67 @@ export default function AdvTable<TData>({
       )}
     </div>
   );
+}
+
+function Filter({ column }: { column: Column<any, unknown> }) {
+  const columnFilterValue = column.getFilterValue();
+  // @ts-expect-error
+  const { filterVariant } = column.columnDef.meta ?? {};
+
+  if (filterVariant === 'range') {
+    return (
+      <div>
+        <div className='flex justify-center gap-x-1'>
+          {/* See faceted column filters example for min max values functionality */}
+          <input
+            type='number'
+            value={(columnFilterValue as [number, number])?.[0] ?? ''}
+            onChange={(e) =>
+              column.setFilterValue((old: [number, number]) => [
+                e.target.value,
+                old?.[1],
+              ])
+            }
+            placeholder={`Min`}
+            className='block w-[50px] rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
+          />
+          <input
+            type='number'
+            value={(columnFilterValue as [number, number])?.[1] ?? ''}
+            onChange={(e) =>
+              column.setFilterValue((old: [number, number]) => [
+                old?.[0],
+                e.target.value,
+              ])
+            }
+            placeholder={`Max`}
+            className='block w-[50px] rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
+          />
+        </div>
+        <div className='h-1' />
+      </div>
+    );
+  }
+  if (filterVariant === 'text') {
+    return (
+      <input
+        className='block w-full rounded-md border-0 py-1.5 pl-2 !font-medium text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
+        onChange={(e) => column.setFilterValue(e.target.value)}
+        placeholder={`Search...`}
+        type='text'
+        value={(columnFilterValue ?? '') as string}
+      />
+    );
+  }
+  if (filterVariant === 'date') {
+    return (
+      <input
+        className='block w-full rounded-md border-0 py-1.5 pl-2 !font-medium text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
+        onChange={(e) => column.setFilterValue(e.target.value)}
+        placeholder={`Search...`}
+        type='date'
+        value={(columnFilterValue ?? '') as string}
+      />
+    );
+  }
 }
