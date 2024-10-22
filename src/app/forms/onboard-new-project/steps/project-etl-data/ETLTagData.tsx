@@ -8,7 +8,7 @@ import { MdContentPaste } from 'react-icons/md';
 import Select, { SingleValue } from 'react-select';
 import useDMVDataStore from '../../useDMVDataStore';
 import useETLDataStore from '../../useETLDataStore';
-import _ from 'lodash';
+import _, { startCase } from 'lodash';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import { useQuery } from '@tanstack/react-query';
 import axiosClient from '@/utils/AxiosClient';
@@ -206,6 +206,7 @@ export default function ETLTagData({
                           type='text'
                           id={pattern.type}
                           value={pattern.pattern}
+                          placeholder=''
                           onChange={(e) =>
                             updateProjectETLFormData(
                               etlTagData.id,
@@ -221,13 +222,13 @@ export default function ETLTagData({
                               ]
                             )
                           }
-                          className='group peer w-full flex-[5] rounded-md border-0 bg-transparent p-2 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
+                          className='group peer w-full flex-[5] rounded-md border-0 bg-transparent p-2 pt-4 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
                         />
                         <label
-                          className='absolute left-2 top-2 text-gray-300 transition-all duration-300 peer-valid:-top-3 peer-valid:bg-white peer-valid:px-2 peer-valid:text-violet-500 peer-focus:-top-3 peer-focus:bg-white peer-focus:px-2 peer-focus:text-violet-500'
+                          className='absolute left-2 top-3 cursor-text py-0 text-gray-500 transition-all duration-300 peer-focus:-top-3 peer-focus:bg-white peer-focus:px-2 peer-focus:text-violet-500 peer-[:not(:placeholder-shown)]:-top-3 peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:text-violet-500'
                           htmlFor={pattern.type}
                         >
-                          {pattern.type}
+                          {startCase(pattern.type)}
                         </label>
                       </div>
                       {pattern.priority != 3 && (
