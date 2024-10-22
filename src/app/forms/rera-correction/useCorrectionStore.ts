@@ -53,8 +53,8 @@ type CorrectionStoreState = {
 };
 
 type CorrectionStore = {
-  state: CorrectionStoreState;
-  setFormData: <K extends keyof CorrectionStoreState>(
+  correctionData: CorrectionStoreState;
+  updateCorrectionFormData: <K extends keyof CorrectionStoreState>(
     _name: K,
     _value: CorrectionStoreState[K]
   ) => void;
@@ -79,28 +79,19 @@ const INITIAL_STATE: CorrectionStoreState = {
 
 export const useCorrectionStore = create<CorrectionStore>()(
   immer((set) => ({
-    state: INITIAL_STATE,
-    setFormData: <K extends keyof CorrectionStoreState>(
+    correctionData: INITIAL_STATE,
+    updateCorrectionFormData: <K extends keyof CorrectionStoreState>(
       name: K,
       value: CorrectionStoreState[K]
     ) => {
       set((state) =>
         produce(state, (draft) => {
-          draft.state[name] = value;
+          draft.correctionData[name] = value;
         })
       );
     },
     resetAll: () => {
-      set({ state: INITIAL_STATE });
+      set({ correctionData: INITIAL_STATE });
     },
   }))
 );
-
-export const useCorrectionStoreActions = () =>
-  useCorrectionStore.getState().setFormData;
-
-export const useCorrectionStoreState = () =>
-  useCorrectionStore.getState().state;
-
-export const useCorrectionStoreReset = () =>
-  useCorrectionStore.getState().resetAll;

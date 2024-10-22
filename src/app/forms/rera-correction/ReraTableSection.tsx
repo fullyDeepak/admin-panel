@@ -1,25 +1,29 @@
 import { useMemo, useState } from 'react';
 import FetchDocs from './FetchDocs';
-import Table from './Table';
-import { useCorrectionStoreState } from './useCorrectionStore';
+import AdvTable from './AdvTable';
+import 'rc-select/assets/index.css';
+import { MasterDevelopers } from '@/components/dropdowns/MasterDevelopers';
+import { useCorrectionStore } from './useCorrectionStore';
 
 export default function ReraTableSection() {
   const [pdfPreviewDivs, setPdfPreviewDivs] = useState<React.JSX.Element[]>([]);
   const reraTableColumns = useMemo(
     () => [
       {
-        header: 'Select',
-        cell: ({ row }: any) => (
-          <label>
-            <input type='checkbox' className='checkbox' />
-          </label>
-        ),
-      },
-      {
         header: 'Submit',
         cell: ({ row }: any) => (
           <label>
-            <button className='btn btn-accent btn-sm'>Submit</button>
+            <button
+              className='btn btn-accent btn-sm'
+              type='button'
+              onClick={() => {
+                console.log(row);
+                console.log({ isSelected: row.getIsSelected() });
+              }}
+              disabled={!row?.getIsSelected()}
+            >
+              Submit
+            </button>
           </label>
         ),
       },
@@ -46,21 +50,21 @@ export default function ReraTableSection() {
       {
         header: 'Developer M ID',
         cell: ({ row }: any) => (
-          <select name='' id=''>
-            <option value='1'>1</option>
-            <option value='2'>2</option>
-            <option value='3'>3</option>
-          </select>
+          <MasterDevelopers
+            isDisabled={!row.getIsSelected()}
+            SetValue={''}
+            onChange={(e) => console.log(e)}
+          />
         ),
       },
       {
         header: 'Developer G ID',
         cell: ({ row }: any) => (
-          <select name='' id=''>
-            <option value='1'>1</option>
-            <option value='2'>2</option>
-            <option value='3'>3</option>
-          </select>
+          <MasterDevelopers
+            isDisabled={true}
+            SetValue={''}
+            onChange={(e) => console.log(e)}
+          />
         ),
       },
       {
@@ -136,7 +140,9 @@ export default function ReraTableSection() {
     ],
     []
   );
-  const { reraTableData } = useCorrectionStoreState();
+  const { correctionData } = useCorrectionStore();
+  const [rowSelection, setRowSelection] = useState({});
+  const [selectedRows, setSelectedRows] = useState<unknown[]>([]);
   return (
     <div className='my-5 flex w-full gap-5'>
       <div className='flex-1 rounded-lg border-2 p-2'>
@@ -144,12 +150,20 @@ export default function ReraTableSection() {
           RERA Data
         </h3>
 
-        {reraTableData && reraTableData?.length > 0 && (
-          <div className='max-w-[88vw]'>
-            {pdfPreviewDivs}
-            <Table columns={reraTableColumns} data={reraTableData} />
-          </div>
-        )}
+        {correctionData.reraTableData &&
+          correctionData.reraTableData?.length > 0 && (
+            <div className='max-w-[88vw]'>
+              {pdfPreviewDivs}
+              <AdvTable
+                columns={reraTableColumns}
+                data={correctionData.reraTableData}
+                rowSelection={rowSelection}
+                setRowSelection={setRowSelection}
+                setSelectedRows={setSelectedRows}
+                isMultiSelection={true}
+              />
+            </div>
+          )}
       </div>
     </div>
   );

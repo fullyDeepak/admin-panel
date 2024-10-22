@@ -31,6 +31,8 @@ export function MasterDevelopers(props: Props & { SetValue: string | null }) {
       },
       staleTime: Infinity,
       refetchOnMount: false,
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
     });
   return (
     <>
@@ -38,6 +40,7 @@ export function MasterDevelopers(props: Props & { SetValue: string | null }) {
         key={'masterDeveloperSelector'}
         options={masterDevelopers || []}
         isLoading={loadingMasterDevelopers}
+        isDisabled={props.isDisabled}
         onChange={props.onChange}
         value={
           masterDevelopers?.find((ele) => ele.value === props.SetValue) || null

@@ -7,10 +7,7 @@ import { isEqual, uniqWith } from 'lodash';
 import { MultiSelect } from 'react-multi-select-component';
 import { useReraCorrectionStore } from '@/store/useReraCorrectionStore';
 import { ReraDMLVTableData } from '@/types/types';
-import {
-  useCorrectionStore,
-  useCorrectionStoreState,
-} from './useCorrectionStore';
+import { useCorrectionStore } from './useCorrectionStore';
 
 export default function ReraDropdown() {
   const {
@@ -21,16 +18,8 @@ export default function ReraDropdown() {
     reraTableDataStore,
     setRERATableDataStore,
   } = useReraCorrectionStore();
-  const {
-    selectedReraDistrict,
-    selectedReraMandal,
-    selectedReraRawMandal,
-    selectedReraRawVillage,
-    selectedReraVillage,
-    selectedReraLocality,
-  } = useCorrectionStoreState();
+  const { correctionData, updateCorrectionFormData } = useCorrectionStore();
 
-  const { setFormData } = useCorrectionStore();
   const [reraRawMandalOption, setRawMandalOption] = useState<
     | {
         label: string;
@@ -49,7 +38,7 @@ export default function ReraDropdown() {
   // populate rera district dropdown
   const { isPending: loadingReraDistricts, data: reraDistrictOptions } =
     useQuery({
-      queryKey: ['rera-districts', selectedReraMandal],
+      queryKey: ['rera-districts', correctionData.selectedReraMandal],
       queryFn: async () => {
         const options = await fetchDropdownOption('districts', 'state', 36);
         return options.map((item) => ({
@@ -65,14 +54,17 @@ export default function ReraDropdown() {
     data: reraMandalOptions,
     refetch: refetchReraMandalOptions,
   } = useQuery({
-    queryKey: ['rera-district', selectedReraDistrict],
+    queryKey: ['rera-district', correctionData.selectedReraDistrict],
     queryFn: async () => {
-      if (selectedReraDistrict !== undefined && selectedReraDistrict !== null) {
+      if (
+        correctionData.selectedReraDistrict !== undefined &&
+        correctionData.selectedReraDistrict !== null
+      ) {
         console.log('Calling AA');
         const response = await axiosClient.get<{ data: ReraDMLVTableData[] }>(
           '/forms/rera/getReraProjectsByDMLVId',
           {
-            params: { district_id: selectedReraDistrict.value },
+            params: { district_id: correctionData.selectedReraDistrict.value },
           }
         );
         const data = response.data?.data;
@@ -107,7 +99,13 @@ export default function ReraDropdown() {
             value: item.village === '' ? 'BLANK' : item.village,
           });
         });
-        setFormData('reraTableData', data);
+        updateCorrectionFormData(
+          'reraTableData',
+          data.map((item) => ({
+            ...item,
+            agreement_type: item.agreement_type ? item.agreement_type : 'N/A',
+          }))
+        );
         setRawVillageOption(uniqWith(rawVillageOptions, isEqual));
         setRawMandalOption(uniqWith(rawOptions, isEqual));
         setRERATableDataStore(data);
@@ -121,21 +119,21 @@ export default function ReraDropdown() {
 
   // populate rera table data on rera raw mandal selection
   useQuery({
-    queryKey: ['rera-raw-mandal', selectedReraRawMandal],
+    queryKey: ['rera-raw-mandal', correctionData.selectedReraRawMandal],
     queryFn: async () => {
       if (
-        selectedReraDistrict &&
-        selectedReraRawMandal != null &&
-        selectedReraMandal
+        correctionData.selectedReraDistrict &&
+        correctionData.selectedReraRawMandal != null &&
+        correctionData.selectedReraMandal
       ) {
         console.log('Calling BB');
         const response = await axiosClient.get<{ data: ReraDMLVTableData[] }>(
           '/forms/rera/getReraProjectsByDMLVId',
           {
             params: {
-              district_id: selectedReraDistrict.value,
-              mandal: selectedReraMandal?.label.split(':')[1],
-              mandal_raw: selectedReraRawMandal.value,
+              district_id: correctionData.selectedReraDistrict.value,
+              mandal: correctionData.selectedReraMandal?.label.split(':')[1],
+              mandal_raw: correctionData.selectedReraRawMandal.value,
             },
           }
         );
@@ -171,7 +169,13 @@ export default function ReraDropdown() {
             value: item.village === '' ? 'BLANK' : item.village,
           });
         });
-        setFormData('reraTableData', data);
+        updateCorrectionFormData(
+          'reraTableData',
+          data.map((item) => ({
+            ...item,
+            agreement_type: item.agreement_type ? item.agreement_type : 'N/A',
+          }))
+        );
         setRawVillageOption(uniqWith(rawVillageOptions, isEqual));
         setRawMandalOption(uniqWith(rawOptions, isEqual));
         setRERATableDataStore(data);
@@ -185,22 +189,22 @@ export default function ReraDropdown() {
 
   // populate rera table data on rera raw village selection
   useQuery({
-    queryKey: ['rera-raw-village', selectedReraRawVillage],
+    queryKey: ['rera-raw-village', correctionData.selectedReraRawVillage],
     queryFn: async () => {
       if (
-        selectedReraDistrict &&
-        selectedReraMandal &&
-        selectedReraRawVillage
+        correctionData.selectedReraDistrict &&
+        correctionData.selectedReraMandal &&
+        correctionData.selectedReraRawVillage
       ) {
         console.log('Calling BBVILL');
         const response = await axiosClient.get<{ data: ReraDMLVTableData[] }>(
           '/forms/rera/getReraProjectsByDMLVId',
           {
             params: {
-              district_id: selectedReraDistrict.value,
-              mandal: selectedReraMandal?.label.split(':')[1],
-              village: selectedReraVillage?.label.split(':')[1],
-              village_raw: selectedReraRawVillage.value,
+              district_id: correctionData.selectedReraDistrict.value,
+              mandal: correctionData.selectedReraMandal?.label.split(':')[1],
+              village: correctionData.selectedReraVillage?.label.split(':')[1],
+              village_raw: correctionData.selectedReraRawVillage.value,
             },
           }
         );
@@ -231,7 +235,13 @@ export default function ReraDropdown() {
             value: item.village === '' ? 'BLANK' : item.village,
           });
         });
-        setFormData('reraTableData', data);
+        updateCorrectionFormData(
+          'reraTableData',
+          data.map((item) => ({
+            ...item,
+            agreement_type: item.agreement_type ? item.agreement_type : 'N/A',
+          }))
+        );
         setRawVillageOption(uniqWith(rawVillageOptions, isEqual));
         setRawMandalOption(uniqWith(rawOptions, isEqual));
         setRERATableDataStore(data);
@@ -249,10 +259,10 @@ export default function ReraDropdown() {
     data: reraVillageOptions,
     refetch: _refetchReraVillageOptions,
   } = useQuery({
-    queryKey: ['rera-mandal', selectedReraMandal],
+    queryKey: ['rera-mandal', correctionData.selectedReraMandal],
     queryFn: async () => {
-      if (selectedReraMandal != undefined) {
-        if (selectedReraMandal?.value === '-1') {
+      if (correctionData.selectedReraMandal != undefined) {
+        if (correctionData.selectedReraMandal?.value === '-1') {
           refetchReraMandalOptions();
           return null;
         }
@@ -261,10 +271,10 @@ export default function ReraDropdown() {
           '/forms/rera/getReraProjectsByDMLVId',
           {
             params: {
-              district_id: selectedReraDistrict?.value,
-              mandalId: selectedReraMandal?.value.split(':')[0],
-              mandal: selectedReraMandal?.value.split(':')[1],
-              village: selectedReraVillage?.value.split(':')[1],
+              district_id: correctionData.selectedReraDistrict?.value,
+              mandalId: correctionData.selectedReraMandal?.value.split(':')[0],
+              mandal: correctionData.selectedReraMandal?.value.split(':')[1],
+              village: correctionData.selectedReraVillage?.value.split(':')[1],
             },
           }
         );
@@ -300,7 +310,13 @@ export default function ReraDropdown() {
             value: item.village === '' ? 'BLANK' : item.village,
           });
         });
-        setFormData('reraTableData', data);
+        updateCorrectionFormData(
+          'reraTableData',
+          data.map((item) => ({
+            ...item,
+            agreement_type: item.agreement_type ? item.agreement_type : 'N/A',
+          }))
+        );
         setRawMandalOption(uniqWith(rawMandalOptions, isEqual));
         setRawVillageOption(uniqWith(rawVillageOptions, isEqual));
         setRERATableDataStore(data);
@@ -318,10 +334,10 @@ export default function ReraDropdown() {
     data: reraLocalityOptions,
     refetch: refetchReraLocalityOptions,
   } = useQuery({
-    queryKey: ['rera-village', selectedReraVillage],
+    queryKey: ['rera-village', correctionData.selectedReraVillage],
     queryFn: async () => {
-      if (selectedReraVillage != undefined) {
-        if (selectedReraVillage?.value === '-1') {
+      if (correctionData.selectedReraVillage != undefined) {
+        if (correctionData.selectedReraVillage?.value === '-1') {
           refetchReraMandalOptions();
           return null;
         }
@@ -330,11 +346,11 @@ export default function ReraDropdown() {
           '/forms/rera/getReraProjectsByDMLVId',
           {
             params: {
-              district_id: selectedReraDistrict?.value,
-              mandalId: selectedReraMandal?.value.split(':')[0],
-              mandal: selectedReraMandal?.value.split(':')[1],
-              village: selectedReraVillage?.value.split(':')[1],
-              mandal_raw: selectedReraRawMandal?.value,
+              district_id: correctionData.selectedReraDistrict?.value,
+              mandalId: correctionData.selectedReraMandal?.value.split(':')[0],
+              mandal: correctionData.selectedReraMandal?.value.split(':')[1],
+              village: correctionData.selectedReraVillage?.value.split(':')[1],
+              mandal_raw: correctionData.selectedReraRawMandal?.value,
             },
           }
         );
@@ -370,7 +386,13 @@ export default function ReraDropdown() {
             value: item.village === '' ? 'BLANK' : item.village,
           });
         });
-        setFormData('reraTableData', data);
+        updateCorrectionFormData(
+          'reraTableData',
+          data.map((item) => ({
+            ...item,
+            agreement_type: item.agreement_type ? item.agreement_type : 'N/A',
+          }))
+        );
         // setRawMandalOption(uniqWith(rawOptions, isEqual));
         setRawVillageOption(uniqWith(rawVillageOptions, isEqual));
         setRERATableDataStore(data);
@@ -384,10 +406,10 @@ export default function ReraDropdown() {
 
   //  filter rera table data on rera locality selection
   useQuery({
-    queryKey: ['rera-mandal', selectedReraLocality],
+    queryKey: ['rera-mandal', correctionData.selectedReraLocality],
     queryFn: async () => {
-      if (selectedReraMandal != undefined) {
-        if (selectedReraLocality?.value === '-1') {
+      if (correctionData.selectedReraMandal != undefined) {
+        if (correctionData.selectedReraLocality?.value === '-1') {
           refetchReraLocalityOptions();
           return null;
         }
@@ -396,12 +418,13 @@ export default function ReraDropdown() {
           '/forms/rera/getReraProjectsByDMLVId',
           {
             params: {
-              district_id: selectedReraDistrict?.value,
-              mandalId: selectedReraMandal?.value.split(':')[0],
-              mandal: selectedReraMandal?.value.split(':')[1],
-              villageId: selectedReraVillage?.value.split(':')[0],
-              village: selectedReraVillage?.value.split(':')[1],
-              locality: selectedReraLocality?.value,
+              district_id: correctionData.selectedReraDistrict?.value,
+              mandalId: correctionData.selectedReraMandal?.value.split(':')[0],
+              mandal: correctionData.selectedReraMandal?.value.split(':')[1],
+              villageId:
+                correctionData.selectedReraVillage?.value.split(':')[0],
+              village: correctionData.selectedReraVillage?.value.split(':')[1],
+              locality: correctionData.selectedReraLocality?.value,
             },
           }
         );
@@ -416,8 +439,13 @@ export default function ReraDropdown() {
             value: item.id,
           });
         });
-        setFormData('reraTableData', data);
-        setFormData('reraTableData', data);
+        updateCorrectionFormData(
+          'reraTableData',
+          data.map((item) => ({
+            ...item,
+            agreement_type: item.agreement_type ? item.agreement_type : 'N/A',
+          }))
+        );
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
         setSelectedProjects(optionsForProjects);
@@ -448,7 +476,15 @@ export default function ReraDropdown() {
                 selectedProjectId.includes(item.id)
               );
               filteredTableData &&
-                setFormData('reraTableData', filteredTableData);
+                updateCorrectionFormData(
+                  'reraTableData',
+                  filteredTableData.map((item) => ({
+                    ...item,
+                    agreement_type: item.agreement_type
+                      ? item.agreement_type
+                      : 'N/A',
+                  }))
+                );
             }}
           />
           <span
@@ -465,7 +501,7 @@ export default function ReraDropdown() {
           key={'district'}
           options={reraDistrictOptions || undefined}
           isLoading={loadingReraDistricts}
-          value={selectedReraDistrict}
+          value={correctionData.selectedReraDistrict}
           instanceId={useId()}
           onChange={(
             e: SingleValue<{
@@ -473,8 +509,8 @@ export default function ReraDropdown() {
               value: number;
             }>
           ) => {
-            setFormData('selectedReraDistrict', e);
-            setFormData('selectedReraMandal', null);
+            updateCorrectionFormData('selectedReraDistrict', e);
+            updateCorrectionFormData('selectedReraMandal', null);
           }}
         />
       </label>
@@ -485,15 +521,15 @@ export default function ReraDropdown() {
           key={'mandal'}
           options={reraMandalOptions || undefined}
           isLoading={loadingReraMandals}
-          value={selectedReraMandal}
+          value={correctionData.selectedReraMandal}
           instanceId={useId()}
           onChange={(e) => {
-            setFormData('selectedReraMandal', e);
-            setFormData('selectedReraVillage', null);
-            setFormData('selectedReraRawMandal', null);
-            setFormData('selectedReraRawVillage', null);
+            updateCorrectionFormData('selectedReraMandal', e);
+            updateCorrectionFormData('selectedReraVillage', null);
+            updateCorrectionFormData('selectedReraRawMandal', null);
+            updateCorrectionFormData('selectedReraRawVillage', null);
           }}
-          isDisabled={Boolean(!selectedReraDistrict)}
+          isDisabled={Boolean(!correctionData.selectedReraDistrict)}
         />
       </label>
       <label className='flex items-center justify-between gap-5'>
@@ -502,15 +538,17 @@ export default function ReraDropdown() {
           className='w-full flex-[5]'
           key={'mandal'}
           options={reraRawMandalOption || undefined}
-          value={selectedReraRawMandal}
+          value={correctionData.selectedReraRawMandal}
           instanceId={useId()}
           onChange={(e) => {
-            setFormData('selectedReraRawMandal', e);
-            setFormData('selectedReraRawVillage', null);
-            setFormData('selectedReraVillage', null);
+            updateCorrectionFormData('selectedReraRawMandal', e);
+            updateCorrectionFormData('selectedReraRawVillage', null);
+            updateCorrectionFormData('selectedReraVillage', null);
           }}
           isDisabled={
-            selectedReraMandal?.label.split(':')[0] === 'NULL' ? false : true
+            correctionData.selectedReraMandal?.label.split(':')[0] === 'NULL'
+              ? false
+              : true
           }
         />
       </label>
@@ -522,9 +560,13 @@ export default function ReraDropdown() {
           instanceId={useId()}
           options={reraVillageOptions || undefined}
           isLoading={loadingReraVillages}
-          value={selectedReraMandal ? selectedReraVillage : null}
-          onChange={(e) => setFormData('selectedReraVillage', e)}
-          isDisabled={Boolean(!selectedReraMandal)}
+          value={
+            correctionData.selectedReraMandal
+              ? correctionData.selectedReraVillage
+              : null
+          }
+          onChange={(e) => updateCorrectionFormData('selectedReraVillage', e)}
+          isDisabled={Boolean(!correctionData.selectedReraMandal)}
         />
       </label>
       <label className='flex items-center justify-between gap-5'>
@@ -534,10 +576,18 @@ export default function ReraDropdown() {
           key={'village'}
           instanceId={useId()}
           options={reraRawVillageOption || undefined}
-          value={selectedReraMandal ? selectedReraRawVillage : null}
-          onChange={(e) => setFormData('selectedReraRawVillage', e)}
+          value={
+            correctionData.selectedReraMandal
+              ? correctionData.selectedReraRawVillage
+              : null
+          }
+          onChange={(e) =>
+            updateCorrectionFormData('selectedReraRawVillage', e)
+          }
           isDisabled={
-            selectedReraVillage?.label.split(':')[0] === 'NULL' ? false : true
+            correctionData.selectedReraVillage?.label.split(':')[0] === 'NULL'
+              ? false
+              : true
           }
         />
       </label>
@@ -549,9 +599,13 @@ export default function ReraDropdown() {
           key={'locality'}
           options={reraLocalityOptions || undefined}
           isLoading={loadingReraLocality}
-          value={selectedReraVillage ? selectedReraLocality : null}
-          onChange={(e) => setFormData('selectedReraLocality', e)}
-          isDisabled={Boolean(!selectedReraVillage)}
+          value={
+            correctionData.selectedReraVillage
+              ? correctionData.selectedReraLocality
+              : null
+          }
+          onChange={(e) => updateCorrectionFormData('selectedReraLocality', e)}
+          isDisabled={Boolean(!correctionData.selectedReraVillage)}
         />
       </label>
     </>

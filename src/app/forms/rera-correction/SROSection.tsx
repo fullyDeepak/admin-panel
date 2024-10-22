@@ -1,11 +1,7 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import Select, { SingleValue } from 'react-select';
-import {
-  SroResponse,
-  useCorrectionStore,
-  useCorrectionStoreState,
-} from './useCorrectionStore';
+import { SroResponse, useCorrectionStore } from './useCorrectionStore';
 import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
 import { useId } from 'react';
 import axiosClient from '@/utils/AxiosClient';
@@ -14,12 +10,10 @@ import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import { sroTableColumns } from './utils';
 
 export default function SROSection() {
-  const { selectedSroDistrict, selectedSroMandal, sroTableData } =
-    useCorrectionStoreState();
-  const { setFormData } = useCorrectionStore();
+  const { updateCorrectionFormData, correctionData } = useCorrectionStore();
   const { isPending: loadingSroDistricts, data: sroDistrictOptions } = useQuery(
     {
-      queryKey: ['sro-districts', selectedSroMandal],
+      queryKey: ['sro-districts', correctionData.selectedSroMandal],
       queryFn: async () => {
         const options = await fetchDropdownOption('districts', 'state', 36);
         return options.map((item) => ({
@@ -35,13 +29,16 @@ export default function SROSection() {
     data: sroMandalOptions,
     refetch: refetchSroMandalOption,
   } = useQuery({
-    queryKey: ['sro-mandals', selectedSroDistrict],
+    queryKey: ['sro-mandals', correctionData.selectedSroDistrict],
     queryFn: async () => {
-      if (selectedSroDistrict !== undefined && selectedSroDistrict !== null) {
+      if (
+        correctionData.selectedSroDistrict !== undefined &&
+        correctionData.selectedSroDistrict !== null
+      ) {
         const response = await axiosClient.get<{ data: SroResponse[] }>(
           '/sro/getSroDMVById',
           {
-            params: { district_id: selectedSroDistrict.value },
+            params: { district_id: correctionData.selectedSroDistrict.value },
           }
         );
         const data = response.data?.data;
@@ -53,7 +50,7 @@ export default function SROSection() {
           });
         });
         // setSroTableData(data);
-        setFormData('sroTableData', data);
+        updateCorrectionFormData('sroTableData', data);
         return uniqWith(options, isEqual);
       }
     },
@@ -63,10 +60,13 @@ export default function SROSection() {
 
   // populated sro village dropdown on sro mandal selection
   useQuery({
-    queryKey: ['sro-villages', selectedSroMandal?.value],
+    queryKey: ['sro-villages', correctionData.selectedSroMandal?.value],
     queryFn: async () => {
-      if (selectedSroMandal !== undefined && selectedSroMandal !== null) {
-        if (selectedSroMandal.value === -1) {
+      if (
+        correctionData.selectedSroMandal !== undefined &&
+        correctionData.selectedSroMandal !== null
+      ) {
+        if (correctionData.selectedSroMandal.value === -1) {
           refetchSroMandalOption();
           return true;
         }
@@ -74,8 +74,8 @@ export default function SROSection() {
           '/sro/getSroDMVById',
           {
             params: {
-              district_id: selectedSroDistrict?.value,
-              mandal_id: selectedSroMandal.value,
+              district_id: correctionData.selectedSroDistrict?.value,
+              mandal_id: correctionData.selectedSroMandal.value,
             },
           }
         );
@@ -85,7 +85,7 @@ export default function SROSection() {
           value: item.mandal_id,
         }));
         // setSroTableData(data);
-        setFormData('sroTableData', data);
+        updateCorrectionFormData('sroTableData', data);
         return uniqWith(options, isEqual);
       }
     },
@@ -102,7 +102,7 @@ export default function SROSection() {
           key={'district'}
           options={sroDistrictOptions || undefined}
           isLoading={loadingSroDistricts}
-          value={selectedSroDistrict}
+          value={correctionData.selectedSroDistrict}
           instanceId={useId()}
           onChange={(
             e: SingleValue<{
@@ -110,7 +110,7 @@ export default function SROSection() {
               value: number;
             }>
           ) => {
-            setFormData('selectedSroDistrict', e);
+            updateCorrectionFormData('selectedSroDistrict', e);
           }}
         />
       </label>
@@ -121,23 +121,27 @@ export default function SROSection() {
           key={'mandal'}
           options={sroMandalOptions || undefined}
           isLoading={loadingSroMandals}
-          value={selectedSroMandal}
+          value={correctionData.selectedSroMandal}
           instanceId={useId()}
           onChange={(e) => {
-            setFormData('selectedSroMandal', e);
+            updateCorrectionFormData('selectedSroMandal', e);
           }}
-          isDisabled={Boolean(!selectedSroDistrict)}
+          isDisabled={Boolean(!correctionData.selectedSroDistrict)}
         />
       </label>
       <div className='max-w-[40vw] rounded-lg border-2 p-2'>
         <h3 className='mt-5 text-center text-2xl font-semibold underline'>
           SRO Data
         </h3>
-        {sroTableData && sroTableData?.length > 0 && (
-          <div className='overflow-x-auto'>
-            <TanstackReactTable columns={sroTableColumns} data={sroTableData} />
-          </div>
-        )}
+        {correctionData.sroTableData &&
+          correctionData.sroTableData?.length > 0 && (
+            <div className='overflow-x-auto'>
+              <TanstackReactTable
+                columns={sroTableColumns}
+                data={correctionData.sroTableData}
+              />
+            </div>
+          )}
       </div>
     </div>
   );

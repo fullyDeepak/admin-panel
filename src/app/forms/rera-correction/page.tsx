@@ -1,19 +1,16 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import {
-  useCorrectionStore,
-  useCorrectionStoreState,
-} from './useCorrectionStore';
+import { useCorrectionStore } from './useCorrectionStore';
 import { usePathname } from 'next/navigation';
 import SROSection from './SROSection';
 import ReraFilterSection from './ReraFilterSection';
 import ReraTableSection from './ReraTableSection';
+import Dropdown from './Dropdown';
 
 export default function ReraCorrectionPage() {
-  const { selectedReraMandal, selectedReraVillage } = useCorrectionStoreState();
-
-  const { setFormData, resetAll } = useCorrectionStore();
+  const { updateCorrectionFormData, resetAll, correctionData } =
+    useCorrectionStore();
 
   useEffect(() => {
     resetAll();
@@ -21,13 +18,13 @@ export default function ReraCorrectionPage() {
 
   useEffect(() => {
     // setSelectedReraLocality(null);
-    setFormData('selectedReraLocality', null);
-  }, [selectedReraMandal?.value]);
+    updateCorrectionFormData('selectedReraLocality', null);
+  }, [correctionData.selectedReraMandal?.value]);
 
   useEffect(() => {
     // setSelectedReraLocality(null);
-    setFormData('selectedReraLocality', null);
-  }, [selectedReraVillage?.value]);
+    updateCorrectionFormData('selectedReraLocality', null);
+  }, [correctionData.selectedReraVillage?.value]);
 
   return (
     <div className='mx-auto mt-10 flex w-[90%] flex-col'>
@@ -36,7 +33,20 @@ export default function ReraCorrectionPage() {
         <SROSection />
         <ReraFilterSection />
       </div>
+      <Dropdown />
       <ReraTableSection />
     </div>
   );
 }
+
+// Selection
+// Button
+// RERA approval Date
+// Developer
+// Agreement Type
+// Developer M ID
+// Developer G ID
+// Project Type
+// Subtype
+// Towers
+// Units

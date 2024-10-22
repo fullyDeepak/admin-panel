@@ -1,8 +1,5 @@
 import ReraDropdown from './ReraDropdown';
-import {
-  useCorrectionStore,
-  useCorrectionStoreState,
-} from './useCorrectionStore';
+import { useCorrectionStore } from './useCorrectionStore';
 import { useReraCorrectionStore } from '@/store/useReraCorrectionStore';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -14,13 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
 const inputBoxClass =
   'w-full rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 export default function ReraFilterSection() {
-  const {
-    selectedReraDistrict,
-    districtIdValue,
-    mandalIdValue,
-    villageIdValue,
-  } = useCorrectionStoreState();
-  const { setFormData } = useCorrectionStore();
+  const { updateCorrectionFormData, correctionData } = useCorrectionStore();
   const { selectedProjects } = useReraCorrectionStore();
   const [surveyValue, setSurveyValue] = useState<string[]>([]);
   const [plotValue, setPlotValue] = useState<string[]>([]);
@@ -29,12 +20,16 @@ export default function ReraFilterSection() {
     type: 'DISTRICT' | 'MANDAL' | 'VILLAGE' | 'SURVEY'
   ) {
     const projectIds = selectedProjects.map((item) => item.value);
-    if (type === 'DISTRICT' && districtIdValue && districtIdValue.trim()) {
+    if (
+      type === 'DISTRICT' &&
+      correctionData.districtIdValue &&
+      correctionData.districtIdValue.trim()
+    ) {
       console.log('updaing district.........');
       try {
         const response = axiosClient.put('/forms/rera/district', {
           project_ids: projectIds,
-          district_id: +districtIdValue,
+          district_id: +correctionData.districtIdValue,
         });
         await toast.promise(
           response,
@@ -49,7 +44,7 @@ export default function ReraFilterSection() {
             },
           }
         );
-        setFormData('districtIdValue', '');
+        updateCorrectionFormData('districtIdValue', '');
       } catch (error) {
         if (
           axios.isAxiosError(error) &&
@@ -67,11 +62,15 @@ export default function ReraFilterSection() {
           });
         }
       }
-    } else if (type === 'MANDAL' && mandalIdValue && mandalIdValue.trim()) {
+    } else if (
+      type === 'MANDAL' &&
+      correctionData.mandalIdValue &&
+      correctionData.mandalIdValue.trim()
+    ) {
       try {
         const response = axiosClient.put('/forms/rera/mandal', {
           project_ids: projectIds,
-          mandal_id: +mandalIdValue,
+          mandal_id: +correctionData.mandalIdValue,
         });
         await toast.promise(
           response,
@@ -86,7 +85,7 @@ export default function ReraFilterSection() {
             },
           }
         );
-        setFormData('mandalIdValue', '');
+        updateCorrectionFormData('mandalIdValue', '');
       } catch (error) {
         if (
           axios.isAxiosError(error) &&
@@ -104,11 +103,15 @@ export default function ReraFilterSection() {
           });
         }
       }
-    } else if (type === 'VILLAGE' && villageIdValue && villageIdValue.trim()) {
+    } else if (
+      type === 'VILLAGE' &&
+      correctionData.villageIdValue &&
+      correctionData.villageIdValue.trim()
+    ) {
       try {
         const response = axiosClient.put('/forms/rera/village', {
           project_ids: projectIds,
-          village_id: +villageIdValue,
+          village_id: +correctionData.villageIdValue,
         });
         await toast.promise(
           response,
@@ -123,7 +126,7 @@ export default function ReraFilterSection() {
             },
           }
         );
-        setFormData('villageIdValue', '');
+        updateCorrectionFormData('villageIdValue', '');
       } catch (error) {
         if (
           axios.isAxiosError(error) &&
@@ -235,8 +238,10 @@ export default function ReraFilterSection() {
             name='district_id'
             placeholder='Enter ID here'
             type='number'
-            value={districtIdValue}
-            onChange={(e) => setFormData('districtIdValue', e.target.value)}
+            value={correctionData.districtIdValue}
+            onChange={(e) =>
+              updateCorrectionFormData('districtIdValue', e.target.value)
+            }
           />
           <button
             className='btn-rezy max-h-10'
@@ -263,8 +268,10 @@ export default function ReraFilterSection() {
             name='mandal_id'
             placeholder='Enter ID here'
             type='number'
-            value={mandalIdValue}
-            onChange={(e) => setFormData('mandalIdValue', e.target.value)}
+            value={correctionData.mandalIdValue}
+            onChange={(e) =>
+              updateCorrectionFormData('mandalIdValue', e.target.value)
+            }
           />
           <button
             className='btn-rezy max-h-10'
@@ -282,8 +289,10 @@ export default function ReraFilterSection() {
             className={inputBoxClass}
             name='village_id'
             placeholder='Enter ID here'
-            value={villageIdValue}
-            onChange={(e) => setFormData('villageIdValue', e.target.value)}
+            value={correctionData.villageIdValue}
+            onChange={(e) =>
+              updateCorrectionFormData('villageIdValue', e.target.value)
+            }
           />
           <button
             className='btn-rezy max-h-10'
@@ -342,11 +351,11 @@ export default function ReraFilterSection() {
           type='button'
           onClick={() => {
             queryClient.refetchQueries({
-              queryKey: ['rera-district', selectedReraDistrict],
+              queryKey: ['rera-district', correctionData.selectedReraDistrict],
             });
-            setFormData('selectedReraMandal', null);
-            setFormData('selectedReraVillage', null);
-            setFormData('selectedReraLocality', null);
+            updateCorrectionFormData('selectedReraMandal', null);
+            updateCorrectionFormData('selectedReraVillage', null);
+            updateCorrectionFormData('selectedReraLocality', null);
           }}
         >
           Refresh All

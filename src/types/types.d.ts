@@ -171,6 +171,11 @@ export interface FormTowerDetailType {
 export type ReraDMLVTableData = {
   id: number;
   project_name: string;
+  approval_date: string;
+  project_type: string;
+  project_subtype_calculated: string;
+  dev_name: string;
+  agreement_type: string | null;
   district_id: number;
   clean_district_name: string;
   mandal: string;
@@ -182,6 +187,8 @@ export type ReraDMLVTableData = {
   clean_village_name: string;
   clean_survey_number: string;
   clean_plot_number: string;
+  tower_count: string;
+  unit_count: string;
 };
 
 export type ImageStatsData = {
