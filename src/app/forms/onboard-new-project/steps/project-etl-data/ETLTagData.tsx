@@ -9,6 +9,10 @@ import Select, { SingleValue } from 'react-select';
 import useDMVDataStore from '../../useDMVDataStore';
 import useETLDataStore from '../../useETLDataStore';
 import _ from 'lodash';
+import { useOnboardingDataStore } from '../../useOnboardingDataStore';
+import { useQuery } from '@tanstack/react-query';
+import axiosClient from '@/utils/AxiosClient';
+import SimpleTable from '@/components/tables/SimpleTable';
 
 interface ETLTagDataType {
   showHeading?: boolean;
@@ -27,12 +31,37 @@ export default function ETLTagData({
     addNewProjectETLTagCard,
   } = useETLDataStore();
   const { villageOptions } = useDMVDataStore();
-
+  const { onboardingData } = useOnboardingDataStore();
   const docIdPattern: RegExp =
     /^(100\d|10[1-9]\d|1[1-9]\d{2}|[2-9]\d{3})-(19[0-9][0-9]|2[0][0-9]{2})-([1-9]\d{1,5}|[1-9])$/gm;
   const notDocIdPattern: RegExp =
     /^(100\d|10[1-9]\d|1[1-9]\d{2}|[2-9]\d{3})-(19[0-9][0-9]|2[0][0-9]{2})-([1-9]\d{1,5}|[1-9])-([1-9]\d{1,5}|[1-9])$/gm;
-
+  const {
+    data: patternRecommendations,
+    isLoading: loadingPatternRecommendations,
+  } = useQuery({
+    queryKey: ['pattern-recommendations', onboardingData.selectedTempProject],
+    queryFn: async () => {
+      if (!onboardingData.selectedTempProject) return [];
+      const res = await axiosClient.get<{
+        data: {
+          floor: string | null;
+          unit_number: string | null;
+          flat: string | null;
+          facing: string | null;
+          flat_pattern: string | null;
+        }[];
+      }>('/onboarding/pattern-recommendations', {
+        params: {
+          project_id: onboardingData.selectedTempProject.value,
+        },
+      });
+      return res.data.data;
+    },
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
   return (
     <>
       {showHeading && (
@@ -235,6 +264,14 @@ export default function ETLTagData({
                 ))}
             </div>
           </div>
+          <SimpleTable
+            columns={['floor', 'unit_number', 'flat', 'facing', 'flat_pattern']}
+            tableData={
+              patternRecommendations?.map((ele) =>
+                Object.values(ele).map((ele) => (ele ? ele : 'N/A'))
+              ) || []
+            }
+          />
           <div className='flex flex-wrap items-center justify-between gap-5'>
             <span className='flex flex-[2] items-center'>
               <span>Doc ID:</span>
