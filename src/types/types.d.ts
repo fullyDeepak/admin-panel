@@ -175,6 +175,7 @@ export type ReraDMLVTableData = {
   project_type: string;
   project_subtype_calculated: string;
   dev_name: string;
+  developer_master_id: number;
   agreement_type: string | null;
   district_id: number;
   clean_district_name: string;

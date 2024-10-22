@@ -43,7 +43,7 @@ export function MasterDevelopers(props: Props & { SetValue: string | null }) {
         isDisabled={props.isDisabled}
         onChange={props.onChange}
         value={
-          masterDevelopers?.find((ele) => ele.value === props.SetValue) || null
+          masterDevelopers?.find((ele) => ele.value == props.SetValue) || null
         }
         className={props.className}
       />

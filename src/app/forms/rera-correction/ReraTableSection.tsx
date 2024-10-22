@@ -52,7 +52,7 @@ export default function ReraTableSection() {
         cell: ({ row }: any) => (
           <MasterDevelopers
             isDisabled={!row.getIsSelected()}
-            SetValue={''}
+            SetValue={'DEVELOPER:' + row.original.developer_master_id}
             onChange={(e) => console.log(e)}
           />
         ),
@@ -118,14 +118,6 @@ export default function ReraTableSection() {
       {
         header: 'Clean Village',
         accessorKey: 'clean_village_name',
-      },
-      {
-        header: 'Clean Survey',
-        accessorKey: 'clean_survey_number',
-      },
-      {
-        header: 'Clean Plot',
-        accessorKey: 'clean_plot_number',
       },
       {
         header: 'RERA Docs',

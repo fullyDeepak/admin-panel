@@ -456,44 +456,6 @@ export default function ReraDropdown() {
 
   return (
     <>
-      <div className='flex items-center justify-between gap-5'>
-        <span className='flex-[2] text-xl'>Projects:</span>
-        <div className='flex flex-[5] items-center gap-3'>
-          <MultiSelect
-            options={projectOption}
-            value={selectedProjects}
-            className='w-full'
-            labelledBy=''
-            onChange={(
-              e: {
-                label: string;
-                value: number;
-              }[]
-            ) => {
-              setSelectedProjects(e);
-              const selectedProjectId = e.map((item) => item.value);
-              const filteredTableData = reraTableDataStore?.filter((item) =>
-                selectedProjectId.includes(item.id)
-              );
-              filteredTableData &&
-                updateCorrectionFormData(
-                  'reraTableData',
-                  filteredTableData.map((item) => ({
-                    ...item,
-                    agreement_type: item.agreement_type
-                      ? item.agreement_type
-                      : 'N/A',
-                  }))
-                );
-            }}
-          />
-          <span
-            className={`badge aspect-square h-10 rounded-full bg-violet-200 ${selectedProjects.length > 100 ? 'text-base' : 'text-lg'} `}
-          >
-            {selectedProjects.length}
-          </span>
-        </div>
-      </div>
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-xl'>District:</span>
         <Select
@@ -608,6 +570,44 @@ export default function ReraDropdown() {
           isDisabled={Boolean(!correctionData.selectedReraVillage)}
         />
       </label>
+      <div className='flex items-center justify-between gap-5'>
+        <span className='flex-[2] text-xl'>Projects:</span>
+        <div className='flex flex-[5] items-center gap-3'>
+          <MultiSelect
+            options={projectOption}
+            value={selectedProjects}
+            className='w-full'
+            labelledBy=''
+            onChange={(
+              e: {
+                label: string;
+                value: number;
+              }[]
+            ) => {
+              setSelectedProjects(e);
+              const selectedProjectId = e.map((item) => item.value);
+              const filteredTableData = reraTableDataStore?.filter((item) =>
+                selectedProjectId.includes(item.id)
+              );
+              filteredTableData &&
+                updateCorrectionFormData(
+                  'reraTableData',
+                  filteredTableData.map((item) => ({
+                    ...item,
+                    agreement_type: item.agreement_type
+                      ? item.agreement_type
+                      : 'N/A',
+                  }))
+                );
+            }}
+          />
+          <span
+            className={`badge aspect-square h-10 rounded-full bg-violet-200 ${selectedProjects.length > 100 ? 'text-base' : 'text-lg'} `}
+          >
+            {selectedProjects.length}
+          </span>
+        </div>
+      </div>
     </>
   );
 }
