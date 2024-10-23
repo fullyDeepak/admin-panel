@@ -89,6 +89,7 @@ export interface OnboardingDataType {
   reraTotalLandArea: number;
   reraCalcNetLandArea: number;
   developerGroup: string;
+  geoData: any[];
 }
 
 export interface TempProjectSourceData {
@@ -236,12 +237,13 @@ const INITIAL_STATE: OnboardingDataType = {
   reraTotalLandArea: 0,
   reraCalcNetLandArea: 0,
   developerGroup: '',
+  geoData: [],
 };
 
 export const useOnboardingDataStore = create<Store>()(
   immer((set) => ({
     onboardingData: INITIAL_STATE,
-    currentFormStep: 'Static Data' as Store['currentFormStep'],
+    currentFormStep: 'Geo-Data' as Store['currentFormStep'],
     formStepsList: [
       'Static Data',
       'Geo-Data',

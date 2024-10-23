@@ -1,22 +1,22 @@
-import { Dispatch, SetStateAction, useEffect } from 'react';
-import { useMap } from 'react-leaflet';
+// @ts-nocheck
+
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-import markerPin from '../../../../map/project/project-marker.png';
-import { Icon } from 'leaflet';
-import L from 'leaflet';
+import L, { Icon } from 'leaflet';
+import png from 'leaflet/dist/images/marker-icon.png';
+import { useEffect } from 'react';
+import { useMap } from 'react-leaflet';
 
 type Props = {
-  setGeoJsonData: Dispatch<SetStateAction<any[]>>;
+  setGeoJsonData: (_d) => void;
 };
-
 export default function GeomanDrawer({ setGeoJsonData }: Props) {
   const map = useMap();
   const markerIcon = new Icon({
-    iconUrl: markerPin.src,
+    iconUrl: png.src,
     iconSize: [38, 38],
   });
-
+  console.log(JSON.stringify(markerIcon));
   useEffect(() => {
     map?.pm?.addControls({
       position: 'topright',
@@ -30,18 +30,46 @@ export default function GeomanDrawer({ setGeoJsonData }: Props) {
       dragMode: true,
       cutPolygon: true,
       removalMode: true,
+      drawText: true,
     });
-
     map.on('pm:create', (e) => {
       const layer = e.layer;
-      if (layer instanceof L.Marker) {
+
+      console.log('Created Layer', e);
+      console.log('Adding Edit Listener');
+      layer.on('pm:edit', (e) => {
+        console.log('Edited');
+        console.log(e);
+        const toSet = map.pm.getGeomanLayers().map((layer) => {
+          console.log('Layer', layer);
+          let geojson = layer.toGeoJSON();
+          if (layer.options.textMarker) {
+            geojson = {
+              ...geojson,
+              properties: {
+                ...geojson.properties,
+                text: layer.options.text,
+              },
+            };
+          }
+          return geojson;
+        });
+        console.log(toSet);
+        setGeoJsonData(toSet);
+      });
+      if (e.shape === 'marker') {
         const marker = layer as L.Marker;
         marker.setIcon(markerIcon);
       }
-      //@ts-expect-error
-      const geoJsonData = layer?.toGeoJSON();
-      console.log('GeoJSON Data:', geoJsonData);
-      setGeoJsonData((prev) => [...prev, geoJsonData]);
+      const toSet = map.pm.getGeomanLayers().map((layer) => {
+        console.log('Layer', layer.toGeoJSON());
+        return layer.toGeoJSON();
+      });
+      console.log(toSet);
+      setGeoJsonData(toSet);
+      map.pm.getGeomanLayers().forEach((layer) => {
+        console.log('Layer', layer.toGeoJSON());
+      });
     });
     return () => {
       map.off('pm:create');

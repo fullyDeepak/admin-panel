@@ -1,12 +1,19 @@
 'use client';
-import { Icon, LatLngBounds, LatLngBoundsExpression, LatLngTuple, Layer } from 'leaflet';
+import {
+  Icon,
+  LatLngBounds,
+  LatLngBoundsExpression,
+  LatLngTuple,
+  Layer,
+} from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 import {
   LayersControl,
   MapContainer,
   Marker,
-  Popup,GeoJSON,
+  Popup,
+  GeoJSON,
   TileLayer,
   useMap,
 } from 'react-leaflet';
@@ -20,9 +27,11 @@ import * as geojson from 'geojson';
 
 export default function MapInterface() {
   const center: LatLngTuple = [17.418136769166217, 78.33019660095187];
-  const {mapData, mapGeojsonData} = useOnboardingDataStore(
-    (state) => ({mapData:state.onboardingData.mapData, mapGeojsonData:state.onboardingData.mapGeojsonData})
-  );
+  const { mapData, mapGeojsonData } = useOnboardingDataStore((state) => ({
+    mapData: state.onboardingData.mapData,
+    mapGeojsonData: state.onboardingData.mapGeojsonData,
+  }));
+
   const mapLayer = [
     {
       name: 'Google Terrain',
@@ -50,8 +59,7 @@ export default function MapInterface() {
     },
   ];
 
-  const [geoJsonData, setGeoJsonData] = useState<any[]>([]);
-
+  const { onboardingData, updateOnboardingData } = useOnboardingDataStore();
   const selectIcon = new Icon({
     iconUrl: selectPin.src,
     iconSize: [28, 38],
@@ -75,7 +83,7 @@ export default function MapInterface() {
       // Fly to the bounds of the markers
       map.flyToBounds(bounds, { duration: 1.9 });
     }, [mapData, map]);
-    
+
     useEffect(() => {
       if (!mapGeojsonData) return;
       if (mapGeojsonData) {
@@ -118,7 +126,13 @@ export default function MapInterface() {
           scrollWheelZoom={true}
           className='h-full min-h-[100px] w-full min-w-[200px] flex-[4] rounded-2xl border-[3px] border-[#9CAA71] shadow-[0px_0px_6px_2px_#00000024]'
         >
-          <GeomanDrawer setGeoJsonData={setGeoJsonData} />
+          <GeomanDrawer
+            setGeoJsonData={(d) =>
+              updateOnboardingData({
+                geoData: d,
+              })
+            }
+          />
           <FitBounds mapData={mapData} />
           {mapData?.map((project) => (
             <>
@@ -148,17 +162,15 @@ export default function MapInterface() {
               </Marker>
             </>
           ))}
-            {mapGeojsonData && (
-              mapGeojsonData?.features?.map((feature, index) => (
-                <GeoJSON
-                  data={feature}
-                  key={index}
-                  style={{ color: 'dodgerblue' }} 
-                  onEachFeature={renderLabel}
-                />
-              ))
-             
-            )}
+          {mapGeojsonData &&
+            mapGeojsonData?.features?.map((feature, index) => (
+              <GeoJSON
+                data={feature}
+                key={index}
+                style={{ color: 'dodgerblue' }}
+                onEachFeature={renderLabel}
+              />
+            ))}
           <LayersControl>
             {mapLayer?.map((item, i) => (
               <LayersControl.BaseLayer
@@ -185,12 +197,12 @@ export default function MapInterface() {
         <div className='mx-auto flex w-full flex-1 flex-col justify-start gap-4'>
           <button
             className='btn btn-error max-w-min self-center text-white'
-            onClick={() => setGeoJsonData([])}
+            onClick={() => updateOnboardingData({ geoData: [] })}
           >
             Clear
           </button>
           <pre className='max-h-[500px] overflow-y-auto bg-gray-200 font-mono text-sm'>
-            {JSON.stringify(geoJsonData, null, 2)}
+            {JSON.stringify(onboardingData.geoData, null, 2)}
           </pre>
         </div>
       </div>
