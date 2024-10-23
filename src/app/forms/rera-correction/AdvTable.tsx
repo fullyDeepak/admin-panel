@@ -10,6 +10,7 @@ import {
   RowSelectionState,
   OnChangeFn,
   Column,
+  FilterFn,
 } from '@tanstack/react-table';
 import { HTMLProps, useEffect, useRef, useState } from 'react';
 import { GoArrowDown, GoArrowUp, GoArrowSwitch } from 'react-icons/go';
@@ -19,6 +20,8 @@ import {
   MdOutlineNavigateBefore,
   MdOutlineNavigateNext,
 } from 'react-icons/md';
+import Datepicker from 'react-tailwindcss-datepicker';
+import { DateType } from 'react-tailwindcss-datepicker';
 
 interface TableProps<TData> {
   data: TData[];
@@ -28,6 +31,7 @@ interface TableProps<TData> {
   rowSelection: { [id: string]: boolean };
   setRowSelection: OnChangeFn<RowSelectionState>;
   isMultiSelection?: boolean;
+  dateRangeFilterFn: FilterFn<any>;
 }
 
 function IndeterminateCheckbox({
@@ -75,6 +79,7 @@ export default function AdvTable<TData>({
   rowSelection,
   setRowSelection,
   isMultiSelection = true,
+  dateRangeFilterFn,
 }: TableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filtering, setFiltering] = useState('');
@@ -137,6 +142,9 @@ export default function AdvTable<TData>({
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     enableMultiRowSelection: isMultiSelection,
+    filterFns: {
+      dateRange: dateRangeFilterFn,
+    },
     state: {
       sorting: sorting,
       globalFilter: filtering,
@@ -156,7 +164,7 @@ export default function AdvTable<TData>({
   return (
     <div className='mx-auto flex flex-col'>
       <div className='m-5 max-h-screen overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
-        <table className='relative !block max-h-[70vh] w-full border-collapse overflow-y-scroll bg-white text-sm text-gray-700'>
+        <table className='relative !block h-[70vh] w-full border-collapse overflow-y-scroll bg-white text-sm text-gray-700'>
           <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50'>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -286,35 +294,31 @@ function Filter({ column }: { column: Column<any, unknown> }) {
 
   if (filterVariant === 'range') {
     return (
-      <div>
-        <div className='flex justify-center gap-x-1'>
-          {/* See faceted column filters example for min max values functionality */}
-          <input
-            type='number'
-            value={(columnFilterValue as [number, number])?.[0] ?? ''}
-            onChange={(e) =>
-              column.setFilterValue((old: [number, number]) => [
-                e.target.value,
-                old?.[1],
-              ])
-            }
-            placeholder={`Min`}
-            className='block w-[50px] rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
-          />
-          <input
-            type='number'
-            value={(columnFilterValue as [number, number])?.[1] ?? ''}
-            onChange={(e) =>
-              column.setFilterValue((old: [number, number]) => [
-                old?.[0],
-                e.target.value,
-              ])
-            }
-            placeholder={`Max`}
-            className='block w-[50px] rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
-          />
-        </div>
-        <div className='h-1' />
+      <div className='flex justify-center gap-x-1'>
+        <input
+          type='number'
+          value={(columnFilterValue as [number, number])?.[0] ?? ''}
+          onChange={(e) =>
+            column.setFilterValue((old: [number, number]) => [
+              e.target.value,
+              old?.[1],
+            ])
+          }
+          placeholder={`Min`}
+          className='block w-[50px] rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
+        />
+        <input
+          type='number'
+          value={(columnFilterValue as [number, number])?.[1] ?? ''}
+          onChange={(e) =>
+            column.setFilterValue((old: [number, number]) => [
+              old?.[0],
+              e.target.value,
+            ])
+          }
+          placeholder={`Max`}
+          className='block w-[50px] rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
+        />
       </div>
     );
   }
@@ -330,13 +334,43 @@ function Filter({ column }: { column: Column<any, unknown> }) {
     );
   }
   if (filterVariant === 'date') {
+    const columnFilterValue = column.getFilterValue() as {
+      startDate: DateType;
+      endDate: DateType;
+    } | null;
+
+    const startDate = columnFilterValue?.startDate
+      ? new Date(columnFilterValue.startDate)
+      : undefined;
+    const endDate = columnFilterValue?.endDate
+      ? new Date(columnFilterValue.endDate)
+      : undefined;
+
     return (
-      <input
-        className='block w-full rounded-md border-0 py-1.5 pl-2 !font-medium text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 sm:text-sm sm:leading-6'
-        onChange={(e) => column.setFilterValue(e.target.value)}
-        placeholder={`Search...`}
-        type='date'
-        value={(columnFilterValue ?? '') as string}
+      <Datepicker
+        onChange={(value) => {
+          console.log(value);
+          column.setFilterValue({
+            startDate: value?.startDate
+              ? new Date(value.startDate).toISOString()
+              : null,
+            endDate: value?.endDate
+              ? new Date(value.endDate).toISOString()
+              : null,
+          });
+        }}
+        value={{
+          startDate: startDate || null,
+          endDate: endDate || null,
+        }}
+        showShortcuts
+        primaryColor='violet'
+        containerClassName={'flex relative w-full'}
+        popupClassName={
+          'transition-all ease-out duration-300 absolute z-10 text-sm lg:text-xs 2xl:text-sm translate-y-4 opacity-0 hidden mt-8'
+        }
+        inputClassName='text-[10px] tabular-nums block w-full rounded-md border-0 py-1.5 pl-2 !font-medium text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
+        popoverDirection='down'
       />
     );
   }
