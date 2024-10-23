@@ -243,7 +243,7 @@ const INITIAL_STATE: OnboardingDataType = {
 export const useOnboardingDataStore = create<Store>()(
   immer((set) => ({
     onboardingData: INITIAL_STATE,
-    currentFormStep: 'Geo-Data' as Store['currentFormStep'],
+    currentFormStep: 'Static Data' as Store['currentFormStep'],
     formStepsList: [
       'Static Data',
       'Geo-Data',
