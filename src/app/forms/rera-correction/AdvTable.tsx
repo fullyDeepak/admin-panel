@@ -367,7 +367,7 @@ function Filter({ column }: { column: Column<any, unknown> }) {
         primaryColor='violet'
         containerClassName={'flex relative w-full'}
         popupClassName={
-          'transition-all ease-out duration-300 absolute z-10 text-sm lg:text-xs 2xl:text-sm translate-y-4 opacity-0 hidden mt-8'
+          'transition-all scale-90 ease-out duration-300 absolute z-10 text-sm lg:text-xs 2xl:text-sm translate-y-4 opacity-0 hidden mt-0 -ml-12'
         }
         inputClassName='text-[10px] tabular-nums block w-full rounded-md border-0 py-1.5 pl-2 !font-medium text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
         popoverDirection='down'

@@ -8,6 +8,7 @@ import CellEditor from './CellEditor';
 import { ColumnDef, createColumnHelper, FilterFn } from '@tanstack/react-table';
 import { ReraDMLVTableData } from '@/types/types';
 import { formatISO } from 'date-fns';
+import { DeveloperGroup } from '@/components/dropdowns/DevelopersGroup';
 
 export default function ReraTableSection() {
   const [pdfPreviewDivs, setPdfPreviewDivs] = useState<React.JSX.Element[]>([]);
@@ -80,7 +81,11 @@ export default function ReraTableSection() {
         cell: ({ row }: any) => (
           <MasterDevelopers
             isDisabled={!row.getIsSelected()}
-            SetValue={'DEVELOPER:' + row.original.developer_master_id}
+            SetValue={
+              row.original.developer_master_id
+                ? 'DEVELOPER:' + row.original.developer_master_id
+                : null
+            }
             onChange={(e) =>
               // @ts-expect-error
               updateCurrentTableData(row.original.id, e?.value?.split(':')[1])
@@ -94,9 +99,13 @@ export default function ReraTableSection() {
       {
         header: 'Developer G ID',
         cell: ({ row }: any) => (
-          <MasterDevelopers
-            isDisabled={true}
-            SetValue={''}
+          <DeveloperGroup
+            isDisabled={!row.getIsSelected()}
+            SetValue={
+              row.original.dev_group_id
+                ? 'G:' + row.original.dev_group_id
+                : null
+            }
             onChange={(e) => console.log(e)}
           />
         ),
