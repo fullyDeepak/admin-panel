@@ -13,9 +13,14 @@ import { dateRangeFilterFn } from './utils';
 
 export default function ReraTableSection() {
   const [pdfPreviewDivs, setPdfPreviewDivs] = useState<React.JSX.Element[]>([]);
-  const { correctionData, updateCurrentTableData } = useCorrectionStore();
+  const {
+    correctionData,
+    updateCurrentTableData,
+    selectedTableRows,
+    setSelectedTableRows,
+    updateSelectedTableRows,
+  } = useCorrectionStore();
   const [rowSelection, setRowSelection] = useState({});
-  const [selectedRows, setSelectedRows] = useState<unknown[]>([]);
   const columnHelper = createColumnHelper<ReraDMLVTableData>();
   const reraTableColumns: ColumnDef<ReraDMLVTableData, any>[] = useMemo(
     () => [
@@ -87,10 +92,16 @@ export default function ReraTableSection() {
                 ? 'DEVELOPER:' + row.original.developer_master_id
                 : null
             }
-            onChange={(e) =>
-              // @ts-expect-error
-              updateCurrentTableData(row.original.id, e?.value?.split(':')[1])
-            }
+            onChange={(e) => {
+              updateCurrentTableData(row.original.id, {
+                // @ts-expect-error
+                developer_master_id: e?.value?.split(':')[1],
+              });
+              updateSelectedTableRows(row.original.id, {
+                // @ts-expect-error
+                developer_master_id: e?.value?.split(':')[1],
+              });
+            }}
           />
         ),
         meta: {
@@ -107,7 +118,16 @@ export default function ReraTableSection() {
                 ? 'G:' + row.original.dev_group_id
                 : null
             }
-            onChange={(e) => console.log(e)}
+            onChange={(e) => {
+              updateCurrentTableData(row.original.id, {
+                // @ts-expect-error
+                dev_group_id: e?.value?.split(':')[1],
+              });
+              updateSelectedTableRows(row.original.id, {
+                // @ts-expect-error
+                dev_group_id: e?.value?.split(':')[1],
+              });
+            }}
           />
         ),
         meta: {
@@ -217,8 +237,8 @@ export default function ReraTableSection() {
   );
 
   useEffect(() => {
-    console.log(selectedRows);
-  }, [selectedRows]);
+    console.log(selectedTableRows);
+  }, [selectedTableRows]);
 
   return (
     <div className='my-5 flex w-full gap-5'>
@@ -236,7 +256,7 @@ export default function ReraTableSection() {
                 data={correctionData.reraTableData}
                 rowSelection={rowSelection}
                 setRowSelection={setRowSelection}
-                setSelectedRows={setSelectedRows}
+                setSelectedRows={setSelectedTableRows}
                 isMultiSelection={true}
                 dateRangeFilterFn={dateRangeFilterFn}
               />

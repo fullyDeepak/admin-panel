@@ -1,6 +1,5 @@
 import ReraDropdown from './ReraDropdown';
 import { useCorrectionStore } from './useCorrectionStore';
-import { useReraCorrectionStore } from '@/store/useReraCorrectionStore';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import axiosClient from '@/utils/AxiosClient';
@@ -9,13 +8,14 @@ import { useQueryClient } from '@tanstack/react-query';
 const inputBoxClass =
   'w-full rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 export default function ReraFilterSection() {
-  const { updateCorrectionFormData, correctionData } = useCorrectionStore();
-  const { selectedProjects } = useReraCorrectionStore();
+  const { updateCorrectionFormData, correctionData, selectedTableRows } =
+    useCorrectionStore();
   const queryClient = useQueryClient();
+
   async function setReraDMVLId(
     type: 'DISTRICT' | 'MANDAL' | 'VILLAGE' | 'SURVEY'
   ) {
-    const projectIds = selectedProjects.map((item) => item.value);
+    const projectIds = selectedTableRows.map((item) => item.id);
     if (
       type === 'DISTRICT' &&
       correctionData.districtIdValue &&
@@ -164,9 +164,13 @@ export default function ReraFilterSection() {
             className='btn-rezy max-h-10'
             type='button'
             onClick={() => {
+              if (!selectedTableRows || selectedTableRows.length === 0) {
+                toast.error('Select a project first.');
+                return null;
+              }
               if (
                 confirm(
-                  `You are updating district id for total ${selectedProjects.length} RERA Projects.\nAre you sure?`
+                  `You are updating district id for total ${selectedTableRows.length} RERA Projects.\nAre you sure?`
                 )
               ) {
                 setReraDMVLId('DISTRICT');
@@ -193,7 +197,13 @@ export default function ReraFilterSection() {
           <button
             className='btn-rezy max-h-10'
             type='button'
-            onClick={() => setReraDMVLId('MANDAL')}
+            onClick={() => {
+              if (!selectedTableRows || selectedTableRows.length === 0) {
+                toast.error('Select a project first.');
+                return null;
+              }
+              setReraDMVLId('MANDAL');
+            }}
           >
             Save
           </button>
@@ -214,7 +224,13 @@ export default function ReraFilterSection() {
           <button
             className='btn-rezy max-h-10'
             type='button'
-            onClick={() => setReraDMVLId('VILLAGE')}
+            onClick={() => {
+              if (!selectedTableRows || selectedTableRows.length === 0) {
+                toast.error('Select a project first.');
+                return null;
+              }
+              setReraDMVLId('VILLAGE');
+            }}
           >
             Save
           </button>

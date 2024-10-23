@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import SROSection from './SROSection';
 import ReraFilterSection from './ReraFilterSection';
 import ReraTableSection from './ReraTableSection';
-import Dropdown from './Dropdown';
 
 export default function ReraCorrectionPage() {
   const { updateCorrectionFormData, resetAll, correctionData } =
@@ -33,20 +32,7 @@ export default function ReraCorrectionPage() {
         <SROSection />
         <ReraFilterSection />
       </div>
-      <Dropdown />
       <ReraTableSection />
     </div>
   );
 }
-
-// Selection
-// Button
-// RERA approval Date
-// Developer
-// Agreement Type
-// Developer M ID
-// Developer G ID
-// Project Type
-// Subtype
-// Towers
-// Units

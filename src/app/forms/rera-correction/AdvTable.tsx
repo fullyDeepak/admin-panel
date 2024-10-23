@@ -171,7 +171,7 @@ export default function AdvTable<TData>({
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className='px-4 py-4 font-semibold text-gray-900'
+                    className='px-3 py-4 font-semibold text-gray-900'
                   >
                     <div className='flex cursor-pointer select-none flex-col items-center gap-1'>
                       {header.column.getCanFilter() &&
@@ -194,7 +194,7 @@ export default function AdvTable<TData>({
                           )}
                         </span>
                         {header.id !== 'select' && (
-                          <span className='w-20'>
+                          <span className='w-5'>
                             {
                               {
                                 asc: <GoArrowUp size={16} />,
@@ -359,13 +359,14 @@ function Filter({ column }: { column: Column<any, unknown> }) {
               : null,
           });
         }}
+        placeholder='Select Date Range'
         value={{
           startDate: startDate || null,
           endDate: endDate || null,
         }}
         showShortcuts
         primaryColor='violet'
-        containerClassName={'flex relative w-full'}
+        containerClassName={'flex relative w-44'}
         popupClassName={
           'transition-all scale-90 ease-out duration-300 absolute z-10 text-sm lg:text-xs 2xl:text-sm translate-y-4 opacity-0 hidden mt-0 -ml-12'
         }
