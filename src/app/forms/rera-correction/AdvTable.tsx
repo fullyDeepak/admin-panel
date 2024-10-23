@@ -163,7 +163,7 @@ export default function AdvTable<TData>({
   }, [rowSelection]);
   return (
     <div className='mx-auto flex flex-col'>
-      <div className='m-5 max-h-screen overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
+      <div className='my-5 max-h-screen overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
         <table className='relative !block h-[70vh] w-full border-collapse overflow-y-scroll bg-white text-sm text-gray-700'>
           <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50'>
             {table.getHeaderGroups().map((headerGroup) => (

@@ -146,7 +146,7 @@ export default function ReraTableSection() {
         accessorKey: 'project_subtype_calculated',
         cell: ({ row }: any) => (
           <CellEditor
-            onChange={() => {}}
+            onComplete={() => {}}
             value={row.original.project_subtype_calculated}
           />
         ),
@@ -174,6 +174,20 @@ export default function ReraTableSection() {
         meta: {
           filterVariant: 'text',
         },
+        cell: ({ row }: any) => (
+          <CellEditor
+            onComplete={(value) => {
+              console.log(value);
+              updateCurrentTableData(row.original.id, {
+                mandal: value,
+              });
+              updateSelectedTableRows(row.original.id, {
+                mandal: value,
+              });
+            }}
+            value={row.original.mandal || ''}
+          />
+        ),
       },
       {
         header: 'Mandal ID',
@@ -192,6 +206,9 @@ export default function ReraTableSection() {
       {
         header: 'Locality',
         accessorKey: 'locality',
+        cell: ({ row }: any) => (
+          <CellEditor onComplete={() => {}} value={row.original.locality} />
+        ),
         meta: {
           filterVariant: 'text',
         },
@@ -241,15 +258,15 @@ export default function ReraTableSection() {
   }, [selectedTableRows]);
 
   return (
-    <div className='my-5 flex w-full gap-5'>
-      <div className='flex-1 rounded-lg border-2 p-2'>
+    <div className='my-5 mb-40 flex w-full gap-5'>
+      <div className='flex w-full flex-col justify-center'>
         <h3 className='mt-5 text-center text-2xl font-semibold underline'>
           RERA Data
         </h3>
 
         {correctionData.reraTableData &&
           correctionData.reraTableData?.length > 0 && (
-            <div className='max-w-[88vw]'>
+            <div className='max-w-full'>
               {pdfPreviewDivs}
               <AdvTable
                 columns={reraTableColumns}
@@ -262,6 +279,8 @@ export default function ReraTableSection() {
               />
             </div>
           )}
+
+        <button className='btn-rezy mx-auto my-10'>Submit</button>
       </div>
     </div>
   );
