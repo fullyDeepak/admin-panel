@@ -11,14 +11,20 @@ import StepsUI from './StepsUI';
 import { useOnboardingDataStore } from './useOnboardingDataStore';
 import ProjectSection from './steps/image-tagging/ProjectSection';
 import RootDocTagging from './steps/root-doc-tagging/RootDocTagging';
+import useETLDataStore from './useETLDataStore';
+import { useTowerUnitStore } from './useTowerUnitStore';
+import { useImageStore } from './useImageStore';
 
 export default function Page() {
   const {
     currentFormStep: formSteps,
     formStepsList,
     setFormSteps,
+    onboardingData,
   } = useOnboardingDataStore();
-
+  const { projectFormETLTagData } = useETLDataStore();
+  const { towerFormData } = useTowerUnitStore();
+  const { imagesStore } = useImageStore();
   return (
     <>
       <div className='mx-auto mt-10 flex w-full flex-col'>
@@ -75,8 +81,15 @@ export default function Page() {
             {formSteps === 'Preview' && (
               <button
                 className='btn btn-error w-28 text-white'
-                onClick={() => {
-                  alert('add submit form logic here');
+                onClick={async () => {
+                  await navigator.clipboard.writeText(
+                    JSON.stringify({
+                      staticData: onboardingData,
+                      etlData: projectFormETLTagData,
+                      towerData: towerFormData,
+                      imageData: imagesStore,
+                    })
+                  );
                 }}
               >
                 Submit
