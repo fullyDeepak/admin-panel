@@ -5,10 +5,11 @@ import 'rc-select/assets/index.css';
 import { MasterDevelopers } from '@/components/dropdowns/MasterDevelopers';
 import { useCorrectionStore } from './useCorrectionStore';
 import CellEditor from './CellEditor';
-import { ColumnDef, createColumnHelper, FilterFn } from '@tanstack/react-table';
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { ReraDMLVTableData } from '@/types/types';
 import { formatISO } from 'date-fns';
 import { DeveloperGroup } from '@/components/dropdowns/DevelopersGroup';
+import { dateRangeFilterFn } from './utils';
 
 export default function ReraTableSection() {
   const [pdfPreviewDivs, setPdfPreviewDivs] = useState<React.JSX.Element[]>([]);
@@ -245,19 +246,3 @@ export default function ReraTableSection() {
     </div>
   );
 }
-
-const dateRangeFilterFn: FilterFn<any> = (row, columnId, filterValue) => {
-  const rowValue = row.getValue(columnId);
-
-  if (!filterValue || !filterValue.startDate || !filterValue.endDate) {
-    return true; // If no filter is set, show all rows.
-  }
-
-  const rowDate = new Date(rowValue as string);
-  const { startDate, endDate } = filterValue;
-
-  return (
-    (!startDate || rowDate >= new Date(startDate)) &&
-    (!endDate || rowDate <= new Date(endDate))
-  );
-};
