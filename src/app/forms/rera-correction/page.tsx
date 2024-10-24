@@ -28,7 +28,7 @@ export default function ReraCorrectionPage() {
   return (
     <div className='mx-auto mt-10 flex w-[90%] flex-col'>
       <h1 className='self-center text-3xl'>Form: RERA Correction</h1>
-      <div className='flex justify-start gap-5'>
+      <div className='flex flex-col justify-start gap-5 xl:flex-row'>
         <SROSection />
         <ReraFilterSection />
       </div>
