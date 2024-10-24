@@ -14,6 +14,8 @@ import RootDocTagging from './steps/root-doc-tagging/RootDocTagging';
 import useETLDataStore from './useETLDataStore';
 import { useTowerUnitStore } from './useTowerUnitStore';
 import { useImageStore } from './useImageStore';
+import axiosClient from '@/utils/AxiosClient';
+import { useState } from 'react';
 
 export default function Page() {
   const {
@@ -25,6 +27,9 @@ export default function Page() {
   const { projectFormETLTagData } = useETLDataStore();
   const { towerFormData } = useTowerUnitStore();
   const { imagesStore } = useImageStore();
+  const [draftSaveState, setDraftSaveState] = useState<
+    'SAVING' | 'SAVED' | 'UNSAVED'
+  >('UNSAVED');
   return (
     <>
       <div className='mx-auto mt-10 flex w-full flex-col'>
@@ -61,10 +66,69 @@ export default function Page() {
                 setFormSteps(
                   formStepsList[formStepsList.indexOf(formSteps) - 1]
                 );
+                if (
+                  !onboardingData.selectedTempProject?.value ||
+                  onboardingData.selectedReraProjects.length < 1
+                ) {
+                  alert(
+                    'Please select a Temp Project and at least one RERA to save as Draft Project.'
+                  );
+                  return;
+                }
+                setDraftSaveState('SAVING');
+                axiosClient
+                  .post('/onboarding/save-onboarding-state', {
+                    id: `${onboardingData.projectSourceType}-${onboardingData.selectedTempProject?.value}-${
+                      onboardingData.selectedReraProjects[0]?.value
+                    }`,
+                    data: {
+                      staticData: onboardingData,
+                      etlData: projectFormETLTagData,
+                      towerData: towerFormData,
+                      imageData: imagesStore,
+                    },
+                    onboardingState: formSteps,
+                  })
+                  .then(() => {
+                    setDraftSaveState('SAVED');
+                  });
               }}
               disabled={formSteps === 'Static Data'}
             >
               Previous
+            </button>
+            <button
+              className='btn-rezy btn w-28'
+              onClick={() => {
+                if (
+                  !onboardingData.selectedTempProject?.value ||
+                  onboardingData.selectedReraProjects.length < 1
+                ) {
+                  alert(
+                    'Please select a Temp Project and at least one RERA to save as Draft Project.'
+                  );
+                  return;
+                }
+                setDraftSaveState('SAVING');
+                axiosClient
+                  .post('/onboarding/save-onboarding-state', {
+                    id: `${onboardingData.projectSourceType}-${onboardingData.selectedTempProject?.value}-${
+                      onboardingData.selectedReraProjects[0]?.value
+                    }`,
+                    data: {
+                      staticData: onboardingData,
+                      etlData: projectFormETLTagData,
+                      towerData: towerFormData,
+                      imageData: imagesStore,
+                    },
+                    onboardingState: formSteps,
+                  })
+                  .then(() => {
+                    setDraftSaveState('SAVED');
+                  });
+              }}
+            >
+              Save Draft
             </button>
             {formSteps !== 'Preview' && (
               <button
@@ -73,6 +137,23 @@ export default function Page() {
                   setFormSteps(
                     formStepsList[formStepsList.indexOf(formSteps) + 1]
                   );
+                  setDraftSaveState('SAVING');
+                  axiosClient
+                    .post('/onboarding/save-onboarding-state', {
+                      id: `${onboardingData.projectSourceType}-${onboardingData.selectedTempProject?.value}-${
+                        onboardingData.selectedReraProjects[0]?.value
+                      }`,
+                      data: {
+                        staticData: onboardingData,
+                        etlData: projectFormETLTagData,
+                        towerData: towerFormData,
+                        imageData: imagesStore,
+                      },
+                      onboardingState: formSteps,
+                    })
+                    .then(() => {
+                      setDraftSaveState('SAVED');
+                    });
                 }}
               >
                 Next
@@ -82,19 +163,31 @@ export default function Page() {
               <button
                 className='btn btn-error w-28 text-white'
                 onClick={async () => {
-                  await navigator.clipboard.writeText(
-                    JSON.stringify({
-                      staticData: onboardingData,
-                      etlData: projectFormETLTagData,
-                      towerData: towerFormData,
-                      imageData: imagesStore,
+                  setDraftSaveState('SAVING');
+                  axiosClient
+                    .post('/onboarding/save-onboarding-state', {
+                      id: `${onboardingData.projectSourceType}-${onboardingData.selectedTempProject?.value}-${
+                        onboardingData.selectedReraProjects[0]?.value
+                      }`,
+                      data: {
+                        staticData: onboardingData,
+                        etlData: projectFormETLTagData,
+                        towerData: towerFormData,
+                        imageData: imagesStore,
+                      },
+                      onboardingState: 'FINAL',
                     })
-                  );
+                    .then(() => {
+                      setDraftSaveState('SAVED');
+                    });
                 }}
               >
                 Submit
               </button>
             )}
+          </div>
+          <div className='w-full justify-center text-center text-xl'>
+            Draft Status: {draftSaveState}
           </div>
         </div>
       </div>

@@ -1,4 +1,7 @@
 'use client';
+import bboxCalculator from '@turf/bbox';
+import { AllGeoJSON } from '@turf/helpers';
+import * as geojson from 'geojson';
 import {
   Icon,
   LatLngBounds,
@@ -9,11 +12,11 @@ import {
 import 'leaflet/dist/leaflet.css';
 import { useEffect } from 'react';
 import {
+  GeoJSON,
   LayersControl,
   MapContainer,
   Marker,
   Popup,
-  GeoJSON,
   TileLayer,
   useMap,
 } from 'react-leaflet';
@@ -21,9 +24,6 @@ import { ProjectCordWithinVillage } from '../../../village-project-cleaner/MapUI
 import selectPin from '../../../village-project-cleaner/select-pin.png';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import GeomanDrawer from './GeomanDrawer';
-import bboxCalculator from '@turf/bbox';
-import { AllGeoJSON } from '@turf/helpers';
-import * as geojson from 'geojson';
 
 export default function MapInterface() {
   const center: LatLngTuple = [17.418136769166217, 78.33019660095187];

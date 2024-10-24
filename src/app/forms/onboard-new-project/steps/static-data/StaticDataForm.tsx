@@ -1,18 +1,16 @@
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
-import _ from 'lodash';
-import { useState } from 'react';
 import { MultiValue, SingleValue } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
+import { MasterDevelopers } from '@/components/dropdowns/MasterDevelopers';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
 import useDMVDataStore from '../../useDMVDataStore';
+import useETLDataStore from '../../useETLDataStore';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import ProjectMatcherSection from './ProjectMatcherSection';
 import ReraSection from './ReraSection';
 import { fetchTempProjectDetails } from './utils';
-import { MasterDevelopers } from '@/components/dropdowns/MasterDevelopers';
-import useETLDataStore from '../../useETLDataStore';
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
@@ -34,9 +32,6 @@ export default function StaticDataForm() {
     setVillageOptions,
     villageOptions,
   } = useDMVDataStore();
-  const [reraForTempProjects, setReraForTempProjects] = useState<{
-    [key: string]: string[];
-  }>({});
   const { isLoading: isLoadingDMV } = useQuery({
     queryKey: ['village-project-cleaner-developer-tagger'],
     queryFn: async () => {
@@ -146,60 +141,6 @@ export default function StaticDataForm() {
     staleTime: Infinity,
     refetchOnMount: false,
   });
-  const { data: _reraForTemp } = useQuery({
-    queryKey: ['reraForTempProjects', onboardingData.selectedTempProject],
-    queryFn: async () => {
-      if (!onboardingData.selectedTempProject) return [];
-      const res = await axiosClient.get<{
-        data?: { temp_project_id: string; rera_ids: string[] };
-      }>('/onboarding/rera-matches-for-temp-project', {
-        params: {
-          project_id: onboardingData.selectedTempProject.value,
-        },
-      });
-      if (res.data?.data?.rera_ids && res.data?.data?.rera_ids.length) {
-        setReraForTempProjects({
-          [onboardingData.selectedTempProject.value]:
-            res.data?.data?.rera_ids || [],
-        });
-        console.log(
-          res.data?.data?.rera_ids
-            .map((ele) => {
-              const reraProject = reraProjects?.find((project) => {
-                return project.value === ele;
-              });
-              console.log(reraProject);
-              return reraProject;
-            })
-            .filter((ele) => !ele)
-        );
-        const reraProjectsToSelect = res.data?.data?.rera_ids
-          .map((ele) => {
-            const reraProject = reraProjects?.find((project) => {
-              return project.value === ele;
-            });
-            console.log(reraProject);
-            return reraProject || [];
-          })
-          .filter((ele) => !!ele) as {
-          label: string;
-          value: string;
-        }[];
-        console.log(reraProjectsToSelect);
-        if (reraProjectsToSelect.length > 0) {
-          updateOnboardingData({
-            selectedReraProjects: _.uniqBy(
-              [...onboardingData.selectedReraProjects, ...reraProjectsToSelect],
-              (ele) => ele.value
-            ),
-          });
-        }
-      }
-      return [];
-    },
-    staleTime: 0,
-    refetchOnMount: false,
-  });
 
   return (
     <div className='z-10 mt-5 flex min-h-screen w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none'>
@@ -268,8 +209,10 @@ export default function StaticDataForm() {
             } else {
               setVillageOptions([]);
             }
-            updateOnboardingData({ selectedVillage: null });
-            setReraForTempProjects({});
+            updateOnboardingData({
+              selectedVillage: null,
+              reraForTempProjects: {},
+            });
           }}
           isDisabled={Boolean(!onboardingData.selectedDistrict)}
         />
@@ -338,9 +281,9 @@ export default function StaticDataForm() {
             }>
           ) => {
             console.log(e);
-            setReraForTempProjects({});
             updateOnboardingData({
               projectSourceType: e?.value,
+              reraForTempProjects: {},
             });
             resetData();
             resetAllProjectData();
@@ -370,7 +313,6 @@ export default function StaticDataForm() {
           onChange={(e: SingleValue<{ label: string; value: string }>) =>
             fetchTempProjectDetails({
               e,
-              setReraForTempProjects,
               villageOptions,
             })
           }
@@ -383,7 +325,7 @@ export default function StaticDataForm() {
       <ReraSection
         isLoadingReraProjects={isLoadingReraProjects}
         reraProjects={reraProjects}
-        reraForTempProjects={reraForTempProjects}
+        reraForTempProjects={onboardingData.reraForTempProjects}
       />
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-wrap break-words md:text-xl'>

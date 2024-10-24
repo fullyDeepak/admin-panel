@@ -1,32 +1,22 @@
+import axiosClient from '@/utils/AxiosClient';
 import { SingleValue } from 'react-select';
+import useETLDataStore from '../../useETLDataStore';
+import { useImageStore } from '../../useImageStore';
 import {
   TempProjectSourceData,
   useOnboardingDataStore,
 } from '../../useOnboardingDataStore';
-import { Dispatch, SetStateAction } from 'react';
-import axiosClient from '@/utils/AxiosClient';
-import useETLDataStore from '../../useETLDataStore';
 import { useTowerUnitStore } from '../../useTowerUnitStore';
-import { useImageStore } from '../../useImageStore';
 
 type Props = {
   e: SingleValue<{ label: string; value: string }>;
-  setReraForTempProjects: Dispatch<
-    SetStateAction<{
-      [key: string]: string[];
-    }>
-  >;
   villageOptions: {
     label: string;
     value: number;
   }[];
 };
 
-export async function fetchTempProjectDetails({
-  e,
-  setReraForTempProjects,
-  villageOptions,
-}: Props) {
+export async function fetchTempProjectDetails({ e, villageOptions }: Props) {
   const {
     onboardingData,
     updateOnboardingData,
@@ -47,8 +37,8 @@ export async function fetchTempProjectDetails({
       developerMasterId: null,
       coreDoorNumberStrings: [],
       developerGroup: '',
+      reraForTempProjects: {},
     });
-    setReraForTempProjects({});
     const tempProjectData = await axiosClient.get<{
       data: TempProjectSourceData;
     }>(`/temp-projects/${e.value}`);
@@ -188,7 +178,6 @@ export async function fetchTempProjectDetails({
   } else {
     // cleanup
     resetData();
-    setReraForTempProjects({});
     resetAllProjectData();
     resetImageStore();
     resetTowerUnitStore();

@@ -1,12 +1,13 @@
 import LoadingCircle from '@/components/ui/LoadingCircle';
 import axiosClient from '@/utils/AxiosClient';
-import { isEqual, uniq, uniqBy, uniqWith } from 'lodash';
+import _, { isEqual, uniq, uniqBy, uniqWith } from 'lodash';
 import { useState } from 'react';
 import { SingleValue } from 'react-select';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import { UnitCardType, useTowerUnitStore } from '../../useTowerUnitStore';
+import { useQuery } from '@tanstack/react-query';
 
 type Props = {
   reraProjects:
@@ -210,6 +211,62 @@ export default function ReraSection({
     setTowerFormData(towersData);
     setLoadingProjectDetails(false);
   }
+  const { data: _reraForTemp } = useQuery({
+    queryKey: ['reraForTempProjects', onboardingData.selectedTempProject],
+    queryFn: async () => {
+      if (!onboardingData.selectedTempProject) return [];
+      const res = await axiosClient.get<{
+        data?: { temp_project_id: string; rera_ids: string[] };
+      }>('/onboarding/rera-matches-for-temp-project', {
+        params: {
+          project_id: onboardingData.selectedTempProject.value,
+        },
+      });
+      if (res.data?.data?.rera_ids && res.data?.data?.rera_ids.length) {
+        updateOnboardingData({
+          reraForTempProjects: {
+            [onboardingData.selectedTempProject.value]:
+              res.data?.data?.rera_ids || [],
+          },
+        });
+        console.log(
+          res.data?.data?.rera_ids
+            .map((ele) => {
+              const reraProject = reraProjects?.find((project) => {
+                return project.value === ele;
+              });
+              console.log(reraProject);
+              return reraProject;
+            })
+            .filter((ele) => !ele)
+        );
+
+        const reraProjectsToSelect = res.data?.data?.rera_ids
+          .map((ele) => {
+            const reraProject = reraProjects?.find((project) => {
+              return project.value === ele;
+            });
+            console.log(reraProject);
+            return reraProject;
+          })
+          .filter((ele) => !!ele);
+        console.log(reraProjectsToSelect);
+        if (reraProjectsToSelect.length > 0) {
+          updateOnboardingData({
+            selectedReraProjects: _.uniqBy(
+              [...onboardingData.selectedReraProjects, ...reraProjectsToSelect],
+              (ele) => ele.value
+            ),
+          });
+        }
+      }
+      return [];
+    },
+    staleTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
   return (
     <>
       <label className='flex items-center justify-between gap-5'>
@@ -298,6 +355,7 @@ export default function ReraSection({
           <span>
             Selected Rera Projects to Inherit From :{' '}
             {onboardingData.selectedReraProjects.map((e) => {
+              console.log(e);
               return (
                 <span
                   className='btn btn-error btn-sm mx-2 max-w-fit self-center text-white hover:bg-red-200 hover:text-black'
