@@ -3,7 +3,16 @@ import { useQuery } from '@tanstack/react-query';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
 import { Props } from 'react-select';
-export function MasterDevelopers(props: Props & { SetValue: string | null }) {
+
+// type OnchangeEvent = { label: string; value: string; lowercaseLabel: string };
+
+export function MasterDevelopers(
+  props: Props & {
+    SetValue: string | null;
+    className: string;
+    excludeJvs?: boolean;
+  }
+) {
   const { data: masterDevelopers, isLoading: loadingMasterDevelopers } =
     useQuery({
       queryKey: ['master-developers'],
@@ -18,6 +27,14 @@ export function MasterDevelopers(props: Props & { SetValue: string | null }) {
             jvs: { id: number; name: string }[];
           };
         }>('/developers/master-developers-jv');
+        if (props.excludeJvs) {
+          return [
+            ...res.data.data.developers.map((item) => ({
+              label: `M:${item.id}:${item.name}:${item.developer_group_name}`,
+              value: `DEVELOPER:${item.id}`,
+            })),
+          ];
+        }
         return [
           ...res.data.data.developers.map((item) => ({
             label: `M:${item.id}:${item.name}:${item.developer_group_name}`,
