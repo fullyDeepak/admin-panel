@@ -7,7 +7,7 @@ import {
   Layer,
 } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   LayersControl,
   MapContainer,

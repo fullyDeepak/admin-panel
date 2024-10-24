@@ -1,6 +1,5 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import _ from 'lodash';
-import Select, { SingleValue } from 'react-select';
 export type RawAptDataRow = {
   district_name: string;
   district_id: string;

@@ -7,12 +7,10 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  OnChangeFn,
-  RowSelectionState,
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import { HTMLProps, useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { GoArrowDown, GoArrowSwitch, GoArrowUp, GoTrash } from 'react-icons/go';
 import {
   MdOutlineFirstPage,

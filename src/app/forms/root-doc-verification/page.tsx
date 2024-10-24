@@ -596,7 +596,7 @@ export default function Page() {
                           className='checkbox cursor-pointer'
                           onChange={(e) => {
                             setRootDocOptions((prev) => {
-                              return prev.map((ele, i) => {
+                              return prev.map((ele) => {
                                 if (
                                   ele.doc_id_schedule === item.doc_id_schedule
                                 ) {

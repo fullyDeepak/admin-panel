@@ -2,7 +2,7 @@
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCallback } from 'react';
-import { DotButton, useDotButton } from './CarouselDotButton';
+// import {  useDotButton } from './CarouselDotButton';
 
 export default function PopCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel();
@@ -15,8 +15,8 @@ export default function PopCarousel() {
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
-  const { selectedIndex, scrollSnaps, onDotButtonClick } =
-    useDotButton(emblaApi);
+  // const { selectedIndex, scrollSnaps, onDotButtonClick } =
+  //   useDotButton(emblaApi);
   return (
     <div className='relative overflow-hidden' ref={emblaRef}>
       <div className='flex'>

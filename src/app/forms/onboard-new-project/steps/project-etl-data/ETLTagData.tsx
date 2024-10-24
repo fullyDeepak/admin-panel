@@ -1,8 +1,7 @@
-import { inputBoxClass } from '@/app/constants/tw-class';
 import ChipInput from '@/components/ui/Chip';
 import { nanoid } from 'nanoid';
 import RcSelect, { Option } from 'rc-select';
-import { BiCopy, BiInfoCircle, BiPlus, BiReset } from 'react-icons/bi';
+import { BiCopy, BiInfoCircle, BiPlus } from 'react-icons/bi';
 import { FaRegCopy, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { MdContentPaste } from 'react-icons/md';
 import Select, { SingleValue } from 'react-select';
@@ -36,10 +35,7 @@ export default function ETLTagData({
     /^(100\d|10[1-9]\d|1[1-9]\d{2}|[2-9]\d{3})-(19[0-9][0-9]|2[0][0-9]{2})-([1-9]\d{1,5}|[1-9])$/gm;
   const notDocIdPattern: RegExp =
     /^(100\d|10[1-9]\d|1[1-9]\d{2}|[2-9]\d{3})-(19[0-9][0-9]|2[0][0-9]{2})-([1-9]\d{1,5}|[1-9])-([1-9]\d{1,5}|[1-9])$/gm;
-  const {
-    data: patternRecommendations,
-    isLoading: loadingPatternRecommendations,
-  } = useQuery({
+  const { data: patternRecommendations } = useQuery({
     queryKey: ['pattern-recommendations', onboardingData.selectedTempProject],
     queryFn: async () => {
       if (!onboardingData.selectedTempProject) return [];

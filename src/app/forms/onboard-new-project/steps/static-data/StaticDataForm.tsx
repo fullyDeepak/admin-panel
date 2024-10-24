@@ -1,7 +1,7 @@
 import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { MultiValue, SingleValue } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 // @ts-expect-error  third party
