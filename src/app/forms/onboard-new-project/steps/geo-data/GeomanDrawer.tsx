@@ -106,7 +106,7 @@ export default function GeomanDrawer({ setGeoJsonData }: Props) {
   }
 
   return (
-    <div className='relative left-[10px] top-20 z-[10000]'>
+    <div className='relative left-[10px] top-20 z-[10000] w-fit'>
       <button
         className='flex size-8 items-center justify-center rounded bg-red-500 p-1 text-white'
         onClick={clearMapData}
