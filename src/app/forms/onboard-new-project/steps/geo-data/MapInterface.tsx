@@ -127,6 +127,7 @@ export default function MapInterface() {
           className='h-full min-h-[100px] w-full min-w-[200px] flex-[4] rounded-2xl border-[3px] border-[#9CAA71] shadow-[0px_0px_6px_2px_#00000024]'
         >
           <GeomanDrawer
+            geoJsonData={onboardingData.geoData}
             setGeoJsonData={(d) =>
               updateOnboardingData({
                 geoData: d,

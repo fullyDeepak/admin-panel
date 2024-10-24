@@ -9,16 +9,17 @@ import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 
 type Props = {
+  geoJsonData: any[];
   setGeoJsonData: (_d) => void;
 };
-export default function GeomanDrawer({ setGeoJsonData }: Props) {
+export default function GeomanDrawer({ setGeoJsonData, geoJsonData }: Props) {
   const map = useMap();
   const markerIcon = new Icon({
     iconUrl: png.src,
     iconSize: [38, 38],
   });
-  console.log(JSON.stringify(markerIcon));
   useEffect(() => {
+    console.log(map);
     map?.pm?.addControls({
       position: 'topright',
       drawMarker: false,
@@ -34,6 +35,51 @@ export default function GeomanDrawer({ setGeoJsonData }: Props) {
       drawText: true,
       rotateMode: false,
     });
+    for (const geoJson of geoJsonData) {
+      console.log('Adding geojson', geoJson);
+      const layer_to_add = L.geoJSON(geoJson);
+      layer_to_add.on('pm:edit', (e) => {
+        console.log('Edited');
+        console.log(e);
+        const toSet = map.pm.getGeomanLayers().map((layer) => {
+          console.log('Layer', layer);
+          let geojson = layer.toGeoJSON();
+          if (layer.options.textMarker) {
+            geojson = {
+              ...geojson,
+              properties: {
+                ...geojson.properties,
+                text: layer.options.text,
+              },
+            };
+          }
+          return geojson;
+        });
+        console.log(toSet);
+        setGeoJsonData(toSet);
+      });
+      layer_to_add.on('pm:remove', (e) => {
+        console.log('deleted');
+        console.log(e);
+        const toSet = map.pm.getGeomanLayers().map((layer) => {
+          console.log('Layer', layer);
+          let geojson = layer.toGeoJSON();
+          if (layer.options.textMarker) {
+            geojson = {
+              ...geojson,
+              properties: {
+                ...geojson.properties,
+                text: layer.options.text,
+              },
+            };
+          }
+          return geojson;
+        });
+        console.log(toSet);
+        setGeoJsonData(toSet);
+      });
+      layer_to_add.addTo(map);
+    }
     map.on('pm:create', (e) => {
       const layer = e.layer;
 
@@ -95,8 +141,12 @@ export default function GeomanDrawer({ setGeoJsonData }: Props) {
     });
     return () => {
       map.off('pm:create');
+      map.off('pm:remove');
+      map.eachLayer((layer) => {
+        map.removeLayer(layer);
+      });
     };
-  }, [map]);
+  }, [map._leaflet_id]);
 
   function clearMapData() {
     map.pm.getGeomanLayers().map((layer) => {
