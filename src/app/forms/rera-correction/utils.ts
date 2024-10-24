@@ -119,7 +119,7 @@ export async function postReraCleanData(data: ReraDMLVTableData[]) {
       devGid: item.dev_group_id,
     });
   });
-  toast.promise(axiosClient.post('/clean-rera-data', { data: dataToPost }), {
+  toast.promise(axiosClient.post('/rera/clean-rera-data', { data: dataToPost }), {
     loading: 'Cleaning...',
     success: () => {
       return 'Data Cleaned ✨';
