@@ -119,6 +119,7 @@ export default function ReraDropdown() {
           }
         );
         const data = response.data?.data;
+        updateCorrectionFormData('reraTableData', data);
         const {
           cleanMandalOptions,
           rawMandalOptions,
@@ -160,6 +161,7 @@ export default function ReraDropdown() {
           }
         );
         const data = response.data?.data;
+        updateCorrectionFormData('reraTableData', data);
         const { rawMandalOptions, rawVillageOptions, optionsForProjects } =
           generateOptions(data);
         setDeveloperOption(developerOption);
@@ -201,6 +203,7 @@ export default function ReraDropdown() {
           }
         );
         const data = response.data?.data;
+        updateCorrectionFormData('reraTableData', data);
         const {
           cleanVillageOptions,
           rawMandalOptions,
@@ -247,6 +250,7 @@ export default function ReraDropdown() {
           }
         );
         const data = response.data?.data;
+        updateCorrectionFormData('reraTableData', data);
         const { localityOption, rawVillageOptions, optionsForProjects } =
           generateOptions(data);
         setDeveloperOption(developerOption);
@@ -286,6 +290,7 @@ export default function ReraDropdown() {
           }
         );
         const data = response.data?.data;
+        updateCorrectionFormData('reraTableData', data);
         const optionsForProjects: {
           label: string;
           value: number;
