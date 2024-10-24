@@ -21,6 +21,8 @@ export function DeveloperCleanAndTagPanel({
   selectedDevelopers,
   setSelectedDevelopers,
   refetchDevelopersToGroup,
+  hideMutationToggle,
+  header,
 }: {
   isMutation: boolean;
   setIsMutation: Dispatch<SetStateAction<boolean>>;
@@ -47,6 +49,8 @@ export function DeveloperCleanAndTagPanel({
     >
   >;
   refetchDevelopersToGroup: () => void;
+  hideMutationToggle?: boolean;
+  header?: string;
 }) {
   const [selectedDeveloperId, setSelectedDeveloperId] = useState<string>('');
   const [JVName, setJVName] = useState<string>('');
@@ -139,7 +143,9 @@ export function DeveloperCleanAndTagPanel({
       className='relative mb-2 flex h-[90dvh] w-full flex-col justify-between gap-2 border border-solid p-5'
     >
       <h3 className='text-center text-2xl font-semibold'>
-        Select Developers to Tag to This Project or to Create Mutations
+        {header
+          ? header
+          : 'Select Developers to Tag to This Project or to Create Mutations'}
       </h3>
       <SelectVirtualized
         className='w-full self-start'
@@ -310,19 +316,21 @@ export function DeveloperCleanAndTagPanel({
           </li>
         ))}
       </ul>
-      <div className='flex w-full flex-row justify-center gap-2'>
-        <span>IS JV</span>
-        <input
-          type='checkbox'
-          className='toggle'
-          checked={isMutation}
-          onChange={(e) => {
-            setIsMutation(e.target.checked);
-            setSelectedDevelopers([]);
-          }}
-        />
-        <span>Is Mutation</span>
-      </div>
+      {hideMutationToggle ? null : (
+        <div className='flex w-full flex-row justify-center gap-2'>
+          <span>IS JV</span>
+          <input
+            type='checkbox'
+            className='toggle'
+            checked={isMutation}
+            onChange={(e) => {
+              setIsMutation(e.target.checked);
+              setSelectedDevelopers([]);
+            }}
+          />
+          <span>Is Mutation</span>
+        </div>
+      )}
       <button
         className='btn w-full'
         onClick={() => {

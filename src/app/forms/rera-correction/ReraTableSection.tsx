@@ -267,7 +267,7 @@ export default function ReraTableSection() {
   ];
 
   return (
-    <div className='my-5 mb-40 flex w-full gap-5'>
+    <div className='my-5 flex w-full gap-5'>
       {correctionData.reraTableData &&
         correctionData.reraTableData?.length > 0 && (
           <div className='flex w-full flex-col justify-center'>

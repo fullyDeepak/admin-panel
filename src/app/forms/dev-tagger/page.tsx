@@ -8,7 +8,28 @@ import { LuLoader, LuMoveRight } from 'react-icons/lu';
 import Select, { SingleValue } from 'react-select';
 import { DeveloperGroupSelectionPanel } from './DeveloperGroupSelectionPanel';
 import { DeveloperCleanAndTagPanel } from './DeveloperCleanAndTagPanel';
-export default function Page() {
+
+type Props =
+  | {
+      showOnlyDevTaggerWithoutJV?: boolean;
+      showOnlyDevTaggerWithJV?: never;
+      showDevGroupSelectionPanel?: never;
+    }
+  | {
+      showOnlyDevTaggerWithoutJV?: never;
+      showOnlyDevTaggerWithJV?: boolean;
+      showDevGroupSelectionPanel?: never;
+    }
+  | {
+      showOnlyDevTaggerWithoutJV?: never;
+      showOnlyDevTaggerWithJV?: never;
+      showDevGroupSelectionPanel?: boolean;
+    };
+export default function Page({
+  showDevGroupSelectionPanel,
+  showOnlyDevTaggerWithJV,
+  showOnlyDevTaggerWithoutJV,
+}: Props) {
   // states
   const [selectedDistrict, setSelectedDistrict] = useState<{
     label: string;
@@ -329,6 +350,48 @@ export default function Page() {
         },
         error: 'Error',
       }
+    );
+  }
+
+  if (showOnlyDevTaggerWithJV) {
+    return (
+      <DeveloperCleanAndTagPanel
+        isMutation={false}
+        setIsMutation={setIsMutation}
+        selectedTempProject={selectedTempProject}
+        selectedDevelopers={selectedDevelopers}
+        setSelectedDevelopers={setSelectedDevelopers}
+        refetchDevelopersToGroup={refetchDevelopersToGroup}
+        hideMutationToggle={true}
+        header='Select Developers to create a JV.'
+      />
+    );
+  }
+
+  if (showOnlyDevTaggerWithoutJV) {
+    return (
+      <DeveloperCleanAndTagPanel
+        isMutation={true}
+        setIsMutation={setIsMutation}
+        selectedTempProject={selectedTempProject}
+        selectedDevelopers={selectedDevelopers}
+        setSelectedDevelopers={setSelectedDevelopers}
+        refetchDevelopersToGroup={refetchDevelopersToGroup}
+        hideMutationToggle={true}
+        header='Select Developers to Create Mutations'
+      />
+    );
+  }
+
+  if (showDevGroupSelectionPanel) {
+    return (
+      <DeveloperGroupSelectionPanel
+        isMutation={isMutation}
+        selectedDevelopers={selectedDevelopers}
+        loadingDevelopersToGroup={loadingDevelopersToGroup}
+        developersToGroup={developersToGroup}
+        refetchDevelopersToGroup={refetchDevelopersToGroup}
+      />
     );
   }
 
