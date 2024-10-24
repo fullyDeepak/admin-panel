@@ -119,21 +119,24 @@ export async function postReraCleanData(data: ReraDMLVTableData[]) {
       devGid: item.dev_group_id,
     });
   });
-  toast.promise(axiosClient.post('/rera/clean-rera-data', { data: dataToPost }), {
-    loading: 'Cleaning...',
-    success: () => {
-      return 'Data Cleaned ✨';
-    },
-    error: (err) => {
-      console.log({ err });
-      if (axios.isAxiosError(err)) {
-        return (
-          err.response?.data?.message ||
-          err.response?.data?.error ||
-          err.message
-        );
-      }
-      return JSON.stringify(err);
-    },
-  });
+  toast.promise(
+    axiosClient.post('/forms/rera/clean-rera-data', { data: dataToPost }),
+    {
+      loading: 'Cleaning...',
+      success: () => {
+        return 'Data Cleaned ✨';
+      },
+      error: (err) => {
+        console.log({ err });
+        if (axios.isAxiosError(err)) {
+          return (
+            err.response?.data?.message ||
+            err.response?.data?.error ||
+            err.message
+          );
+        }
+        return JSON.stringify(err);
+      },
+    }
+  );
 }
