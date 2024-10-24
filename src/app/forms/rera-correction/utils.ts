@@ -1,6 +1,9 @@
 import { ReraDMLVTableData } from '@/types/types';
+import axiosClient from '@/utils/AxiosClient';
 import { FilterFn } from '@tanstack/react-table';
+import axios from 'axios';
 import { uniqBy } from 'lodash';
+import toast from 'react-hot-toast';
 
 export const sroTableColumns = [
   {
@@ -96,4 +99,41 @@ export function generateOptions(data: ReraDMLVTableData[]) {
     optionsForProjects: uniqBy([], 'value'),
     developerOption: uniqBy(developerOption, 'value'),
   };
+}
+
+export async function postReraCleanData(data: ReraDMLVTableData[]) {
+  const dataToPost: {
+    projectId: number;
+    mandalId: number | null;
+    locality: string;
+    devMid: number | null;
+    devGid: number | null;
+  }[] = [];
+
+  data.map((item) => {
+    dataToPost.push({
+      projectId: item.id,
+      mandalId: +item.mandal_id,
+      locality: item.locality,
+      devMid: +item.developer_master_id,
+      devGid: item.dev_group_id,
+    });
+  });
+  toast.promise(axiosClient.post('/clean-rera-data', { data: dataToPost }), {
+    loading: 'Cleaning...',
+    success: () => {
+      return 'Data Cleaned ✨';
+    },
+    error: (err) => {
+      console.log({ err });
+      if (axios.isAxiosError(err)) {
+        return (
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message
+        );
+      }
+      return JSON.stringify(err);
+    },
+  });
 }

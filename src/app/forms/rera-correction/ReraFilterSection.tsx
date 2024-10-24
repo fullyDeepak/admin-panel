@@ -14,7 +14,7 @@ export default function ReraFilterSection() {
   const queryClient = useQueryClient();
 
   async function setReraDMVLId(
-    type: 'DISTRICT' | 'MANDAL' | 'VILLAGE' | 'SURVEY'
+    type: 'DISTRICT' | 'MANDAL' | 'VILLAGE' | 'SURVEY' | 'DEVELOPER'
   ) {
     const projectIds = selectedTableRows.map((item) => item.id);
     if (
@@ -124,6 +124,47 @@ export default function ReraFilterSection() {
           }
         );
         updateCorrectionFormData('villageIdValue', '');
+      } catch (error) {
+        if (
+          axios.isAxiosError(error) &&
+          error.response?.status &&
+          error.response?.status >= 400
+        ) {
+          const errMsg =
+            error.response.data?.message || error.response.data?.error;
+          toast.error(`Error: ${errMsg}`, {
+            duration: 3000,
+          });
+        } else {
+          toast.error("Couldn't send data to server.", {
+            duration: 3000,
+          });
+        }
+      }
+    } else if (
+      type === 'DEVELOPER' &&
+      correctionData.devIdValue &&
+      correctionData.devIdValue.trim()
+    ) {
+      try {
+        const response = axiosClient.put('/forms/rera/dev-master', {
+          project_ids: projectIds,
+          dev_master_id: +correctionData.devIdValue,
+        });
+        await toast.promise(
+          response,
+          {
+            loading: `Saving developer master id to database.`,
+            success: 'Master developer ID updated',
+            error: `Couldn't save Master Developer id.`,
+          },
+          {
+            success: {
+              duration: 10000,
+            },
+          }
+        );
+        updateCorrectionFormData('devIdValue', undefined);
       } catch (error) {
         if (
           axios.isAxiosError(error) &&
@@ -265,7 +306,7 @@ export default function ReraFilterSection() {
                 toast.error('Select a project first.');
                 return null;
               }
-              // setReraDMVLId('VILLAGE');
+              setReraDMVLId('DEVELOPER');
             }}
           >
             Save
