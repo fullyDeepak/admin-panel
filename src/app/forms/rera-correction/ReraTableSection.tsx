@@ -228,6 +228,19 @@ export default function ReraTableSection() {
       meta: {
         filterVariant: 'text',
       },
+      cell: ({ row }: any) => (
+        <CellEditor
+          onComplete={(value) => {
+            updateCurrentTableData(row.original.id, {
+              village_id: value,
+            });
+            updateSelectedTableRows(row.original.id, {
+              village_id: value,
+            });
+          }}
+          value={row.original.village_id || ''}
+        />
+      ),
     },
     {
       header: 'Clean Village',

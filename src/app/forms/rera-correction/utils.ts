@@ -105,6 +105,7 @@ export async function postReraCleanData(data: ReraDMLVTableData[]) {
   const dataToPost: {
     projectId: number;
     mandalId: number | null;
+    villageId: number | null;
     locality: string;
     devMid: number | null;
     devGid: number | null;
@@ -114,6 +115,7 @@ export async function postReraCleanData(data: ReraDMLVTableData[]) {
     dataToPost.push({
       projectId: item.id,
       mandalId: +item.mandal_id,
+      villageId: +item.village_id,
       locality: item.locality,
       devMid: +item.developer_master_id,
       devGid: item.dev_group_id,
