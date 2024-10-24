@@ -31,13 +31,12 @@ export default function ReraTableSection() {
             className='btn btn-accent btn-sm'
             type='button'
             onClick={() => {
-              console.log(row.original);
-              console.log(selectedTableRows);
               const data = selectedTableRows.find(
                 (ele) => ele.id == row.original.id
               );
               if (!data) return;
               postReraCleanData([data]);
+              setRowSelection({});
             }}
             disabled={!row?.getIsSelected()}
           >
@@ -288,7 +287,10 @@ export default function ReraTableSection() {
             </div>
             <button
               className='btn-rezy mx-auto my-10'
-              onClick={() => postReraCleanData(selectedTableRows)}
+              onClick={() => {
+                postReraCleanData(selectedTableRows);
+                setRowSelection({});
+              }}
             >
               Submit
             </button>

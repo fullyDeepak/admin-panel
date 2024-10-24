@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
 
-const DevTaggerForm = dynamic(() => import('./../dev-tagger/page'), {
+const DevTaggerForm = dynamic(() => import('./../dev-tagger/PageContainer'), {
   loading: () => <p>Loading...</p>,
 });
 
