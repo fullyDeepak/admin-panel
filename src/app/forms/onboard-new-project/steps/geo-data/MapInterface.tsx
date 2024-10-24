@@ -34,6 +34,10 @@ export default function MapInterface() {
 
   const mapLayer = [
     {
+      name: 'Google Satellite',
+      url: 'http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+    },
+    {
       name: 'Google Terrain',
       url: 'http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
     },
@@ -44,10 +48,6 @@ export default function MapInterface() {
     {
       name: 'Google Hybrid',
       url: 'http://{s}.google.com/vt/lyrs=h&x={x}&y={y}&z={z}',
-    },
-    {
-      name: 'Google Satellite',
-      url: 'http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
     },
     {
       name: 'Google Street with Traffic',
@@ -195,13 +195,7 @@ export default function MapInterface() {
           </LayersControl>
         </MapContainer>
         <div className='mx-auto flex w-full flex-1 flex-col justify-start gap-4'>
-          <button
-            className='btn btn-error max-w-min self-center text-white'
-            onClick={() => updateOnboardingData({ geoData: [] })}
-          >
-            Clear
-          </button>
-          <pre className='max-h-[500px] overflow-y-auto bg-gray-200 font-mono text-sm'>
+          <pre className='max-h-[500px] overflow-auto bg-gray-200 font-mono text-sm'>
             {JSON.stringify(onboardingData.geoData, null, 2)}
           </pre>
         </div>

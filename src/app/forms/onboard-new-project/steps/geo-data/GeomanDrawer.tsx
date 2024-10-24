@@ -4,6 +4,7 @@ import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import L, { Icon } from 'leaflet';
 import png from 'leaflet/dist/images/marker-icon.png';
+import { Trash2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 
@@ -20,17 +21,18 @@ export default function GeomanDrawer({ setGeoJsonData }: Props) {
   useEffect(() => {
     map?.pm?.addControls({
       position: 'topright',
-      drawMarker: true,
-      drawCircleMarker: true,
-      drawPolyline: true,
+      drawMarker: false,
+      drawCircleMarker: false,
+      drawPolyline: false,
       drawRectangle: true,
       drawPolygon: true,
-      drawCircle: true,
+      drawCircle: false,
       editMode: true,
       dragMode: true,
-      cutPolygon: true,
+      cutPolygon: false,
       removalMode: true,
       drawText: true,
+      rotateMode: false,
     });
     map.on('pm:create', (e) => {
       const layer = e.layer;
@@ -39,6 +41,26 @@ export default function GeomanDrawer({ setGeoJsonData }: Props) {
       console.log('Adding Edit Listener');
       layer.on('pm:edit', (e) => {
         console.log('Edited');
+        console.log(e);
+        const toSet = map.pm.getGeomanLayers().map((layer) => {
+          console.log('Layer', layer);
+          let geojson = layer.toGeoJSON();
+          if (layer.options.textMarker) {
+            geojson = {
+              ...geojson,
+              properties: {
+                ...geojson.properties,
+                text: layer.options.text,
+              },
+            };
+          }
+          return geojson;
+        });
+        console.log(toSet);
+        setGeoJsonData(toSet);
+      });
+      layer.on('pm:remove', (e) => {
+        console.log('deleted');
         console.log(e);
         const toSet = map.pm.getGeomanLayers().map((layer) => {
           console.log('Layer', layer);
@@ -76,5 +98,21 @@ export default function GeomanDrawer({ setGeoJsonData }: Props) {
     };
   }, [map]);
 
-  return null;
+  function clearMapData() {
+    map.pm.getGeomanLayers().map((layer) => {
+      map.removeLayer(layer);
+    });
+    setGeoJsonData([]);
+  }
+
+  return (
+    <div className='relative left-[10px] top-20 z-[10000]'>
+      <button
+        className='flex size-8 items-center justify-center rounded bg-red-500 p-1 text-white'
+        onClick={clearMapData}
+      >
+        <Trash2 size={20} />
+      </button>
+    </div>
+  );
 }
