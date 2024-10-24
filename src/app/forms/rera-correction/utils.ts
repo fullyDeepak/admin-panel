@@ -1,4 +1,6 @@
+import { ReraDMLVTableData } from '@/types/types';
 import { FilterFn } from '@tanstack/react-table';
+import { uniqBy } from 'lodash';
 
 export const sroTableColumns = [
   {
@@ -38,3 +40,60 @@ export const dateRangeFilterFn: FilterFn<any> = (
     (!endDate || rowDate <= new Date(endDate))
   );
 };
+
+export function generateOptions(data: ReraDMLVTableData[]) {
+  type OptionType = {
+    label: string;
+    value: string;
+  };
+  const optionsForProjects: {
+    label: string;
+    value: number;
+  }[] = [];
+  const cleanMandalOptions: OptionType[] = [];
+  const rawMandalOptions: OptionType[] = [];
+  const cleanVillageOptions: OptionType[] = [];
+  const rawVillageOptions: OptionType[] = [];
+  const localityOption: OptionType[] = [];
+  const developerOption: OptionType[] = [];
+  data.map((item) => {
+    cleanMandalOptions.push({
+      label: `${item.mandal_id}:${item.clean_mandal_name}`,
+      value: `${item.mandal_id}:${item.clean_mandal_name}`,
+    });
+    optionsForProjects.push({
+      label: `${item.id}:${item.project_name}`,
+      value: item.id,
+    });
+    rawMandalOptions.push({
+      label: item.mandal === '' ? 'BLANK' : item.mandal,
+      value: item.mandal === '' ? 'BLANK' : item.mandal,
+    });
+    cleanVillageOptions.push({
+      label: `${item.village_id}:${item.clean_village_name}`,
+      value: `${item.village_id}:${item.clean_village_name}`,
+    });
+    rawVillageOptions.push({
+      label: item.village === '' ? 'BLANK' : item.village,
+      value: item.village === '' ? 'BLANK' : item.village,
+    });
+    localityOption.push({
+      label: item.locality,
+      value: item.locality,
+    });
+    developerOption.push({
+      label: item.dev_name,
+      value: item.dev_name,
+    });
+  });
+
+  return {
+    cleanMandalOptions: uniqBy(cleanMandalOptions, 'value'),
+    rawMandalOptions: uniqBy(rawMandalOptions, 'value'),
+    cleanVillageOptions: uniqBy(cleanVillageOptions, 'value'),
+    rawVillageOptions: uniqBy(rawVillageOptions, 'value'),
+    localityOption: uniqBy(localityOption, 'value'),
+    optionsForProjects: uniqBy([], 'value'),
+    developerOption: uniqBy(developerOption, 'value'),
+  };
+}

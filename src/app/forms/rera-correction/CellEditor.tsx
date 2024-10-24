@@ -32,6 +32,7 @@ export default function CellEditor({ onComplete, value }: Props) {
             }
             if (e.key === 'Escape') {
               e.preventDefault();
+              e.stopPropagation();
               setIsEditing(false);
             }
           }}

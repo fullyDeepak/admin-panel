@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 import axiosClient from '@/utils/AxiosClient';
 import { useQueryClient } from '@tanstack/react-query';
+import { MasterDevelopers } from '@/components/dropdowns/MasterDevelopers';
 
 const inputBoxClass =
   'w-full rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
@@ -144,7 +145,7 @@ export default function ReraFilterSection() {
   }
 
   return (
-    <form className='mt-5 flex flex-1 flex-col gap-3 rounded p-10 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
+    <form className='z-[2] mt-5 flex flex-1 flex-col gap-3 rounded p-10 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
       <h3 className='text-center text-2xl font-semibold'>RERA DMVLs</h3>
       <ReraDropdown />
       <div className='flex flex-wrap items-center justify-between gap-5'>
@@ -230,6 +231,41 @@ export default function ReraFilterSection() {
                 return null;
               }
               setReraDMVLId('VILLAGE');
+            }}
+          >
+            Save
+          </button>
+        </div>
+      </div>
+      <div className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[2]'>Assign Master Dev ID:</span>
+        <div className='flex flex-[5] gap-4'>
+          <MasterDevelopers
+            onChange={(e) => {
+              updateCorrectionFormData(
+                'devIdValue',
+                (
+                  e as { label: string; value: string; lowercaseLabel: string }
+                ).value.split(':')[1]
+              );
+            }}
+            SetValue={
+              correctionData.devIdValue
+                ? 'DEVELOPER:' + correctionData.devIdValue
+                : null
+            }
+            className='w-full'
+            excludeJvs={true}
+          />
+          <button
+            className='btn-rezy max-h-10'
+            type='button'
+            onClick={() => {
+              if (!selectedTableRows || selectedTableRows.length === 0) {
+                toast.error('Select a project first.');
+                return null;
+              }
+              // setReraDMVLId('VILLAGE');
             }}
           >
             Save

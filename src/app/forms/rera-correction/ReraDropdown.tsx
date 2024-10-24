@@ -3,16 +3,14 @@ import Select, { SingleValue } from 'react-select';
 import { useQuery } from '@tanstack/react-query';
 import { fetchDropdownOption } from '@/utils/fetchDropdownOption';
 import axiosClient from '@/utils/AxiosClient';
-import { isEqual, uniqWith } from 'lodash';
 import { MultiSelect } from 'react-multi-select-component';
 import { useReraCorrectionStore } from '@/store/useReraCorrectionStore';
 import { ReraDMLVTableData } from '@/types/types';
 import { useCorrectionStore } from './useCorrectionStore';
+import { generateOptions } from './utils';
 
 export default function ReraDropdown() {
   const {
-    projectOption,
-    selectedProjects,
     setProjectOptions,
     setSelectedProjects,
     reraTableDataStore,
@@ -34,6 +32,18 @@ export default function ReraDropdown() {
       }[]
     | null
   >();
+  const [developerOption, setDeveloperOption] = useState<
+    {
+      label: string;
+      value: string;
+    }[]
+  >([]);
+  const [selectedDeveloper, setSelectedDeveloper] = useState<
+    {
+      label: string;
+      value: string;
+    }[]
+  >([]);
 
   // populate rera district dropdown
   const { isPending: loadingReraDistricts, data: reraDistrictOptions } =
@@ -60,7 +70,6 @@ export default function ReraDropdown() {
         correctionData.selectedReraDistrict !== undefined &&
         correctionData.selectedReraDistrict !== null
       ) {
-        console.log('Calling AA');
         const response = await axiosClient.get<{ data: ReraDMLVTableData[] }>(
           '/forms/rera/getReraProjectsByDMLVId',
           {
@@ -68,50 +77,22 @@ export default function ReraDropdown() {
           }
         );
         const data = response.data?.data;
-        const options = [{ label: 'ALL', value: '-1' }];
-        const optionsForProjects: {
-          label: string;
-          value: number;
-        }[] = [];
-        const rawOptions: {
-          label: string;
-          value: string;
-        }[] = [];
-        const rawVillageOptions: {
-          label: string;
-          value: string;
-        }[] = [];
-        data.map((item) => {
-          options.push({
-            label: `${item.mandal_id}:${item.clean_mandal_name}`,
-            value: `${item.mandal_id}:${item.clean_mandal_name}`,
-          });
-          optionsForProjects.push({
-            label: `${item.id}:${item.project_name}`,
-            value: item.id,
-          });
-          rawOptions.push({
-            label: item.mandal === '' ? 'BLANK' : item.mandal,
-            value: item.mandal === '' ? 'BLANK' : item.mandal,
-          });
-          rawVillageOptions.push({
-            label: item.village === '' ? 'BLANK' : item.village,
-            value: item.village === '' ? 'BLANK' : item.village,
-          });
-        });
-        updateCorrectionFormData(
-          'reraTableData',
-          data.map((item) => ({
-            ...item,
-            agreement_type: item.agreement_type ? item.agreement_type : 'N/A',
-          }))
-        );
-        setRawVillageOption(uniqWith(rawVillageOptions, isEqual));
-        setRawMandalOption(uniqWith(rawOptions, isEqual));
+        updateCorrectionFormData('reraTableData', data);
+        const {
+          cleanMandalOptions,
+          rawMandalOptions,
+          rawVillageOptions,
+          optionsForProjects,
+          developerOption,
+        } = generateOptions(data);
+        setDeveloperOption(developerOption);
+        setSelectedDeveloper(developerOption);
+        setRawVillageOption(rawVillageOptions);
+        setRawMandalOption(rawMandalOptions);
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
         setSelectedProjects(optionsForProjects);
-        return uniqWith(options, isEqual);
+        return [{ label: 'ALL', value: '-1' }, ...cleanMandalOptions];
       }
     },
     refetchOnWindowFocus: false,
@@ -138,50 +119,20 @@ export default function ReraDropdown() {
           }
         );
         const data = response.data?.data;
-        const options = [{ label: 'ALL', value: '-1' }];
-        const optionsForProjects: {
-          label: string;
-          value: number;
-        }[] = [];
-        const rawOptions: {
-          label: string;
-          value: string;
-        }[] = [];
-        const rawVillageOptions: {
-          label: string;
-          value: string;
-        }[] = [];
-        data.map((item) => {
-          options.push({
-            label: `${item.mandal_id}:${item.clean_mandal_name}`,
-            value: `${item.mandal_id}:${item.clean_mandal_name}`,
-          });
-          optionsForProjects.push({
-            label: `${item.id}:${item.project_name}`,
-            value: item.id,
-          });
-          rawOptions.push({
-            label: item.mandal === '' ? 'BLANK' : item.mandal,
-            value: item.mandal === '' ? 'BLANK' : item.mandal,
-          });
-          rawVillageOptions.push({
-            label: item.village === '' ? 'BLANK' : item.village,
-            value: item.village === '' ? 'BLANK' : item.village,
-          });
-        });
-        updateCorrectionFormData(
-          'reraTableData',
-          data.map((item) => ({
-            ...item,
-            agreement_type: item.agreement_type ? item.agreement_type : 'N/A',
-          }))
-        );
-        setRawVillageOption(uniqWith(rawVillageOptions, isEqual));
-        setRawMandalOption(uniqWith(rawOptions, isEqual));
+        const {
+          cleanMandalOptions,
+          rawMandalOptions,
+          rawVillageOptions,
+          optionsForProjects,
+        } = generateOptions(data);
+        setDeveloperOption(developerOption);
+        setSelectedDeveloper(developerOption);
+        setRawVillageOption(rawVillageOptions);
+        setRawMandalOption(rawMandalOptions);
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
         setSelectedProjects(optionsForProjects);
-        return uniqWith(options, isEqual);
+        return [{ label: 'ALL', value: '-1' }, ...cleanMandalOptions];
       }
     },
     refetchOnWindowFocus: false,
@@ -209,41 +160,12 @@ export default function ReraDropdown() {
           }
         );
         const data = response.data?.data;
-        const optionsForProjects: {
-          label: string;
-          value: number;
-        }[] = [];
-        const rawOptions: {
-          label: string;
-          value: string;
-        }[] = [];
-        const rawVillageOptions: {
-          label: string;
-          value: string;
-        }[] = [];
-        data.map((item) => {
-          optionsForProjects.push({
-            label: `${item.id}:${item.project_name}`,
-            value: item.id,
-          });
-          rawOptions.push({
-            label: item.mandal === '' ? 'BLANK' : item.mandal,
-            value: item.mandal === '' ? 'BLANK' : item.mandal,
-          });
-          rawVillageOptions.push({
-            label: item.village === '' ? 'BLANK' : item.village,
-            value: item.village === '' ? 'BLANK' : item.village,
-          });
-        });
-        updateCorrectionFormData(
-          'reraTableData',
-          data.map((item) => ({
-            ...item,
-            agreement_type: item.agreement_type ? item.agreement_type : 'N/A',
-          }))
-        );
-        setRawVillageOption(uniqWith(rawVillageOptions, isEqual));
-        setRawMandalOption(uniqWith(rawOptions, isEqual));
+        const { rawMandalOptions, rawVillageOptions, optionsForProjects } =
+          generateOptions(data);
+        setDeveloperOption(developerOption);
+        setSelectedDeveloper(developerOption);
+        setRawVillageOption(rawVillageOptions);
+        setRawMandalOption(rawMandalOptions);
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
         setSelectedProjects(optionsForProjects);
@@ -279,50 +201,20 @@ export default function ReraDropdown() {
           }
         );
         const data = response.data?.data;
-        const options = [{ label: 'ALL', value: '-1' }];
-        const rawMandalOptions: {
-          label: string;
-          value: string;
-        }[] = [];
-        const optionsForProjects: {
-          label: string;
-          value: number;
-        }[] = [];
-        const rawVillageOptions: {
-          label: string;
-          value: string;
-        }[] = [];
-        data.map((item) => {
-          options.push({
-            label: `${item.village_id}:${item.clean_village_name}`,
-            value: `${item.village_id}:${item.clean_village_name}`,
-          });
-          optionsForProjects.push({
-            label: `${item.id}:${item.project_name}`,
-            value: item.id,
-          });
-          rawMandalOptions.push({
-            label: item.mandal === '' ? 'BLANK' : item.mandal,
-            value: item.mandal === '' ? 'BLANK' : item.mandal,
-          });
-          rawVillageOptions.push({
-            label: item.village === '' ? 'BLANK' : item.village,
-            value: item.village === '' ? 'BLANK' : item.village,
-          });
-        });
-        updateCorrectionFormData(
-          'reraTableData',
-          data.map((item) => ({
-            ...item,
-            agreement_type: item.agreement_type ? item.agreement_type : 'N/A',
-          }))
-        );
-        setRawMandalOption(uniqWith(rawMandalOptions, isEqual));
-        setRawVillageOption(uniqWith(rawVillageOptions, isEqual));
+        const {
+          cleanVillageOptions,
+          rawMandalOptions,
+          rawVillageOptions,
+          optionsForProjects,
+        } = generateOptions(data);
+        setDeveloperOption(developerOption);
+        setSelectedDeveloper(developerOption);
+        setRawMandalOption(rawMandalOptions);
+        setRawVillageOption(rawVillageOptions);
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
         setSelectedProjects(optionsForProjects);
-        return uniqWith(options, isEqual);
+        return [{ label: 'ALL', value: '-1' }, ...cleanVillageOptions];
       }
     },
     refetchOnWindowFocus: false,
@@ -355,50 +247,15 @@ export default function ReraDropdown() {
           }
         );
         const data = response.data?.data;
-        const options = [{ label: 'ALL', value: '-1' }];
-        const optionsForProjects: {
-          label: string;
-          value: number;
-        }[] = [];
-        const rawOptions: {
-          label: string;
-          value: string;
-        }[] = [];
-        const rawVillageOptions: {
-          label: string;
-          value: string;
-        }[] = [];
-        data.map((item) => {
-          options.push({
-            label: item.locality,
-            value: item.locality,
-          });
-          optionsForProjects.push({
-            label: `${item.id}:${item.project_name}`,
-            value: item.id,
-          });
-          rawOptions.push({
-            label: item.mandal === '' ? 'BLANK' : item.mandal,
-            value: item.mandal === '' ? 'BLANK' : item.mandal,
-          });
-          rawVillageOptions.push({
-            label: item.village === '' ? 'BLANK' : item.village,
-            value: item.village === '' ? 'BLANK' : item.village,
-          });
-        });
-        updateCorrectionFormData(
-          'reraTableData',
-          data.map((item) => ({
-            ...item,
-            agreement_type: item.agreement_type ? item.agreement_type : 'N/A',
-          }))
-        );
-        // setRawMandalOption(uniqWith(rawOptions, isEqual));
-        setRawVillageOption(uniqWith(rawVillageOptions, isEqual));
+        const { localityOption, rawVillageOptions, optionsForProjects } =
+          generateOptions(data);
+        setDeveloperOption(developerOption);
+        setSelectedDeveloper(developerOption);
+        setRawVillageOption(rawVillageOptions);
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
         setSelectedProjects(optionsForProjects);
-        return uniqWith(options, isEqual);
+        return [{ label: 'ALL', value: '-1' }, ...localityOption];
       }
     },
     refetchOnWindowFocus: false,
@@ -439,13 +296,8 @@ export default function ReraDropdown() {
             value: item.id,
           });
         });
-        updateCorrectionFormData(
-          'reraTableData',
-          data.map((item) => ({
-            ...item,
-            agreement_type: item.agreement_type ? item.agreement_type : 'N/A',
-          }))
-        );
+        setDeveloperOption(developerOption);
+        setSelectedDeveloper(developerOption);
         setRERATableDataStore(data);
         setProjectOptions(optionsForProjects);
         setSelectedProjects(optionsForProjects);
@@ -571,41 +423,28 @@ export default function ReraDropdown() {
         />
       </label>
       <div className='flex items-center justify-between gap-5'>
-        <span className='flex-[2] text-xl'>Projects:</span>
+        <span className='flex-[2] text-xl'>Developers:</span>
         <div className='flex flex-[5] items-center gap-3'>
           <MultiSelect
-            options={projectOption}
-            value={selectedProjects}
+            options={developerOption}
+            value={selectedDeveloper}
             className='w-full'
             labelledBy=''
             onChange={(
               e: {
                 label: string;
-                value: number;
+                value: string;
               }[]
             ) => {
-              setSelectedProjects(e);
-              const selectedProjectId = e.map((item) => item.value);
+              setSelectedDeveloper(e);
+              const selectedDevId = e.map((item) => item.value);
               const filteredTableData = reraTableDataStore?.filter((item) =>
-                selectedProjectId.includes(item.id)
+                selectedDevId.includes(item.dev_name)
               );
               filteredTableData &&
-                updateCorrectionFormData(
-                  'reraTableData',
-                  filteredTableData.map((item) => ({
-                    ...item,
-                    agreement_type: item.agreement_type
-                      ? item.agreement_type
-                      : 'N/A',
-                  }))
-                );
+                updateCorrectionFormData('reraTableData', filteredTableData);
             }}
           />
-          <span
-            className={`badge aspect-square h-10 rounded-full bg-violet-200 ${selectedProjects.length > 100 ? 'text-base' : 'text-lg'} `}
-          >
-            {selectedProjects.length}
-          </span>
         </div>
       </div>
     </>

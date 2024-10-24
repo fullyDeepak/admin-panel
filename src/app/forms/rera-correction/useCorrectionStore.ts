@@ -50,6 +50,7 @@ type CorrectionStoreState = {
   districtIdValue: string | undefined;
   mandalIdValue: string | undefined;
   villageIdValue: string | undefined;
+  devIdValue: string | undefined;
 };
 
 type CorrectionStore = {
@@ -85,6 +86,7 @@ const INITIAL_STATE: CorrectionStoreState = {
   districtIdValue: undefined,
   mandalIdValue: undefined,
   villageIdValue: undefined,
+  devIdValue: undefined,
 };
 
 export const useCorrectionStore = create<CorrectionStore>()(

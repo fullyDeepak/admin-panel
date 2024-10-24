@@ -76,13 +76,6 @@ export default function ReraTableSection() {
         },
       },
       {
-        header: 'Agreement Type',
-        accessorKey: 'agreement_type',
-        meta: {
-          filterVariant: 'text',
-        },
-      },
-      {
         header: 'Developer M ID',
         cell: ({ row }: any) => (
           <MasterDevelopers
@@ -102,6 +95,7 @@ export default function ReraTableSection() {
                 developer_master_id: e?.value?.split(':')[1],
               });
             }}
+            className='w-96'
           />
         ),
         meta: {
@@ -128,6 +122,7 @@ export default function ReraTableSection() {
                 dev_group_id: e?.value?.split(':')[1],
               });
             }}
+            className='w-96'
           />
         ),
         meta: {
@@ -144,12 +139,6 @@ export default function ReraTableSection() {
       {
         header: 'Project SubType',
         accessorKey: 'project_subtype_calculated',
-        cell: ({ row }: any) => (
-          <CellEditor
-            onComplete={() => {}}
-            value={row.original.project_subtype_calculated}
-          />
-        ),
         meta: {
           filterVariant: 'text',
         },
@@ -174,20 +163,6 @@ export default function ReraTableSection() {
         meta: {
           filterVariant: 'text',
         },
-        cell: ({ row }: any) => (
-          <CellEditor
-            onComplete={(value) => {
-              console.log(value);
-              updateCurrentTableData(row.original.id, {
-                mandal: value,
-              });
-              updateSelectedTableRows(row.original.id, {
-                mandal: value,
-              });
-            }}
-            value={row.original.mandal || ''}
-          />
-        ),
       },
       {
         header: 'Mandal ID',
@@ -195,6 +170,20 @@ export default function ReraTableSection() {
         meta: {
           filterVariant: 'text',
         },
+        cell: ({ row }: any) => (
+          <CellEditor
+            onComplete={(value) => {
+              console.log(value);
+              updateCurrentTableData(row.original.id, {
+                mandal_id: value,
+              });
+              updateSelectedTableRows(row.original.id, {
+                mandal_id: value,
+              });
+            }}
+            value={row.original.mandal_id || ''}
+          />
+        ),
       },
       {
         header: 'Clean Mandal',
@@ -206,12 +195,23 @@ export default function ReraTableSection() {
       {
         header: 'Locality',
         accessorKey: 'locality',
-        cell: ({ row }: any) => (
-          <CellEditor onComplete={() => {}} value={row.original.locality} />
-        ),
         meta: {
           filterVariant: 'text',
         },
+        cell: ({ row }: any) => (
+          <CellEditor
+            onComplete={(value) => {
+              console.log(value);
+              updateCurrentTableData(row.original.id, {
+                locality: value,
+              });
+              updateSelectedTableRows(row.original.id, {
+                locality: value,
+              });
+            }}
+            value={row.original.locality || ''}
+          />
+        ),
       },
       {
         header: 'Village',
@@ -259,13 +259,12 @@ export default function ReraTableSection() {
 
   return (
     <div className='my-5 mb-40 flex w-full gap-5'>
-      <div className='flex w-full flex-col justify-center'>
-        <h3 className='mt-5 text-center text-2xl font-semibold underline'>
-          RERA Data
-        </h3>
-
-        {correctionData.reraTableData &&
-          correctionData.reraTableData?.length > 0 && (
+      {correctionData.reraTableData &&
+        correctionData.reraTableData?.length > 0 && (
+          <div className='flex w-full flex-col justify-center'>
+            <h3 className='mt-5 text-center text-2xl font-semibold underline'>
+              RERA Data
+            </h3>
             <div className='max-w-full'>
               {pdfPreviewDivs}
               <AdvTable
@@ -278,10 +277,9 @@ export default function ReraTableSection() {
                 dateRangeFilterFn={dateRangeFilterFn}
               />
             </div>
-          )}
-
-        <button className='btn-rezy mx-auto my-10'>Submit</button>
-      </div>
+            <button className='btn-rezy mx-auto my-10'>Submit</button>
+          </div>
+        )}
     </div>
   );
 }
