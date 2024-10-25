@@ -449,6 +449,7 @@ export default function ReraDropdown() {
               }[]
             ) => {
               setSelectedDeveloper(e);
+              setTableRowSelection({});
               const selectedDevId = e.map((item) => item.value);
               const filteredTableData = reraTableDataStore?.filter((item) =>
                 selectedDevId.includes(item.dev_name)

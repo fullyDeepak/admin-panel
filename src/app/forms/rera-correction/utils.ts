@@ -45,60 +45,103 @@ export const dateRangeFilterFn: FilterFn<any> = (
 };
 
 export function generateOptions(data: ReraDMLVTableData[]) {
-  type OptionType = {
-    label: string;
-    value: string;
+  type OptionType = { label: string; value: string };
+  type TempOptionType = { label: string; value: string; count: number };
+  type FrequencyMap = Record<string, number>;
+  type Frequencies = {
+    dev: FrequencyMap;
+    cleanMandal: FrequencyMap;
+    rawMandal: FrequencyMap;
+    cleanVillage: FrequencyMap;
+    rawVillage: FrequencyMap;
+    locality: FrequencyMap;
   };
-  const optionsForProjects: {
-    label: string;
-    value: string;
-  }[] = [];
-  const cleanMandalOptions: OptionType[] = [];
-  const rawMandalOptions: OptionType[] = [];
-  const cleanVillageOptions: OptionType[] = [];
-  const rawVillageOptions: OptionType[] = [];
-  const localityOption: OptionType[] = [];
-  const developerOption: OptionType[] = [];
-  data.map((item) => {
-    cleanMandalOptions.push({
-      label: `${item.mandal_id}:${item.clean_mandal_name}`,
+
+  const tempCleanMandalOptions: Record<string, TempOptionType> = {};
+  const tempRawMandalOptions: Record<string, TempOptionType> = {};
+  const tempCleanVillageOptions: Record<string, TempOptionType> = {};
+  const tempRawVillageOptions: Record<string, TempOptionType> = {};
+  const tempLocalityOptions: Record<string, TempOptionType> = {};
+  const tempDeveloperOptions: Record<string, TempOptionType> = {};
+  const optionsForProjects: OptionType[] = [];
+
+  const frequencies = data.reduce<Frequencies>(
+    (acc, item) => {
+      acc.dev[item.dev_name] = (acc.dev[item.dev_name] || 0) + 1;
+      acc.cleanMandal[item.clean_mandal_name] =
+        (acc.cleanMandal[item.clean_mandal_name] || 0) + 1;
+      acc.rawMandal[item.mandal] = (acc.rawMandal[item.mandal] || 0) + 1;
+      acc.cleanVillage[item.clean_village_name] =
+        (acc.cleanVillage[item.clean_village_name] || 0) + 1;
+      acc.rawVillage[item.village] = (acc.rawVillage[item.village] || 0) + 1;
+      acc.locality[item.locality] = (acc.locality[item.locality] || 0) + 1;
+      return acc;
+    },
+    {
+      dev: {},
+      cleanMandal: {},
+      rawMandal: {},
+      cleanVillage: {},
+      rawVillage: {},
+      locality: {},
+    }
+  );
+
+  data.forEach((item) => {
+    tempCleanMandalOptions[item.clean_mandal_name] = {
+      label: `${item.mandal_id}:${item.clean_mandal_name}:(${frequencies.cleanMandal[item.clean_mandal_name]})`,
       value: `${item.mandal_id}:${item.clean_mandal_name}`,
-    });
+      count: frequencies.cleanMandal[item.clean_mandal_name],
+    };
+    tempRawMandalOptions[item.mandal || 'BLANK'] = {
+      label: item.mandal
+        ? `${item.mandal}:(${frequencies.rawMandal[item.mandal]})`
+        : `BLANK:(${frequencies.rawMandal['']})`,
+      value: item.mandal || 'BLANK',
+      count: frequencies.rawMandal[item.mandal],
+    };
+    tempCleanVillageOptions[item.clean_village_name] = {
+      label: `${item.village_id}:${item.clean_village_name}:(${frequencies.cleanVillage[item.clean_village_name]})`,
+      value: `${item.village_id}:${item.clean_village_name}`,
+      count: frequencies.cleanVillage[item.clean_village_name],
+    };
+    tempRawVillageOptions[item.village || 'BLANK'] = {
+      label: item.village
+        ? `${item.village}:(${frequencies.rawVillage[item.village]})`
+        : 'BLANK',
+      value: item.village || 'BLANK',
+      count: frequencies.rawVillage[item.village],
+    };
+    tempLocalityOptions[item.locality] = {
+      label: `${item.locality}:(${frequencies.locality[item.locality]})`,
+      value: item.locality,
+      count: frequencies.locality[item.locality],
+    };
+    tempDeveloperOptions[item.dev_name] = {
+      label: `${item.dev_name}:(${frequencies.dev[item.dev_name]})`,
+      value: item.dev_name,
+      count: frequencies.dev[item.dev_name],
+    };
     optionsForProjects.push({
       label: `${item.id}:${item.project_name}`,
       value: item.id,
     });
-    rawMandalOptions.push({
-      label: item.mandal === '' ? 'BLANK' : item.mandal,
-      value: item.mandal === '' ? 'BLANK' : item.mandal,
-    });
-    cleanVillageOptions.push({
-      label: `${item.village_id}:${item.clean_village_name}`,
-      value: `${item.village_id}:${item.clean_village_name}`,
-    });
-    rawVillageOptions.push({
-      label: item.village === '' ? 'BLANK' : item.village,
-      value: item.village === '' ? 'BLANK' : item.village,
-    });
-    localityOption.push({
-      label: item.locality,
-      value: item.locality,
-    });
-    developerOption.push({
-      label: item.dev_name,
-      value: item.dev_name,
-    });
   });
 
-  return {
-    cleanMandalOptions: uniqBy(cleanMandalOptions, 'value'),
-    rawMandalOptions: uniqBy(rawMandalOptions, 'value'),
-    cleanVillageOptions: uniqBy(cleanVillageOptions, 'value'),
-    rawVillageOptions: uniqBy(rawVillageOptions, 'value'),
-    localityOption: uniqBy(localityOption, 'value'),
-    optionsForProjects: uniqBy([], 'value'),
-    developerOption: uniqBy(developerOption, 'value'),
+  const toSortedArray = (tempOptions: Record<string, TempOptionType>) =>
+    Object.values(tempOptions).sort((a, b) => b.count - a.count);
+
+  const results = {
+    cleanMandalOptions: toSortedArray(tempCleanMandalOptions),
+    rawMandalOptions: toSortedArray(tempRawMandalOptions),
+    cleanVillageOptions: toSortedArray(tempCleanVillageOptions),
+    rawVillageOptions: toSortedArray(tempRawVillageOptions),
+    localityOption: toSortedArray(tempLocalityOptions),
+    optionsForProjects: uniqBy(optionsForProjects, 'value'),
+    developerOption: toSortedArray(tempDeveloperOptions),
   };
+
+  return results;
 }
 
 export async function postReraCleanData(data: ReraDMLVTableData[]) {
