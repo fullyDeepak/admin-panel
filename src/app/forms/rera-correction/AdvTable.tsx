@@ -11,6 +11,7 @@ import {
   OnChangeFn,
   Column,
   FilterFn,
+  ColumnFiltersState,
 } from '@tanstack/react-table';
 import { HTMLProps, useEffect, useRef, useState } from 'react';
 import { GoArrowDown, GoArrowUp, GoArrowSwitch } from 'react-icons/go';
@@ -83,6 +84,7 @@ export default function AdvTable<TData>({
 }: TableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filtering, setFiltering] = useState('');
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   //   const [rowSelection, setRowSelection] = useState({});
   const newColumn: ColumnDef<TData, any>[] = [
     {
@@ -149,11 +151,12 @@ export default function AdvTable<TData>({
       sorting: sorting,
       globalFilter: filtering,
       rowSelection: rowSelection,
+      columnFilters: columnFilters,
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setFiltering,
+    onColumnFiltersChange: setColumnFilters,
   });
-  table.getSelectedRowModel;
 
   useEffect(() => {
     const ogData = table
@@ -163,6 +166,12 @@ export default function AdvTable<TData>({
   }, [rowSelection]);
   return (
     <div className='mx-auto flex flex-col'>
+      <button
+        className='btn btn-error btn-xs max-w-fit self-end text-white'
+        onClick={() => setColumnFilters([])}
+      >
+        Reset all filters
+      </button>
       <div className='my-5 max-h-screen overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
         <table className='relative !block h-[70vh] w-full border-collapse overflow-y-scroll bg-white text-sm text-gray-700'>
           <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50'>
