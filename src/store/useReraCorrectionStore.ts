@@ -15,12 +15,12 @@ interface FormState {
   reraTableDataStore: ReraDMLVTableData[] | null;
   projectOption: {
     label: string;
-    value: number;
+    value: string;
   }[];
   setProjectOptions: (
     _options: {
       label: string;
-      value: number;
+      value: string;
     }[]
   ) => void;
 

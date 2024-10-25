@@ -169,7 +169,7 @@ export interface FormTowerDetailType {
 }
 
 export type ReraDMLVTableData = {
-  id: number;
+  id: string;
   project_name: string;
   approval_date: string;
   project_type: string;

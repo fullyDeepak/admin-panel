@@ -51,7 +51,7 @@ export function generateOptions(data: ReraDMLVTableData[]) {
   };
   const optionsForProjects: {
     label: string;
-    value: number;
+    value: string;
   }[] = [];
   const cleanMandalOptions: OptionType[] = [];
   const rawMandalOptions: OptionType[] = [];
@@ -103,7 +103,7 @@ export function generateOptions(data: ReraDMLVTableData[]) {
 
 export async function postReraCleanData(data: ReraDMLVTableData[]) {
   const dataToPost: {
-    projectId: number;
+    projectId: string;
     mandalId: number | null;
     villageId: number | null;
     locality: string;
@@ -113,7 +113,7 @@ export async function postReraCleanData(data: ReraDMLVTableData[]) {
 
   data.map((item) => {
     dataToPost.push({
-      projectId: item.id,
+      projectId: item.id.replace('T', '').replace('R', ''),
       mandalId: +item.mandal_id,
       villageId: +item.village_id,
       locality: item.locality,

@@ -299,7 +299,7 @@ export default function ReraDropdown() {
         updateCorrectionFormData('reraTableData', data);
         const optionsForProjects: {
           label: string;
-          value: number;
+          value: string;
         }[] = [];
         data.map((item) => {
           optionsForProjects.push({

@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import SROSection from './SROSection';
 import ReraFilterSection from './ReraFilterSection';
 import ReraTableSection from './ReraTableSection';
-import DevTaggerForm from './../dev-tagger/page';
 import DevTaggerPanels from './DevTaggerPanels';
 
 export default function ReraCorrectionPage() {

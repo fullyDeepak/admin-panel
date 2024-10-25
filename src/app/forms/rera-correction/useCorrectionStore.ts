@@ -64,7 +64,7 @@ type CorrectionStore = {
   ) => void;
   setSelectedTableRows: (_data: ReraDMLVTableData[]) => void;
   updateSelectedTableRows: (
-    _projectId: number,
+    _projectId: string,
     _data: Partial<ReraDMLVTableData>
   ) => void;
   updateCorrectionFormData: <K extends keyof CorrectionStoreState>(
@@ -73,7 +73,7 @@ type CorrectionStore = {
   ) => void;
   resetAll: () => void;
   updateCurrentTableData: (
-    _projectId: number,
+    _projectId: string,
     _data: Partial<ReraDMLVTableData>
   ) => void;
 };
