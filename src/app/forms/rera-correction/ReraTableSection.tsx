@@ -19,8 +19,9 @@ export default function ReraTableSection() {
     selectedTableRows,
     setSelectedTableRows,
     updateSelectedTableRows,
+    tableRowSelection,
+    setTableRowSelection,
   } = useCorrectionStore();
-  const [rowSelection, setRowSelection] = useState({});
   const columnHelper = createColumnHelper<ReraDMLVTableData>();
   const reraTableColumns: ColumnDef<ReraDMLVTableData, any>[] = [
     columnHelper.accessor('id', {
@@ -36,7 +37,7 @@ export default function ReraTableSection() {
               );
               if (!data) return;
               postReraCleanData([data]);
-              setRowSelection({});
+              setTableRowSelection({});
             }}
             disabled={!row?.getIsSelected()}
           >
@@ -278,8 +279,8 @@ export default function ReraTableSection() {
               <AdvTable
                 columns={reraTableColumns}
                 data={correctionData.reraTableData}
-                rowSelection={rowSelection}
-                setRowSelection={setRowSelection}
+                rowSelection={tableRowSelection}
+                setRowSelection={setTableRowSelection}
                 setSelectedRows={setSelectedTableRows}
                 isMultiSelection={true}
                 dateRangeFilterFn={dateRangeFilterFn}
@@ -289,7 +290,7 @@ export default function ReraTableSection() {
               className='btn-rezy mx-auto my-10'
               onClick={() => {
                 postReraCleanData(selectedTableRows);
-                setRowSelection({});
+                setTableRowSelection({});
               }}
             >
               Submit

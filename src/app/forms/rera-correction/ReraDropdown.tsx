@@ -16,7 +16,8 @@ export default function ReraDropdown() {
     reraTableDataStore,
     setRERATableDataStore,
   } = useReraCorrectionStore();
-  const { correctionData, updateCorrectionFormData } = useCorrectionStore();
+  const { correctionData, updateCorrectionFormData, setTableRowSelection } =
+    useCorrectionStore();
 
   const [reraRawMandalOption, setRawMandalOption] = useState<
     | {
@@ -87,6 +88,7 @@ export default function ReraDropdown() {
         } = generateOptions(data);
         setDeveloperOption(developerOption);
         setSelectedDeveloper(developerOption);
+        setTableRowSelection({});
         setRawVillageOption(rawVillageOptions);
         setRawMandalOption(rawMandalOptions);
         setRERATableDataStore(data);
@@ -126,6 +128,7 @@ export default function ReraDropdown() {
           rawVillageOptions,
           optionsForProjects,
         } = generateOptions(data);
+        setTableRowSelection({});
         setDeveloperOption(developerOption);
         setSelectedDeveloper(developerOption);
         setRawVillageOption(rawVillageOptions);
@@ -164,6 +167,7 @@ export default function ReraDropdown() {
         updateCorrectionFormData('reraTableData', data);
         const { rawMandalOptions, rawVillageOptions, optionsForProjects } =
           generateOptions(data);
+        setTableRowSelection({});
         setDeveloperOption(developerOption);
         setSelectedDeveloper(developerOption);
         setRawVillageOption(rawVillageOptions);
@@ -210,6 +214,7 @@ export default function ReraDropdown() {
           rawVillageOptions,
           optionsForProjects,
         } = generateOptions(data);
+        setTableRowSelection({});
         setDeveloperOption(developerOption);
         setSelectedDeveloper(developerOption);
         setRawMandalOption(rawMandalOptions);
@@ -253,6 +258,7 @@ export default function ReraDropdown() {
         updateCorrectionFormData('reraTableData', data);
         const { localityOption, rawVillageOptions, optionsForProjects } =
           generateOptions(data);
+        setTableRowSelection({});
         setDeveloperOption(developerOption);
         setSelectedDeveloper(developerOption);
         setRawVillageOption(rawVillageOptions);
@@ -301,6 +307,7 @@ export default function ReraDropdown() {
             value: item.id,
           });
         });
+        setTableRowSelection({});
         setDeveloperOption(developerOption);
         setSelectedDeveloper(developerOption);
         setRERATableDataStore(data);

@@ -56,6 +56,12 @@ type CorrectionStoreState = {
 type CorrectionStore = {
   correctionData: CorrectionStoreState;
   selectedTableRows: ReraDMLVTableData[];
+  tableRowSelection: Record<string, boolean>;
+  setTableRowSelection: (
+    _updater:
+      | Record<string, boolean>
+      | ((_prev: Record<string, boolean>) => Record<string, boolean>)
+  ) => void;
   setSelectedTableRows: (_data: ReraDMLVTableData[]) => void;
   updateSelectedTableRows: (
     _projectId: number,
@@ -93,6 +99,14 @@ export const useCorrectionStore = create<CorrectionStore>()(
   immer((set) => ({
     correctionData: INITIAL_STATE,
     selectedTableRows: [] as ReraDMLVTableData[],
+    tableRowSelection: {},
+    setTableRowSelection: (updater) =>
+      set((state) => ({
+        tableRowSelection:
+          typeof updater === 'function'
+            ? updater(state.tableRowSelection)
+            : updater,
+      })),
     setSelectedTableRows: (data) => set({ selectedTableRows: data }),
     updateSelectedTableRows: (pid, data) => {
       set((prev) => {

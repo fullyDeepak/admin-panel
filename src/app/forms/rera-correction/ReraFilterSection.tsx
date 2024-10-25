@@ -9,8 +9,12 @@ import { MasterDevelopers } from '@/components/dropdowns/MasterDevelopers';
 const inputBoxClass =
   'w-full rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 export default function ReraFilterSection() {
-  const { updateCorrectionFormData, correctionData, selectedTableRows } =
-    useCorrectionStore();
+  const {
+    updateCorrectionFormData,
+    correctionData,
+    selectedTableRows,
+    setTableRowSelection,
+  } = useCorrectionStore();
   const queryClient = useQueryClient();
 
   async function setReraDMVLId(
@@ -183,6 +187,7 @@ export default function ReraFilterSection() {
         }
       }
     }
+    setTableRowSelection({});
   }
 
   return (
@@ -321,6 +326,7 @@ export default function ReraFilterSection() {
             queryClient.refetchQueries({
               queryKey: ['rera-district', correctionData.selectedReraDistrict],
             });
+            setTableRowSelection({});
             updateCorrectionFormData('selectedReraMandal', null);
             updateCorrectionFormData('selectedReraVillage', null);
             updateCorrectionFormData('selectedReraLocality', null);
