@@ -11,12 +11,16 @@ import {
 } from '../../useTowerUnitStore';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Minus, Plus } from 'lucide-react';
+import { CirclePlus, Minus, Plus, Trash2 } from 'lucide-react';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import { ColumnDef } from '@tanstack/react-table';
 import axiosClient from '@/utils/AxiosClient';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import toast from 'react-hot-toast';
+import {
+  PiCardsThreeDuotone,
+  PiMicrosoftExcelLogoDuotone,
+} from 'react-icons/pi';
 
 const hmRefTableColumns: ColumnDef<object, any>[] = [
   {
@@ -93,10 +97,17 @@ export default function TowerPage() {
   }, [towerFormData]);
 
   async function fetchRefTables() {
-    const selectedProjectIds = onboardingData.selectedReraProjects.map(
+    const selectedReraProjectIds = onboardingData.selectedReraProjects.map(
       (item) => +item.value
     );
 
+    if (
+      !onboardingData.selectedTempProject?.value &&
+      selectedReraProjectIds.length === 0
+    ) {
+      toast.error('Select a Temp Project or at least one RERA to fetch.');
+      return;
+    }
     const res = axiosClient.get<{
       data: {
         apt_name: string;
@@ -132,12 +143,17 @@ export default function TowerPage() {
             return 0;
           });
           updateTMRefTable(tableData);
-          return 'TM Ref Table fetched';
+          return 'TM Ref Table fetched with ' + tableData.length + ' entries';
         },
         error: 'Error',
       },
       { duration: 8000 }
     );
+
+    if (onboardingData.coreDoorNumberStrings.length === 0) {
+      toast.error("HM data won't be fetched without Core Door Numbers.");
+      return null;
+    }
 
     const hmProjectTypeRes = axiosClient.get<{
       data: {
@@ -161,26 +177,11 @@ export default function TowerPage() {
       {
         loading: 'Fetching HM Ref Table...',
         success: ({ data }) => {
-          const towerCardData: TowerUnitDetailType[] = [];
           updateHMRefTable(
-            data.data.map((item, idx) => {
+            data.data.map((item) => {
               const unit_numbers: string[] = [];
               item.house_nos.map((house_no) => {
                 unit_numbers.push(house_no.split('/').pop() || '');
-              });
-              towerCardData.push({
-                id: idx + 1,
-                projectPhase: 1,
-                reraId: '',
-                towerType: null,
-                singleUnit: false,
-                displayTowerType: null,
-                reraTowerId: '',
-                towerNameETL: item.tower_name,
-                towerNameDisplay: item.tower_name,
-                towerDoorNoString:
-                  item.pattern.replace('%', '') + item.tower_name + '/{F}{UU}',
-                unitCards: [],
               });
               return {
                 tower_name: item.tower_name,
@@ -189,10 +190,66 @@ export default function TowerPage() {
               };
             })
           );
-          if (selectedProjectIds.length === 0 && towerCardData?.length > 0) {
-            setTowerFormData(towerCardData);
+          return 'HM Ref Table fetched with ' + data.data.length + ' entries';
+        },
+        error: 'Error',
+      },
+      { duration: 5000 }
+    );
+  }
+
+  async function fetchHMCards() {
+    if (onboardingData.coreDoorNumberStrings.length === 0) {
+      toast.error("HM data won't be fetched without Core Door Numbers.");
+      return null;
+    }
+
+    const hmProjectTypeRes = axiosClient.get<{
+      data: {
+        tower_name: string;
+        freq: string;
+        house_nos: string[];
+        pattern: string;
+      }[];
+    }>('/forms/hmReferenceTable', {
+      params: {
+        strings: encodeURIComponent(
+          JSON.stringify(
+            onboardingData.coreDoorNumberStrings.map((item) => item + '%')
+          )
+        ),
+      },
+    });
+
+    toast.promise(
+      hmProjectTypeRes,
+      {
+        loading: 'Fetching HM Tower Cards...',
+        success: ({ data }) => {
+          const towerCardData: TowerUnitDetailType[] = [];
+          data.data.forEach((item, idx) => {
+            towerCardData.push({
+              id: idx + 1,
+              projectPhase: 1,
+              reraId: '',
+              towerType: null,
+              singleUnit: false,
+              displayTowerType: null,
+              reraTowerId: '',
+              towerNameETL: item.tower_name,
+              towerNameDisplay: item.tower_name,
+              towerDoorNoString:
+                item.pattern.replace('%', '') + item.tower_name + '/{F}{UU}',
+              unitCards: [],
+            });
+          });
+
+          if (towerCardData?.length > 0) {
+            setTowerFormData(towerFormData.concat(towerCardData));
           }
-          return 'HM Ref Table fetched';
+          return towerCardData.length
+            ? towerCardData.length + ' HM Cards found and added.'
+            : 'No card found 😢';
         },
         error: 'Error',
       },
@@ -202,10 +259,10 @@ export default function TowerPage() {
 
   return (
     <div className='flex flex-col text-sm'>
-      <label className='mx-auto mb-5 flex max-w-[600px] flex-wrap items-center justify-between gap-5'>
+      <label className='mx-auto mb-5 flex max-w-[800px] flex-wrap items-center justify-between gap-5'>
         <input
           placeholder='Enter Tower Card Count'
-          className={cn(inputBoxClass, 'max-w-[180px]')}
+          className={cn(inputBoxClass, 'w-[180px]')}
           type='number'
           value={towerCardCount || ''}
           onChange={(e) => setTowerCardCount(+e.target.value)}
@@ -226,33 +283,46 @@ export default function TowerPage() {
         </button>
         <button
           onClick={() => {
-            setTowerFormData([]);
             if (towerCardCount > 0) {
               Array.from({ length: towerCardCount }).forEach(() =>
                 addNewTowerCard()
               );
             }
           }}
-          className='btn-rezy flex-[2]'
+          className='btn btn-success items-center text-white'
           disabled={towerCardCount === 0}
         >
-          {towerFormData.length === 0
-            ? 'Generate Tower Card'
-            : 'Delete and Regenerate Tower Card'}
+          <CirclePlus />
+          <span>Add Tower Card</span>
+        </button>
+        <button
+          onClick={() => {
+            setTowerFormData([]);
+          }}
+          className='btn btn-error items-center text-white'
+        >
+          <Trash2 />
+          Delete All Tower Cards
         </button>
       </label>
 
-      <div className='flex justify-around'>
+      <div className='flex items-center justify-around'>
         <button className='btn btn-accent' onClick={() => toggleRefTable('tm')}>
           Toggle TM Table View
         </button>
         <button
-          className='btn-rezy my-4 self-center'
-          onClick={() => fetchRefTables()}
+          className='btn my-4 border border-gray-300 bg-gray-50 hover:border-gray-300 hover:bg-gray-100'
+          onClick={fetchRefTables}
         >
-          {onboardingData.selectedReraProjects.length
-            ? 'Fetch Only TM & HM Ref Tables'
-            : 'Fetch TM & HM Ref and Tower Cards'}
+          <PiMicrosoftExcelLogoDuotone className='text-green-600' size={25} />
+          Fetch Ref Tables
+        </button>
+        <button
+          className='btn my-4 border border-gray-300 bg-gray-50 hover:border-gray-300 hover:bg-gray-100'
+          onClick={fetchHMCards}
+        >
+          <PiCardsThreeDuotone className='text-green-600' size={25} />
+          Add HM Cards
         </button>
         <button className='btn btn-accent' onClick={() => toggleRefTable('hm')}>
           Toggle HM Table View
@@ -383,7 +453,7 @@ export default function TowerPage() {
                     className='toggle toggle-success border-2'
                     name='singleUnit'
                     type='checkbox'
-                    defaultChecked={tower.singleUnit}
+                    checked={tower.singleUnit}
                     onChange={(e) =>
                       updateTowerFormData(tower.id, {
                         singleUnit: e.target.checked,
