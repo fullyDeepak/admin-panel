@@ -16,6 +16,7 @@ import { useTowerUnitStore } from './useTowerUnitStore';
 import { useImageStore } from './useImageStore';
 import axiosClient from '@/utils/AxiosClient';
 import { useState } from 'react';
+import StatusPricing from './steps/status-pricing/StatusPricing';
 
 export default function Page() {
   const {
@@ -56,10 +57,11 @@ export default function Page() {
           {formSteps === 'ETL For Project' && <ETLForProjectSection />}
           {formSteps === 'Tower - Unit' && <TowerPage />}
           {formSteps === 'Image Tagging' && <ProjectSection />}
+          {formSteps === 'Pricing - Status' && <StatusPricing />}
           {formSteps === 'Preview' && <PreviewData />}
 
           {/* PAGINATORS */}
-          <div className='mx-auto flex w-[50%] justify-between'>
+          <div className='mx-auto mt-20 flex w-[50%] justify-between'>
             <button
               className='btn-rezy btn w-28'
               onClick={() => {
