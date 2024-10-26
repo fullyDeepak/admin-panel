@@ -7,6 +7,7 @@ import {
   useOnboardingDataStore,
 } from '../../useOnboardingDataStore';
 import { useTowerUnitStore } from '../../useTowerUnitStore';
+import { startCase } from 'lodash';
 
 type Props = {
   e: SingleValue<{ label: string; value: string }>;
@@ -55,7 +56,7 @@ export async function fetchTempProjectDetails({ e, villageOptions }: Props) {
         ele.toUpperCase()
     );
     updateOnboardingData({
-      mainProjectName: e.label.split(':')[1].trim(),
+      mainProjectName: startCase(e.label.split(':')[1].trim().toLowerCase()),
       developerMasterId: tempProjectData.data.data.developers?.is_jv
         ? 'JV:' + tempProjectData.data.data.developers?.jv_id?.toString()
         : 'DEVELOPER:' +
