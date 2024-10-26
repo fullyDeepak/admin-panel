@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 import { immer } from 'zustand/middleware/immer';
+import { uniqBy } from 'lodash';
 
 export type TowerUnitDetailType = {
   id: number;
@@ -92,6 +93,24 @@ export type TMRefTable = {
 };
 type Store = {
   towerFormData: TowerUnitDetailType[];
+  projectPricingStatus: {
+    updated_at: string;
+    tower_id: string;
+    updated_field: 'price';
+    updated_value: string;
+  }[];
+  projectBookingStatus: {
+    updated_at: string;
+    tower_id: string;
+    updated_field: 'manual_bookings';
+    updated_value: string;
+  }[];
+  projectConstructionStatus: {
+    updated_at: string;
+    tower_id: string;
+    updated_field: 'display_construction_status';
+    updated_value: string;
+  }[];
   hmRefTable: HmRefTable[];
   tmRefTable: TMRefTable[];
   showHMRefTable: boolean;
@@ -126,11 +145,30 @@ type Store = {
   addNewUnitCard: (_towerCardId: number) => void;
   deleteUnitCard: (_towerCardId: number, _unitCardId: number) => void;
   resetTowerUnitStore: () => void;
+  updateProjectStatus: (
+    _key: 'booking' | 'pricing' | 'display_construction_status',
+    _newData: {
+      updated_at: string;
+      tower_id: string;
+      updated_value: string;
+      updated_field:
+        | 'manual_bookings'
+        | 'price'
+        | 'display_construction_status';
+    }[]
+  ) => void;
+  deleteProjectStatusData: (
+    _key: 'booking' | 'pricing' | 'display_construction_status',
+    _tower_id: string
+  ) => void;
 };
 
 export const useTowerUnitStore = create<Store>()(
   immer((set) => ({
     towerFormData: INITIAL_STATE,
+    projectBookingStatus: [] as Store['projectBookingStatus'],
+    projectPricingStatus: [] as Store['projectPricingStatus'],
+    projectConstructionStatus: [] as Store['projectConstructionStatus'],
     hmRefTable: [] as HmRefTable[],
     tmRefTable: [] as TMRefTable[],
     showHMRefTable: true as boolean,
@@ -273,5 +311,59 @@ export const useTowerUnitStore = create<Store>()(
         tmRefTable: [],
         existingUnitTypeOption: [],
       }),
+    updateProjectStatus: (key, newData) => {
+      if (key === 'booking') {
+        set((state) => ({
+          projectBookingStatus: uniqBy(
+            [
+              ...state.projectBookingStatus,
+              ...(newData as Store['projectBookingStatus']),
+            ],
+            'tower_id'
+          ),
+        }));
+      } else if (key === 'pricing') {
+        set((state) => ({
+          projectPricingStatus: uniqBy(
+            [
+              ...state.projectPricingStatus,
+              ...(newData as Store['projectPricingStatus']),
+            ],
+            'tower_id'
+          ),
+        }));
+      } else if (key === 'display_construction_status') {
+        set((state) => ({
+          projectConstructionStatus: uniqBy(
+            [
+              ...state.projectConstructionStatus,
+              ...(newData as Store['projectConstructionStatus']),
+            ],
+            'tower_id'
+          ),
+        }));
+      }
+    },
+    deleteProjectStatusData: (key, tower_id) => {
+      if (key === 'booking') {
+        set((state) => ({
+          projectBookingStatus: state.projectBookingStatus.filter(
+            (item) => item.tower_id != tower_id
+          ),
+        }));
+      } else if (key === 'pricing') {
+        set((state) => ({
+          projectPricingStatus: state.projectPricingStatus.filter(
+            (item) => item.tower_id != tower_id
+          ),
+        }));
+      } else if (key === 'display_construction_status') {
+        set((state) => ({
+          projectConstructionStatus: state.projectConstructionStatus.filter(
+            (item) => item.tower_id != tower_id
+          ),
+        }));
+      }
+    },
   }))
 );
