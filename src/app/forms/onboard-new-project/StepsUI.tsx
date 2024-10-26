@@ -24,9 +24,6 @@ export default function StepsUI<T>({
                 ? 'step-secondary'
                 : ''
             )}
-            data-content={
-              steps.findIndex((s) => s === stepValue) > index ? '✓' : index + 1
-            }
             onClick={() => setFormSteps(step as T)}
           >
             {step}

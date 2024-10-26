@@ -52,12 +52,12 @@ export default function Page() {
           />
           {formSteps === 'Static Data' && <StaticDataForm />}
           {formSteps === 'Geo-Data' && <GeoData />}
-          {formSteps === 'Keyword Tagging' && <DeveloperTagging />}
-          {formSteps === 'Root Doc Tagging' && <RootDocTagging />}
-          {formSteps === 'ETL For Project' && <ETLForProjectSection />}
-          {formSteps === 'Tower - Unit' && <TowerPage />}
-          {formSteps === 'Image Tagging' && <ProjectSection />}
-          {formSteps === 'Pricing - Status' && <StatusPricing />}
+          {formSteps === 'Keyword Tag' && <DeveloperTagging />}
+          {formSteps === 'Root Doc' && <RootDocTagging />}
+          {formSteps === 'Project ETL' && <ETLForProjectSection />}
+          {formSteps === 'Tower' && <TowerPage />}
+          {formSteps === 'Image Tag' && <ProjectSection />}
+          {formSteps === 'Status' && <StatusPricing />}
           {formSteps === 'Preview' && <PreviewData />}
 
           {/* PAGINATORS */}
