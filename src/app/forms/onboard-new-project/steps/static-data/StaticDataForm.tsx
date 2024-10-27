@@ -11,6 +11,7 @@ import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import ProjectMatcherSection from './ProjectMatcherSection';
 import ReraSection from './ReraSection';
 import { fetchTempProjectDetails } from './utils';
+import { useTowerUnitStore } from '../../useTowerUnitStore';
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
@@ -32,6 +33,7 @@ export default function StaticDataForm() {
     setVillageOptions,
     villageOptions,
   } = useDMVDataStore();
+  const { updateTowerFormData, towerFormData } = useTowerUnitStore();
   const { isLoading: isLoadingDMV } = useQuery({
     queryKey: ['village-project-cleaner-developer-tagger'],
     queryFn: async () => {
@@ -503,6 +505,40 @@ export default function StaticDataForm() {
             }>
           ) => {
             updateOnboardingData({ projectSubType: e });
+            const towerIds = towerFormData.map((item) => item.id);
+            if (towerIds.length > 0) {
+              if (e?.value.includes('APARTMENT')) {
+                updateTowerFormData(1, {
+                  towerType: {
+                    label: 'Apartment',
+                    value: 'apartment',
+                  },
+                  displayTowerType: {
+                    label: 'APARTMENT',
+                    value: 'APARTMENT',
+                  },
+                });
+              } else if (e?.value.includes('VILLA')) {
+                updateTowerFormData(1, {
+                  towerType: {
+                    label: 'Villa',
+                    value: 'villa',
+                  },
+                  displayTowerType: {
+                    label: 'VILLA',
+                    value: 'VILLA',
+                  },
+                });
+              } else if (e?.value.includes('MIXED')) {
+                updateTowerFormData(1, {
+                  towerType: {
+                    label: 'Mixed',
+                    value: 'mixed',
+                  },
+                  displayTowerType: null,
+                });
+              }
+            }
           }}
           isDisabled={Boolean(!onboardingData.projectSourceType)}
         />
