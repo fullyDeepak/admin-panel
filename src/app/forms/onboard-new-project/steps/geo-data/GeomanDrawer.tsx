@@ -4,15 +4,22 @@ import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import L, { Icon } from 'leaflet';
 import png from 'leaflet/dist/images/marker-icon.png';
+import _ from 'lodash';
 import { Trash2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
+import { computeArea } from 'spherical-geometry-js';
 
 type Props = {
   geoJsonData: any[];
   setGeoJsonData: (_d) => void;
+  setArea: (_d: number) => void;
 };
-export default function GeomanDrawer({ setGeoJsonData, geoJsonData }: Props) {
+export default function GeomanDrawer({
+  setGeoJsonData,
+  geoJsonData,
+  setArea,
+}: Props) {
   const map = useMap();
   const markerIcon = new Icon({
     iconUrl: png.src,
@@ -56,6 +63,16 @@ export default function GeomanDrawer({ setGeoJsonData, geoJsonData }: Props) {
           return geojson;
         });
         console.log(toSet);
+        const totalArea = _.sum(
+          toSet.map((geo) => {
+            if (geo.geometry.type !== 'Polygon') return null;
+            const latlongs = geo.geometry.coordinates[0];
+            console.log(latlongs);
+            const computedArea = computeArea(latlongs);
+            return parseFloat((computedArea * 1.196).toFixed(2));
+          })
+        );
+        setArea(totalArea);
         setGeoJsonData(toSet);
       });
       layer_to_add.on('pm:remove', (e) => {
@@ -76,6 +93,16 @@ export default function GeomanDrawer({ setGeoJsonData, geoJsonData }: Props) {
           return geojson;
         });
         console.log(toSet);
+        const totalArea = _.sum(
+          toSet.map((geo) => {
+            if (geo.geometry.type !== 'Polygon') return null;
+            const latlongs = geo.geometry.coordinates[0];
+            console.log(latlongs);
+            const computedArea = computeArea(latlongs);
+            return parseFloat((computedArea * 1.196).toFixed(2));
+          })
+        );
+        setArea(totalArea);
         setGeoJsonData(toSet);
       });
       layer_to_add.addTo(map);
@@ -103,6 +130,16 @@ export default function GeomanDrawer({ setGeoJsonData, geoJsonData }: Props) {
           return geojson;
         });
         console.log(toSet);
+        const totalArea = _.sum(
+          toSet.map((geo) => {
+            if (geo.geometry.type !== 'Polygon') return null;
+            const latlongs = geo.geometry.coordinates[0];
+            console.log(latlongs);
+            const computedArea = computeArea(latlongs);
+            return parseFloat((computedArea * 1.196).toFixed(2));
+          })
+        );
+        setArea(totalArea);
         setGeoJsonData(toSet);
       });
       layer.on('pm:remove', (e) => {
@@ -123,6 +160,16 @@ export default function GeomanDrawer({ setGeoJsonData, geoJsonData }: Props) {
           return geojson;
         });
         console.log(toSet);
+        const totalArea = _.sum(
+          toSet.map((geo) => {
+            if (geo.geometry.type !== 'Polygon') return null;
+            const latlongs = geo.geometry.coordinates[0];
+            console.log(latlongs);
+            const computedArea = computeArea(latlongs);
+            return parseFloat((computedArea * 1.196).toFixed(2));
+          })
+        );
+        setArea(totalArea);
         setGeoJsonData(toSet);
       });
       if (e.shape === 'marker') {
@@ -134,6 +181,16 @@ export default function GeomanDrawer({ setGeoJsonData, geoJsonData }: Props) {
         return layer.toGeoJSON();
       });
       console.log(toSet);
+      const totalArea = _.sum(
+        toSet.map((geo) => {
+          if (geo.geometry.type !== 'Polygon') return null;
+          const latlongs = geo.geometry.coordinates[0];
+          console.log(latlongs);
+          const computedArea = computeArea(latlongs);
+          return parseFloat((computedArea * 1.196).toFixed(2));
+        })
+      );
+      setArea(totalArea);
       setGeoJsonData(toSet);
       map.pm.getGeomanLayers().forEach((layer) => {
         console.log('Layer', layer.toGeoJSON());

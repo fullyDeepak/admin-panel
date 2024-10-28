@@ -133,6 +133,11 @@ export default function MapInterface() {
                 geoData: d,
               })
             }
+            setArea={(d) =>
+              updateOnboardingData({
+                polygonArea: d,
+              })
+            }
           />
           <FitBounds mapData={mapData} />
           {mapData?.map((project) => (

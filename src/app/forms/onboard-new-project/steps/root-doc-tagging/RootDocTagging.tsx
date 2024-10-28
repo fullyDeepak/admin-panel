@@ -9,6 +9,8 @@ import TanstackReactTable from './Table';
 import { parseISO, format } from 'date-fns';
 import useETLDataStore from '../../useETLDataStore';
 import ReraDocs from '../project-etl-data/ReraDocs';
+import { computeArea } from 'spherical-geometry-js';
+import _ from 'lodash';
 const columnHelper = createColumnHelper<{
   execution_date: Date;
   linked_docs: string;
@@ -292,6 +294,31 @@ export default function DeveloperTagging() {
                 {(onboardingData.reraCalcNetLandArea * 1.196).toFixed(2)} SQ Yds
                 (approx.{' '}
                 {(onboardingData.reraCalcNetLandArea / 4047).toFixed(2)} Acres)
+              </span>
+              <span>
+                Map Calculated Land Area:{' '}
+                {_.sum(
+                  onboardingData.geoData.map((geo) => {
+                    if (geo.geometry.type !== 'Polygon') return null;
+                    const latlongs = geo.geometry.coordinates[0];
+                    console.log(latlongs);
+                    const computedArea = computeArea(latlongs);
+                    return parseFloat((computedArea * 1.196).toFixed(2));
+                  })
+                )}{' '}
+                SQ Yds (approx.{' '}
+                {(
+                  _.sum(
+                    onboardingData.geoData.map((geo) => {
+                      if (geo.geometry.type !== 'Polygon') return null;
+                      const latlongs = geo.geometry.coordinates[0];
+                      console.log(latlongs);
+                      const computedArea = computeArea(latlongs);
+                      return parseFloat((computedArea * 1.196).toFixed(2));
+                    })
+                  ) / 4047
+                ).toFixed(2)}{' '}
+                Acres)
               </span>
             </div>
           </div>

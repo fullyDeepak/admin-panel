@@ -1,14 +1,13 @@
 'use client';
 
 import { inputBoxClass } from '@/app/constants/tw-class';
-import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import { cn } from '@/lib/utils';
-import dynamic from 'next/dynamic';
-import { ChangeEvent, useMemo } from 'react';
-import { handleShowOnMap } from './utils';
 import { kml } from '@tmcw/togeojson';
 import { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
-import { computeArea } from 'spherical-geometry-js';
+import dynamic from 'next/dynamic';
+import { ChangeEvent, useMemo } from 'react';
+import { useOnboardingDataStore } from '../../useOnboardingDataStore';
+import { handleShowOnMap } from './utils';
 
 export default function GeoData() {
   const MapInterface = useMemo(
@@ -95,19 +94,6 @@ export default function GeoData() {
           />
         </label>
       </div>
-      {onboardingData.geoData.map((geo) => {
-        if (geo.geometry.type !== 'Polygon') return null;
-        const latlongs = geo.geometry.coordinates[0];
-        console.log(latlongs);
-        const computedArea = computeArea(latlongs);
-        return (
-          <div key={geo.properties.name} className='flex w-full justify-around'>
-            <span className='py-3 text-center text-2xl font-semibold'>
-              Area: {(computedArea * 1.196).toFixed(2)} yd<sup>2</sup>
-            </span>
-          </div>
-        );
-      })}
     </div>
   );
 }
