@@ -285,13 +285,13 @@ export default function DeveloperTagging() {
             <div className='flex flex-col gap-2'>
               <span>
                 RERA Net Land Area:{' '}
-                {(onboardingData.reraTotalLandArea * 1.196).toFixed(2)} SQ mts
+                {(onboardingData.reraTotalLandArea * 1.196).toFixed(2)} SQ yds
                 (approx. {(onboardingData.reraTotalLandArea / 4047).toFixed(2)}{' '}
                 Acres)
               </span>
               <span>
                 RERA Calculated Net Land Area:{' '}
-                {(onboardingData.reraCalcNetLandArea * 1.196).toFixed(2)} SQ mts
+                {(onboardingData.reraCalcNetLandArea * 1.196).toFixed(2)} SQ yds
                 (approx.{' '}
                 {(onboardingData.reraCalcNetLandArea / 4047).toFixed(2)} Acres)
               </span>
