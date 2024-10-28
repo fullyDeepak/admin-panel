@@ -1,10 +1,10 @@
 'use client';
-import React, { useState } from 'react';
-import { LayersControl, MapContainer, TileLayer } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
 import { LatLngTuple } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { useEffect, useState } from 'react';
+import { LayersControl, MapContainer, TileLayer } from 'react-leaflet';
+import { computeArea } from 'spherical-geometry-js';
 import GeomanDrawer from './GeomanDrawer';
-
 export default function MapInterface() {
   const center: LatLngTuple = [17.418136769166217, 78.33019660095187];
   const mapLayer = [
@@ -35,7 +35,18 @@ export default function MapInterface() {
   ];
 
   const [geoJsonData, setGeoJsonData] = useState<any[]>([]);
+  const [area, setArea] = useState<number[]>();
 
+  useEffect(() => {
+    const areas = geoJsonData.map((geo) => {
+      if (geo.geometry.type === 'Polygon') {
+        return computeArea(geo.geometry.coordinates[0]);
+      } else {
+        return 0;
+      }
+    });
+    setArea(areas);
+  }, [geoJsonData]);
   return (
     <div className='mb-40 flex w-full flex-col items-center justify-center'>
       <div className='flex w-full justify-around'>
@@ -43,6 +54,15 @@ export default function MapInterface() {
           Draw on Map
         </span>
       </div>
+      {area?.map((item, index) => {
+        return (
+          <div key={index} className='flex w-full justify-around'>
+            <span className='py-3 text-center text-2xl font-semibold'>
+              Area: {(item * 1.196).toFixed(2)} yd<sup>2</sup>
+            </span>
+          </div>
+        );
+      })}
       <div className='mx-auto flex h-[70vh] w-full max-w-[90%] gap-2'>
         <MapContainer
           center={center}

@@ -93,6 +93,7 @@ export interface OnboardingDataType {
   reraForTempProjects: {
     [key: string]: string[];
   };
+  polygonArea: number[];
 }
 
 export interface TempProjectSourceData {
@@ -243,6 +244,7 @@ const INITIAL_STATE: OnboardingDataType = {
   developerGroup: '',
   geoData: [],
   reraForTempProjects: {},
+  polygonArea: [],
 };
 
 export const useOnboardingDataStore = create<Store>()(
