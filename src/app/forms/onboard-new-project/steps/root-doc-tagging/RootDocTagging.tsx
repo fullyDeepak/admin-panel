@@ -285,40 +285,19 @@ export default function DeveloperTagging() {
             <div className='flex flex-col gap-2'>
               <span>
                 RERA Net Land Area:{' '}
-                {(onboardingData.reraTotalLandArea * 1.196).toFixed(2)} SQ Yds
+                {(onboardingData.reraTotalLandArea * 1.196).toFixed(2)} SQ mts
                 (approx. {(onboardingData.reraTotalLandArea / 4047).toFixed(2)}{' '}
                 Acres)
               </span>
               <span>
                 RERA Calculated Net Land Area:{' '}
-                {(onboardingData.reraCalcNetLandArea * 1.196).toFixed(2)} SQ Yds
+                {(onboardingData.reraCalcNetLandArea * 1.196).toFixed(2)} SQ mts
                 (approx.{' '}
                 {(onboardingData.reraCalcNetLandArea / 4047).toFixed(2)} Acres)
               </span>
               <span>
-                Map Calculated Land Area:{' '}
-                {_.sum(
-                  onboardingData.geoData.map((geo) => {
-                    if (geo.geometry.type !== 'Polygon') return null;
-                    const latlongs = geo.geometry.coordinates[0];
-                    console.log(latlongs);
-                    const computedArea = computeArea(latlongs);
-                    return parseFloat((computedArea * 1.196).toFixed(2));
-                  })
-                )}{' '}
-                SQ Yds (approx.{' '}
-                {(
-                  _.sum(
-                    onboardingData.geoData.map((geo) => {
-                      if (geo.geometry.type !== 'Polygon') return null;
-                      const latlongs = geo.geometry.coordinates[0];
-                      console.log(latlongs);
-                      const computedArea = computeArea(latlongs);
-                      return parseFloat((computedArea * 1.196).toFixed(2));
-                    })
-                  ) / 4047
-                ).toFixed(2)}{' '}
-                Acres)
+                Map Calculated Land Area: {onboardingData.polygonArea} SQ Yds
+                (approx. {(onboardingData.polygonArea / 4840).toFixed(2)} Acres)
               </span>
             </div>
           </div>
