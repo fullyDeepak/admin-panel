@@ -71,16 +71,28 @@ export default function FormHomePage() {
             Project Tower Forms
           </h2>
           <Link
+            href={'/forms/onboard-new-project'}
+            className='btn relative flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+          >
+            <span className='absolute -right-2 -top-1 rotate-45 rounded-full bg-violet-600 px-1 text-[8px] text-white'>
+              NEW
+            </span>
+            Onboard Project Part - I
+          </Link>
+          <Link
+            href={'/forms/onboard-new-project-part-ii'}
+            className='btn relative flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+          >
+            <span className='absolute -right-2 -top-1 rotate-45 rounded-full bg-violet-600 px-1 text-[8px] text-white'>
+              NEW
+            </span>
+            Onboard Project Part - II
+          </Link>
+          <Link
             href={'/forms/project-tower-rera'}
             className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
             Onboard Project
-          </Link>
-          <Link
-            href={'/forms/onboard-new-project'}
-            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
-          >
-            Onboard Project (NEW)
           </Link>
           <Link
             href={'/forms/project-tower-edit'}
