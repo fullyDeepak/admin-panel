@@ -200,8 +200,8 @@ interface Store extends Actions {
     'Root Doc',
     'Project ETL',
     'Tower',
-    'Image Tag',
-    'Status',
+    // 'Image Tag',
+    // 'Status',
     'Preview',
   ];
   currentFormStep: Store['formStepsList'][number];
@@ -258,8 +258,8 @@ export const useOnboardingDataStore = create<Store>()(
       'Root Doc',
       'Project ETL',
       'Tower',
-      'Image Tag',
-      'Status',
+      // 'Image Tag',
+      // 'Status',
       'Preview',
     ] as Store['formStepsList'],
     tempProjectSourceData: {},
