@@ -19,7 +19,7 @@ export interface ProjectDataType {
 
 interface State {
   projectData: ProjectDataType;
-  formStepsList: ['Project', 'Tower', 'Status', 'Image', 'Preview'];
+  formStepsList: ['Project', 'Tower', 'Image', 'Status', 'Preview'];
   currentFormStep: State['formStepsList'][number];
   setFormSteps: (_step: State['currentFormStep']) => void;
 }
@@ -41,8 +41,8 @@ export const useProjectDataStore = create<State & Actions>()(
     formStepsList: [
       'Project',
       'Tower',
-      'Status',
       'Image',
+      'Status',
       'Preview',
     ] as State['formStepsList'],
     setFormSteps: (step) => set({ currentFormStep: step }),
