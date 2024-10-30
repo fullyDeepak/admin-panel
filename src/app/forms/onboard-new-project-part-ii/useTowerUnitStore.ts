@@ -24,7 +24,7 @@ export type TowerUnitDetailType = {
   gfUnitCount: string;
   unitCards: UnitCardType[];
   reraRefTable: RefTableType[];
-  tmRefTable: RefTableType[];
+  tmRefTable: (RefTableType & { extent: string })[];
 };
 
 export type UnitCardType = {

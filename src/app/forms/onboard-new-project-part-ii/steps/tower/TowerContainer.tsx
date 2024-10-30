@@ -13,8 +13,10 @@ import toast from 'react-hot-toast';
 
 export default function TowerContainer() {
   const [value, setValue] = useState('');
+  const [valueTM, setValueTM] = useState('');
+
   const { setTowerFormData } = useTowerUnitStore();
-  async function fetchProjectsDetails() {
+  async function fetchReraUnitRef() {
     if (!value) return;
     const response = axiosClient.get<{
       data: {
@@ -126,10 +128,90 @@ export default function TowerContainer() {
       error: 'Error',
     });
   }
+
+  async function fetchTMUnitRef() {
+    if (!valueTM) return;
+    const response = axiosClient.get<{
+      data: {
+        tower_id: number;
+        unit_types: {
+          extent: number;
+          facing: string;
+          configName: string[];
+          floor_list: string[];
+          unit_count: number;
+          salable_area: number;
+        }[];
+      }[];
+    }>('/forms/tmUnitTypeRef', {
+      params: { project_id: valueTM },
+    });
+
+    toast.promise(response, {
+      loading: 'Fetching Project Details...',
+      success: ({ data: res }) => {
+        const data = res.data;
+
+        const towersData: TowerUnitDetailType[] = data.map((item, index) => {
+          const unitCards: UnitCardType[] = [];
+          const tmRefTable: (RefTableType & { extent: string })[] = [];
+          item.unit_types.map((etl, idx) => {
+            unitCards.push({
+              id: idx + 1,
+              reraUnitType: null,
+              existingUnitType: null,
+              floorNos: '',
+              salableAreaMin: etl.salable_area || 0,
+              salableAreaMax: etl.salable_area || 0,
+              extentMin: etl.extent || 0,
+              extentMax: etl.extent || 0,
+              facing: etl.facing?.substring(0, 1) || null,
+              corner: false,
+              configName: etl.configName?.join(', ') || '',
+              configVerified: true,
+              unitFloorCount: null,
+              unitNos: '',
+              maidConfig: '',
+              tmUnitType: null,
+              toiletConfig: '',
+            });
+            tmRefTable.push({
+              type: `${etl.configName} : ${etl.salable_area} : ${etl.facing || 'N/A'}`,
+              towerId: item.tower_id.toString(),
+              unitCount: etl.unit_count.toString(),
+              config: etl.configName?.join(', '),
+              salableArea: etl.salable_area.toString(),
+              extent: etl.extent.toString(),
+              facing: etl.facing || 'N/A',
+              floorList: etl.floor_list.join(', '),
+            });
+          });
+
+          return {
+            id: index + 1,
+            reraId: '',
+            reraTowerId: '',
+            towerNameDisplay: '',
+            towerNameETL: '',
+            gfName: '',
+            gfUnitCount: '',
+            reraRefTable: [],
+            tmRefTable: tmRefTable,
+            typicalMaxFloor: 0,
+            typicalUnitCount: '',
+            unitCards: unitCards,
+          };
+        });
+        setTowerFormData(towersData);
+        return 'Project Details fetched';
+      },
+      error: 'Error',
+    });
+  }
   return (
     <>
       <div className='flex flex-wrap items-center justify-between gap-5'>
-        <span className='flex-[3]'>Fetch Rera:</span>
+        <span className='flex-[3]'>Fetch Rera Ref:</span>
         <div className='flex flex-[5] items-center gap-2'>
           <input
             className={`${inputBoxClass} !ml-0`}
@@ -137,10 +219,20 @@ export default function TowerContainer() {
             onChange={(e) => setValue(e.target.value)}
           />
         </div>
-        <button
-          className='btn btn-neutral btn-sm'
-          onClick={fetchProjectsDetails}
-        >
+        <button className='btn btn-neutral btn-sm' onClick={fetchReraUnitRef}>
+          Fetch
+        </button>
+      </div>
+      <div className='flex flex-wrap items-center justify-between gap-5'>
+        <span className='flex-[3]'>Fetch TM Ref:</span>
+        <div className='flex flex-[5] items-center gap-2'>
+          <input
+            className={`${inputBoxClass} !ml-0`}
+            value={valueTM}
+            onChange={(e) => setValueTM(e.target.value)}
+          />
+        </div>
+        <button className='btn btn-neutral btn-sm' onClick={fetchTMUnitRef}>
           Fetch
         </button>
       </div>

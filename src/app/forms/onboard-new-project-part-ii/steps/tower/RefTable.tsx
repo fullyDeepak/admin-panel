@@ -3,11 +3,11 @@ import { RefTableType } from '../../useTowerUnitStore';
 
 type Props = {
   reraRefTable: RefTableType[];
-  tmRefTable: RefTableType[];
+  tmRefTable: (RefTableType & { extent: string })[];
 };
 
 export default function RefTable({ reraRefTable, tmRefTable }: Props) {
-  const tableColumns = [
+  const reraTableColumns = [
     'Type ID',
     'Tower ID',
     'Unit Count',
@@ -16,14 +16,22 @@ export default function RefTable({ reraRefTable, tmRefTable }: Props) {
     'Facing',
     'Floor List',
   ];
-
-  console.log({ reraRefTable });
+  const tmTableColumns = [
+    'Type ID',
+    'Tower ID',
+    'Unit Count',
+    'Config',
+    'Salable Area',
+    'Extent',
+    'Facing',
+    'Floor List',
+  ];
 
   return (
     <div>
       <h3 className='text-lg font-bold'>RERA Ref Table</h3>
       <SimpleTable
-        columns={tableColumns}
+        columns={reraTableColumns}
         tableData={reraRefTable.map((item) => [
           item.type,
           item.towerId,
@@ -36,13 +44,14 @@ export default function RefTable({ reraRefTable, tmRefTable }: Props) {
       />
       <h3 className='text-lg font-bold'>TM Ref Table</h3>
       <SimpleTable
-        columns={tableColumns}
+        columns={tmTableColumns}
         tableData={tmRefTable.map((item) => [
           item.type,
           item.towerId,
           item.unitCount,
           item.config,
           item.salableArea,
+          item.extent,
           item.facing,
           item.floorList,
         ])}
