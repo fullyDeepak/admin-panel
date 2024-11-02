@@ -167,17 +167,11 @@ export default function Page() {
                 onClick={async () => {
                   setDraftSaveState('SAVING');
                   axiosClient
-                    .post('/onboarding/save-onboarding-state', {
-                      id: `${onboardingData.projectSourceType}-${onboardingData.selectedTempProject?.value}-${
-                        onboardingData.selectedReraProjects[0]?.value
-                      }`,
-                      data: {
-                        staticData: onboardingData,
-                        etlData: projectFormETLTagData,
-                        towerData: towerFormData,
-                        imageData: imagesStore,
-                      },
-                      onboardingState: 'FINAL',
+                    .post('/onboarding/onboarding/onboard-project', {
+                      staticData: onboardingData,
+                      etlData: projectFormETLTagData,
+                      towerData: towerFormData,
+                      imageData: imagesStore,
                     })
                     .then(() => {
                       setDraftSaveState('SAVED');

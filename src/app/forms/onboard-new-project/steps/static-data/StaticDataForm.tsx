@@ -107,6 +107,35 @@ export default function StaticDataForm() {
     staleTime: Infinity,
     refetchOnMount: false,
   });
+  const { data: colonyTagOptions, isLoading: loadingColonyTagOptions } =
+    useQuery({
+      queryKey: ['colonyTagOptions'],
+      queryFn: async () => {
+        const data = await axiosClient.get('/colony-tags');
+        const colony_tags: { id: number; tag: string }[] = data.data?.data;
+        const colonyTagOptions = colony_tags.map((item) => ({
+          label: item.tag,
+          value: item.id,
+        }));
+        return colonyTagOptions;
+      },
+      staleTime: Infinity,
+      refetchOnMount: false,
+    });
+  const { data: layoutOptions, isLoading: loadingLayoutOptions } = useQuery({
+    queryKey: ['layoutOptions'],
+    queryFn: async () => {
+      const data = await axiosClient.get('/layout-tags');
+      const layout_tags: { id: number; tag: string }[] = data.data?.data;
+      const layoutOptions = layout_tags.map((item) => ({
+        label: item.tag,
+        value: item.id,
+      }));
+      return layoutOptions;
+    },
+    staleTime: Infinity,
+    refetchOnMount: false,
+  });
   const { data: reraProjects, isLoading: isLoadingReraProjects } = useQuery({
     queryKey: [
       'reraProjects',
@@ -393,7 +422,8 @@ export default function StaticDataForm() {
         </span>
         <CreatableSelect
           className='w-full flex-[5]'
-          options={[]} //{micromarketOptions || []}
+          options={layoutOptions || []} //{micromarketOptions || []}
+          isLoading={loadingLayoutOptions}
           value={onboardingData.layoutTags}
           isClearable
           isMulti
@@ -420,8 +450,8 @@ export default function StaticDataForm() {
         <span className='flex-[2] text-base md:text-xl'>Colony Tags: </span>
         <CreatableSelect
           className='w-full flex-[5]'
-          options={[]} //{streetTagOptions || []}
-          // {loadingStreetTags}
+          options={colonyTagOptions || []} //{streetTagOptions || []}
+          isLoading={loadingColonyTagOptions}
           value={onboardingData.colonyTags}
           isClearable
           isMulti

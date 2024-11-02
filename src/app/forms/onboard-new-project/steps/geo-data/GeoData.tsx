@@ -10,15 +10,14 @@ import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import { handleShowOnMap } from './utils';
 
 export default function GeoData() {
+  const { onboardingData, updateOnboardingData } = useOnboardingDataStore();
   const MapInterface = useMemo(
     () =>
       dynamic(() => import('./../geo-data/MapInterface'), {
         ssr: false,
       }),
-    []
+    [onboardingData.mapGeojsonData]
   );
-
-  const { onboardingData, updateOnboardingData } = useOnboardingDataStore();
 
   async function extractKMLCoordinates(
     event: ChangeEvent<HTMLInputElement>
@@ -88,6 +87,7 @@ export default function GeoData() {
               if (geometry) {
                 updateOnboardingData({
                   mapGeojsonData: geometry as FeatureCollection,
+                  geoData: [...onboardingData.geoData, geometry],
                 });
               }
             }}

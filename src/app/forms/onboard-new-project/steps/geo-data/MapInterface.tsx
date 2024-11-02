@@ -10,7 +10,7 @@ import {
   Layer,
 } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   GeoJSON,
   LayersControl,
@@ -27,10 +27,13 @@ import GeomanDrawer from './GeomanDrawer';
 
 export default function MapInterface() {
   const center: LatLngTuple = [17.418136769166217, 78.33019660095187];
-  const { mapData, mapGeojsonData } = useOnboardingDataStore((state) => ({
-    mapData: state.onboardingData.mapData,
-    mapGeojsonData: state.onboardingData.mapGeojsonData,
-  }));
+  const { mapData, mapGeojsonData, geoData, updateOnboardingData } =
+    useOnboardingDataStore((state) => ({
+      mapData: state.onboardingData.mapData,
+      mapGeojsonData: state.onboardingData.mapGeojsonData,
+      geoData: state.onboardingData.geoData,
+      updateOnboardingData: state.updateOnboardingData,
+    }));
 
   const mapLayer = [
     {
@@ -59,11 +62,11 @@ export default function MapInterface() {
     },
   ];
 
-  const { onboardingData, updateOnboardingData } = useOnboardingDataStore();
   const selectIcon = new Icon({
     iconUrl: selectPin.src,
     iconSize: [28, 38],
   });
+  const [fitted, setFitted] = useState<boolean>(false);
   const FitBounds = ({
     mapData,
   }: {
@@ -72,7 +75,7 @@ export default function MapInterface() {
     const map = useMap();
 
     useEffect(() => {
-      if (!mapData?.length) return;
+      if (!mapData?.length || fitted) return;
       const bounds = new LatLngBounds(
         mapData.map((location) => [
           location.geometry.location.lat,
@@ -82,6 +85,7 @@ export default function MapInterface() {
 
       // Fly to the bounds of the markers
       map.flyToBounds(bounds, { duration: 1.9 });
+      setFitted(true);
     }, [mapData, map]);
 
     useEffect(() => {
@@ -127,7 +131,7 @@ export default function MapInterface() {
           className='h-full min-h-[100px] w-full min-w-[200px] flex-[4] rounded-2xl border-[3px] border-[#9CAA71] shadow-[0px_0px_6px_2px_#00000024]'
         >
           <GeomanDrawer
-            geoJsonData={onboardingData.geoData}
+            geoJsonData={geoData}
             setGeoJsonData={(d) =>
               updateOnboardingData({
                 geoData: d,
@@ -168,7 +172,7 @@ export default function MapInterface() {
               </Marker>
             </>
           ))}
-          {mapGeojsonData &&
+          {/* {mapGeojsonData &&
             mapGeojsonData?.features?.map((feature, index) => (
               <GeoJSON
                 data={feature}
@@ -176,7 +180,7 @@ export default function MapInterface() {
                 style={{ color: 'dodgerblue' }}
                 onEachFeature={renderLabel}
               />
-            ))}
+            ))} */}
           <LayersControl>
             {mapLayer?.map((item, i) => (
               <LayersControl.BaseLayer
@@ -200,9 +204,9 @@ export default function MapInterface() {
             ))}
           </LayersControl>
         </MapContainer>
-        <div className='mx-auto flex w-full flex-1 flex-col justify-start gap-4'>
+        <div className='mx-auto flex w-2/12 flex-1 flex-col justify-start gap-4'>
           <pre className='max-h-[500px] overflow-auto bg-gray-200 font-mono text-sm'>
-            {JSON.stringify(onboardingData.geoData, null, 2)}
+            {JSON.stringify(geoData, null, 2)}
           </pre>
         </div>
       </div>

@@ -45,6 +45,9 @@ export default function GeomanDrawer({
     for (const geoJson of geoJsonData) {
       console.log('Adding geojson', geoJson);
       const layer_to_add = L.geoJSON(geoJson);
+      if (geoJson.properties?.name) {
+        layer_to_add.bindPopup(geoJson.properties.name);
+      }
       layer_to_add.on('pm:edit', (e) => {
         console.log('Edited');
         console.log(e);

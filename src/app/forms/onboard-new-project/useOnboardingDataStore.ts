@@ -50,7 +50,6 @@ export interface OnboardingDataType {
     value: string | number;
     __isNew__?: boolean;
   }[];
-  mapLayers: string[];
   isLuxuryProject: boolean;
   houseMasterLocalities: string[];
   core_door_number_string: string;
@@ -222,7 +221,6 @@ const INITIAL_STATE: OnboardingDataType = {
   mainProjectName: '',
   layoutTags: [],
   colonyTags: [],
-  mapLayers: [],
   isLuxuryProject: false,
   houseMasterLocalities: [],
   core_door_number_string: '',
@@ -285,7 +283,6 @@ export const useOnboardingDataStore = create<Store>()(
           mainProjectName: '',
           layoutTags: [],
           colonyTags: [],
-          mapLayers: [],
           isLuxuryProject: false,
           houseMasterLocalities: [],
           core_door_number_string: '',
