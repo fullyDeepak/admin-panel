@@ -166,15 +166,15 @@ export default function Page() {
                 className='btn btn-error w-28 text-white'
                 onClick={async () => {
                   setDraftSaveState('SAVING');
-                  axiosClient
-                    .post('/onboarding/onboarding/onboard-project', {
+                  await axiosClient
+                    .post('/onboarding/onboard-project', {
                       staticData: onboardingData,
                       etlData: projectFormETLTagData,
                       towerData: towerFormData,
-                      imageData: imagesStore,
                     })
                     .then(() => {
                       setDraftSaveState('SAVED');
+                      alert('Onboarded');
                     });
                 }}
               >
