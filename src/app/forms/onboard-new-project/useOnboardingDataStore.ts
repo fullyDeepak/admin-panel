@@ -151,12 +151,12 @@ export interface GeojsonDaum {
   project_id: string;
   village_id: number;
   place_id: string;
-  full_address: string;
-  road: any;
-  colony: any;
-  locality: any;
-  city: any;
-  pin_code: number;
+  full_address?: string;
+  road?: any;
+  colony?: any;
+  locality?: any;
+  city?: any;
+  pin_code?: number;
   geom_point: GeomPoint;
 }
 

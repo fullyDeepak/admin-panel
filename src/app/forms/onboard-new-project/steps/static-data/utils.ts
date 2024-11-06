@@ -98,7 +98,7 @@ export async function fetchTempProjectDetails({ e, villageOptions }: Props) {
         mapData: [
           {
             name: '',
-            description: geoData[0].full_address,
+            description: geoData[0]?.full_address || '',
             pincode: geoData[0].pin_code + '',
             place_id: geoData[0].place_id,
             types: '',
