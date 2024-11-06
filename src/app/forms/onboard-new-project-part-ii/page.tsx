@@ -5,13 +5,17 @@ import StepsUI from './StepsUI';
 import ProjectContainer from './steps/project/ProjectContainer';
 import TowerContainer from './steps/tower/TowerContainer';
 import { useProjectDataStore } from './useProjectDataStore';
+import axiosClient from '@/utils/AxiosClient';
+import { useTowerUnitStore } from './useTowerUnitStore';
 
 export default function Page() {
   const {
     formStepsList,
     setFormSteps,
     currentFormStep: formSteps,
+    projectData,
   } = useProjectDataStore();
+  const { towerFormData } = useTowerUnitStore();
   return (
     <div className='mx-auto mt-10 flex w-full flex-col'>
       <h1 className='self-center text-2xl md:text-3xl'>
@@ -58,7 +62,14 @@ export default function Page() {
           {formSteps === 'Preview' && (
             <button
               className='btn btn-error w-28 text-white'
-              onClick={async () => {}}
+              onClick={async () => {
+                await axiosClient.post('/onboarding/testste', {
+                  data: {
+                    projectData: projectData,
+                    towerData: towerFormData,
+                  },
+                });
+              }}
             >
               Submit
             </button>

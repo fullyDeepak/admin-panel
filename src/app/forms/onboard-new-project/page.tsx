@@ -56,8 +56,6 @@ export default function Page() {
           {formSteps === 'Root Doc' && <RootDocTagging />}
           {formSteps === 'Project ETL' && <ETLForProjectSection />}
           {formSteps === 'Tower' && <TowerPage />}
-          {/* {formSteps === 'Image Tag' && <ProjectSection />} */}
-          {/* {formSteps === 'Status' && <StatusPricing />} */}
           {formSteps === 'Preview' && <PreviewData />}
 
           {/* PAGINATORS */}

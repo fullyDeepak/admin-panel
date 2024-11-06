@@ -375,7 +375,7 @@ export default function StaticDataForm() {
       <label className='flex items-center justify-between gap-5'>
         <span>GeoCoded Address : </span>
         {Object.entries(tempProjectSourceData).map(([projectId, data]) => {
-          return data.geojson_data?.[0].full_address ? (
+          return data.geojson_data?.[0]?.full_address ? (
             <span className='border' key={projectId}>
               {projectId} : {data.geojson_data?.[0].full_address}
             </span>
