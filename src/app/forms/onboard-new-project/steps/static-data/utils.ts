@@ -93,13 +93,13 @@ export async function fetchTempProjectDetails({ e, villageOptions }: Props) {
         : null,
     });
     const geoData = tempProjectData.data.data.geojson_data;
-    if (geoData && geoData?.length > 0) {
+    if (geoData && geoData?.length > 0 && geoData[0]) {
       updateOnboardingData({
         mapData: [
           {
             name: '',
             description: geoData[0]?.full_address || '',
-            pincode: geoData[0].pin_code + '',
+            pincode: geoData[0]?.pin_code?.toString() || '',
             place_id: geoData[0].place_id,
             types: '',
             geometry: {
