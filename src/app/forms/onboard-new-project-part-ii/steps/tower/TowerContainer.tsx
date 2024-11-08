@@ -108,7 +108,7 @@ export default function TowerContainer() {
           });
 
           return {
-            id: index + 1,
+            tower_id: index + 1,
             reraId: item.rera_id || '',
             reraTowerId: item.rera_id,
             towerNameDisplay: item.tower_name,
@@ -188,7 +188,7 @@ export default function TowerContainer() {
           });
 
           return {
-            id: index + 1,
+            tower_id: index + 1,
             reraId: '',
             reraTowerId: '',
             towerNameDisplay: '',
