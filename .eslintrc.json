@@ -3,7 +3,8 @@
     "next/core-web-vitals",
     "eslint:recommended",
     "prettier",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "next/typescript"
   ],
   "plugins": ["prettier"],
   "rules": {
@@ -13,10 +14,15 @@
     "prettier/prettier": 0,
     "react-hooks/rules-of-hooks": 0,
     "react-hooks/exhaustive-deps": 0,
-    "no-unused-vars": [
+     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": [
       "warn",
       {
+        "args": "all",
         "argsIgnorePattern": "^_",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_",
         "varsIgnorePattern": "^_",
         "ignoreRestSiblings": true
       }
