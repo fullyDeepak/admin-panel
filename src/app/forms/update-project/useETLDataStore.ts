@@ -27,7 +27,8 @@ export interface FormProjectETLTagDataType {
     type: 'tower' | 'floor' | 'unit';
     priority: number;
   }[];
-  oldPattern?: boolean
+  oldPattern?: boolean;
+  rawPattern?: string;
 }
 interface FormState {
   projectFormETLTagData: FormProjectETLTagDataType[];

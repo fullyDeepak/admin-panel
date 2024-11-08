@@ -105,7 +105,7 @@ export interface ProjectEtltagDataType {
   doc_id_not_equals: any[];
   locality_wb_plot: LocalityWbPlot[];
   single_unit: boolean;
-  etl_pattern: EtlPattern;
+  etl_pattern: EtlPattern | null;
 }
 
 export interface LocalityWbPlot {

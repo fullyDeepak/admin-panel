@@ -179,6 +179,15 @@ export default function ETLTagData({
               <span>{etlTagData.singleUnit ? 'True' : 'False'}</span>
             </div>
           </label>
+          {etlTagData.oldPattern && (
+            <span>
+              This Project has a Pattern with old nomenclature. Please update
+              the pattern. Previously the Pattern{' '}
+              {etlTagData.rawPattern
+                ? 'was ' + etlTagData.rawPattern
+                : 'was unset'}
+            </span>
+          )}
           <div className='flex flex-wrap items-center justify-between gap-5'>
             <span className='flex flex-[2] items-center'>
               <span>Pattern:</span>

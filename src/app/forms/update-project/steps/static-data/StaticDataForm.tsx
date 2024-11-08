@@ -235,7 +235,7 @@ export default function StaticDataForm() {
                     docIdNotEquals: ele.doc_id_not_equals,
                     singleUnit: ele.single_unit,
                     rootDocs: ele.root_docs,
-                    oldPattern: !ele.etl_pattern.flags.newLang,
+                    oldPattern: !ele.etl_pattern?.flags.newLang,
                     patterns: ele.etl_pattern
                       ? ele.etl_pattern.flags.newLang
                         ? JSON.parse(ele.etl_pattern.pattern)
@@ -361,7 +361,8 @@ export default function StaticDataForm() {
                     docIdNotEquals: ele.doc_id_not_equals,
                     singleUnit: ele.single_unit,
                     rootDocs: ele.root_docs,
-                    oldPattern: !ele.etl_pattern.flags.newLang,
+                    oldPattern: !ele.etl_pattern?.flags.newLang,
+                    rawPattern: ele.etl_pattern?.pattern,
                     patterns: ele.etl_pattern
                       ? ele.etl_pattern.flags.newLang
                         ? JSON.parse(ele.etl_pattern.pattern)
