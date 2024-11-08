@@ -33,7 +33,7 @@ export const useReraDocStore = create<FormState>((set) => ({
       );
       set({ loadingReraDocs: 'complete' });
       set({ reraDocs: response?.data?.data });
-    } catch (error) {
+    } catch (_error) {
       set({ loadingReraDocs: 'error' });
     }
   },

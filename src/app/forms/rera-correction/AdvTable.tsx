@@ -298,7 +298,7 @@ export default function AdvTable<TData>({
 
 function Filter({ column }: { column: Column<any, unknown> }) {
   const columnFilterValue = column.getFilterValue();
-  // @ts-expect-error
+  // @ts-expect-error third party
   const { filterVariant } = column.columnDef.meta ?? {};
 
   if (filterVariant === 'range') {

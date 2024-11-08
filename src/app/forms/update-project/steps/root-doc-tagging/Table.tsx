@@ -53,7 +53,6 @@ export default function TanstackReactTable<TData>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
   });
-  table.getSelectedRowModel;
 
   return (
     <div className='flex h-[98vh] flex-col justify-between'>
@@ -183,7 +182,7 @@ export default function TanstackReactTable<TData>({
 
 function Filter({ column }: { column: Column<any, unknown> }) {
   const columnFilterValue = column.getFilterValue();
-  // @ts-expect-error
+  // @ts-expect-error third party
   const { filterVariant } = column.columnDef.meta ?? {};
 
   return filterVariant === 'range' ? (

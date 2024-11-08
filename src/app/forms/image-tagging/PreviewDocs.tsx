@@ -59,7 +59,7 @@ export default function PreviewDocs({
           selectedImageTaggingType,
         ],
       });
-    } catch (error) {
+    } catch (_error) {
       setLoading(false);
     }
   }
@@ -93,7 +93,7 @@ export default function PreviewDocs({
           },
         }
       );
-    } catch (error) {
+    } catch (_error) {
       setLoading(false);
     }
   }

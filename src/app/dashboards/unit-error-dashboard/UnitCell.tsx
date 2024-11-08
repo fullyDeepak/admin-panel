@@ -16,7 +16,7 @@ export default function UnitCell({
   unitType,
   shouldColor,
 }: UnitCellProps) {
-  let color =
+  const color =
     unitType === 1
       ? '#4ade80'
       : unitType === 2

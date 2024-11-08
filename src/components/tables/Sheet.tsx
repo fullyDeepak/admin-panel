@@ -48,12 +48,13 @@ export default function Sheet(
           size={20}
           className='group-hover:text-white'
           onClick={() => {
-            props?.setSheetData &&
+            if (props?.setSheetData) {
               props?.setSheetData(
                 sheetData.filter(
                   (item) => JSON.stringify(item) !== JSON.stringify(rowData)
                 )
               );
+            }
           }}
         />
       </button>

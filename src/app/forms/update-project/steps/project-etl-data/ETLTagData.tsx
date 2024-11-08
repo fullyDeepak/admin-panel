@@ -49,7 +49,7 @@ export default function ETLTagData({
           });
         });
         return newData;
-      } catch (error) {
+      } catch (_error) {
         return [];
       }
     },

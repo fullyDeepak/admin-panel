@@ -1,18 +1,15 @@
 'use client';
 import bboxCalculator from '@turf/bbox';
 import { AllGeoJSON } from '@turf/helpers';
-import * as geojson from 'geojson';
 import {
   Icon,
   LatLngBounds,
   LatLngBoundsExpression,
   LatLngTuple,
-  Layer,
 } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 import {
-  GeoJSON,
   LayersControl,
   MapContainer,
   Marker,
@@ -103,22 +100,6 @@ export default function MapInterface() {
     }, [mapGeojsonData, map]);
     return null;
   };
-
-  function renderLabel(
-    feature: geojson.Feature<
-      {
-        type: 'Polygon';
-        coordinates: [number, number][][];
-      },
-      {
-        id: number;
-        name: string;
-      }
-    >,
-    layer: Layer
-  ) {
-    layer.bindPopup(feature.properties?.name);
-  }
 
   return (
     <div className='mb-5 flex w-full flex-col items-center justify-center'>

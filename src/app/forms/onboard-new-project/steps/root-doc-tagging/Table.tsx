@@ -53,14 +53,6 @@ export default function TanstackReactTable<TData>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
   });
-  table.getSelectedRowModel;
-
-  // useEffect(() => {
-  //   const ogData = table
-  //     .getSelectedRowModel()
-  //     ?.rows?.map((item) => item.original);
-  //   setSelectedRows(ogData);
-  // }, [rowSelection]);
   return (
     <div className='flex h-[98vh] flex-col justify-between'>
       <div className='overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
@@ -189,7 +181,7 @@ export default function TanstackReactTable<TData>({
 
 function Filter({ column }: { column: Column<any, unknown> }) {
   const columnFilterValue = column.getFilterValue();
-  // @ts-expect-error
+  // @ts-expect-error third party
   const { filterVariant } = column.columnDef.meta ?? {};
 
   return filterVariant === 'range' ? (

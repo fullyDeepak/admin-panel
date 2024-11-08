@@ -9,14 +9,12 @@ import GeoData from './steps/geo-data/GeoData';
 import TowerPage from './steps/tower-unit/TowerPage';
 import StepsUI from './StepsUI';
 import { useOnboardingDataStore } from './useOnboardingDataStore';
-import ProjectSection from './steps/image-tagging/ProjectSection';
 import RootDocTagging from './steps/root-doc-tagging/RootDocTagging';
 import useETLDataStore from './useETLDataStore';
 import { useTowerUnitStore } from './useTowerUnitStore';
 import { useImageStore } from './useImageStore';
 import axiosClient from '@/utils/AxiosClient';
 import { useState } from 'react';
-import StatusPricing from './steps/status-pricing/StatusPricing';
 
 export default function Page() {
   const {

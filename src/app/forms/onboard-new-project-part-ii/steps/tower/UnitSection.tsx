@@ -48,8 +48,9 @@ export default function UnitSection({
               className='absolute right-2 top-0 m-2 size-8 rounded-full text-sm font-semibold hover:bg-gray-300'
               type='button'
               onClick={() => {
-                confirm('Are you sure?') &&
+                if (confirm('Are you sure?')) {
                   deleteUnitCard(towerId, unitData.id);
+                }
               }}
             >
               ✕

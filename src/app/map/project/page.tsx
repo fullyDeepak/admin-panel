@@ -24,7 +24,7 @@ export default function Page() {
           currentBoundArea
         );
         return res.data.data;
-      } catch (error) {
+      } catch (_error) {
         return [];
       }
     },

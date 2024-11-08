@@ -143,7 +143,7 @@ export default function VillageOnboardingPage() {
           duration: 5000,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       setReplacementDictFlag(null);
       toast.error('Error occurred while checking status.', {
         id: checkReplacementToast,

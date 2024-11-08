@@ -52,7 +52,7 @@ export default function PreviewUnitDocs({
       ).close();
       setLoading(false);
       setShowModal(false);
-    } catch (error) {
+    } catch (_error) {
       setLoading(false);
     }
   }

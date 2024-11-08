@@ -66,6 +66,7 @@ export interface OnboardingDataType {
   mapData: ProjectCordWithinVillage['data'] | null;
   mapInputValue: string;
   mapGeojsonData: FeatureCollection | null;
+  geoData: any[];
   coreDoorNumberStrings: string[];
   suggestedSurvey: string[];
   suggestedPlot: string[];
@@ -88,7 +89,6 @@ export interface OnboardingDataType {
   reraTotalLandArea: number;
   reraCalcNetLandArea: number;
   developerGroup: string;
-  geoData: any[];
   reraForTempProjects: {
     [key: string]: string[];
   };

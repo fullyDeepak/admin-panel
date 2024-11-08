@@ -153,19 +153,21 @@ export default function DeveloperTagging() {
                 }
               ),
             });
-            e.target.checked
-              ? updateProjectETLTagData(1, 'rootDocs', [
-                  ...projectFormETLTagData.find((item) => item.id === 1)!
-                    .rootDocs,
-                  row.getValue('doc_id'),
-                ])
-              : updateProjectETLTagData(
-                  1,
-                  'rootDocs',
-                  projectFormETLTagData
-                    .find((item) => item.id === 1)!
-                    .rootDocs.filter((item) => item !== row.getValue('doc_id'))
-                );
+            if (e.target.checked) {
+              updateProjectETLTagData(1, 'rootDocs', [
+                ...projectFormETLTagData.find((item) => item.id === 1)!
+                  .rootDocs,
+                row.getValue('doc_id'),
+              ]);
+            } else {
+              updateProjectETLTagData(
+                1,
+                'rootDocs',
+                projectFormETLTagData
+                  .find((item) => item.id === 1)!
+                  .rootDocs.filter((item) => item !== row.getValue('doc_id'))
+              );
+            }
           }}
           type='checkbox'
           className='checkbox no-animation cursor-pointer'

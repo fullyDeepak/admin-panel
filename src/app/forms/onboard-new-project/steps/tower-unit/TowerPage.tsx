@@ -81,7 +81,7 @@ export default function TowerPage() {
   const [towerCardCount, setTowerCardCount] = useState<number>(0);
   const { onboardingData } = useOnboardingDataStore();
   useEffect(() => {
-    let options: {
+    const options: {
       label: string;
       value: string;
     }[] = [];
@@ -359,7 +359,9 @@ export default function TowerPage() {
                   className='absolute right-2 top-2 m-2 size-10 rounded-full font-semibold hover:bg-gray-300'
                   type='button'
                   onClick={() => {
-                    confirm('Are you sure?') && deleteTowerCard(tower.id);
+                    if (confirm('Are you sure?')) {
+                      deleteTowerCard(tower.id);
+                    }
                   }}
                 >
                   ✕

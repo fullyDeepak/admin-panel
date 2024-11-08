@@ -63,9 +63,9 @@ export default function UnitFP({
         };
       } = {};
       if (match && match.groups) {
-        let towers = match.groups.towers;
-        let floors = match.groups.floors;
-        let units = match.groups.units;
+        const towers = match.groups.towers;
+        const floors = match.groups.floors;
+        const units = match.groups.units;
         generatedData = generateTFU(towers, floors, units, towerFloorData);
         tfuMatchData = generatedData.tfuMatchData;
         setUnitFPDataStore(

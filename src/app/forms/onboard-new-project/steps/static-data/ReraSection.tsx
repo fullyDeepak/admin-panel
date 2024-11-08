@@ -125,8 +125,8 @@ export default function ReraSection({
     const phases: Record<number, number> = {};
     const projectIds = uniq(data.map((item) => +item.project_id));
     projectIds.map((num, index) => (phases[num] = index + 1));
-    let reraTotalLandAreaObj: Record<string, number> = {};
-    let reraCalcNetLandAreaObj: Record<string, number> = {};
+    const reraTotalLandAreaObj: Record<string, number> = {};
+    const reraCalcNetLandAreaObj: Record<string, number> = {};
 
     const towersData = data.map((item, index) => {
       let gfMin = null;

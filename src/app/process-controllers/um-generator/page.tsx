@@ -7,7 +7,7 @@ import { CgInfo } from 'react-icons/cg';
 
 export default function UMGenerator() {
   async function handleUMStart() {
-    let toastId: string = toast.loading('Starting UM Generator...');
+    const toastId: string = toast.loading('Starting UM Generator...');
     await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
       const response = await axiosClient.post('/unitmaster/generate');

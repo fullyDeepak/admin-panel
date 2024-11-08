@@ -149,7 +149,6 @@ export default function TanstackReactTable<TData>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
   });
-  table.getSelectedRowModel;
 
   useEffect(() => {
     const ogData = table
@@ -220,9 +219,11 @@ export default function TanstackReactTable<TData>({
                 key={row.id}
                 className={`max-w-7xl cursor-pointer border-b ${row.getIsSelected() ? 'bg-sky-100 hover:bg-opacity-50' : 'bg-none hover:bg-gray-100'}`}
                 onClick={() => {
-                  isMultiSelection
-                    ? row.toggleSelected()
-                    : row.toggleSelected(true);
+                  if (isMultiSelection) {
+                    row.toggleSelected();
+                  } else {
+                    row.toggleSelected(true);
+                  }
                 }}
               >
                 {row.getVisibleCells().map((cell) => (
@@ -292,7 +293,7 @@ export default function TanstackReactTable<TData>({
 
 function Filter({ column }: { column: Column<any, unknown> }) {
   const columnFilterValue = column.getFilterValue();
-  // @ts-expect-error
+  // @ts-expect-error third party
   const { filterVariant } = column.columnDef.meta ?? {};
 
   return filterVariant === 'range' ? (

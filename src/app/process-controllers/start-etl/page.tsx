@@ -7,7 +7,7 @@ import { CgInfo } from 'react-icons/cg';
 
 export default function StartETLPage() {
   async function handleETLStart() {
-    let toastId: string = toast.loading('Starting ETL process...');
+    const toastId: string = toast.loading('Starting ETL process...');
     await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
       const response = await axiosClient.post('/etl/startEtlProcess');

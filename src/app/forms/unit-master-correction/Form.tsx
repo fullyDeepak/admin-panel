@@ -50,7 +50,7 @@ export default function Form() {
     queryKey: ['projects', errorType?.value, errTwoType],
     queryFn: async () => {
       try {
-        let options: { value: number; label: string }[] = [];
+        const options: { value: number; label: string }[] = [];
         if (errorType?.value === 'err-type-1') {
           const res = await axiosClient.get<{
             data: {

@@ -91,11 +91,11 @@ export default function ReraTableSection() {
           }
           onChange={(e) => {
             updateCurrentTableData(row.original.id, {
-              // @ts-expect-error
+              // @ts-expect-error third party
               developer_master_id: e?.value?.split(':')[1],
             });
             updateSelectedTableRows(row.original.id, {
-              // @ts-expect-error
+              // @ts-expect-error third party
               developer_master_id: e?.value?.split(':')[1],
             });
           }}
@@ -116,11 +116,11 @@ export default function ReraTableSection() {
           }
           onChange={(e) => {
             updateCurrentTableData(row.original.id, {
-              // @ts-expect-error
+              // @ts-expect-error third party
               dev_group_id: e?.value?.split(':')[1],
             });
             updateSelectedTableRows(row.original.id, {
-              // @ts-expect-error
+              // @ts-expect-error third party
               dev_group_id: e?.value?.split(':')[1],
             });
           }}

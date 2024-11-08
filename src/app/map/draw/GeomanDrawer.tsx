@@ -38,7 +38,7 @@ export default function GeomanDrawer({ setGeoJsonData }: Props) {
         const marker = layer as L.Marker;
         marker.setIcon(markerIcon);
       }
-      //@ts-expect-error
+      //@ts-expect-error third party
       const geoJsonData = layer?.toGeoJSON();
       console.log('GeoJSON Data:', geoJsonData);
       setGeoJsonData((prev) => [...prev, geoJsonData]);

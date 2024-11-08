@@ -43,8 +43,7 @@ export default function ProjectTowerEditPage() {
     resetAllProjectData();
   }, [usePathname]);
 
-  let newProjectFormData: any;
-  newProjectFormData = { ...editProjectFormData };
+  const newProjectFormData: any = { ...editProjectFormData };
   delete newProjectFormData.selectedProjectOption;
   delete newProjectFormData.projectSubTypeOptions;
   delete newProjectFormData.towerTypeOptions;
@@ -54,15 +53,15 @@ export default function ProjectTowerEditPage() {
   );
   delete newProjectFormData.selectedProjectStatusTowers;
   delete newProjectFormData.selectedProjectStatusType;
-  let newTowerFormData: any;
-  newTowerFormData = editTowerFormData.map((item) => ({
+
+  const newTowerFormData: any = editTowerFormData.map((item) => ({
     ...item,
     towerType: item.towerType,
     etlUnitConfigs: item.etlUnitConfigs.filter(
       (item) => item.configName !== ''
     ),
   }));
-  let newProjectFormETLTagData = projectFormETLTagData?.map((item) => ({
+  const newProjectFormETLTagData = projectFormETLTagData?.map((item) => ({
     ...item,
     village: item.village?.value,
   }));
@@ -114,7 +113,7 @@ export default function ProjectTowerEditPage() {
         return null;
       }
 
-      let modifiedOldProjectFormData = JSON.parse(
+      const modifiedOldProjectFormData = JSON.parse(
         JSON.stringify(oldProjectFormData)
       );
       delete modifiedOldProjectFormData?.selectedProjectOption;

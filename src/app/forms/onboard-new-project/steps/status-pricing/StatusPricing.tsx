@@ -4,7 +4,7 @@ import ConstructionStatus from './ConstructionStatus';
 import Pricing from './Pricing';
 
 export default function StatusPricing() {
-  const { towerFormData, updateTowerFormData } = useTowerUnitStore();
+  const { towerFormData } = useTowerUnitStore();
   const towerOptions = towerFormData.map((item) => ({
     label: `${item.id}:${item.towerNameETL}`,
     value: item.id,

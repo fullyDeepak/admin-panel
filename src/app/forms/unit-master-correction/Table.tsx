@@ -146,7 +146,6 @@ export default function TanstackReactTable<TData>({
     onSortingChange: setSorting,
     onGlobalFilterChange: setFiltering,
   });
-  table.getSelectedRowModel;
 
   useEffect(() => {
     const ogData = table
@@ -229,9 +228,11 @@ export default function TanstackReactTable<TData>({
                 key={row.id}
                 className={`cursor-pointer border-b ${row.getIsSelected() ? 'bg-sky-100 hover:bg-opacity-50' : 'bg-none hover:bg-gray-100'}`}
                 onClick={() => {
-                  isMultiSelection
-                    ? row.toggleSelected()
-                    : row.toggleSelected(true);
+                  if (isMultiSelection) {
+                    row.toggleSelected();
+                  } else {
+                    row.toggleSelected(true);
+                  }
                 }}
               >
                 {row.getVisibleCells().map((cell) => (

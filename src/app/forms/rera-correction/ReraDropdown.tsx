@@ -454,8 +454,9 @@ export default function ReraDropdown() {
               const filteredTableData = reraTableDataStore?.filter((item) =>
                 selectedDevId.includes(item.dev_name)
               );
-              filteredTableData &&
+              if (filteredTableData) {
                 updateCorrectionFormData('reraTableData', filteredTableData);
+              }
             }}
           />
         </div>

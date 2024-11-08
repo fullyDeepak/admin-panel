@@ -257,7 +257,7 @@ export const useUMCorrectionFormStore = create<State & Actions>((set, get) => ({
         set({ errTwoLeftData: res.data.data.leftData });
         set({ errTwoRightData: res.data.data.rightData });
         set({ loadingErrData: 'complete' });
-      } catch (error) {
+      } catch (_error) {
         set({ loadingErrData: 'error' });
       }
     }

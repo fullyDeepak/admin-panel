@@ -124,7 +124,7 @@ export default function DMVS() {
   const { isPending: loadingDistricts, data: districtOptions } = useQuery({
     queryKey: ['district', selectedDistrict],
     queryFn: async ({ queryKey }) => {
-      let featureArray: {
+      const featureArray: {
         type: 'Feature';
         geometry: {
           type: 'Polygon' | 'MultiPolygon';
@@ -133,7 +133,7 @@ export default function DMVS() {
         properties: { id: any; name: any };
       }[] = [];
       console.log(queryKey);
-      let dropdownOptions = [{ label: 'ALL', value: -1 }];
+      const dropdownOptions = [{ label: 'ALL', value: -1 }];
       const res = await axiosClient.get<{
         data: {
           id: number;
@@ -176,7 +176,7 @@ export default function DMVS() {
   const { isPending: loadingMandals, data: mandalOptions } = useQuery({
     queryKey: ['mandals', selectedDistrict],
     queryFn: async ({ queryKey }) => {
-      let featureArray: {
+      const featureArray: {
         type: 'Feature';
         geometry: {
           type: 'Polygon' | 'MultiPolygon';
@@ -185,7 +185,7 @@ export default function DMVS() {
         properties: { id: number; name: string };
       }[] = [];
       console.log(queryKey);
-      let dropdownOptions = [{ label: 'ALL', value: -1 }];
+      const dropdownOptions = [{ label: 'ALL', value: -1 }];
       const res = await axiosClient.get<{
         data: {
           id: number;
@@ -242,7 +242,7 @@ export default function DMVS() {
   const { isPending: loadingVillages, data: villageOptions } = useQuery({
     queryKey: ['village', selectedMandal],
     queryFn: async ({ queryKey }) => {
-      let featureArray: {
+      const featureArray: {
         type: 'Feature';
         geometry: {
           type: 'Polygon' | 'MultiPolygon';
@@ -253,7 +253,7 @@ export default function DMVS() {
       console.log(queryKey);
 
       if (!selectedMandal) throw new Error('Mandal needs to be selected');
-      let dropdownOptions = [{ label: 'ALL', value: -1 }];
+      const dropdownOptions = [{ label: 'ALL', value: -1 }];
       const res = await axiosClient.get<{
         data: {
           id: number;
@@ -306,7 +306,7 @@ export default function DMVS() {
   const { isPending: loadingSurveys, data: surveyOptions } = useQuery({
     queryKey: ['survey', selectedVillage],
     queryFn: async ({ queryKey }) => {
-      let featureArray: {
+      const featureArray: {
         type: 'Feature';
         geometry: {
           type: 'Polygon' | 'MultiPolygon';
@@ -316,7 +316,7 @@ export default function DMVS() {
       }[] = [];
       console.log(queryKey);
       if (!selectedVillage) throw new Error('Village needs to be selected.');
-      let dropdownOptions = [{ label: 'ALL', value: -1 }];
+      const dropdownOptions = [{ label: 'ALL', value: -1 }];
       const res = await axiosClient.get<{
         data: {
           id: number;

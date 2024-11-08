@@ -49,7 +49,7 @@ export default function TowerUnitDetails({
         });
         // [x] unit min-max rules
         for (let i = maxFloor; i >= minFloor; i--) {
-          let temp = [];
+          const temp = [];
           console.log('UNITMIN->', unitMin);
           if (
             typeof unitMax === 'string' &&

@@ -216,7 +216,7 @@ export default function PreviewProjectTower({
     { header: 'ETL Pattern', accessorKey: 'etlPattern' },
   ];
 
-  let etlUnitConfigs: {
+  const etlUnitConfigs: {
     id: number;
     configName: string;
     minArea: number;

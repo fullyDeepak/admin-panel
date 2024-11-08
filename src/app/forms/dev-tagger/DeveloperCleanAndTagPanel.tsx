@@ -305,7 +305,7 @@ export function DeveloperCleanAndTagPanel({
               onClick={() =>
                 setSelectedDevelopers((prev) => {
                   return prev.filter(
-                    (item, item_index) => item_index !== index
+                    (_item, item_index) => item_index !== index
                   );
                 })
               }

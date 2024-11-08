@@ -219,7 +219,7 @@ export function DeveloperGroupSelectionPanel({
                   onClick={() =>
                     setDeveloperGroupMembers((prev) => {
                       return prev.filter(
-                        (item, item_index) => item_index !== index
+                        (_item, item_index) => item_index !== index
                       );
                     })
                   }

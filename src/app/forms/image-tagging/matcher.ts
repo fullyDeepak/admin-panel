@@ -88,7 +88,7 @@ export function generateTFU(
   let floorParts = floorStr.split(';');
   const unitParts = unitStr.split(';');
 
-  let tfuCombinations = [];
+  const tfuCombinations = [];
   const tfuMatchData: {
     [key: string]: {
       [key: string]: string[];
@@ -116,7 +116,7 @@ export function generateTFU(
     }
 
     for (const towerItem of towerList) {
-      let tempTower: {
+      const tempTower: {
         [key: string]: {
           [key: string]: string[];
         };

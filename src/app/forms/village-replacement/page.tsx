@@ -204,7 +204,7 @@ export default function VillageReplacementPage() {
           return { rawVillages, cols };
         }
       }
-    } catch (error) {
+    } catch (_error) {
       setIsRawVillageDataAvailable('Not Available');
     }
     return { rawVillages: [], cols: [] };

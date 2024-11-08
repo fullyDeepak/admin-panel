@@ -26,7 +26,7 @@ export default function TowerSection() {
   } = useTowerUnitStore();
 
   useEffect(() => {
-    let options: {
+    const options: {
       label: string;
       value: string;
     }[] = [];

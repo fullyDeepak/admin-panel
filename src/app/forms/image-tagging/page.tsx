@@ -307,7 +307,7 @@ export default function ImageTaggingPage() {
         setUploadingStatus('complete');
         fetchTowerFloorData(selectedProject.value);
         form.reset();
-      } catch (error) {
+      } catch (_error) {
         setUploadingStatus('error');
       }
     }

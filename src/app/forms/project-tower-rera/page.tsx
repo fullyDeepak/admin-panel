@@ -36,8 +36,7 @@ export default function ProjectTowerReraPage() {
     resetAllProjectData();
   }, [usePathname]);
 
-  let newProjectFormData: any;
-  newProjectFormData = { ...projectFormDataRera };
+  const newProjectFormData: any = { ...projectFormDataRera };
 
   delete newProjectFormData.towerTypeOptions;
   delete newProjectFormData.projectSubTypeOptions;
@@ -58,8 +57,7 @@ export default function ProjectTowerReraPage() {
     newProjectFormData.projectSubTypeOption?.value;
   newProjectFormData.towerTypeOptions =
     newProjectFormData.towerTypeOptions?.value;
-  let newTowerFormData: any;
-  newTowerFormData = towerFormDataRera.map((item) => ({
+  const newTowerFormData: any = towerFormDataRera.map((item) => ({
     ...item,
     validTowerUnits: null,
     towerType: item.towerType?.value,
@@ -68,7 +66,7 @@ export default function ProjectTowerReraPage() {
       (item) => item.configName !== ''
     ),
   }));
-  let newProjectFormETLTagData = projectFormETLTagData.map((item) => ({
+  const newProjectFormETLTagData = projectFormETLTagData.map((item) => ({
     ...item,
     village: item.village?.value,
   }));

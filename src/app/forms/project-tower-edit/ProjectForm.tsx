@@ -39,7 +39,7 @@ export default function ProjectForm() {
       try {
         const res = await axiosClient.get('/projects');
         const options = res.data.data.map(
-          (item: { id: Number; project_name: String }) => ({
+          (item: { id: number; project_name: string }) => ({
             value: item.id,
             label: `${item.id}:${item.project_name}`,
           })
@@ -91,7 +91,7 @@ export default function ProjectForm() {
           });
         });
         return newData;
-      } catch (error) {
+      } catch (_error) {
         return [];
       }
     },
