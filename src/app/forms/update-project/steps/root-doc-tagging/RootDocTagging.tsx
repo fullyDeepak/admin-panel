@@ -232,24 +232,6 @@ export default function DeveloperTagging() {
               ROOT DOC AREA: {onboardingData.rootDocArea.toFixed(2)} SQ Yds
               (approx. {(onboardingData.rootDocArea / 4840).toFixed(2)} Acres)
             </p>
-            <div className='flex flex-col gap-2'>
-              <span>
-                RERA Net Land Area:{' '}
-                {(onboardingData.reraTotalLandArea * 1.196).toFixed(2)} SQ yds
-                (approx. {(onboardingData.reraTotalLandArea / 4047).toFixed(2)}{' '}
-                Acres)
-              </span>
-              <span>
-                RERA Calculated Net Land Area:{' '}
-                {(onboardingData.reraCalcNetLandArea * 1.196).toFixed(2)} SQ yds
-                (approx.{' '}
-                {(onboardingData.reraCalcNetLandArea / 4047).toFixed(2)} Acres)
-              </span>
-              <span>
-                Map Calculated Land Area: {onboardingData.polygonArea} SQ Yds
-                (approx. {(onboardingData.polygonArea / 4840).toFixed(2)} Acres)
-              </span>
-            </div>
           </div>
           <div>
             <TanstackReactTable
