@@ -89,6 +89,15 @@ export default function FormHomePage() {
             Onboard Project Part - II
           </Link>
           <Link
+            href={'/forms/update-project'}
+            className='btn relative flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+          >
+            <span className='absolute -right-2 -top-1 rotate-45 rounded-full bg-violet-600 px-1 text-[8px] text-white'>
+              NEW
+            </span>
+            Update Project Part - I
+          </Link>
+          <Link
             href={'/forms/project-tower-rera'}
             className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
           >
