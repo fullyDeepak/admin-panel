@@ -15,6 +15,10 @@ export interface ProjectDataType {
     label: string;
     value: number;
   }> | null;
+  selectedProject: SingleValue<{
+    label: string;
+    value: number;
+  }> | null;
 }
 
 interface State {
@@ -32,6 +36,7 @@ const INITIAL_PROJECT_DATA_STATE: ProjectDataType = {
   selectedDistrict: null,
   selectedMandal: null,
   selectedVillage: null,
+  selectedProject: null,
 };
 
 export const useProjectDataStore = create<State & Actions>()(

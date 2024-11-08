@@ -5,6 +5,12 @@ import { useEffect } from 'react';
 import { useTowerUnitStore } from '../../useTowerUnitStore';
 import UnitSection from './UnitSection';
 import RefTable from './RefTable';
+import {
+  ChevronFirst,
+  ChevronLast,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 
 export default function TowerSection() {
   const {
@@ -13,8 +19,8 @@ export default function TowerSection() {
     updateUnitCard,
     updateTowerFormData,
     towerFormData,
-    deleteTowerCard,
-    setTowerFormData,
+    // deleteTowerCard,
+    // setTowerFormData,
     deleteUnitCard,
     setExistingUnitTypeOption,
   } = useTowerUnitStore();
@@ -27,8 +33,8 @@ export default function TowerSection() {
     towerFormData.map((tower) => {
       tower.unitCards.map((unitCard) => {
         options.push({
-          label: `T${tower.id}:U${unitCard.id}`,
-          value: `T${tower.id}:U${unitCard.id}`,
+          label: `T${tower.tower_id}:U${unitCard.id}`,
+          value: `T${tower.tower_id}:U${unitCard.id}`,
         });
       });
     });
@@ -37,28 +43,99 @@ export default function TowerSection() {
 
   return (
     <div className='flex flex-col text-sm'>
-      {towerFormData.map((tower) => (
+      {towerFormData.map((tower, idx) => (
         <div
           className='tower-card-container relative z-0 flex flex-col transition-all duration-1000'
-          key={tower.id}
+          key={tower.tower_id}
+          id={`tower-card-${tower.tower_id}`}
         >
           <div className='moveTransition tower-card relative mb-14 flex flex-col gap-3 rounded-2xl p-10 shadow-[0_0px_8px_rgb(139,92,246,0.6)]'>
-            <span className='text-center font-semibold'>
-              Tower Card id: {tower.id}
-            </span>
+            <div className='flex w-full items-center justify-around'>
+              <div className='flex items-center gap-4'>
+                <button
+                  className='tooltip flex !size-10 items-center justify-center rounded-full border-2 border-neutral duration-200 hover:bg-gray-200 active:scale-95 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'
+                  onClick={() => {
+                    const cardIdx = towerFormData.findIndex(
+                      (item) => item.tower_id === tower.tower_id
+                    );
+                    if (cardIdx === 0) return;
+                    const gotoIdx = towerFormData[0].tower_id;
+                    document
+                      .getElementById(`tower-card-${gotoIdx}`)
+                      ?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  data-tip='Go to First Tower Card'
+                  disabled={idx === 0}
+                >
+                  <ChevronFirst />
+                </button>
+                <button
+                  className='tooltip flex !size-10 items-center justify-center rounded-full border-2 border-neutral duration-200 hover:bg-gray-200 active:scale-95 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'
+                  onClick={() => {
+                    const cardIdx = towerFormData.findIndex(
+                      (item) => item.tower_id === tower.tower_id
+                    );
+                    if (cardIdx === 0) return;
+                    const gotoIdx = towerFormData[cardIdx - 1].tower_id;
+                    document
+                      .getElementById(`tower-card-${gotoIdx}`)
+                      ?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  data-tip='Go to Previous Tower Card'
+                  disabled={idx === 0}
+                >
+                  <ChevronLeft />
+                </button>
+              </div>
+              <span className='text-center text-xl font-semibold'>
+                Tower Card id: {tower.tower_id}
+              </span>
+              <div className='flex items-center gap-4'>
+                <button
+                  className='tooltip flex !size-10 items-center justify-center rounded-full border-2 border-neutral duration-200 hover:bg-gray-200 active:scale-95 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'
+                  onClick={() => {
+                    const cardIdx = towerFormData.findIndex(
+                      (item) => item.tower_id === tower.tower_id
+                    );
+                    const gotoIdx = towerFormData[cardIdx + 1].tower_id;
+                    document
+                      .getElementById(`tower-card-${gotoIdx}`)
+                      ?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  disabled={idx === towerFormData.length - 1}
+                  data-tip='Go to Next Tower Card'
+                >
+                  <ChevronRight />
+                </button>
+                <button
+                  className='tooltip flex !size-10 items-center justify-center rounded-full border-2 border-neutral duration-200 hover:bg-gray-200 active:scale-95 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'
+                  onClick={() => {
+                    const gotoIdx =
+                      towerFormData[towerFormData.length - 1].tower_id;
+                    document
+                      .getElementById(`tower-card-${gotoIdx}`)
+                      ?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  data-tip='Go to Last Tower Card'
+                  disabled={idx === towerFormData.length - 1}
+                >
+                  <ChevronLast />
+                </button>
+              </div>
+            </div>
             <h3 className='my-4 text-2xl font-semibold'>
               Section: Tower Details
             </h3>
             <div className='flex flex-wrap items-center justify-between gap-5'>
               <span className='flex-[3]'>ETL Tower ID & Name:</span>
-              <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
-                <span>{tower.id}</span>
+              <span className='ml-[6px] min-h-9 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
+                <span>{`${tower.tower_id} : ${tower.towerNameETL}`}</span>
               </span>
             </div>
             <div className='flex flex-wrap items-center justify-between gap-5'>
-              <span className='flex-[3]'>RERA Tower ID:</span>
-              <span className='ml-[6px] min-h-11 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
-                <span>{tower.reraTowerId}</span>
+              <span className='flex-[3]'>RERA ID and RERA Tower ID:</span>
+              <span className='ml-[6px] min-h-9 w-full flex-[5] rounded-md border-0 p-2 text-gray-900 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
+                <span>{`${tower.reraId} : ${tower.reraTowerId}`}</span>
               </span>
             </div>
             <div className='flex flex-wrap items-center justify-between gap-5'>
@@ -81,7 +158,7 @@ export default function TowerSection() {
                       tower.typicalMaxFloor ? tower.typicalMaxFloor : ''
                     }
                     onChange={(e) =>
-                      updateTowerFormData(tower.id, {
+                      updateTowerFormData(tower.tower_id, {
                         typicalMaxFloor: +e.target.value,
                       })
                     }
@@ -102,7 +179,7 @@ export default function TowerSection() {
                     defaultValue={tower.typicalUnitCount}
                     id='unit-count'
                     onChange={(e) =>
-                      updateTowerFormData(tower.id, {
+                      updateTowerFormData(tower.tower_id, {
                         typicalUnitCount: e.target.value,
                       })
                     }
@@ -127,7 +204,7 @@ export default function TowerSection() {
                     defaultValue={tower.gfName}
                     id='ground-floor-name'
                     onChange={(e) =>
-                      updateTowerFormData(tower.id, {
+                      updateTowerFormData(tower.tower_id, {
                         gfName: e.target.value,
                       })
                     }
@@ -147,7 +224,7 @@ export default function TowerSection() {
                     defaultValue={tower.gfUnitCount}
                     id='gf-unit-count'
                     onChange={(e) =>
-                      updateTowerFormData(tower.id, {
+                      updateTowerFormData(tower.tower_id, {
                         gfUnitCount: e.target.value,
                       })
                     }
@@ -176,7 +253,7 @@ export default function TowerSection() {
             <UnitSection
               unitCards={tower.unitCards}
               updateUnitCard={updateUnitCard}
-              towerId={tower.id}
+              towerId={tower.tower_id}
               copyUnitCard={copyUnitCard}
               addNewUnitCard={addNewUnitCard}
               deleteUnitCard={deleteUnitCard}

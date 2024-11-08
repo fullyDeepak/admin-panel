@@ -13,7 +13,7 @@ export type RefTableType = {
 };
 
 export type TowerUnitDetailType = {
-  id: number;
+  tower_id: number;
   reraId: string;
   reraTowerId: string;
   towerNameDisplay: string;
@@ -58,7 +58,7 @@ export type UnitCardType = {
 
 const INITIAL_STATE: TowerUnitDetailType[] = [
   {
-    id: 1,
+    tower_id: 1,
     reraId: '',
     reraTowerId: '',
     towerNameETL: '',
@@ -132,7 +132,9 @@ export const useTowerUnitStore = create<Store>()(
     setExistingUnitTypeOption: (data) => set({ existingUnitTypeOption: data }),
     updateTowerFormData: (id, newDetails) =>
       set((prev) => {
-        const idx = prev.towerFormData.findIndex((data) => data.id === id);
+        const idx = prev.towerFormData.findIndex(
+          (data) => data.tower_id === id
+        );
         if (idx !== -1) {
           prev.towerFormData[idx] = {
             ...prev.towerFormData[idx],
@@ -143,14 +145,14 @@ export const useTowerUnitStore = create<Store>()(
     deleteTowerCard: (id) =>
       set((prev) => {
         prev.towerFormData = prev.towerFormData.filter(
-          (data) => data.id !== id
+          (data) => data.tower_id !== id
         );
       }),
     setTowerFormData: (data) => set({ towerFormData: data }),
     updateUnitCard: (towerCardId, unitCardId, newDetails) =>
       set((prev) => {
         const towerIdx = prev.towerFormData.findIndex(
-          (data) => data.id === towerCardId
+          (data) => data.tower_id === towerCardId
         );
         if (towerIdx !== -1) {
           const unitCardIdx = prev.towerFormData[towerIdx].unitCards.findIndex(
@@ -167,7 +169,7 @@ export const useTowerUnitStore = create<Store>()(
     copyUnitCard: (towerCardId, newDetails) =>
       set((prev) => {
         const towerIdx = prev.towerFormData.findIndex(
-          (data) => data.id === towerCardId
+          (data) => data.tower_id === towerCardId
         );
         if (towerIdx !== -1) {
           prev.towerFormData[towerIdx].unitCards.push({
@@ -178,7 +180,7 @@ export const useTowerUnitStore = create<Store>()(
     addNewUnitCard: (towerCardId) =>
       set((prev) => {
         const towerIdx = prev.towerFormData.findIndex(
-          (data) => data.id === towerCardId
+          (data) => data.tower_id === towerCardId
         );
         if (towerIdx !== -1) {
           prev.towerFormData[towerIdx].unitCards.push({
@@ -205,7 +207,7 @@ export const useTowerUnitStore = create<Store>()(
     deleteUnitCard: (towerCardId, unitCardId) =>
       set((prev) => {
         const towerIdx = prev.towerFormData.findIndex(
-          (data) => data.id === towerCardId
+          (data) => data.tower_id === towerCardId
         );
         if (towerIdx !== -1) {
           const unitCardIdx = prev.towerFormData[towerIdx].unitCards.findIndex(
