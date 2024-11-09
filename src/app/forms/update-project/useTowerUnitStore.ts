@@ -5,6 +5,7 @@ import { uniqBy } from 'lodash';
 
 export type TowerDetailType = {
   id: number;
+  towerId?: number;
   projectPhase: number;
   reraId: string;
   towerType: SingleValue<{
