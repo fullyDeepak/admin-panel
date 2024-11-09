@@ -313,12 +313,12 @@ export default function StaticDataForm() {
                 taggedKeywords: [
                   ...projectData.data.data.landlord_keywords.map((ele) => ({
                     party: ele,
-                    keyword_type: 'developer' as const,
+                    keyword_type: 'landlord' as const,
                     removed: false,
                   })),
                   ...projectData.data.data.developer_keywords.map((ele) => ({
                     party: ele,
-                    keyword_type: 'landlord' as const,
+                    keyword_type: 'developer' as const,
                     removed: false,
                   })),
                 ],
