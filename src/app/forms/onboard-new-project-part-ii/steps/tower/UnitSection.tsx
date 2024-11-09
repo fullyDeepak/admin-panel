@@ -314,7 +314,7 @@ export default function UnitSection({
                   <span className='flex-[3]'>Config:</span>
                   <div className='ml-3 flex w-full flex-[5] items-center gap-2'>
                     <select
-                      className='h-9 min-h-9 flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none !pe-1 !pl-1 !pr-5 ps-3 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
+                      className='h-9 min-h-9 flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none pl-1 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
                       defaultValue={unitData.configName || undefined}
                       onChange={(e) =>
                         updateUnitCard(towerId, unitData.id, {
@@ -342,7 +342,7 @@ export default function UnitSection({
                       ))}
                     </select>
                     <select
-                      className='h-9 min-h-9 flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none !pe-1 !pl-1 !pr-5 ps-3 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
+                      className='h-9 min-h-9 flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none pl-1 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
                       defaultValue={unitData.toiletConfig || undefined}
                       onChange={(e) =>
                         updateUnitCard(towerId, unitData.id, {
@@ -360,7 +360,7 @@ export default function UnitSection({
                       ))}
                     </select>
                     <select
-                      className='h-9 min-h-9 flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none !pe-1 !pl-1 !pr-5 ps-3 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
+                      className='h-9 min-h-9 flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none pl-1 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
                       defaultValue={unitData.maidConfig || undefined}
                       onChange={(e) =>
                         updateUnitCard(towerId, unitData.id, {
