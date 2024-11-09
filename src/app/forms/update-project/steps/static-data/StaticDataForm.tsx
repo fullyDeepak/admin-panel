@@ -187,6 +187,7 @@ export default function StaticDataForm() {
                 },
                 towerData: projectData.data.data.towers.map((ele, index) => ({
                   id: index + 1,
+                  towerId: ele.tower_id,
                   displayTowerType:
                     [
                       { label: 'APARTMENT', value: 'APARTMENT' },
