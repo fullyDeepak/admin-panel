@@ -134,7 +134,7 @@ export default function Page() {
               </button>
             )}
           </div>
-          <pre>{final_data}</pre>
+          <pre className='max-h-40 overflow-y-scroll'>{final_data}</pre>
         </div>
       </div>
     </>
