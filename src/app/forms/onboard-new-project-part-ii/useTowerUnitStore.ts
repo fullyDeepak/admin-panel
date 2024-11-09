@@ -42,10 +42,9 @@ export type UnitCardType = {
     value: string;
   }> | null;
   floorNos: string;
-  salableAreaMin: number;
-  salableAreaMax: number;
-  extentMin: number;
-  extentMax: number;
+  salableArea: number;
+  extent: number;
+  parking: number;
   facing: string | null;
   corner: boolean;
   configName: string | null;
@@ -54,6 +53,7 @@ export type UnitCardType = {
   configVerified: boolean;
   unitFloorCount: string | null;
   unitNos: string;
+  doorNoOverride: string;
 };
 
 const INITIAL_STATE: TowerUnitDetailType[] = [
@@ -73,10 +73,9 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
         reraUnitType: null,
         existingUnitType: null,
         floorNos: '',
-        salableAreaMin: 0,
-        salableAreaMax: 0,
-        extentMin: 0,
-        extentMax: 0,
+        salableArea: 0,
+        extent: 0,
+        parking: 0,
         facing: null,
         corner: false,
         configName: null,
@@ -86,6 +85,7 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
         maidConfig: null,
         toiletConfig: null,
         tmUnitType: null,
+        doorNoOverride: '',
       },
     ],
     reraRefTable: [],
@@ -188,10 +188,9 @@ export const useTowerUnitStore = create<Store>()(
             reraUnitType: null,
             existingUnitType: null,
             floorNos: '',
-            salableAreaMin: 0,
-            salableAreaMax: 0,
-            extentMin: 0,
-            extentMax: 0,
+            salableArea: 0,
+            extent: 0,
+            parking: 0,
             facing: '',
             corner: false,
             configName: null,
@@ -201,6 +200,7 @@ export const useTowerUnitStore = create<Store>()(
             maidConfig: null,
             toiletConfig: null,
             tmUnitType: null,
+            doorNoOverride: '',
           });
         }
       }),

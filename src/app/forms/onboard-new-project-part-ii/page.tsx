@@ -14,6 +14,8 @@ export default function Page() {
     setFormSteps,
     currentFormStep: formSteps,
     projectData,
+    isUpdateForm,
+    setIsUpdateForm,
   } = useProjectDataStore();
   const { towerFormData } = useTowerUnitStore();
   return (
@@ -27,6 +29,29 @@ export default function Page() {
         )}
         id='projectTowerForm'
       >
+        <div className='mx-auto flex flex-wrap items-center justify-between gap-5 rounded-full bg-violet-100 p-2 px-6 text-2xl transition-all'>
+          <div className='flex items-center gap-5 transition-all duration-1000'>
+            <label
+              className={cn(
+                'w-[170px] cursor-pointer select-none text-gray-400',
+                !isUpdateForm && 'font-bold text-violet-600'
+              )}
+              onClick={() => setIsUpdateForm(false)}
+            >
+              Onboard Form
+            </label>
+            <div>|</div>
+            <label
+              className={cn(
+                'w-[170px] cursor-pointer select-none text-gray-400',
+                isUpdateForm && 'font-bold text-violet-600'
+              )}
+              onClick={() => setIsUpdateForm(true)}
+            >
+              Update Form
+            </label>
+          </div>
+        </div>
         <StepsUI
           stepValue={formSteps}
           steps={formStepsList}

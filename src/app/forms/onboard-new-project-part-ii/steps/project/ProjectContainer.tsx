@@ -3,11 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import Select, { SingleValue } from 'react-select';
 import useDMVDataStore from '../../useDMVDataStore';
 import { useProjectDataStore } from '../../useProjectDataStore';
-import { NewProjectData } from '@/app/forms/update-project/api_types';
-import {
-  TowerUnitDetailType,
-  useTowerUnitStore,
-} from '../../useTowerUnitStore';
+import ProjectDropdown from './ProjectDropdown';
 
 export default function ProjectContainer() {
   const {
@@ -21,7 +17,7 @@ export default function ProjectContainer() {
     setVillageOptions,
   } = useDMVDataStore();
   const { projectData, updateProjectData } = useProjectDataStore();
-  const { setTowerFormData } = useTowerUnitStore();
+
   const { isLoading: isLoadingDMV } = useQuery({
     queryKey: ['village-project-cleaner-developer-tagger'],
     queryFn: async () => {
@@ -56,21 +52,7 @@ export default function ProjectContainer() {
     staleTime: Infinity,
     refetchOnMount: false,
   });
-  const { data: projectOptions, isLoading: loadingProjects } = useQuery({
-    queryKey: ['projects'],
-    queryFn: async () => {
-      const res = await axiosClient.get<{
-        data: { id: number; project_name: string }[];
-      }>('/projects');
-      console.log(res.data.data);
-      return res.data.data.map((ele) => ({
-        label: `${ele.id}:${ele.project_name}`,
-        value: ele.id,
-      }));
-    },
-    staleTime: Infinity,
-    refetchOnMount: false,
-  });
+
   return (
     <div className='flex flex-col gap-4'>
       {/*  DISTRICT SELECTION */}
@@ -170,49 +152,7 @@ export default function ProjectContainer() {
           isDisabled={Boolean(!projectData.selectedMandal)}
         />
       </label>
-      <label className='flex items-center justify-between gap-5'>
-        <span className='flex-[2] text-base md:text-xl'>Select Project:</span>
-        <Select
-          className='w-full flex-[5]'
-          key={'onBoardedProjects'}
-          options={projectOptions || []}
-          isLoading={loadingProjects}
-          value={projectData.selectedProject}
-          onChange={async (
-            e: SingleValue<{
-              label: string;
-              value: number;
-            }>
-          ) => {
-            if (e) {
-              updateProjectData({
-                selectedProject: e,
-              });
-              const projectData = await axiosClient.get<NewProjectData>(
-                '/onboarding/projects/' + e.value
-              );
-              const towerData: TowerUnitDetailType[] = [];
-              projectData.data.data.towers.map((ele, index) => {
-                towerData.push({
-                  tower_id: ele.tower_id,
-                  towerNameDisplay: ele.tower_name_alias,
-                  towerNameETL: ele.etl_tower_name,
-                  reraTowerId: ele.rera_tower_id,
-                  reraId: ele.rera_id,
-                  gfName: '',
-                  gfUnitCount: '',
-                  unitCards: [],
-                  tmRefTable: [],
-                  reraRefTable: [],
-                  typicalMaxFloor: 0,
-                  typicalUnitCount: '',
-                });
-              });
-              setTowerFormData(towerData);
-            }
-          }}
-        />
-      </label>
+      <ProjectDropdown />
     </div>
   );
 }
