@@ -123,11 +123,8 @@ export default function Page() {
                     },
                   };
                   setFinalData(JSON.stringify(toPost, null, 2));
-                  await axiosClient
-                    .put('/onboarding/update-project', toPost)
-                    .then(() => {
-                      alert('Updated');
-                    });
+                  await axiosClient.put('/onboarding/update-project', toPost);
+                  alert('Updated');
                 }}
               >
                 Submit
