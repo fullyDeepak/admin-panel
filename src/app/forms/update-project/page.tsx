@@ -124,7 +124,7 @@ export default function Page() {
                   };
                   setFinalData(JSON.stringify(toPost, null, 2));
                   await axiosClient
-                    .post('/onboarding/update-project', toPost)
+                    .put('/onboarding/update-project', toPost)
                     .then(() => {
                       alert('Updated');
                     });
