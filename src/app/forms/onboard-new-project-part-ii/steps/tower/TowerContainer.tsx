@@ -98,7 +98,7 @@ export default function TowerContainer() {
             });
             reraRefTable.push({
               type: `${etl.configName} : ${etl.minArea} : ${etl.maxArea} : ${etl.facing || 'N/A'}`,
-              towerId: item.tower_id,
+              unitList: etl.unit_count.toString(),
               unitCount: etl.unit_count.toString(),
               config: etl.configName,
               salableArea: `${etl.minArea} : ${etl.maxArea}`,
@@ -178,7 +178,7 @@ export default function TowerContainer() {
             });
             tmRefTable.push({
               type: `${etl.configName} : ${etl.salable_area} : ${etl.facing || 'N/A'}`,
-              towerId: item.tower_id.toString(),
+              unitList: etl.unit_count.toString(),
               unitCount: etl.unit_count.toString(),
               config: etl.configName?.join(', '),
               salableArea: etl.salable_area.toString(),
