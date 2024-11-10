@@ -4,16 +4,18 @@ import { useQuery } from '@tanstack/react-query';
 import { useProjectDataStore } from '../../useProjectDataStore';
 import {
   TowerUnitDetailType,
+  UnitCardType,
   useTowerUnitStore,
 } from '../../useTowerUnitStore';
 import toast from 'react-hot-toast';
+import { convertArrayToRangeString } from '../../utils';
 
 export interface ProjectData {
   status: string;
   data: {
     tower_id: string;
     tower_name: string;
-    rera_id: any;
+    rera_id: string | null;
     ground_floor_name: string;
     ground_floor_unit_no_max: string;
     ground_floor_unit_no_min: string;
@@ -30,7 +32,7 @@ export interface ProjectData {
       configName?: string;
       floor_list: string[];
       salable_area: number;
-      unit_numbers: string | undefined[];
+      unit_numbers: (string | undefined)[];
     }[];
   }[];
 }
@@ -75,16 +77,38 @@ export default function ProjectDropdown() {
           success: ({ data: res }) => {
             const towerData: TowerUnitDetailType[] = [];
             res.data.map((ele) => {
+              const unitCards: UnitCardType[] = [];
+              ele.tm_unit_ref.map((etlData, idx) => {
+                unitCards.push({
+                  id: idx + 1,
+                  reraUnitType: null,
+                  existingUnitType: null,
+                  floorNos: convertArrayToRangeString(etlData.floor_list),
+                  salableArea: etlData.salable_area,
+                  extent: etlData.extent,
+                  parking: 0,
+                  facing: null,
+                  corner: false,
+                  configName: etlData.configName || null,
+                  configVerified: true,
+                  unitFloorCount: null,
+                  unitNos: etlData.unit_numbers.join(', '),
+                  doorNoOverride: '',
+                  maidConfig: null,
+                  toiletConfig: null,
+                  tmUnitType: null,
+                });
+              });
               towerData.push({
                 tower_id: +ele.tower_id,
                 towerNameDisplay: ele.tower_name,
                 towerNameETL: ele.etl_tower_name,
                 reraTowerId: ele.rera_tower_id,
                 towerType: ele.display_tower_type,
-                reraId: ele.rera_id,
+                reraId: ele.rera_id || '',
                 gfName: ele.ground_floor_name,
                 gfUnitCount: ele.ground_floor_unit_no_max,
-                unitCards: [],
+                unitCards: unitCards,
                 tmRefTable: [],
                 reraRefTable: [],
                 typicalMaxFloor: +ele.max_floor,
