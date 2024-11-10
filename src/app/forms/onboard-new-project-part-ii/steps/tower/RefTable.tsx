@@ -18,13 +18,13 @@ export default function RefTable({ reraRefTable, tmRefTable }: Props) {
   ];
   const tmTableColumns = [
     'Type ID',
-    'Tower ID',
     'Unit Count',
     'Config',
     'Salable Area',
     'Extent',
     'Facing',
     'Floor List',
+    'Unit List',
   ];
 
   return (
@@ -34,7 +34,6 @@ export default function RefTable({ reraRefTable, tmRefTable }: Props) {
         columns={reraTableColumns}
         tableData={reraRefTable.map((item) => [
           item.type,
-          item.towerId,
           item.unitCount,
           item.config,
           item.salableArea,
@@ -47,13 +46,13 @@ export default function RefTable({ reraRefTable, tmRefTable }: Props) {
         columns={tmTableColumns}
         tableData={tmRefTable.map((item) => [
           item.type,
-          item.towerId,
           item.unitCount,
           item.config,
           item.salableArea,
           item.extent,
           item.facing,
           item.floorList,
+          item.unitList,
         ])}
       />
     </div>

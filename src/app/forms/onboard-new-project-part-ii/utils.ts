@@ -8,7 +8,7 @@ export function convertArrayToRangeString(arr: string[]) {
       rangeEnd = numbers[i];
     } else {
       if (rangeStart === rangeEnd) {
-        result.push(`${rangeStart}`);
+        result.push(`${rangeStart === 0 ? 'G' : rangeStart}`);
       } else {
         result.push(`${rangeStart === 0 ? 'G' : rangeStart}-${rangeEnd}`);
       }

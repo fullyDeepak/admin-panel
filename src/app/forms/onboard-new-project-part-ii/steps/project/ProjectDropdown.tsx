@@ -3,12 +3,14 @@ import axiosClient from '@/utils/AxiosClient';
 import { useQuery } from '@tanstack/react-query';
 import { useProjectDataStore } from '../../useProjectDataStore';
 import {
+  RefTableType,
   TowerUnitDetailType,
   UnitCardType,
   useTowerUnitStore,
 } from '../../useTowerUnitStore';
 import toast from 'react-hot-toast';
 import { convertArrayToRangeString } from '../../utils';
+import { uniq } from 'lodash';
 
 export interface ProjectData {
   status: string;
@@ -44,7 +46,6 @@ export default function ProjectDropdown() {
       const res = await axiosClient.get<{
         data: { id: number; project_name: string }[];
       }>('/projects');
-      console.log(res.data.data);
       return res.data.data.map((ele) => ({
         label: `${ele.id}:${ele.project_name}`,
         value: ele.id,
@@ -78,6 +79,61 @@ export default function ProjectDropdown() {
             const towerData: TowerUnitDetailType[] = [];
             res.data.map((ele) => {
               const unitCards: UnitCardType[] = [];
+              const tmUnitRefKey: Record<
+                string,
+                RefTableType & { extent: string }
+              > = {};
+              ele.tm_unit_ref.map((etlData) => {
+                const key = `${etlData.configName || 'NULL'}: ${etlData.salable_area}`;
+                if (key in tmUnitRefKey) {
+                  const existingData = tmUnitRefKey[key];
+                  existingData.type = key;
+                  existingData.config = uniq(
+                    `${existingData.config},${etlData.configName}`.split(',')
+                  ).join(', ');
+                  existingData.unitCount = (
+                    +existingData.unitCount + etlData.unit_numbers.length
+                  ).toString();
+                  existingData.salableArea = uniq(
+                    `${existingData.salableArea},${etlData.salable_area}`.split(
+                      ','
+                    )
+                  ).join(', ');
+                  console.log(
+                    'salArea: ',
+                    uniq(
+                      `${existingData.salableArea},${etlData.salable_area}`.split(
+                        ','
+                      )
+                    ).join(', ')
+                  );
+                  existingData.extent = uniq(
+                    `${existingData.extent},${etlData.extent}`.split(',')
+                  ).join(', ');
+                  existingData.facing = uniq(
+                    `${existingData.facing}, ${Object.values(etlData.facing).join(', ')}`.split(
+                      ', '
+                    )
+                  ).join(', ');
+                  existingData.floorList = `${existingData.floorList}, ${etlData.floor_list.join(', ')}`;
+                  existingData.unitList = `${existingData.unitList}, ${etlData.unit_numbers.join(', ')}`;
+                  tmUnitRefKey[key] = existingData;
+                } else {
+                  console.log({ mainSale: etlData.salable_area });
+                  const newData = {} as RefTableType & { extent: string };
+                  newData.type = key;
+                  newData.config = etlData.configName || 'NULL';
+                  newData.unitCount = etlData.unit_numbers.length.toString();
+                  newData.salableArea = etlData.salable_area.toString();
+                  newData.extent = etlData.extent.toString();
+                  newData.facing = uniq(Object.values(etlData.facing)).join(
+                    ', '
+                  );
+                  newData.floorList = etlData.floor_list.join(', ');
+                  newData.unitList = etlData.unit_numbers.join(', ');
+                  tmUnitRefKey[key] = newData;
+                }
+              });
               ele.tm_unit_ref.map((etlData, idx) => {
                 unitCards.push({
                   id: idx + 1,
@@ -109,7 +165,7 @@ export default function ProjectDropdown() {
                 gfName: ele.ground_floor_name,
                 gfUnitCount: ele.ground_floor_unit_no_max,
                 unitCards: unitCards,
-                tmRefTable: [],
+                tmRefTable: Object.values(tmUnitRefKey),
                 reraRefTable: [],
                 typicalMaxFloor: +ele.max_floor,
                 typicalUnitCount: ele.typical_floor_unit_no_max,

@@ -4,12 +4,12 @@ import { immer } from 'zustand/middleware/immer';
 
 export type RefTableType = {
   type: string;
-  towerId: string;
   unitCount: string;
   config: string;
   salableArea: string;
   facing: string;
   floorList: string;
+  unitList: string;
 };
 
 export type TowerUnitDetailType = {
