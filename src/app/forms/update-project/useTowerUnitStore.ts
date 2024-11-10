@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 import { immer } from 'zustand/middleware/immer';
 import { uniqBy } from 'lodash';
+import { FormEtlUnitConfigType } from '@/types/types';
 
 export type TowerDetailType = {
   id: number;
@@ -21,6 +22,7 @@ export type TowerDetailType = {
   towerNameDisplay: string;
   towerNameETL: string;
   towerDoorNoString: string;
+  etlUnitConfigs: FormEtlUnitConfigType[];
 };
 
 const INITIAL_STATE: TowerDetailType[] = [
@@ -35,6 +37,7 @@ const INITIAL_STATE: TowerDetailType[] = [
     towerNameETL: '',
     towerNameDisplay: '',
     towerDoorNoString: '',
+    etlUnitConfigs: [],
   },
 ];
 
@@ -93,6 +96,19 @@ type Store = {
     _key: 'booking' | 'pricing' | 'display_construction_status',
     _tower_id: string
   ) => void;
+  addEtlUnitConfig: (
+    _towerId: number,
+    _configName: string,
+    _minArea: number,
+    _maxArea: number
+  ) => void;
+  updateEtlUnitConfig: (
+    _towerId: number,
+    _configName: string,
+    _minArea: number,
+    _maxArea: number
+  ) => void;
+  deleteEtlUnitConfig: (_towerId: number, _configName: string) => void;
 };
 
 export const useTowerUnitStore = create<Store>()(
@@ -131,6 +147,7 @@ export const useTowerUnitStore = create<Store>()(
           towerNameDisplay: '',
           towerNameETL: '',
           towerDoorNoString: '',
+          etlUnitConfigs: [],
         });
       }),
 
@@ -213,6 +230,57 @@ export const useTowerUnitStore = create<Store>()(
           ),
         }));
       }
+    },
+    addEtlUnitConfig: (towerId, configName, minArea, maxArea) => {
+      set((state) => ({
+        towerFormData: state.towerFormData.map((data) =>
+          data.id === towerId
+            ? {
+                ...data,
+                etlUnitConfigs: [
+                  ...data.etlUnitConfigs,
+                  { configName, minArea, maxArea },
+                ],
+              }
+            : data
+        ),
+      }));
+    },
+
+    updateEtlUnitConfig: (towerId, configName, minArea, maxArea) => {
+      set((state) => ({
+        towerFormData: state.towerFormData.map((data) =>
+          data.id === towerId
+            ? {
+                ...data,
+                etlUnitConfigs: data.etlUnitConfigs.map((unit) =>
+                  unit.configName === configName
+                    ? {
+                        ...unit,
+                        minArea,
+                        maxArea,
+                      }
+                    : unit
+                ),
+              }
+            : data
+        ),
+      }));
+    },
+
+    deleteEtlUnitConfig: (towerId, configName) => {
+      set((state) => ({
+        towerFormData: state.towerFormData.map((data) =>
+          data.id === towerId
+            ? {
+                ...data,
+                etlUnitConfigs: data.etlUnitConfigs.filter(
+                  (unit) => unit.configName !== configName
+                ),
+              }
+            : data
+        ),
+      }));
     },
   }))
 );

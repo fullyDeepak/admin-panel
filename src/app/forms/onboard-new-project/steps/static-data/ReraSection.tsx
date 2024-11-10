@@ -6,7 +6,7 @@ import { SingleValue } from 'react-select';
 // @ts-expect-error  third party
 import Select from 'react-select-virtualized';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
-import { UnitCardType, useTowerUnitStore } from '../../useTowerUnitStore';
+import { useTowerUnitStore } from '../../useTowerUnitStore';
 import { useQuery } from '@tanstack/react-query';
 
 type Props = {
@@ -139,28 +139,9 @@ export default function ReraSection({
       unitMin = '1';
       unitMax = `${item.typical_floor_max_unit}`;
       reraTowerId = item.tower_id;
-      const unitCards: UnitCardType[] = [];
       reraTotalLandAreaObj[item.project_id] = item.total_land_area_sqmt;
       reraCalcNetLandAreaObj[item.project_id] =
         item.calculated_net_land_area_sqmt;
-      item.etl_unit_configs.map((etl, idx) => {
-        unitCards.push({
-          id: idx + 1,
-          reraUnitType: null,
-          existingUnitType: null,
-          floorNos: '',
-          salableAreaMin: etl.minArea,
-          salableAreaMax: etl.maxArea,
-          extentMin: 0,
-          extentMax: 0,
-          facing: etl.facing?.substring(0, 1) || null,
-          corner: false,
-          configName: etl.configName,
-          configVerified: true,
-          unitFloorCount: null,
-          unitNos: '',
-        });
-      });
 
       return {
         id: index + 1,
@@ -189,7 +170,6 @@ export default function ReraSection({
         deleteFullUnitNos: '',
         exceptionUnitNos: '',
         towerDoorNoString: '',
-        unitCards: unitCards,
       };
     });
     console.log({ reraTotalLandAreaObj, reraCalcNetLandAreaObj });

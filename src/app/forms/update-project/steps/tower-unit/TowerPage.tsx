@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { CirclePlus, Minus, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useTowerUnitStore } from '../../useTowerUnitStore';
+import ETLTagConfiguration from './ETLTagConfiguration';
 
 export default function TowerPage() {
   const {
@@ -22,6 +23,9 @@ export default function TowerPage() {
     setTowerFormData,
     // deleteUnitCard,
     duplicateTowerCard,
+    addEtlUnitConfig,
+    deleteEtlUnitConfig,
+    updateEtlUnitConfig,
   } = useTowerUnitStore();
   const [towerCardCount, setTowerCardCount] = useState<number>(0);
 
@@ -76,7 +80,7 @@ export default function TowerPage() {
 
       <div className='flex gap-2'>
         <div className='flex-[2]'>
-          {towerFormData.map((tower) => (
+          {towerFormData.map((tower, idx) => (
             <div
               className='tower-card-container relative z-0 flex flex-col transition-all duration-1000'
               key={tower.id}
@@ -235,6 +239,15 @@ export default function TowerPage() {
                     }
                   />
                 </label>
+                <ETLTagConfiguration
+                  towerData={tower}
+                  addEtlUnitConfig={addEtlUnitConfig}
+                  deleteEtlUnitConfig={deleteEtlUnitConfig}
+                  updateETLUnitConfig={updateEtlUnitConfig}
+                  towerFormData={towerFormData}
+                  updateTowerFormData={updateTowerFormData}
+                  showCopyButton={idx === 0}
+                />
                 <div className='absolute -bottom-6 -left-5 w-full'>
                   <button
                     type='button'

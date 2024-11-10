@@ -4,12 +4,11 @@ import Select from 'react-select';
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { nanoid } from 'nanoid';
 import { BiCopy } from 'react-icons/bi';
-// import UnitSection from './UnitSection';
 import {
   TowerUnitDetailType,
   useTowerUnitStore,
 } from '../../useTowerUnitStore';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { CirclePlus, Minus, Plus, Trash2 } from 'lucide-react';
 import TanstackReactTable from '@/components/tables/TanstackReactTable';
@@ -60,16 +59,11 @@ const tmRefTableColumns: ColumnDef<object, any>[] = [
 
 export default function TowerPage() {
   const {
-    // copyUnitCard,
-    // addNewUnitCard,
-    // updateUnitCard,
     updateTowerFormData,
     towerFormData,
     addNewTowerCard,
     deleteTowerCard,
     setTowerFormData,
-    // deleteUnitCard,
-    setExistingUnitTypeOption,
     hmRefTable,
     duplicateTowerCard,
     tmRefTable,
@@ -84,21 +78,6 @@ export default function TowerPage() {
   } = useTowerUnitStore();
   const [towerCardCount, setTowerCardCount] = useState<number>(0);
   const { onboardingData } = useOnboardingDataStore();
-  useEffect(() => {
-    const options: {
-      label: string;
-      value: string;
-    }[] = [];
-    towerFormData.map((tower) => {
-      tower.unitCards.map((unitCard) => {
-        options.push({
-          label: `T${tower.id}:U${unitCard.id}`,
-          value: `T${tower.id}:U${unitCard.id}`,
-        });
-      });
-    });
-    setExistingUnitTypeOption(options);
-  }, [towerFormData]);
 
   async function fetchRefTables() {
     const selectedReraProjectIds = onboardingData.selectedReraProjects.map(
@@ -244,7 +223,6 @@ export default function TowerPage() {
               towerNameDisplay: item.tower_name,
               towerDoorNoString:
                 item.pattern.replace('%', '') + item.tower_name + '/{F}{UU}',
-              unitCards: [],
               etlUnitConfigs: [],
             });
           });

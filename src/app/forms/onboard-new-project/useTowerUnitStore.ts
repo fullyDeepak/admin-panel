@@ -21,31 +21,7 @@ export type TowerUnitDetailType = {
   towerNameDisplay: string;
   towerNameETL: string;
   towerDoorNoString: string;
-  unitCards: UnitCardType[];
   etlUnitConfigs: FormEtlUnitConfigType[];
-};
-
-export type UnitCardType = {
-  id: number;
-  reraUnitType: SingleValue<{
-    label: string;
-    value: string;
-  }> | null;
-  existingUnitType: SingleValue<{
-    label: string;
-    value: string;
-  }> | null;
-  floorNos: string;
-  salableAreaMin: number;
-  salableAreaMax: number;
-  extentMin: number;
-  extentMax: number;
-  facing: string | null;
-  corner: boolean;
-  configName: string | null;
-  configVerified: boolean;
-  unitFloorCount: string | null;
-  unitNos: string;
 };
 
 const INITIAL_STATE: TowerUnitDetailType[] = [
@@ -60,24 +36,6 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
     towerNameETL: '',
     towerNameDisplay: '',
     towerDoorNoString: '',
-    unitCards: [
-      {
-        id: 1,
-        reraUnitType: null,
-        existingUnitType: null,
-        floorNos: '',
-        salableAreaMin: 0,
-        salableAreaMax: 0,
-        extentMin: 0,
-        extentMax: 0,
-        facing: null,
-        corner: false,
-        configName: null,
-        configVerified: true,
-        unitFloorCount: null,
-        unitNos: '',
-      },
-    ],
     etlUnitConfigs: [],
   },
 ];
@@ -125,28 +83,16 @@ type Store = {
     label: string;
     value: string;
   }>[];
-  setExistingUnitTypeOption: (
-    _data: SingleValue<{
-      label: string;
-      value: string;
-    }>[]
-  ) => void;
+
   updateTowerFormData: (
     _towerCardId: number,
     _newDetails: Partial<TowerUnitDetailType>
   ) => void;
-  updateUnitCard: (
-    _towerCardId: number,
-    _unitCardId: number,
-    _newDetails: Partial<UnitCardType>
-  ) => void;
+
   addNewTowerCard: () => void;
   duplicateTowerCard: (_towerCardId: number) => void;
   setTowerFormData: (_data: TowerUnitDetailType[]) => void;
   deleteTowerCard: (_id: number) => void;
-  copyUnitCard: (_towerCardId: number, _newDetails: UnitCardType) => void;
-  addNewUnitCard: (_towerCardId: number) => void;
-  deleteUnitCard: (_towerCardId: number, _unitCardId: number) => void;
   resetTowerUnitStore: () => void;
   updateProjectStatus: (
     _key: 'booking' | 'pricing' | 'display_construction_status',
@@ -203,7 +149,7 @@ export const useTowerUnitStore = create<Store>()(
       value: string;
     }>[],
     updateTMRefTable: (data) => set({ tmRefTable: data }),
-    setExistingUnitTypeOption: (data) => set({ existingUnitTypeOption: data }),
+
     updateTowerFormData: (id, newDetails) =>
       set((prev) => {
         const idx = prev.towerFormData.findIndex((data) => data.id === id);
@@ -228,7 +174,6 @@ export const useTowerUnitStore = create<Store>()(
           towerNameDisplay: '',
           towerNameETL: '',
           towerDoorNoString: '',
-          unitCards: [],
           etlUnitConfigs: [],
         });
       }),
@@ -255,77 +200,6 @@ export const useTowerUnitStore = create<Store>()(
       }),
 
     setTowerFormData: (data) => set({ towerFormData: data }),
-    updateUnitCard: (towerCardId, unitCardId, newDetails) =>
-      set((prev) => {
-        const towerIdx = prev.towerFormData.findIndex(
-          (data) => data.id === towerCardId
-        );
-        if (towerIdx !== -1) {
-          const unitCardIdx = prev.towerFormData[towerIdx].unitCards.findIndex(
-            (unitCard) => unitCard.id === unitCardId
-          );
-          if (unitCardIdx !== -1) {
-            prev.towerFormData[towerIdx].unitCards[unitCardIdx] = {
-              ...prev.towerFormData[towerIdx].unitCards[unitCardIdx],
-              ...newDetails,
-            };
-          }
-        }
-      }),
-
-    copyUnitCard: (towerCardId, newDetails) =>
-      set((prev) => {
-        const towerIdx = prev.towerFormData.findIndex(
-          (data) => data.id === towerCardId
-        );
-        if (towerIdx !== -1) {
-          prev.towerFormData[towerIdx].unitCards.push({
-            ...newDetails,
-          });
-        }
-      }),
-
-    addNewUnitCard: (towerCardId) =>
-      set((prev) => {
-        const towerIdx = prev.towerFormData.findIndex(
-          (data) => data.id === towerCardId
-        );
-        if (towerIdx !== -1) {
-          prev.towerFormData[towerIdx].unitCards.push({
-            id: prev.towerFormData[towerIdx].unitCards.length + 1,
-            reraUnitType: null,
-            existingUnitType: null,
-            floorNos: '',
-            salableAreaMin: 0,
-            salableAreaMax: 0,
-            extentMin: 0,
-            extentMax: 0,
-            facing: '',
-            corner: false,
-            configName: null,
-            configVerified: true,
-            unitFloorCount: null,
-            unitNos: '',
-          });
-        }
-      }),
-
-    deleteUnitCard: (towerCardId, unitCardId) =>
-      set((prev) => {
-        const towerIdx = prev.towerFormData.findIndex(
-          (data) => data.id === towerCardId
-        );
-        if (towerIdx !== -1) {
-          const unitCardIdx = prev.towerFormData[towerIdx].unitCards.findIndex(
-            (unitCard) => unitCard.id === unitCardId
-          );
-          if (unitCardIdx !== -1) {
-            prev.towerFormData[towerIdx].unitCards = prev.towerFormData[
-              towerIdx
-            ].unitCards.filter((unitCard) => unitCard.id !== unitCardId);
-          }
-        }
-      }),
 
     resetTowerUnitStore: () =>
       set({
