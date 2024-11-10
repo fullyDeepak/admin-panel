@@ -18,6 +18,7 @@ export type TowerUnitDetailType = {
   reraTowerId: string;
   towerNameDisplay: string;
   towerNameETL: string;
+  towerType: string;
   typicalMaxFloor: number;
   typicalUnitCount: string;
   gfName: string;
@@ -63,6 +64,7 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
     reraTowerId: '',
     towerNameETL: '',
     towerNameDisplay: '',
+    towerType: '',
     typicalMaxFloor: 0,
     typicalUnitCount: '',
     gfName: '',

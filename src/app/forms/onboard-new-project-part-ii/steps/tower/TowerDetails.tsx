@@ -1,26 +1,7 @@
-import {
-  RefTableType,
-  TowerUnitDetailType,
-  UnitCardType,
-} from '../../useTowerUnitStore';
+import { TowerUnitDetailType } from '../../useTowerUnitStore';
 
 type Props = {
-  tower: {
-    tower_id: number;
-    reraId: string;
-    reraTowerId: string;
-    towerNameDisplay: string;
-    towerNameETL: string;
-    typicalMaxFloor: number;
-    typicalUnitCount: string;
-    gfName: string;
-    gfUnitCount: string;
-    unitCards: UnitCardType[];
-    reraRefTable: RefTableType[];
-    tmRefTable: (RefTableType & {
-      extent: string;
-    })[];
-  };
+  tower: TowerUnitDetailType;
   updateTowerFormData: (
     _towerCardId: number,
     _newDetails: Partial<TowerUnitDetailType>
@@ -48,7 +29,7 @@ export default function TowerDetails({ tower, updateTowerFormData }: Props) {
         />
         <span className='fl'>Tower Type:</span>
         <span className='flex h-6 items-center rounded-md border-0 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
-          {tower.reraId ? `${tower.reraId} : ${tower.reraTowerId}` : 'N/A'}
+          {tower.towerType ? tower.towerType : 'N/A'}
         </span>
         <span>Typical Floor:</span>
         <div className='flex items-center gap-2'>
