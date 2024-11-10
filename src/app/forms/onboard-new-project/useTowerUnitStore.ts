@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 import { immer } from 'zustand/middleware/immer';
 import { uniqBy } from 'lodash';
+import { FormEtlUnitConfigType } from '@/types/types';
 
 export type TowerUnitDetailType = {
   id: number;
@@ -21,6 +22,7 @@ export type TowerUnitDetailType = {
   towerNameETL: string;
   towerDoorNoString: string;
   unitCards: UnitCardType[];
+  etlUnitConfigs: FormEtlUnitConfigType[];
 };
 
 export type UnitCardType = {
@@ -76,6 +78,7 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
         unitNos: '',
       },
     ],
+    etlUnitConfigs: [],
   },
 ];
 export type HmRefTable = {
@@ -161,6 +164,19 @@ type Store = {
     _key: 'booking' | 'pricing' | 'display_construction_status',
     _tower_id: string
   ) => void;
+  addEtlUnitConfig: (
+    _towerId: number,
+    _configName: string,
+    _minArea: number,
+    _maxArea: number
+  ) => void;
+  updateEtlUnitConfig: (
+    _towerId: number,
+    _configName: string,
+    _minArea: number,
+    _maxArea: number
+  ) => void;
+  deleteEtlUnitConfig: (_towerId: number, _configName: string) => void;
 };
 
 export const useTowerUnitStore = create<Store>()(
@@ -213,6 +229,7 @@ export const useTowerUnitStore = create<Store>()(
           towerNameETL: '',
           towerDoorNoString: '',
           unitCards: [],
+          etlUnitConfigs: [],
         });
       }),
 
@@ -229,12 +246,14 @@ export const useTowerUnitStore = create<Store>()(
           prev.towerFormData.push(newTowerCard);
         }
       }),
+
     deleteTowerCard: (id) =>
       set((prev) => {
         prev.towerFormData = prev.towerFormData.filter(
           (data) => data.id !== id
         );
       }),
+
     setTowerFormData: (data) => set({ towerFormData: data }),
     updateUnitCard: (towerCardId, unitCardId, newDetails) =>
       set((prev) => {
@@ -253,6 +272,7 @@ export const useTowerUnitStore = create<Store>()(
           }
         }
       }),
+
     copyUnitCard: (towerCardId, newDetails) =>
       set((prev) => {
         const towerIdx = prev.towerFormData.findIndex(
@@ -264,6 +284,7 @@ export const useTowerUnitStore = create<Store>()(
           });
         }
       }),
+
     addNewUnitCard: (towerCardId) =>
       set((prev) => {
         const towerIdx = prev.towerFormData.findIndex(
@@ -288,6 +309,7 @@ export const useTowerUnitStore = create<Store>()(
           });
         }
       }),
+
     deleteUnitCard: (towerCardId, unitCardId) =>
       set((prev) => {
         const towerIdx = prev.towerFormData.findIndex(
@@ -304,6 +326,7 @@ export const useTowerUnitStore = create<Store>()(
           }
         }
       }),
+
     resetTowerUnitStore: () =>
       set({
         towerFormData: INITIAL_STATE,
@@ -311,6 +334,7 @@ export const useTowerUnitStore = create<Store>()(
         tmRefTable: [],
         existingUnitTypeOption: [],
       }),
+
     updateProjectStatus: (key, newData) => {
       if (key === 'booking') {
         set((state) => ({
@@ -344,6 +368,7 @@ export const useTowerUnitStore = create<Store>()(
         }));
       }
     },
+
     deleteProjectStatusData: (key, tower_id) => {
       if (key === 'booking') {
         set((state) => ({
@@ -364,6 +389,58 @@ export const useTowerUnitStore = create<Store>()(
           ),
         }));
       }
+    },
+
+    addEtlUnitConfig: (towerId, configName, minArea, maxArea) => {
+      set((state) => ({
+        towerFormData: state.towerFormData.map((data) =>
+          data.id === towerId
+            ? {
+                ...data,
+                etlUnitConfigs: [
+                  ...data.etlUnitConfigs,
+                  { configName, minArea, maxArea },
+                ],
+              }
+            : data
+        ),
+      }));
+    },
+
+    updateEtlUnitConfig: (towerId, configName, minArea, maxArea) => {
+      set((state) => ({
+        towerFormData: state.towerFormData.map((data) =>
+          data.id === towerId
+            ? {
+                ...data,
+                etlUnitConfigs: data.etlUnitConfigs.map((unit) =>
+                  unit.configName === configName
+                    ? {
+                        ...unit,
+                        minArea,
+                        maxArea,
+                      }
+                    : unit
+                ),
+              }
+            : data
+        ),
+      }));
+    },
+
+    deleteEtlUnitConfig: (towerId, configName) => {
+      set((state) => ({
+        towerFormData: state.towerFormData.map((data) =>
+          data.id === towerId
+            ? {
+                ...data,
+                etlUnitConfigs: data.etlUnitConfigs.filter(
+                  (unit) => unit.configName !== configName
+                ),
+              }
+            : data
+        ),
+      }));
     },
   }))
 );

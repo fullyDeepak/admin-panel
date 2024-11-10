@@ -21,6 +21,7 @@ import {
   PiCardsThreeDuotone,
   PiMicrosoftExcelLogoDuotone,
 } from 'react-icons/pi';
+import ETLTagConfiguration from './ETLTagConfiguration';
 
 const hmRefTableColumns: ColumnDef<object, any>[] = [
   {
@@ -77,6 +78,9 @@ export default function TowerPage() {
     toggleRefTable,
     showHMRefTable,
     showTMRefTable,
+    addEtlUnitConfig,
+    deleteEtlUnitConfig,
+    updateEtlUnitConfig,
   } = useTowerUnitStore();
   const [towerCardCount, setTowerCardCount] = useState<number>(0);
   const { onboardingData } = useOnboardingDataStore();
@@ -241,6 +245,7 @@ export default function TowerPage() {
               towerDoorNoString:
                 item.pattern.replace('%', '') + item.tower_name + '/{F}{UU}',
               unitCards: [],
+              etlUnitConfigs: [],
             });
           });
 
@@ -346,7 +351,7 @@ export default function TowerPage() {
         )}
 
         <div className='flex-[2]'>
-          {towerFormData.map((tower) => (
+          {towerFormData.map((tower, idx) => (
             <div
               className='tower-card-container relative z-0 flex flex-col transition-all duration-1000'
               key={tower.id}
@@ -516,14 +521,15 @@ export default function TowerPage() {
                     <BiCopy size={30} /> <span>Duplicate</span>
                   </button>
                 </div>
-                {/* <UnitSection
-                  unitCards={tower.unitCards}
-                  updateUnitCard={updateUnitCard}
-                  towerId={tower.id}
-                  copyUnitCard={copyUnitCard}
-                  addNewUnitCard={addNewUnitCard}
-                  deleteUnitCard={deleteUnitCard}
-                /> */}
+                <ETLTagConfiguration
+                  towerData={tower}
+                  addEtlUnitConfig={addEtlUnitConfig}
+                  deleteEtlUnitConfig={deleteEtlUnitConfig}
+                  updateETLUnitConfig={updateEtlUnitConfig}
+                  towerFormData={towerFormData}
+                  updateTowerFormData={updateTowerFormData}
+                  showCopyButton={idx === 0}
+                />
               </div>
             </div>
           ))}
