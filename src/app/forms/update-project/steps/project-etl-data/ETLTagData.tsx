@@ -9,6 +9,8 @@ import { FaArrowLeft, FaArrowRight, FaRegCopy } from 'react-icons/fa';
 import { MdContentPaste } from 'react-icons/md';
 import Select, { SingleValue } from 'react-select';
 import useETLDataStore from '../../useETLDataStore';
+import { useOnboardingDataStore } from '../../useOnboardingDataStore';
+import SimpleTable from '@/components/tables/SimpleTable';
 
 interface ETLTagDataType {
   showHeading?: boolean;
@@ -19,6 +21,7 @@ export default function ETLTagData({
   isUpdateForm,
   showHeading = true,
 }: ETLTagDataType) {
+  const { onboardingData } = useOnboardingDataStore();
   const {
     addProjectETLTagCard: addProjectETLCard,
     deleteProjectETLTagCard: deleteProjectETLCard,
@@ -54,6 +57,30 @@ export default function ETLTagData({
       }
     },
     staleTime: Infinity,
+  });
+  const { data: patternRecommendations } = useQuery({
+    queryKey: ['pattern-recommendations', onboardingData.project_id],
+    queryFn: async () => {
+      if (!onboardingData.project_id) return [];
+      const res = await axiosClient.get<{
+        data: {
+          floor: string | null;
+          unit_number: string | null;
+          flat: string | null;
+          facing: string | null;
+          flat_pattern: string | null;
+        }[];
+      }>('/onboarding/pattern-recommendations', {
+        params: {
+          project_id: onboardingData.project_id,
+          onboarded: true,
+        },
+      });
+      return res.data.data;
+    },
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
   const docIdPattern: RegExp =
     /^(100\d|10[1-9]\d|1[1-9]\d{2}|[2-9]\d{3})-(19[0-9][0-9]|2[0][0-9]{2})-([1-9]\d{1,5}|[1-9])$/gm;
@@ -294,14 +321,14 @@ export default function ETLTagData({
                 ))}
             </div>
           </div>
-          {/* <SimpleTable
+          <SimpleTable
             columns={['floor', 'unit_number', 'flat', 'facing', 'flat_pattern']}
             tableData={
               patternRecommendations?.map((ele) =>
                 Object.values(ele).map((ele) => (ele ? ele : 'N/A'))
               ) || []
             }
-          /> */}
+          />
           <div className='flex flex-wrap items-center justify-between gap-5'>
             <span className='flex flex-[2] items-center'>
               <span>Doc ID:</span>
