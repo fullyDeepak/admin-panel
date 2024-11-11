@@ -57,6 +57,21 @@ const tmRefTableColumns: ColumnDef<object, any>[] = [
   },
 ];
 
+const saRefTableColumns: ColumnDef<object, any>[] = [
+  {
+    accessorKey: 'salable_area',
+    header: 'Salable Area',
+    cell: ({ row }) => (
+      <p className='w-[150px]'>{row.getValue('salable_area')}</p>
+    ),
+  },
+  {
+    header: 'Freq',
+    accessorKey: 'count',
+    cell: ({ row }) => <p className='w-[50px]'>{row.getValue('count')}</p>,
+  },
+];
+
 export default function TowerPage() {
   const {
     updateTowerFormData,
@@ -74,6 +89,8 @@ export default function TowerPage() {
     showTMRefTable,
     addEtlUnitConfig,
     deleteEtlUnitConfig,
+    saRefTable,
+    updateSARefTable,
     updateEtlUnitConfig,
   } = useTowerUnitStore();
   const [towerCardCount, setTowerCardCount] = useState<number>(0);
@@ -93,12 +110,18 @@ export default function TowerPage() {
     }
     const res = axiosClient.get<{
       data: {
-        apt_name: string;
-        unit_type: string;
-        count: string;
-        floors: number[];
-        unit_numbers: number[];
-      }[];
+        name_freq: {
+          apt_name: string;
+          unit_type: string;
+          count: string;
+          floors: number[];
+          unit_numbers: number[];
+        }[];
+        salable_area_freq: {
+          salable_area: number;
+          count: string;
+        }[];
+      };
     }>('/forms/tmReferenceTable', {
       params: { temp_id: onboardingData.selectedTempProject?.value },
     });
@@ -106,8 +129,8 @@ export default function TowerPage() {
       res,
       {
         loading: 'Fetching TM Ref Table...',
-        success: (data) => {
-          const tableData = data.data.data.map((item) => ({
+        success: ({ data }) => {
+          const tableData = data.data.name_freq.map((item) => ({
             apt_name: item.apt_name,
             unit_type: item.unit_type,
             freq: item.count,
@@ -125,6 +148,7 @@ export default function TowerPage() {
             }
             return 0;
           });
+          updateSARefTable(data.data.salable_area_freq);
           updateTMRefTable(tableData);
           return 'TM Ref Table fetched with ' + tableData.length + ' entries';
         },
@@ -314,17 +338,31 @@ export default function TowerPage() {
 
       <div className='flex gap-2'>
         {showTMRefTable && tmRefTable && tmRefTable.length > 0 && (
-          <div className='flex- sticky top-1 max-h-[99dvh] overflow-x-auto overflow-y-auto rounded-lg border-2'>
+          <div className='sticky top-1 max-h-[99dvh] rounded-lg border-2'>
             <p className='mt-2 text-center text-2xl font-semibold'>
-              TM Ref Table
+              TM Ref Tables
             </p>
-            <TanstackReactTable
-              data={tmRefTable}
-              columns={tmRefTableColumns}
-              showPagination={false}
-              enableSearch={false}
-              showAllRows={true}
-            />
+            <div className='flex max-h-[98dvh] flex-col'>
+              <div className='max-h-[40dvh] overflow-y-auto'>
+                <TanstackReactTable
+                  data={saRefTable}
+                  columns={saRefTableColumns}
+                  showPagination={false}
+                  enableSearch={false}
+                  showAllRows={true}
+                />
+              </div>
+              <hr />
+              <div className='max-h-[50dvh] overflow-y-auto'>
+                <TanstackReactTable
+                  data={tmRefTable}
+                  columns={tmRefTableColumns}
+                  showPagination={false}
+                  enableSearch={false}
+                  showAllRows={true}
+                />
+              </div>
+            </div>
           </div>
         )}
 

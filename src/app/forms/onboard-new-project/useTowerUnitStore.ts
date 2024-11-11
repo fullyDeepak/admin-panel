@@ -36,7 +36,23 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
     towerNameETL: '',
     towerNameDisplay: '',
     towerDoorNoString: '',
-    etlUnitConfigs: [],
+    etlUnitConfigs: [
+      {
+        configName: '1BHK',
+        minArea: 500,
+        maxArea: 800,
+      },
+      {
+        configName: '2BHK',
+        minArea: 800,
+        maxArea: 1300,
+      },
+      {
+        configName: '3BHK',
+        minArea: 1300,
+        maxArea: 2500,
+      },
+    ],
   },
 ];
 export type HmRefTable = {
@@ -74,11 +90,21 @@ type Store = {
   }[];
   hmRefTable: HmRefTable[];
   tmRefTable: TMRefTable[];
+  saRefTable: {
+    salable_area: number;
+    count: string;
+  }[];
   showHMRefTable: boolean;
   showTMRefTable: boolean;
   toggleRefTable: (_key: 'hm' | 'tm') => void;
   updateHMRefTable: (_data: HmRefTable[]) => void;
   updateTMRefTable: (_data: TMRefTable[]) => void;
+  updateSARefTable: (
+    _data: {
+      salable_area: number;
+      count: string;
+    }[]
+  ) => void;
   existingUnitTypeOption: SingleValue<{
     label: string;
     value: string;
@@ -133,6 +159,10 @@ export const useTowerUnitStore = create<Store>()(
     projectConstructionStatus: [] as Store['projectConstructionStatus'],
     hmRefTable: [] as HmRefTable[],
     tmRefTable: [] as TMRefTable[],
+    saRefTable: [] as {
+      salable_area: number;
+      count: string;
+    }[],
     showHMRefTable: true as boolean,
     showTMRefTable: true as boolean,
     toggleRefTable: (key) =>
@@ -149,6 +179,8 @@ export const useTowerUnitStore = create<Store>()(
       value: string;
     }>[],
     updateTMRefTable: (data) => set({ tmRefTable: data }),
+
+    updateSARefTable: (data) => set({ saRefTable: data }),
 
     updateTowerFormData: (id, newDetails) =>
       set((prev) => {
