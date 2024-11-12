@@ -207,7 +207,7 @@ export default function TowerPage() {
 
   async function fetchHMCards() {
     if (onboardingData.coreDoorNumberStrings.length === 0) {
-      toast.error("HM data won't be fetched without Core Door Numbers.");
+      toast.error("Can't be fetch HM data without Core Door Numbers.");
       return null;
     }
 
@@ -234,14 +234,18 @@ export default function TowerPage() {
         loading: 'Fetching HM Tower Cards...',
         success: ({ data }) => {
           const towerCardData: TowerUnitDetailType[] = [];
-          data.data.forEach((item, idx) => {
+          const towerType = towerFormData[0].towerType;
+          const displayTowerType = towerFormData[0].displayTowerType;
+          let nextId = Math.max(...towerFormData.map((item) => item.id));
+          data.data.forEach((item) => {
+            nextId++;
             towerCardData.push({
-              id: idx + 1,
+              id: nextId,
               projectPhase: 1,
               reraId: '',
-              towerType: null,
+              towerType: towerType,
               singleUnit: false,
-              displayTowerType: null,
+              displayTowerType: displayTowerType,
               reraTowerId: '',
               towerNameETL: item.tower_name,
               towerNameDisplay: item.tower_name,
