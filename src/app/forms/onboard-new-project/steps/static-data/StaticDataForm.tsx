@@ -538,18 +538,21 @@ export default function StaticDataForm() {
             const towerIds = towerFormData.map((item) => item.id);
             if (towerIds.length > 0) {
               if (e?.value.includes('APARTMENT')) {
-                updateTowerFormData(1, {
-                  towerType: {
-                    label: 'Apartment',
-                    value: 'apartment',
-                  },
-                  displayTowerType: {
-                    label: 'APARTMENT',
-                    value: 'APARTMENT',
-                  },
+                towerIds.forEach((id) => {
+                  updateTowerFormData(id, {
+                    towerType: {
+                      label: 'Apartment',
+                      value: 'apartment',
+                    },
+                    displayTowerType: {
+                      label: 'APARTMENT',
+                      value: 'APARTMENT',
+                    },
+                  });
                 });
               } else if (e?.value.includes('VILLA')) {
-                updateTowerFormData(1, {
+                towerIds.forEach((id) => {
+                updateTowerFormData(id, {
                   towerType: {
                     label: 'Villa',
                     value: 'villa',
@@ -559,14 +562,16 @@ export default function StaticDataForm() {
                     value: 'VILLA',
                   },
                 });
+              })
               } else if (e?.value.includes('MIXED')) {
-                updateTowerFormData(1, {
+                towerIds.forEach((id) => {
+                updateTowerFormData(id, {
                   towerType: {
                     label: 'Mixed',
                     value: 'mixed',
                   },
                   displayTowerType: null,
-                });
+                });})
               }
             }
           }}
