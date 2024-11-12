@@ -9,34 +9,70 @@ import {
   useTowerUnitStore,
 } from '../../useTowerUnitStore';
 import toast from 'react-hot-toast';
-import { convertArrayToRangeString } from '../../utils';
 import { uniq } from 'lodash';
 
 export interface ProjectData {
   status: string;
   data: {
-    tower_id: string;
-    tower_name: string;
-    rera_id: string | null;
-    ground_floor_name: string;
-    ground_floor_unit_no_max: string;
-    ground_floor_unit_no_min: string;
-    typical_floor_unit_no_min: string;
-    typical_floor_unit_no_max: string;
-    min_floor: string;
-    max_floor: string;
-    rera_tower_id: any;
-    etl_tower_name: string;
-    display_tower_type: string;
-    tm_unit_ref: {
-      extent: number;
-      facing: Record<string, string>;
-      configName?: string;
-      floor_list: string[];
-      salable_area: number;
-      unit_numbers: (string | undefined)[];
+    tmData: {
+      tower_id: string;
+      tower_name: string;
+      rera_id: string | null;
+      ground_floor_name: string;
+      ground_floor_unit_no_max: string;
+      ground_floor_unit_no_min: string;
+      typical_floor_unit_no_min: string;
+      typical_floor_unit_no_max: string;
+      min_floor: string;
+      max_floor: string;
+      rera_tower_id: any;
+      etl_tower_name: string;
+      display_tower_type: string;
+      tm_unit_ref: {
+        extent: number;
+        facing: Record<string, string>;
+        configName?: string;
+        floor_list: string[];
+        salable_area: number;
+        unit_numbers: (string | undefined)[];
+      }[];
     }[];
-  }[];
+    unitData: {
+      tower_id: string;
+      tower_name: string;
+      rera_id: string | null;
+      ground_floor_name: string;
+      ground_floor_unit_no_max: string;
+      ground_floor_unit_no_min: string;
+      typical_floor_unit_no_min: string;
+      typical_floor_unit_no_max: string;
+      min_floor: string;
+      max_floor: string;
+      rera_tower_id: any;
+      etl_tower_name: string;
+      display_tower_type: string;
+      unit_type_json: {
+        unit_type_id: string;
+        tower_id: number;
+        rera_type: string | null;
+        tower_type: string;
+        unit_type: string;
+        saleable_area: number;
+        parking: number | null;
+        extent: number;
+        config: string;
+        confident: boolean;
+        wc_count: string | null;
+        other_features: any[];
+        unit_floors: number;
+        door_no_override: string | null;
+        type_floors: string;
+        type_units: string;
+        facing: string;
+        is_corner: boolean;
+      }[];
+    }[];
+  };
 }
 
 export default function ProjectDropdown() {
@@ -77,7 +113,7 @@ export default function ProjectDropdown() {
           loading: "Fetching Project's Towers...",
           success: ({ data: res }) => {
             const towerData: TowerUnitDetailType[] = [];
-            res.data.map((ele) => {
+            res.data.tmData.map((ele) => {
               const unitCards: UnitCardType[] = [];
               const tmUnitRefKey: Record<
                 string,
@@ -134,22 +170,27 @@ export default function ProjectDropdown() {
                   tmUnitRefKey[key] = newData;
                 }
               });
-              ele.tm_unit_ref.map((etlData, idx) => {
+
+              const unitData = res.data.unitData.find((temp) => {
+                return temp.tower_id == ele.tower_id;
+              });
+
+              unitData?.unit_type_json.map((etlData, idx) => {
                 unitCards.push({
                   id: idx + 1,
                   reraUnitType: null,
                   existingUnitType: null,
-                  floorNos: convertArrayToRangeString(etlData.floor_list),
-                  salableArea: etlData.salable_area,
+                  floorNos: etlData.type_floors,
+                  salableArea: etlData.saleable_area,
                   extent: etlData.extent,
-                  parking: 0,
-                  facing: null,
-                  corner: false,
-                  configName: etlData.configName || null,
+                  parking: etlData.parking || 0,
+                  facing: etlData.facing,
+                  corner: etlData.is_corner,
+                  configName: etlData.config || null,
                   configVerified: true,
-                  unitFloorCount: null,
-                  unitNos: etlData.unit_numbers.join(', '),
-                  doorNoOverride: '',
+                  unitFloorCount: etlData.unit_floors.toString(),
+                  unitNos: etlData.type_units,
+                  doorNoOverride: etlData.door_no_override || '',
                   maidConfig: null,
                   toiletConfig: null,
                   tmUnitType: null,
