@@ -119,7 +119,7 @@ export default function ProjectDropdown() {
                 string,
                 RefTableType & { extent: string }
               > = {};
-              ele.tm_unit_ref.map((etlData) => {
+              ele.tm_unit_ref?.map((etlData) => {
                 const key = `${etlData.configName || 'NULL'}: ${etlData.salable_area}`;
                 if (key in tmUnitRefKey) {
                   const existingData = tmUnitRefKey[key];
@@ -135,14 +135,6 @@ export default function ProjectDropdown() {
                       ','
                     )
                   ).join(', ');
-                  console.log(
-                    'salArea: ',
-                    uniq(
-                      `${existingData.salableArea},${etlData.salable_area}`.split(
-                        ','
-                      )
-                    ).join(', ')
-                  );
                   existingData.extent = uniq(
                     `${existingData.extent},${etlData.extent}`.split(',')
                   ).join(', ');
@@ -155,7 +147,6 @@ export default function ProjectDropdown() {
                   existingData.unitList = `${existingData.unitList}, ${etlData.unit_numbers.join(', ')}`;
                   tmUnitRefKey[key] = existingData;
                 } else {
-                  console.log({ mainSale: etlData.salable_area });
                   const newData = {} as RefTableType & { extent: string };
                   newData.type = key;
                   newData.config = etlData.configName || 'NULL';
@@ -215,7 +206,10 @@ export default function ProjectDropdown() {
             setTowerFormData(towerData);
             return 'Fetched Towers';
           },
-          error: 'Error',
+          error: (err) => {
+            console.log(err);
+            return 'Error';
+          },
         }
       );
     }
