@@ -25,13 +25,11 @@ interface State {
   projectData: ProjectDataType;
   formStepsList: ['Project', 'Tower', 'Image', 'Status', 'Preview'];
   currentFormStep: State['formStepsList'][number];
-  isUpdateForm: boolean;
 }
 
 interface Actions {
   updateProjectData: (_newDetails: Partial<ProjectDataType>) => void;
   setFormSteps: (_step: State['currentFormStep']) => void;
-  setIsUpdateForm: (_isUpdateForm: boolean) => void;
 }
 
 const INITIAL_PROJECT_DATA_STATE: ProjectDataType = {
@@ -52,8 +50,6 @@ export const useProjectDataStore = create<State & Actions>()(
       'Status',
       'Preview',
     ] as State['formStepsList'],
-    isUpdateForm: false as boolean,
-    setIsUpdateForm: (isUpdateForm) => set({ isUpdateForm }),
     setFormSteps: (step) => set({ currentFormStep: step }),
     updateProjectData: (newDetails) =>
       set((prev) => {
