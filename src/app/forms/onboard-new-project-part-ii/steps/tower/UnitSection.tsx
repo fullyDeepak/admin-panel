@@ -113,8 +113,35 @@ export default function UnitSection({
                     className='w-full flex-1'
                     instanceId={nanoid()}
                     options={existingUnitTypeOption}
-                    onChange={() => {
-                      //  fill current unit card`
+                    value={null}
+                    onChange={(e) => {
+                      if (e) {
+                        const [exTowerId, exUnitId] = e.value
+                          .split(':')
+                          .map(Number);
+
+                        const existingCard = towerFormData
+                          .find((item) => item.tower_id === exTowerId)
+                          ?.unitCards.find((item) => item.id === exUnitId);
+
+                        updateUnitCard(towerId, unitData.id, {
+                          salableArea: existingCard?.salableArea,
+                          parking: existingCard?.parking,
+                          extent: existingCard?.extent,
+                          facing: existingCard?.facing,
+                          corner: existingCard?.corner,
+                          unitFloorCount: existingCard?.unitFloorCount,
+                          configName: existingCard?.configName,
+                          toiletConfig: existingCard?.toiletConfig,
+                          otherConfig: existingCard?.otherConfig,
+                          configVerified: existingCard?.configVerified,
+                          doorNoOverride: existingCard?.doorNoOverride,
+                          floorNos: existingCard?.floorNos,
+                          unitNos: existingCard?.unitNos,
+                          tmUnitType: existingCard?.tmUnitType,
+                          reraUnitType: existingCard?.reraUnitType,
+                        });
+                      }
                     }}
                   />
                 </div>
@@ -316,7 +343,7 @@ export default function UnitSection({
                   <div className='w-full flex-[5]'>
                     <select
                       className='h-9 min-h-9 w-full flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none !pe-1 !pl-1 !pr-5 ps-3 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
-                      defaultValue={unitData.unitFloorCount || undefined}
+                      value={unitData.unitFloorCount || undefined}
                       onChange={(e) =>
                         updateUnitCard(towerId, unitData.id, {
                           unitFloorCount: e.target.value,
@@ -348,7 +375,7 @@ export default function UnitSection({
                   <div className='ml-3 flex w-full flex-[5] items-center gap-2'>
                     <select
                       className='h-9 min-h-9 flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none pl-1 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
-                      defaultValue={unitData.configName || undefined}
+                      value={unitData.configName || undefined}
                       onChange={(e) =>
                         updateUnitCard(towerId, unitData.id, {
                           configName: e.target.value,
@@ -376,7 +403,7 @@ export default function UnitSection({
                     </select>
                     <select
                       className='h-9 min-h-9 flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none pl-1 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
-                      defaultValue={unitData.toiletConfig || undefined}
+                      value={unitData.toiletConfig || undefined}
                       onChange={(e) =>
                         updateUnitCard(towerId, unitData.id, {
                           toiletConfig: e.target.value,
@@ -394,10 +421,10 @@ export default function UnitSection({
                     </select>
                     <select
                       className='h-9 min-h-9 flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none pl-1 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
-                      defaultValue={unitData.maidConfig || undefined}
+                      value={unitData.otherConfig || undefined}
                       onChange={(e) =>
                         updateUnitCard(towerId, unitData.id, {
-                          maidConfig: e.target.value,
+                          otherConfig: e.target.value,
                         })
                       }
                     >
@@ -418,7 +445,7 @@ export default function UnitSection({
                     <label className='swap swap-flip'>
                       <input
                         type='checkbox'
-                        defaultChecked={unitData.configVerified}
+                        checked={unitData.configVerified}
                         className='hidden'
                         onChange={(e) =>
                           updateUnitCard(towerId, unitData.id, {

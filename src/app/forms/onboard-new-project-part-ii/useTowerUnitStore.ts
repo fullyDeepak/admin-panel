@@ -42,10 +42,6 @@ export type UnitCardType = {
     label: string;
     value: string;
   }> | null;
-  existingUnitType: SingleValue<{
-    label: string;
-    value: string;
-  }> | null;
   floorNos: string;
   salableArea: number;
   extent: number;
@@ -54,7 +50,7 @@ export type UnitCardType = {
   corner: boolean;
   configName: string | null;
   toiletConfig: string | null;
-  maidConfig: string | null;
+  otherConfig: string | null;
   configVerified: boolean;
   unitFloorCount: string | null;
   unitNos: string;
@@ -77,7 +73,6 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
       {
         id: 1,
         reraUnitType: null,
-        existingUnitType: null,
         floorNos: '',
         salableArea: 0,
         extent: 0,
@@ -88,7 +83,7 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
         configVerified: true,
         unitFloorCount: null,
         unitNos: '',
-        maidConfig: null,
+        otherConfig: null,
         toiletConfig: null,
         tmUnitType: null,
         doorNoOverride: '',
@@ -197,7 +192,6 @@ export const useTowerUnitStore = create<Store>()(
           prev.towerFormData[towerIdx].unitCards.push({
             id: prev.towerFormData[towerIdx].unitCards.length + 1,
             reraUnitType: null,
-            existingUnitType: null,
             floorNos: '',
             salableArea: 0,
             extent: 0,
@@ -208,7 +202,7 @@ export const useTowerUnitStore = create<Store>()(
             configVerified: true,
             unitFloorCount: null,
             unitNos: '',
-            maidConfig: null,
+            otherConfig: null,
             toiletConfig: null,
             tmUnitType: null,
             doorNoOverride: '',

@@ -33,8 +33,8 @@ export default function TowerSection() {
     towerFormData.map((tower) => {
       tower.unitCards.map((unitCard) => {
         options.push({
-          label: `T${tower.tower_id}:U${unitCard.id}`,
-          value: `T${tower.tower_id}:U${unitCard.id}`,
+          label: `T${tower.tower_id}:U${unitCard.id}:${unitCard.configName}:${unitCard.salableArea}`,
+          value: `${tower.tower_id}:${unitCard.id}`,
         });
       });
     });

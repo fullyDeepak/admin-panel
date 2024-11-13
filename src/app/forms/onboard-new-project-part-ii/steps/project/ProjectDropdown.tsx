@@ -199,7 +199,6 @@ export default function ProjectDropdown() {
                 unitCards.push({
                   id: idx + 1,
                   reraUnitType: null,
-                  existingUnitType: null,
                   floorNos: etlData.type_floors,
                   salableArea: etlData.saleable_area,
                   extent: etlData.extent,
@@ -211,7 +210,7 @@ export default function ProjectDropdown() {
                   unitFloorCount: etlData.unit_floors.toString(),
                   unitNos: etlData.type_units,
                   doorNoOverride: etlData.door_no_override || '',
-                  maidConfig: null,
+                  otherConfig: null,
                   toiletConfig: null,
                   tmUnitType: null,
                 });
