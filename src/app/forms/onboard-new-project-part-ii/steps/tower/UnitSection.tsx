@@ -29,11 +29,20 @@ export default function UnitSection({
   addNewUnitCard,
   deleteUnitCard,
 }: Props) {
-  const { existingUnitTypeOption } = useTowerUnitStore();
+  const { existingUnitTypeOption, setShowTMRefTable, showTMRefTable } =
+    useTowerUnitStore();
 
   return (
     <div>
-      <h2 className='-mb-5 text-xl font-semibold'>Section: Unit Card</h2>
+      <div className='-mb-5 flex items-center gap-5'>
+        <h2 className='text-xl font-semibold'>Section: Unit Card</h2>
+        <button
+          className='btn btn-accent btn-xs'
+          onClick={() => setShowTMRefTable(!showTMRefTable)}
+        >
+          Toggle TM Ref Table
+        </button>
+      </div>
       {unitCards && unitCards.length > 0 ? (
         unitCards.map((unitData) => (
           <div

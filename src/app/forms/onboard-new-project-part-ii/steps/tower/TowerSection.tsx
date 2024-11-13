@@ -20,8 +20,7 @@ export default function TowerSection() {
     updateUnitCard,
     updateTowerFormData,
     towerFormData,
-    // deleteTowerCard,
-    // setTowerFormData,
+    showTMRefTable,
     deleteUnitCard,
     setExistingUnitTypeOption,
   } = useTowerUnitStore();
@@ -131,6 +130,7 @@ export default function TowerSection() {
             <RefTable
               reraRefTable={tower.reraRefTable}
               tmRefTable={tower.tmRefTable}
+              showTMRefTable={showTMRefTable}
             />
             <UnitSection
               unitCards={tower.unitCards}

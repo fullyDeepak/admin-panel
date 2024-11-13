@@ -4,9 +4,14 @@ import { RefTableType } from '../../useTowerUnitStore';
 type Props = {
   reraRefTable: RefTableType[];
   tmRefTable: (RefTableType & { extent: string })[];
+  showTMRefTable: boolean;
 };
 
-export default function RefTable({ reraRefTable, tmRefTable }: Props) {
+export default function RefTable({
+  reraRefTable,
+  tmRefTable,
+  showTMRefTable,
+}: Props) {
   const reraTableColumns = [
     'Type ID',
     'Tower ID',
@@ -41,20 +46,24 @@ export default function RefTable({ reraRefTable, tmRefTable }: Props) {
           item.floorList,
         ])}
       />
-      <h3 className='text-lg font-bold'>TM Ref Table</h3>
-      <SimpleTable
-        columns={tmTableColumns}
-        tableData={tmRefTable.map((item) => [
-          item.type,
-          item.unitCount,
-          item.config,
-          item.salableArea,
-          item.extent,
-          item.facing,
-          item.floorList,
-          item.unitList,
-        ])}
-      />
+      {showTMRefTable && (
+        <>
+          <h3 className='text-lg font-bold'>TM Ref Table</h3>
+          <SimpleTable
+            columns={tmTableColumns}
+            tableData={tmRefTable.map((item) => [
+              item.type,
+              item.unitCount,
+              item.config,
+              item.salableArea,
+              item.extent,
+              item.facing,
+              item.floorList,
+              item.unitList,
+            ])}
+          />
+        </>
+      )}
     </div>
   );
 }

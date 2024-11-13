@@ -101,6 +101,8 @@ type Store = {
     label: string;
     value: string;
   }>[];
+  showTMRefTable: boolean;
+  setShowTMRefTable: (_data: boolean) => void;
   setExistingUnitTypeOption: (
     _data: SingleValue<{
       label: string;
@@ -127,6 +129,8 @@ type Store = {
 export const useTowerUnitStore = create<Store>()(
   immer((set) => ({
     towerFormData: INITIAL_STATE,
+    showTMRefTable: false as boolean,
+    setShowTMRefTable: (data) => set({ showTMRefTable: data }),
     existingUnitTypeOption: [] as SingleValue<{
       label: string;
       value: string;
