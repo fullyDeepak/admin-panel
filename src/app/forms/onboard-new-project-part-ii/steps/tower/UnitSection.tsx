@@ -34,8 +34,12 @@ export default function UnitSection({
   deleteUnitCard,
   reraUnitTypeOption,
 }: Props) {
-  const { existingUnitTypeOption, setShowTMRefTable, showTMRefTable } =
-    useTowerUnitStore();
+  const {
+    existingUnitTypeOption,
+    setShowTMRefTable,
+    showTMRefTable,
+    towerFormData,
+  } = useTowerUnitStore();
 
   return (
     <div>
@@ -43,7 +47,10 @@ export default function UnitSection({
         <h2 className='text-xl font-semibold'>Section: Unit Card</h2>
         <button
           className='btn btn-accent btn-xs'
-          onClick={() => setShowTMRefTable(!showTMRefTable)}
+          onClick={() => {
+            setShowTMRefTable(!showTMRefTable);
+            console.log({ towerFormData });
+          }}
         >
           Toggle TM Ref Table
         </button>
@@ -71,25 +78,37 @@ export default function UnitSection({
             </button>
 
             <div className='grid grid-cols-2 gap-x-5 gap-y-1'>
-              <label className='flex flex-wrap items-center justify-between gap-5'>
-                <span className='flex-[3]'>Rera Unit Type:</span>
-                <div className='flex flex-[8]'>
-                  <Select
-                    className='-ml-0.5 w-full flex-1'
-                    instanceId={nanoid()}
-                    options={reraUnitTypeOption}
-                    defaultValue={unitData.reraUnitType}
-                    onChange={(e) =>
-                      updateUnitCard(towerId, unitData.id, {
-                        reraUnitType: e,
-                      })
-                    }
-                  />
-                </div>
-              </label>
-              <label className='flex flex-wrap items-center justify-between gap-5'>
-                <span className='flex-[3]'>Existing Unit Type:</span>
-                <div className='flex flex-[5]'>
+              {reraUnitTypeOption && reraUnitTypeOption.length > 0 && (
+                <label className='flex flex-wrap items-center justify-between gap-5'>
+                  <span className='flex-[3]'>Rera Unit Type:</span>
+                  <div className='flex flex-[8]'>
+                    <Select
+                      className='-ml-0.5 w-full flex-1'
+                      instanceId={nanoid()}
+                      options={reraUnitTypeOption}
+                      defaultValue={unitData.reraUnitType}
+                      onChange={(e) =>
+                        updateUnitCard(towerId, unitData.id, {
+                          reraUnitType: e,
+                        })
+                      }
+                    />
+                  </div>
+                </label>
+              )}
+              <label
+                className={cn(
+                  'flex flex-wrap items-center justify-between gap-5',
+                  reraUnitTypeOption?.length === 0 && 'col-span-2'
+                )}
+              >
+                <span className='flex-[2'>Existing Unit Type:</span>
+                <div
+                  className={cn(
+                    'flex flex-[5]',
+                    reraUnitTypeOption?.length === 0 && 'ml-4 w-full'
+                  )}
+                >
                   <Select
                     className='w-full flex-1'
                     instanceId={nanoid()}
