@@ -19,6 +19,10 @@ type Props = {
   copyUnitCard: (_towerCardId: number, _newDetails: UnitCardType) => void;
   addNewUnitCard: (_towerCardId: number) => void;
   deleteUnitCard: (_towerCardId: number, _unitCardId: number) => void;
+  reraUnitTypeOption: {
+    label: string;
+    value: string;
+  }[];
 };
 
 export default function UnitSection({
@@ -28,6 +32,7 @@ export default function UnitSection({
   copyUnitCard,
   addNewUnitCard,
   deleteUnitCard,
+  reraUnitTypeOption,
 }: Props) {
   const { existingUnitTypeOption, setShowTMRefTable, showTMRefTable } =
     useTowerUnitStore();
@@ -72,7 +77,7 @@ export default function UnitSection({
                   <Select
                     className='-ml-0.5 w-full flex-1'
                     instanceId={nanoid()}
-                    options={[]}
+                    options={reraUnitTypeOption}
                     defaultValue={unitData.reraUnitType}
                     onChange={(e) =>
                       updateUnitCard(towerId, unitData.id, {

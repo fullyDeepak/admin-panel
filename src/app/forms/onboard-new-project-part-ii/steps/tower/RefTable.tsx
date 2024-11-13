@@ -14,12 +14,12 @@ export default function RefTable({
 }: Props) {
   const reraTableColumns = [
     'Type ID',
-    'Tower ID',
     'Unit Count',
     'Config',
     'Salable Area',
     'Facing',
     'Floor List',
+    'Unit List',
   ];
   const tmTableColumns = [
     'Type ID',
@@ -44,6 +44,7 @@ export default function RefTable({
           item.salableArea,
           item.facing,
           item.floorList,
+          item.unitList,
         ])}
       />
       {showTMRefTable && (

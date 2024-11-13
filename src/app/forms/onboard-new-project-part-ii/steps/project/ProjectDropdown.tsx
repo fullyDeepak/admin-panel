@@ -10,6 +10,7 @@ import {
 } from '../../useTowerUnitStore';
 import toast from 'react-hot-toast';
 import { uniq } from 'lodash';
+import { convertArrayToRangeString } from '../../utils';
 
 export interface ProjectData {
   status: string;
@@ -70,6 +71,18 @@ export interface ProjectData {
         type_units: string;
         facing: string;
         is_corner: boolean;
+      }[];
+    }[];
+    reraData: {
+      rera_tower_id: string;
+      tower_id: string;
+      rera_unit_type_ids: string[];
+      ref_data: {
+        units: string[] | null;
+        config: string;
+        floor_ids: number[];
+        salable_area: number;
+        facing: string | null;
       }[];
     }[];
   };
@@ -165,6 +178,22 @@ export default function ProjectDropdown() {
               const unitData = res.data.unitData.find((temp) => {
                 return temp.tower_id == ele.tower_id;
               });
+              const reraData = res.data.reraData.find((temp) => {
+                return temp.tower_id == ele.tower_id;
+              });
+
+              const reraRefTable: RefTableType[] | undefined =
+                reraData?.ref_data.map((item) => ({
+                  type: `${item.config} : ${item.salable_area}`,
+                  unitCount: item.units?.length.toString() || 'N/A',
+                  config: item.config,
+                  salableArea: item.salable_area.toString(),
+                  facing: item.facing ? item.facing.substring(0, 1) : 'N/A',
+                  floorList: convertArrayToRangeString(
+                    item.floor_ids.map(String)
+                  ),
+                  unitList: item.units?.join(', ') || 'N/A',
+                }));
 
               unitData?.unit_type_json.map((etlData, idx) => {
                 unitCards.push({
@@ -198,9 +227,14 @@ export default function ProjectDropdown() {
                 gfUnitCount: ele.ground_floor_unit_no_max,
                 unitCards: unitCards,
                 tmRefTable: Object.values(tmUnitRefKey),
-                reraRefTable: [],
+                reraRefTable: reraRefTable || [],
                 typicalMaxFloor: +ele.max_floor,
                 typicalUnitCount: ele.typical_floor_unit_no_max,
+                reraUnitTypeOption:
+                  reraData?.rera_unit_type_ids.map((ele) => ({
+                    label: ele,
+                    value: ele,
+                  })) || [],
               });
             });
             setTowerFormData(towerData);

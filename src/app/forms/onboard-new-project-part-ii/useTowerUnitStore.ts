@@ -26,6 +26,10 @@ export type TowerUnitDetailType = {
   unitCards: UnitCardType[];
   reraRefTable: RefTableType[];
   tmRefTable: (RefTableType & { extent: string })[];
+  reraUnitTypeOption: {
+    label: string;
+    value: string;
+  }[];
 };
 
 export type UnitCardType = {
@@ -92,6 +96,7 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
     ],
     reraRefTable: [],
     tmRefTable: [],
+    reraUnitTypeOption: [],
   },
 ];
 

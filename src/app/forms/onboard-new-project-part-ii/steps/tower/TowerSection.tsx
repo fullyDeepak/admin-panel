@@ -139,6 +139,7 @@ export default function TowerSection() {
               copyUnitCard={copyUnitCard}
               addNewUnitCard={addNewUnitCard}
               deleteUnitCard={deleteUnitCard}
+              reraUnitTypeOption={tower.reraUnitTypeOption}
             />
           </div>
         </div>
