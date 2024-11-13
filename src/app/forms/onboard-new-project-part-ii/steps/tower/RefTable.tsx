@@ -34,20 +34,24 @@ export default function RefTable({
 
   return (
     <div>
-      <h3 className='text-lg font-bold'>RERA Ref Table</h3>
-      <SimpleTable
-        columns={reraTableColumns}
-        tableData={reraRefTable.map((item) => [
-          item.type,
-          item.unitCount,
-          item.config,
-          item.salableArea,
-          item.facing,
-          item.floorList,
-          item.unitList,
-        ])}
-      />
-      {showTMRefTable && (
+      {reraRefTable.length > 0 && (
+        <>
+          <h3 className='text-lg font-bold'>RERA Ref Table</h3>
+          <SimpleTable
+            columns={reraTableColumns}
+            tableData={reraRefTable.map((item) => [
+              item.type,
+              item.unitCount,
+              item.config,
+              item.salableArea,
+              item.facing,
+              item.floorList,
+              item.unitList,
+            ])}
+          />
+        </>
+      )}
+      {showTMRefTable && tmRefTable.length > 0 && (
         <>
           <h3 className='text-lg font-bold'>TM Ref Table</h3>
           <SimpleTable
