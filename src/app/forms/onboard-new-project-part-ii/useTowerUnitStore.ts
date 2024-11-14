@@ -170,6 +170,7 @@ type Store = {
     _key: 'booking' | 'pricing' | 'display_construction_status',
     _tower_id: string
   ) => void;
+  resetStatusFormData: () => void;
 };
 
 export const useTowerUnitStore = create<Store>()(
@@ -361,5 +362,12 @@ export const useTowerUnitStore = create<Store>()(
         }));
       }
     },
+
+    resetStatusFormData: () =>
+      set({
+        projectBookingStatus: [],
+        projectPricingStatus: [],
+        projectConstructionStatus: [],
+      }),
   }))
 );

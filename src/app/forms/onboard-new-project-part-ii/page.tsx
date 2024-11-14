@@ -8,7 +8,7 @@ import { useProjectDataStore } from './useProjectDataStore';
 import { useTowerUnitStore } from './useTowerUnitStore';
 import PreviewContainer from './steps/preview/PreviewContainer';
 import { UnitCardDataToPost } from './types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import axiosClient from '@/utils/AxiosClient';
 import ImageFormContainer from './steps/image/ImageFormContainer';
@@ -30,6 +30,10 @@ export default function Page() {
   const [UnitCardDataToPost, setUnitCardDataToPost] = useState<
     UnitCardDataToPost[]
   >([]);
+
+  useEffect(() => {
+    setUnitCardDataToPost([]);
+  }, [projectData.selectedProject]);
 
   async function submit() {
     const toPost: UnitCardDataToPost[] = [];

@@ -11,6 +11,7 @@ import {
 import toast from 'react-hot-toast';
 import { uniq } from 'lodash';
 import { convertArrayToRangeString } from '../../utils';
+import { useProjectImageStore } from '../../useProjectImageStore';
 
 export interface ProjectData {
   status: string;
@@ -104,7 +105,8 @@ export default function ProjectDropdown() {
     refetchOnMount: false,
   });
   const { projectData, updateProjectData } = useProjectDataStore();
-  const { setTowerFormData } = useTowerUnitStore();
+  const { setTowerFormData, resetStatusFormData } = useTowerUnitStore();
+  const { resetImageStore } = useProjectImageStore();
 
   async function handleProjectChange(
     e: SingleValue<{
@@ -240,10 +242,14 @@ export default function ProjectDropdown() {
               });
             });
             setTowerFormData(towerData);
+            resetImageStore();
+            resetStatusFormData();
             return 'Fetched Towers';
           },
           error: (err) => {
             console.log(err);
+            resetImageStore();
+            resetStatusFormData();
             return 'Error';
           },
         }
