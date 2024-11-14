@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 import { immer } from 'zustand/middleware/immer';
+import { uniqBy } from 'lodash';
 
 export type RefTableType = {
   type: string;
@@ -120,6 +121,27 @@ type Store = {
     _unitCardId: number,
     _newDetails: Partial<UnitCardType>
   ) => void;
+  projectPricingStatus: {
+    updated_at: string;
+    project_id: string;
+    tower_id: string;
+    updated_field: 'price';
+    updated_value: string;
+  }[];
+  projectBookingStatus: {
+    updated_at: string;
+    project_id: string;
+    tower_id: string;
+    updated_field: 'manual_bookings';
+    updated_value: string;
+  }[];
+  projectConstructionStatus: {
+    updated_at: string;
+    project_id: string;
+    tower_id: string;
+    updated_field: 'display_construction_status';
+    updated_value: string;
+  }[];
   setTowerFormData: (_data: TowerUnitDetailType[]) => void;
   deleteTowerCard: (_id: number) => void;
   copyUnitCard: (_towerCardId: number, _newDetails: UnitCardType) => void;
@@ -131,6 +153,23 @@ type Store = {
     imageData: { fileName: string; file: File }
   ) => void;
   removeTowerFloorPlanFile: (_towerCardId: number, fileName: string) => void;
+  updateProjectStatus: (
+    _key: 'booking' | 'pricing' | 'display_construction_status',
+    _newData: {
+      updated_at: string;
+      project_id: string;
+      tower_id: string;
+      updated_value: string;
+      updated_field:
+        | 'manual_bookings'
+        | 'price'
+        | 'display_construction_status';
+    }[]
+  ) => void;
+  deleteProjectStatusData: (
+    _key: 'booking' | 'pricing' | 'display_construction_status',
+    _tower_id: string
+  ) => void;
 };
 
 export const useTowerUnitStore = create<Store>()(
@@ -143,6 +182,11 @@ export const useTowerUnitStore = create<Store>()(
       value: string;
     }>[],
     setExistingUnitTypeOption: (data) => set({ existingUnitTypeOption: data }),
+
+    projectBookingStatus: [] as Store['projectBookingStatus'],
+    projectPricingStatus: [] as Store['projectPricingStatus'],
+    projectConstructionStatus: [] as Store['projectConstructionStatus'],
+
     updateTowerFormData: (id, newDetails) =>
       set((prev) => {
         const idx = prev.towerFormData.findIndex(
@@ -260,6 +304,62 @@ export const useTowerUnitStore = create<Store>()(
             (item) => item.fileName !== fileName
           );
       });
+    },
+
+    updateProjectStatus: (key, newData) => {
+      if (key === 'booking') {
+        set((state) => ({
+          projectBookingStatus: uniqBy(
+            [
+              ...state.projectBookingStatus,
+              ...(newData as Store['projectBookingStatus']),
+            ],
+            'tower_id'
+          ),
+        }));
+      } else if (key === 'pricing') {
+        set((state) => ({
+          projectPricingStatus: uniqBy(
+            [
+              ...state.projectPricingStatus,
+              ...(newData as Store['projectPricingStatus']),
+            ],
+            'tower_id'
+          ),
+        }));
+      } else if (key === 'display_construction_status') {
+        set((state) => ({
+          projectConstructionStatus: uniqBy(
+            [
+              ...state.projectConstructionStatus,
+              ...(newData as Store['projectConstructionStatus']),
+            ],
+            'tower_id'
+          ),
+        }));
+      }
+    },
+
+    deleteProjectStatusData: (key, tower_id) => {
+      if (key === 'booking') {
+        set((state) => ({
+          projectBookingStatus: state.projectBookingStatus.filter(
+            (item) => item.tower_id != tower_id
+          ),
+        }));
+      } else if (key === 'pricing') {
+        set((state) => ({
+          projectPricingStatus: state.projectPricingStatus.filter(
+            (item) => item.tower_id != tower_id
+          ),
+        }));
+      } else if (key === 'display_construction_status') {
+        set((state) => ({
+          projectConstructionStatus: state.projectConstructionStatus.filter(
+            (item) => item.tower_id != tower_id
+          ),
+        }));
+      }
     },
   }))
 );

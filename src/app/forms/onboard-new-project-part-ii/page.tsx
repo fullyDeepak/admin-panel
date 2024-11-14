@@ -11,6 +11,8 @@ import { UnitCardDataToPost } from './types';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import axiosClient from '@/utils/AxiosClient';
+import ImageFormContainer from './steps/image/ImageFormContainer';
+import StatusContainer from './steps/status-pricing/StatusContainer';
 
 export default function Page() {
   const {
@@ -19,7 +21,12 @@ export default function Page() {
     currentFormStep: formSteps,
     projectData,
   } = useProjectDataStore();
-  const { towerFormData } = useTowerUnitStore();
+  const {
+    towerFormData,
+    projectBookingStatus,
+    projectPricingStatus,
+    projectConstructionStatus,
+  } = useTowerUnitStore();
   const [UnitCardDataToPost, setUnitCardDataToPost] = useState<
     UnitCardDataToPost[]
   >([]);
@@ -109,6 +116,31 @@ export default function Page() {
         }
       );
     }
+
+    if (
+      projectBookingStatus.length > 0 ||
+      projectPricingStatus.length > 0 ||
+      projectConstructionStatus.length > 0
+    ) {
+      const projectStatusPromise = axiosClient.post('/projects/status', {
+        bookingData: projectBookingStatus,
+        pricingData: projectPricingStatus,
+        constructionData: projectConstructionStatus,
+      });
+      await toast.promise(
+        projectStatusPromise,
+        {
+          loading: 'Saving new Project Status...',
+          success: 'New Status saved to database.',
+          error: 'Something went wrong',
+        },
+        {
+          success: {
+            duration: 10000,
+          },
+        }
+      );
+    }
   }
   return (
     <div className='mx-auto mt-10 flex w-full flex-col'>
@@ -128,6 +160,8 @@ export default function Page() {
         />
         {formSteps === 'Project' && <ProjectContainer />}
         {formSteps === 'Tower' && <TowerContainer />}
+        {formSteps === 'Image' && <ImageFormContainer />}
+        {formSteps === 'Status' && <StatusContainer />}
         {formSteps === 'Preview' && (
           <PreviewContainer UnitCardDataToPost={UnitCardDataToPost} />
         )}
