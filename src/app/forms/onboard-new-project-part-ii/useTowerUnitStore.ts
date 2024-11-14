@@ -16,6 +16,7 @@ export type TowerUnitDetailType = {
   tower_id: number;
   reraId: string;
   reraTowerId: string;
+  towerFloorPlanFile: { fileName: string; file: File }[];
   towerNameDisplay: string;
   towerNameETL: string;
   towerType: string;
@@ -60,6 +61,7 @@ export type UnitCardType = {
 const INITIAL_STATE: TowerUnitDetailType[] = [
   {
     tower_id: 1,
+    towerFloorPlanFile: [],
     reraId: '',
     reraTowerId: '',
     towerNameETL: '',
@@ -124,6 +126,11 @@ type Store = {
   addNewUnitCard: (_towerCardId: number) => void;
   deleteUnitCard: (_towerCardId: number, _unitCardId: number) => void;
   resetTowerUnitStore: () => void;
+  setTowerFloorPlanFile: (
+    _towerCardId: number,
+    imageData: { fileName: string; file: File }
+  ) => void;
+  removeTowerFloorPlanFile: (_towerCardId: number, fileName: string) => void;
 };
 
 export const useTowerUnitStore = create<Store>()(
@@ -230,5 +237,29 @@ export const useTowerUnitStore = create<Store>()(
         towerFormData: INITIAL_STATE,
         existingUnitTypeOption: [],
       }),
+
+    setTowerFloorPlanFile: (towerCardId, imageData) => {
+      set((prev) => {
+        const towerDataIdx = prev.towerFormData.findIndex(
+          (tower) => tower.tower_id === towerCardId
+        );
+        prev.towerFormData[towerDataIdx].towerFloorPlanFile = [
+          ...prev.towerFormData[towerDataIdx].towerFloorPlanFile,
+          imageData,
+        ];
+      });
+    },
+
+    removeTowerFloorPlanFile: (towerCardId, fileName) => {
+      set((prev) => {
+        const towerDataIdx = prev.towerFormData.findIndex(
+          (tower) => tower.tower_id === towerCardId
+        );
+        prev.towerFormData[towerDataIdx].towerFloorPlanFile =
+          prev.towerFormData[towerDataIdx].towerFloorPlanFile.filter(
+            (item) => item.fileName !== fileName
+          );
+      });
+    },
   }))
 );

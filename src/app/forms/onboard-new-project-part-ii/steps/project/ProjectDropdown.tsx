@@ -219,6 +219,7 @@ export default function ProjectDropdown() {
               });
               towerData.push({
                 tower_id: +ele.tower_id,
+                towerFloorPlanFile: [],
                 towerNameDisplay: ele.tower_name,
                 towerNameETL: ele.etl_tower_name,
                 reraTowerId: ele.rera_tower_id,

@@ -23,6 +23,8 @@ export default function TowerSection() {
     showTMRefTable,
     deleteUnitCard,
     setExistingUnitTypeOption,
+    setTowerFloorPlanFile,
+    removeTowerFloorPlanFile,
   } = useTowerUnitStore();
 
   useEffect(() => {
@@ -126,6 +128,8 @@ export default function TowerSection() {
             <TowerDetails
               tower={tower}
               updateTowerFormData={updateTowerFormData}
+              removeTowerFloorPlanFile={removeTowerFloorPlanFile}
+              setTowerFloorPlanFile={setTowerFloorPlanFile}
             />
             <RefTable
               reraRefTable={tower.reraRefTable}

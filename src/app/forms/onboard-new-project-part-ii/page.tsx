@@ -17,11 +17,13 @@ export default function Page() {
     formStepsList,
     setFormSteps,
     currentFormStep: formSteps,
+    projectData,
   } = useProjectDataStore();
   const { towerFormData } = useTowerUnitStore();
   const [UnitCardDataToPost, setUnitCardDataToPost] = useState<
     UnitCardDataToPost[]
   >([]);
+
   async function submit() {
     const toPost: UnitCardDataToPost[] = [];
     const towerDataToPost: {
@@ -31,7 +33,17 @@ export default function Page() {
       ground_floor_unit_no_max: string;
       ground_floor_name: string;
     }[] = [];
+    let uploadTowerFloorPlan = false;
+    const formData = new FormData();
+    formData.append(
+      'project_id',
+      projectData.selectedProject!.value.toString()
+    );
     towerFormData.map((tower) => {
+      tower.towerFloorPlanFile.map((file) => {
+        uploadTowerFloorPlan = true;
+        formData.append(tower.tower_id.toString(), file.file);
+      });
       towerDataToPost.push({
         tower_id: tower.tower_id.toString(),
         typical_floor_unit_no_max: tower.typicalUnitCount,
@@ -63,13 +75,14 @@ export default function Page() {
       });
     });
     setUnitCardDataToPost(toPost);
+
     toast.promise(
       axiosClient.post('/onboarding/onboardProjectPart2/', {
         unitTypeData: toPost,
         towerData: towerDataToPost,
       }),
       {
-        loading: 'Submitting...',
+        loading: 'Submitting tower-unit data...',
         success: () => {
           return 'Part 2 Data Submitted';
         },
@@ -79,6 +92,23 @@ export default function Page() {
         },
       }
     );
+    if (uploadTowerFloorPlan) {
+      toast.promise(
+        axiosClient.post('/forms/imgTag/tower', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }),
+        {
+          loading: 'uploading tower floor plan...',
+          success: () => {
+            return 'File uploaded';
+          },
+          error: (err) => {
+            console.log(err);
+            return 'Error';
+          },
+        }
+      );
+    }
   }
   return (
     <div className='mx-auto mt-10 flex w-full flex-col'>

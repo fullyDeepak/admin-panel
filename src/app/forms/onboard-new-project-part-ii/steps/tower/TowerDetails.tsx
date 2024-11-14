@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react';
 import { TowerUnitDetailType } from '../../useTowerUnitStore';
 
 type Props = {
@@ -6,17 +7,30 @@ type Props = {
     _towerCardId: number,
     _newDetails: Partial<TowerUnitDetailType>
   ) => void;
+  setTowerFloorPlanFile: (
+    _towerCardId: number,
+    imageData: {
+      fileName: string;
+      file: File;
+    }
+  ) => void;
+  removeTowerFloorPlanFile: (_towerCardId: number, fileName: string) => void;
 };
 
-export default function TowerDetails({ tower, updateTowerFormData }: Props) {
+export default function TowerDetails({
+  tower,
+  updateTowerFormData,
+  removeTowerFloorPlanFile,
+  setTowerFloorPlanFile,
+}: Props) {
   return (
     <div className='flex flex-col'>
       <h3 className='my-4 text-2xl font-semibold'>Section: Tower Details</h3>
       <div className='grid grid-cols-4 items-center gap-x-5 gap-y-1'>
         <span className=''>ETL Tower ID & Name:</span>
-        <span className='flex h-6 items-center rounded-md border-0 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>{`${tower.tower_id} : ${tower.towerNameETL}`}</span>
+        <span className='flex h-6 items-center rounded-md border-0 px-2 text-gray-900 placeholder:text-gray-400'>{`${tower.tower_id} : ${tower.towerNameETL}`}</span>
         <span className='fl'>RERA ID and RERA Tower ID:</span>
-        <span className='flex h-6 items-center rounded-md border-0 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
+        <span className='flex h-6 items-center rounded-md border-0 px-2 text-gray-900 placeholder:text-gray-400'>
           {tower.reraId ? `${tower.reraId} : ${tower.reraTowerId}` : 'N/A'}
         </span>
         <span className='flex-[3]'>Tower Floor Plan:</span>
@@ -24,11 +38,20 @@ export default function TowerDetails({ tower, updateTowerFormData }: Props) {
           type='file'
           className='file-input file-input-bordered file-input-accent file-input-xs h-8'
           multiple
-          disabled
           accept='image/*'
+          onChange={(e) => {
+            if (e.target.files && e.target.files.length > 0) {
+              Array.from(e.target.files).forEach((file) => {
+                setTowerFloorPlanFile(tower.tower_id, {
+                  file: file,
+                  fileName: file.name,
+                });
+              });
+            }
+          }}
         />
         <span className='fl'>Tower Type:</span>
-        <span className='flex h-6 items-center rounded-md border-0 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400'>
+        <span className='flex h-6 items-center rounded-md border-0 px-2 text-gray-900 placeholder:text-gray-400'>
           {tower.towerType ? tower.towerType : 'N/A'}
         </span>
         <span>Typical Floor:</span>
@@ -118,6 +141,29 @@ export default function TowerDetails({ tower, updateTowerFormData }: Props) {
           </div>
         </div>
       </div>
+
+      {tower.towerFloorPlanFile && tower.towerFloorPlanFile.length > 0 && (
+        <div className='mt-3 flex flex-col gap-y-2'>
+          <div className='flex'>
+            <span className='flex-[3] text-sm'>Selected files:</span>
+            <div className='ml-5 flex flex-[5] flex-col gap-2'>
+              {tower.towerFloorPlanFile.map((file, idx) => (
+                <div className='flex items-center justify-between' key={idx}>
+                  <span className=''>{file.fileName}</span>
+                  <button
+                    onClick={() =>
+                      removeTowerFloorPlanFile(tower.tower_id, file.fileName)
+                    }
+                    className='flex size-5 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-500'
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <button disabled className='btn btn-warning mt-2 max-w-fit self-center'>
         Generate Grid
