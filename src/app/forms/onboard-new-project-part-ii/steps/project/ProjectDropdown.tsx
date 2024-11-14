@@ -183,17 +183,19 @@ export default function ProjectDropdown() {
               });
 
               const reraRefTable: RefTableType[] | undefined =
-                reraData?.ref_data.map((item) => ({
-                  type: `${item.config} : ${item.salable_area}`,
-                  unitCount: item.units?.length.toString() || 'N/A',
-                  config: item.config,
-                  salableArea: item.salable_area.toString(),
-                  facing: item.facing ? item.facing.substring(0, 1) : 'N/A',
-                  floorList: convertArrayToRangeString(
-                    item.floor_ids.map(String)
-                  ),
-                  unitList: item.units?.join(', ') || 'N/A',
-                }));
+                reraData?.ref_data
+                  .sort((a, b) => b.salable_area - a.salable_area)
+                  .map((item) => ({
+                    type: `${item.config} : ${item.salable_area}`,
+                    unitCount: item.units?.length.toString() || 'N/A',
+                    config: item.config,
+                    salableArea: item.salable_area.toString(),
+                    facing: item.facing ? item.facing.substring(0, 1) : 'N/A',
+                    floorList: convertArrayToRangeString(
+                      item.floor_ids.map(String)
+                    ),
+                    unitList: item.units?.join(', ') || 'N/A',
+                  }));
 
               unitData?.unit_type_json.map((etlData, idx) => {
                 unitCards.push({

@@ -5,34 +5,31 @@ import { nanoid } from 'nanoid';
 import { cn } from '@/lib/utils';
 import { TbMapEast, TbMapNorth, TbMapSouth, TbMapWest } from 'react-icons/tb';
 import { BiCopy, BiPlus } from 'react-icons/bi';
-import { UnitCardType, useTowerUnitStore } from '../../useTowerUnitStore';
+import {
+  TowerUnitDetailType,
+  UnitCardType,
+  useTowerUnitStore,
+} from '../../useTowerUnitStore';
 import { CornerIcon } from './CornerIcon';
 
 type Props = {
-  unitCards: UnitCardType[];
+  towerData: TowerUnitDetailType;
   updateUnitCard: (
     _towerCardId: number,
     _unitCardId: number,
     _newDetails: Partial<UnitCardType>
   ) => void;
-  towerId: number;
   copyUnitCard: (_towerCardId: number, _newDetails: UnitCardType) => void;
   addNewUnitCard: (_towerCardId: number) => void;
   deleteUnitCard: (_towerCardId: number, _unitCardId: number) => void;
-  reraUnitTypeOption: {
-    label: string;
-    value: string;
-  }[];
 };
 
 export default function UnitSection({
-  towerId,
-  unitCards,
+  towerData,
   updateUnitCard,
   copyUnitCard,
   addNewUnitCard,
   deleteUnitCard,
-  reraUnitTypeOption,
 }: Props) {
   const {
     existingUnitTypeOption,
@@ -55,22 +52,22 @@ export default function UnitSection({
           Toggle TM Ref Table
         </button>
       </div>
-      {unitCards && unitCards.length > 0 ? (
-        unitCards.map((unitData) => (
+      {towerData.unitCards && towerData.unitCards.length > 0 ? (
+        towerData.unitCards.map((unitData) => (
           <div
             className='relative my-10 space-y-1 rounded-lg bg-amber-50 p-5 pb-10 text-sm shadow-[0px_0px_3px_2px_#b7791f]'
             key={unitData.id}
           >
             <p className='text-center font-semibold'>
-              Tower Card id: {towerId} &nbsp; &nbsp; &nbsp; &nbsp; Unit Type
-              Card id: {unitData.id}
+              Tower Card id: {towerData.tower_id} &nbsp; &nbsp; &nbsp; &nbsp;
+              Unit Type Card id: {unitData.id}
             </p>
             <button
               className='absolute right-2 top-0 m-2 size-8 rounded-full text-sm font-semibold hover:bg-gray-300'
               type='button'
               onClick={() => {
                 if (confirm('Are you sure?')) {
-                  deleteUnitCard(towerId, unitData.id);
+                  deleteUnitCard(towerData.tower_id, unitData.id);
                 }
               }}
             >
@@ -78,35 +75,36 @@ export default function UnitSection({
             </button>
 
             <div className='grid grid-cols-2 gap-x-5 gap-y-1'>
-              {reraUnitTypeOption && reraUnitTypeOption.length > 0 && (
-                <label className='flex flex-wrap items-center justify-between gap-5'>
-                  <span className='flex-[3]'>Rera Unit Type:</span>
-                  <div className='flex flex-[8]'>
-                    <Select
-                      className='-ml-0.5 w-full flex-1'
-                      instanceId={nanoid()}
-                      options={reraUnitTypeOption}
-                      defaultValue={unitData.reraUnitType}
-                      onChange={(e) =>
-                        updateUnitCard(towerId, unitData.id, {
-                          reraUnitType: e,
-                        })
-                      }
-                    />
-                  </div>
-                </label>
-              )}
+              {towerData.reraUnitTypeOption &&
+                towerData.reraUnitTypeOption.length > 0 && (
+                  <label className='flex flex-wrap items-center justify-between gap-5'>
+                    <span className='flex-[3]'>Rera Unit Type:</span>
+                    <div className='flex flex-[8]'>
+                      <Select
+                        className='-ml-0.5 w-full flex-1'
+                        instanceId={nanoid()}
+                        options={towerData.reraUnitTypeOption}
+                        defaultValue={unitData.reraUnitType}
+                        onChange={(e) =>
+                          updateUnitCard(towerData.tower_id, unitData.id, {
+                            reraUnitType: e,
+                          })
+                        }
+                      />
+                    </div>
+                  </label>
+                )}
               <label
                 className={cn(
                   'flex flex-wrap items-center justify-between gap-5',
-                  reraUnitTypeOption?.length === 0 && 'col-span-2'
+                  towerData.reraUnitTypeOption?.length === 0 && 'col-span-2'
                 )}
               >
                 <span className='flex-[2'>Existing Unit Type:</span>
                 <div
                   className={cn(
                     'flex flex-[5]',
-                    reraUnitTypeOption?.length === 0 && 'ml-4 w-full'
+                    towerData.reraUnitTypeOption?.length === 0 && 'ml-4 w-full'
                   )}
                 >
                   <Select
@@ -124,7 +122,7 @@ export default function UnitSection({
                           .find((item) => item.tower_id === exTowerId)
                           ?.unitCards.find((item) => item.id === exUnitId);
 
-                        updateUnitCard(towerId, unitData.id, {
+                        updateUnitCard(towerData.tower_id, unitData.id, {
                           salableArea: existingCard?.salableArea,
                           parking: existingCard?.parking,
                           extent: existingCard?.extent,
@@ -156,7 +154,7 @@ export default function UnitSection({
                       className={cn(inputBoxClass, 'ml-0')}
                       defaultValue={unitData.salableArea || ''}
                       onChange={(e) =>
-                        updateUnitCard(towerId, unitData.id, {
+                        updateUnitCard(towerData.tower_id, unitData.id, {
                           salableArea: +e.target.value,
                         })
                       }
@@ -172,7 +170,7 @@ export default function UnitSection({
                       className={cn(inputBoxClass, 'ml-0')}
                       defaultValue={unitData.parking || ''}
                       onChange={(e) =>
-                        updateUnitCard(towerId, unitData.id, {
+                        updateUnitCard(towerData.tower_id, unitData.id, {
                           parking: +e.target.value,
                         })
                       }
@@ -188,7 +186,7 @@ export default function UnitSection({
                       className={cn(inputBoxClass, 'ml-0')}
                       defaultValue={unitData.extent || ''}
                       onChange={(e) =>
-                        updateUnitCard(towerId, unitData.id, {
+                        updateUnitCard(towerData.tower_id, unitData.id, {
                           extent: +e.target.value,
                         })
                       }
@@ -215,11 +213,11 @@ export default function UnitSection({
                         checked={unitData.facing === 'N'}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            updateUnitCard(towerId, unitData.id, {
+                            updateUnitCard(towerData.tower_id, unitData.id, {
                               facing: 'N',
                             });
                           } else {
-                            updateUnitCard(towerId, unitData.id, {
+                            updateUnitCard(towerData.tower_id, unitData.id, {
                               facing: null,
                             });
                           }
@@ -242,11 +240,11 @@ export default function UnitSection({
                         checked={unitData.facing === 'S'}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            updateUnitCard(towerId, unitData.id, {
+                            updateUnitCard(towerData.tower_id, unitData.id, {
                               facing: 'S',
                             });
                           } else {
-                            updateUnitCard(towerId, unitData.id, {
+                            updateUnitCard(towerData.tower_id, unitData.id, {
                               facing: null,
                             });
                           }
@@ -269,11 +267,11 @@ export default function UnitSection({
                         checked={unitData.facing === 'E'}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            updateUnitCard(towerId, unitData.id, {
+                            updateUnitCard(towerData.tower_id, unitData.id, {
                               facing: 'E',
                             });
                           } else {
-                            updateUnitCard(towerId, unitData.id, {
+                            updateUnitCard(towerData.tower_id, unitData.id, {
                               facing: null,
                             });
                           }
@@ -296,11 +294,11 @@ export default function UnitSection({
                         checked={unitData.facing === 'W'}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            updateUnitCard(towerId, unitData.id, {
+                            updateUnitCard(towerData.tower_id, unitData.id, {
                               facing: 'W',
                             });
                           } else {
-                            updateUnitCard(towerId, unitData.id, {
+                            updateUnitCard(towerData.tower_id, unitData.id, {
                               facing: null,
                             });
                           }
@@ -328,7 +326,7 @@ export default function UnitSection({
                           className='hidden'
                           defaultChecked={unitData.corner}
                           onChange={(e) =>
-                            updateUnitCard(towerId, unitData.id, {
+                            updateUnitCard(towerData.tower_id, unitData.id, {
                               corner: e.target.checked,
                             })
                           }
@@ -345,7 +343,7 @@ export default function UnitSection({
                       className='h-9 min-h-9 w-full flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none !pe-1 !pl-1 !pr-5 ps-3 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
                       value={unitData.unitFloorCount || undefined}
                       onChange={(e) =>
-                        updateUnitCard(towerId, unitData.id, {
+                        updateUnitCard(towerData.tower_id, unitData.id, {
                           unitFloorCount: e.target.value,
                         })
                       }
@@ -353,18 +351,18 @@ export default function UnitSection({
                       <option disabled selected>
                         Unit Floor
                       </option>
-                      {[
-                        'Simplex',
-                        'Duplex',
-                        'Triplex',
-                        'G+1',
-                        'G+2',
-                        'G+3',
-                      ].map((item, idx) => (
-                        <option value={item} key={idx}>
-                          {item}
-                        </option>
-                      ))}
+                      {towerData.towerType === 'APARTMENT' &&
+                        ['Simplex', 'Duplex', 'Triplex'].map((item, idx) => (
+                          <option value={idx + 1} key={idx}>
+                            {item}
+                          </option>
+                        ))}
+                      {towerData.towerType === 'VILLA' &&
+                        ['G+1', 'G+2', 'G+3'].map((item, idx) => (
+                          <option value={idx + 1} key={idx}>
+                            {item}
+                          </option>
+                        ))}
                     </select>
                   </div>
                 </div>
@@ -377,7 +375,7 @@ export default function UnitSection({
                       className='h-9 min-h-9 flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none pl-1 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
                       value={unitData.configName || undefined}
                       onChange={(e) =>
-                        updateUnitCard(towerId, unitData.id, {
+                        updateUnitCard(towerData.tower_id, unitData.id, {
                           configName: e.target.value,
                         })
                       }
@@ -405,7 +403,7 @@ export default function UnitSection({
                       className='h-9 min-h-9 flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none pl-1 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
                       value={unitData.toiletConfig || undefined}
                       onChange={(e) =>
-                        updateUnitCard(towerId, unitData.id, {
+                        updateUnitCard(towerData.tower_id, unitData.id, {
                           toiletConfig: e.target.value,
                         })
                       }
@@ -423,7 +421,7 @@ export default function UnitSection({
                       className='h-9 min-h-9 flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none pl-1 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
                       value={unitData.otherConfig || undefined}
                       onChange={(e) =>
-                        updateUnitCard(towerId, unitData.id, {
+                        updateUnitCard(towerData.tower_id, unitData.id, {
                           otherConfig: e.target.value,
                         })
                       }
@@ -448,7 +446,7 @@ export default function UnitSection({
                         checked={unitData.configVerified}
                         className='hidden'
                         onChange={(e) =>
-                          updateUnitCard(towerId, unitData.id, {
+                          updateUnitCard(towerData.tower_id, unitData.id, {
                             configVerified: e.target.checked,
                           })
                         }
@@ -475,7 +473,7 @@ export default function UnitSection({
                       className={`${inputBoxClass} !ml-0`}
                       defaultValue={unitData.doorNoOverride}
                       onChange={(e) =>
-                        updateUnitCard(towerId, unitData.id, {
+                        updateUnitCard(towerData.tower_id, unitData.id, {
                           doorNoOverride: e.target.value,
                         })
                       }
@@ -491,7 +489,7 @@ export default function UnitSection({
                     className={`${inputBoxClass} !ml-0`}
                     defaultValue={unitData.floorNos}
                     onChange={(e) =>
-                      updateUnitCard(towerId, unitData.id, {
+                      updateUnitCard(towerData.tower_id, unitData.id, {
                         floorNos: e.target.value,
                       })
                     }
@@ -506,7 +504,7 @@ export default function UnitSection({
                     className={`${inputBoxClass} !ml-0`}
                     defaultValue={unitData.unitNos}
                     onChange={(e) =>
-                      updateUnitCard(towerId, unitData.id, {
+                      updateUnitCard(towerData.tower_id, unitData.id, {
                         unitNos: e.target.value,
                       })
                     }
@@ -533,7 +531,7 @@ export default function UnitSection({
                 type='button'
                 className='btn btn-sm mx-auto flex items-center border-none bg-amber-400 hover:bg-amber-500'
                 onClick={() =>
-                  copyUnitCard(towerId, {
+                  copyUnitCard(towerData.tower_id, {
                     ...unitData,
                     id: unitData.id + 1,
                   })
@@ -545,7 +543,7 @@ export default function UnitSection({
               <button
                 type='button'
                 className='btn btn-sm mx-auto flex items-center border-none bg-amber-400 hover:bg-amber-500'
-                onClick={() => addNewUnitCard(towerId)}
+                onClick={() => addNewUnitCard(towerData.tower_id)}
               >
                 <BiPlus size={30} />
                 <span>New</span>
@@ -560,7 +558,7 @@ export default function UnitSection({
               'btn-rezy mt-10 text-white',
               '!bg-amber-500 hover:!bg-amber-600'
             )}
-            onClick={() => addNewUnitCard(towerId)}
+            onClick={() => addNewUnitCard(towerData.tower_id)}
           >
             Add Unit Card
           </button>

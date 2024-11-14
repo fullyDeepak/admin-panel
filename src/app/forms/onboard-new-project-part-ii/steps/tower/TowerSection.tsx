@@ -133,13 +133,11 @@ export default function TowerSection() {
               showTMRefTable={showTMRefTable}
             />
             <UnitSection
-              unitCards={tower.unitCards}
+              towerData={tower}
               updateUnitCard={updateUnitCard}
-              towerId={tower.tower_id}
               copyUnitCard={copyUnitCard}
               addNewUnitCard={addNewUnitCard}
               deleteUnitCard={deleteUnitCard}
-              reraUnitTypeOption={tower.reraUnitTypeOption}
             />
           </div>
         </div>

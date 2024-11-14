@@ -5,17 +5,81 @@ import StepsUI from './StepsUI';
 import ProjectContainer from './steps/project/ProjectContainer';
 import TowerContainer from './steps/tower/TowerContainer';
 import { useProjectDataStore } from './useProjectDataStore';
-import axiosClient from '@/utils/AxiosClient';
 import { useTowerUnitStore } from './useTowerUnitStore';
+import PreviewContainer from './steps/preview/PreviewContainer';
+import { UnitCardDataToPost } from './types';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
+import axiosClient from '@/utils/AxiosClient';
 
 export default function Page() {
   const {
     formStepsList,
     setFormSteps,
     currentFormStep: formSteps,
-    projectData,
   } = useProjectDataStore();
   const { towerFormData } = useTowerUnitStore();
+  const [UnitCardDataToPost, setUnitCardDataToPost] = useState<
+    UnitCardDataToPost[]
+  >([]);
+  async function submit() {
+    const toPost: UnitCardDataToPost[] = [];
+    const towerDataToPost: {
+      tower_id: string;
+      typical_floor_unit_no_max: string;
+      max_floor: string;
+      ground_floor_unit_no_max: string;
+      ground_floor_name: string;
+    }[] = [];
+    towerFormData.map((tower) => {
+      towerDataToPost.push({
+        tower_id: tower.tower_id.toString(),
+        typical_floor_unit_no_max: tower.typicalUnitCount,
+        max_floor: tower.typicalMaxFloor.toString(),
+        ground_floor_unit_no_max: tower.gfUnitCount,
+        ground_floor_name: tower.gfName,
+      });
+      tower.unitCards.map((unitCard) => {
+        toPost.push({
+          unit_type_id: `${tower.tower_id}_${unitCard.configName}_${unitCard.salableArea}_${unitCard.extent}_${unitCard.facing || 'None'}`,
+          tower_id: tower.tower_id.toString(),
+          rera_type: unitCard.reraUnitType?.value || null,
+          tower_type: tower.towerType,
+          unit_type: tower.towerType,
+          saleable_area: unitCard.salableArea.toString() || null,
+          parking: unitCard.parking.toString() || null,
+          extent: unitCard.extent.toString() || null,
+          config: unitCard.configName || null,
+          confident: unitCard.configVerified,
+          wc_count: unitCard.toiletConfig || null,
+          other_features: unitCard.otherConfig || null,
+          unit_floors: unitCard.unitFloorCount || '1',
+          door_no_override: unitCard.doorNoOverride || null,
+          type_floors: unitCard.floorNos,
+          type_units: unitCard.unitNos,
+          facing: unitCard.facing || null,
+          is_corner: unitCard.corner,
+        });
+      });
+    });
+    setUnitCardDataToPost(toPost);
+    toast.promise(
+      axiosClient.post('/onboarding/onboardProjectPart2/', {
+        unitTypeData: toPost,
+        towerData: towerDataToPost,
+      }),
+      {
+        loading: 'Submitting...',
+        success: () => {
+          return 'Part 2 Data Submitted';
+        },
+        error: (err) => {
+          console.log(err);
+          return 'Error';
+        },
+      }
+    );
+  }
   return (
     <div className='mx-auto mt-10 flex w-full flex-col'>
       <h1 className='self-center text-2xl md:text-3xl'>
@@ -34,6 +98,9 @@ export default function Page() {
         />
         {formSteps === 'Project' && <ProjectContainer />}
         {formSteps === 'Tower' && <TowerContainer />}
+        {formSteps === 'Preview' && (
+          <PreviewContainer UnitCardDataToPost={UnitCardDataToPost} />
+        )}
 
         {/* PAGINATORS */}
         <div className='mx-auto mt-20 flex w-[50%] justify-between'>
@@ -60,17 +127,7 @@ export default function Page() {
             </button>
           )}
           {formSteps === 'Preview' && (
-            <button
-              className='btn btn-error w-28 text-white'
-              onClick={async () => {
-                await axiosClient.post('/onboarding/testste', {
-                  data: {
-                    projectData: projectData,
-                    towerData: towerFormData,
-                  },
-                });
-              }}
-            >
+            <button className='btn btn-error w-28 text-white' onClick={submit}>
               Submit
             </button>
           )}
