@@ -199,17 +199,14 @@ export type ImageStatsData = {
     project_docs: {
       brochure: {
         s3_path: string;
-        preview_url: string;
         file_type: 'image' | 'pdf';
       }[];
       project_image: {
         s3_path: string;
-        preview_url: string;
         file_type: 'image' | 'pdf';
       }[];
       project_master_plan: {
         s3_path: string;
-        preview_url: string;
         file_type: 'image' | 'pdf';
       }[];
     };
@@ -220,7 +217,6 @@ export type ImageStatsData = {
     tower_docs:
       | {
           s3_path: string;
-          preview_url: string;
           file_type: 'image' | 'pdf';
           doc_type: string;
         }[]

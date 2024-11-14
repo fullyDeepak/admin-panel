@@ -8,6 +8,7 @@ import Form from './Form';
 import PreviewDocs from './PreviewDocs';
 import { useImageFormStore } from './useImageFormStore';
 import { usePathname } from 'next/navigation';
+import { IMAGE_PATH_PREFIX } from '@/data/CONSTANTS';
 
 export default function ImageTaggingPage() {
   const {
@@ -149,7 +150,6 @@ export default function ImageTaggingPage() {
             project_id: number;
             doc_type: string;
             s3_path: string;
-            preview_url: string;
           }[];
           status: 'success';
         }>('/forms/imgTag/project', {
@@ -159,6 +159,7 @@ export default function ImageTaggingPage() {
           const newItem = {
             ...item,
             file_type: 'image' as 'image' | 'pdf',
+            preview_url: IMAGE_PATH_PREFIX + item.s3_path,
           };
           if (item.s3_path.endsWith('pdf')) {
             newItem.file_type = 'pdf';
@@ -177,7 +178,6 @@ export default function ImageTaggingPage() {
             tower_id: number;
             doc_type: string;
             s3_path: string;
-            preview_url: string;
           }[];
           status: 'success';
         }>('/forms/imgTag/tower', {
@@ -187,6 +187,7 @@ export default function ImageTaggingPage() {
           const newItem = {
             ...item,
             file_type: 'image' as 'image' | 'pdf',
+            preview_url: IMAGE_PATH_PREFIX + item.s3_path,
           };
           if (item.s3_path.endsWith('pdf')) {
             newItem.file_type = 'pdf';

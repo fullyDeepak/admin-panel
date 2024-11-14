@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import PreviewDocs from './PreviewDocs';
 import { useEffect, useState } from 'react';
+import { IMAGE_PATH_PREFIX } from '@/data/CONSTANTS';
 
 type Props = {
   data: ImageStatsData | null;
@@ -122,7 +123,8 @@ export default function StatsUI({ data, isLoading }: Props) {
                                   onClick={() => {
                                     setPreviewDocsData({
                                       file_type: docItem.file_type,
-                                      preview_url: docItem.preview_url,
+                                      preview_url:
+                                        IMAGE_PATH_PREFIX + docItem.s3_path,
                                       project_id: data.project_res.project_id,
                                       s3_path: docItem.s3_path,
                                       doc_type: docsType,
@@ -198,7 +200,8 @@ export default function StatsUI({ data, isLoading }: Props) {
                                 setPreviewDocsData({
                                   project_id: data.project_res.project_id,
                                   file_type: docItem.file_type,
-                                  preview_url: docItem.preview_url,
+                                  preview_url:
+                                    IMAGE_PATH_PREFIX + docItem.s3_path,
                                   doc_type: docItem.doc_type,
                                   tower_id: towerUnitItem.tower_id,
                                   s3_path: docItem.s3_path,
