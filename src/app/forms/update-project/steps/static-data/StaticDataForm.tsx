@@ -209,7 +209,11 @@ export default function StaticDataForm() {
                       { label: 'Villa', value: 'villa' },
                       { label: 'Mixed', value: 'mixed' },
                     ].find((type) => type.value === ele.type) || null,
-                  etlUnitConfigs: [],
+                  etlUnitConfigs: ele.unit_configs.map((ele) => ({
+                    configName: ele.config,
+                    maxArea: ele.max_built,
+                    minArea: ele.min_built,
+                  })),
                 })),
                 etlData: projectData.data.data.ProjectETLTagDataType.map(
                   (ele, index) => ({
