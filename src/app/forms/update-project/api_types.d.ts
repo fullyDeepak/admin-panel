@@ -61,7 +61,14 @@ export interface Tower {
   tower_id: number;
   max_floor: any;
   min_floor: any;
-  unit_configs: any[];
+  unit_configs: {
+    id: number;
+    config: string;
+    tower_id: number;
+    max_built: number;
+    min_built: number;
+    project_id: number;
+  }[];
   rera_tower_id: string;
   tower_door_no: string;
   etl_tower_name: string;

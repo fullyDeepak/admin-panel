@@ -430,7 +430,11 @@ export default function StaticDataForm() {
                       { label: 'Villa', value: 'villa' },
                       { label: 'Mixed', value: 'mixed' },
                     ].find((type) => type.value === ele.type) || null,
-                  etlUnitConfigs: [],
+                  etlUnitConfigs: ele.unit_configs.map((item) => ({
+                    configName: item.config,
+                    maxArea: item.max_built,
+                    minArea: item.min_built,
+                  })),
                 }))
               );
             }
