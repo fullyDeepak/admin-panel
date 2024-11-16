@@ -182,7 +182,7 @@ export default function StaticDataForm() {
                       (ele) => ele.key === 'clubhouse_area'
                     )?.val || '',
                   rootDocArea: projectData.data.data.root_docs
-                    .filter((ele) => ele.area_attached)
+                    ?.filter((ele) => ele.area_attached)
                     .reduce((acc, ele) => acc + +ele.extent, 0),
                 },
                 towerData: projectData.data.data.towers.map((ele, index) => ({
