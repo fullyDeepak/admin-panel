@@ -330,7 +330,7 @@ export default function StaticDataForm() {
                 ],
                 reraIds: projectData.data.data.rera_id,
                 project_id: projectData.data.data.project_id,
-                developmentAgreements: projectData.data.data.root_docs.map(
+                developmentAgreements: projectData.data.data.root_docs?.map(
                   (ele) => ({
                     ...ele,
                     execution_date: parseISO(ele.execution_date),
