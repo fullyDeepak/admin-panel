@@ -337,7 +337,7 @@ export default function StaticDataForm() {
                   })
                 ),
                 rootDocArea: projectData.data.data.root_docs
-                  .filter((ele) => ele.area_attached)
+                  ?.filter((ele) => ele.area_attached)
                   .reduce((acc, ele) => acc + +ele.extent, 0),
               });
               setEtlData(
