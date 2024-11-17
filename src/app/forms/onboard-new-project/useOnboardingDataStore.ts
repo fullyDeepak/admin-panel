@@ -108,6 +108,7 @@ export interface TempProjectSourceData {
   status: any;
   display_project_type: string;
   raw_apartment_names: string[];
+  apt_name_not_contains: string[];
   developers?: Developer;
   keywords?: Keyword[];
   party_keywords?: PartyKeyword[];

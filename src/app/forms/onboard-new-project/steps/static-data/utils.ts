@@ -133,7 +133,8 @@ export async function fetchTempProjectDetails({ e, villageOptions }: Props) {
         docId: [],
         rootDocs: [],
         apartmentContains: tempProjectData.data.data.raw_apartment_names,
-        aptNameNotContains: [],
+        aptNameNotContains:
+          tempProjectData.data.data.apt_name_not_contains || [],
         aptSurveyPlotDetails: false,
         counterpartyContains: [], // ! couterpartykeywords?
         counterpartySurveyPlotDetails: false,
