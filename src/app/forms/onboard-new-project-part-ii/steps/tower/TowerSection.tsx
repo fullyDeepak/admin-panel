@@ -10,8 +10,11 @@ import {
   ChevronLast,
   ChevronLeft,
   ChevronRight,
+  LockKeyhole,
+  LockKeyholeOpen,
 } from 'lucide-react';
 import TowerDetails from './TowerDetails';
+import { cn } from '@/lib/utils';
 
 export default function TowerSection() {
   const {
@@ -25,7 +28,22 @@ export default function TowerSection() {
     setExistingUnitTypeOption,
     setTowerFloorPlanFile,
     removeTowerFloorPlanFile,
-  } = useTowerUnitStore();
+    lockUnitType,
+    setLockUnitType,
+  } = useTowerUnitStore((state) => ({
+    copyUnitCard: state.copyUnitCard,
+    addNewUnitCard: state.addNewUnitCard,
+    updateUnitCard: state.updateUnitCard,
+    updateTowerFormData: state.updateTowerFormData,
+    towerFormData: state.towerFormData,
+    showTMRefTable: state.showTMRefTable,
+    deleteUnitCard: state.deleteUnitCard,
+    setExistingUnitTypeOption: state.setExistingUnitTypeOption,
+    setTowerFloorPlanFile: state.setTowerFloorPlanFile,
+    removeTowerFloorPlanFile: state.removeTowerFloorPlanFile,
+    lockUnitType: state.lockUnitType,
+    setLockUnitType: state.setLockUnitType,
+  }));
 
   useEffect(() => {
     const options: {
@@ -45,6 +63,27 @@ export default function TowerSection() {
 
   return (
     <div className='flex flex-col text-sm'>
+      <label
+        className={cn(
+          'btn swap swap-rotate btn-sm my-5 self-center',
+          lockUnitType ? 'btn-success' : 'btn-error'
+        )}
+      >
+        <input
+          type='checkbox'
+          onChange={(e) => setLockUnitType(e.target.checked)}
+          checked={lockUnitType}
+        />
+        <div className='swap-on flex items-center gap-2 text-white'>
+          <LockKeyhole size={20} />{' '}
+          <span className='mt-1'>Unit Type Locked</span>
+        </div>
+        <div className='swap-off flex items-center gap-2 text-white'>
+          <LockKeyholeOpen size={20} />{' '}
+          <span className='mt-1'>Unit Type Open</span>
+        </div>
+      </label>
+
       {towerFormData.map((tower, idx) => (
         <div
           className='tower-card-container relative z-0 flex flex-col transition-all duration-1000'

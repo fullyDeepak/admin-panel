@@ -36,7 +36,12 @@ export default function UnitSection({
     setShowTMRefTable,
     showTMRefTable,
     towerFormData,
-  } = useTowerUnitStore();
+  } = useTowerUnitStore((state) => ({
+    existingUnitTypeOption: state.existingUnitTypeOption,
+    setShowTMRefTable: state.setShowTMRefTable,
+    showTMRefTable: state.showTMRefTable,
+    towerFormData: state.towerFormData,
+  }));
 
   return (
     <div>

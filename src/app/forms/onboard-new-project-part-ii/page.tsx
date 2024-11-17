@@ -26,6 +26,7 @@ export default function Page() {
     projectBookingStatus,
     projectPricingStatus,
     projectConstructionStatus,
+    lockUnitType,
   } = useTowerUnitStore();
   const [UnitCardDataToPost, setUnitCardDataToPost] = useState<
     UnitCardDataToPost[]
@@ -89,8 +90,10 @@ export default function Page() {
 
     toast.promise(
       axiosClient.post('/onboarding/onboardProjectPart2/', {
+        project_id: projectData.selectedProject!.value,
         unitTypeData: toPost,
         towerData: towerDataToPost,
+        lockUnitType: lockUnitType,
       }),
       {
         loading: 'Submitting tower-unit data...',
