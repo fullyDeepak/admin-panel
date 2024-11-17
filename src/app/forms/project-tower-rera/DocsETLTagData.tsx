@@ -1,9 +1,9 @@
 import ETLTagData from '@/components/forms/ETLTagData';
 import LoadingCircle from '@/components/ui/LoadingCircle';
-import PDFViewer from '@/components/ui/PdfViewer';
 import { useReraDocStore } from '@/store/useReraDocStore';
 import React, { useState } from 'react';
 import { useProjectStoreRera } from './useProjectStoreRera';
+import RndPdfViewer from '@/components/ui/RndPdfViewer';
 
 type DocsETLTagDataProps = {
   villageOptions:
@@ -76,7 +76,7 @@ export default function DocsETLTagData({
                           onClick={() => {
                             setPdfPreviewDivs(
                               pdfPreviewDivs.concat(
-                                <PDFViewer
+                                <RndPdfViewer
                                   title={`${doc.projectId} - ${doc.fileName}`}
                                   content={doc.content.data}
                                 />

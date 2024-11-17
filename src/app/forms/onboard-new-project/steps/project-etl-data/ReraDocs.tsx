@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import { useReraDocStore } from '@/store/useReraDocStore';
 import LoadingCircle from '@/components/ui/LoadingCircle';
-import PDFViewer from '@/components/ui/PdfViewer';
+import RndPdfViewer from '@/components/ui/RndPdfViewer';
 
 export default function ReraDocs() {
   const { onboardingData } = useOnboardingDataStore();
@@ -56,7 +56,7 @@ export default function ReraDocs() {
                     onClick={() => {
                       setPdfPreviewDivs(
                         pdfPreviewDivs.concat(
-                          <PDFViewer
+                          <RndPdfViewer
                             title={`${doc.projectId} - ${doc.fileName}`}
                             content={doc.content.data}
                           />

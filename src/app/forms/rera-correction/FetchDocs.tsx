@@ -1,5 +1,5 @@
 import LoadingCircle from '@/components/ui/LoadingCircle';
-import PDFViewer from '@/components/ui/PdfViewer';
+import RndPdfViewer from '@/components/ui/RndPdfViewer';
 import axiosClient from '@/utils/AxiosClient';
 import React, { useState } from 'react';
 
@@ -87,7 +87,7 @@ export default function FetchDocs({
                   onClick={() => {
                     setPdfPreviewDivs(
                       pdfPreviewDivs.concat(
-                        <PDFViewer
+                        <RndPdfViewer
                           title={`${doc.projectId} - ${doc.fileName}`}
                           content={doc.content.data}
                         />
