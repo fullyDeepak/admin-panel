@@ -9,7 +9,7 @@ export default function ProjectSection() {
   return (
     <div className='flex flex-col gap-y-6'>
       <section className='space-y-5 p-2'>
-        <h2 className='text-lg font-semibold'>Section: Project Brochure</h2>
+        <h2 className='text-xl font-semibold'>Section: Project Brochure</h2>
         <div className='relative flex flex-wrap items-center justify-between gap-5'>
           <span className='flex-[3] text-base md:text-xl'>Select File:</span>
           <input
@@ -38,7 +38,7 @@ export default function ProjectSection() {
       </section>
       <hr className='border-[1.5px] border-violet-300' />
       <section className='space-y-5 px-2'>
-        <h2 className='text-lg font-semibold'>Section: Project Master Plan</h2>
+        <h2 className='text-xl font-semibold'>Section: Project Master Plan</h2>
         <div className='relative flex flex-wrap items-center justify-between gap-5'>
           <span className='flex-[3] text-base md:text-xl'>Select File:</span>
           <div className='flex flex-[5] items-center gap-2'>
@@ -73,7 +73,7 @@ export default function ProjectSection() {
       </section>
       <hr className='border-[1.5px] border-violet-300' />
       <section className='space-y-5 px-2'>
-        <h2 className='text-lg font-semibold'>Section: Project Images</h2>
+        <h2 className='text-xl font-semibold'>Section: Project Images</h2>
         <div className='relative flex flex-wrap items-center justify-between gap-5'>
           <span className='flex-[3] text-base md:text-xl'>
             Select Primary Images:
@@ -143,7 +143,7 @@ export default function ProjectSection() {
       </section>
       <hr className='border-[1.5px] border-violet-300' />
       <section className='space-y-5 px-2'>
-        <h2 className='text-lg font-semibold'>Section: Project Other Docs</h2>
+        <h2 className='text-xl font-semibold'>Section: Project Other Docs</h2>
         <div className='relative flex flex-wrap items-center justify-between gap-5'>
           <span className='flex-[3] text-base md:text-xl'>
             Select Any Other Documents:
