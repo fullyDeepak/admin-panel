@@ -8,8 +8,7 @@ export default function ProjectContainer() {
   return (
     <div className='flex flex-col gap-4'>
       <ProjectDropdown />
-      {/* {projectData.selectedProject?.value && <ImageFormContainer />} */}
-      <ImageFormContainer />
+      {projectData.selectedProject?.value && <ImageFormContainer />}
     </div>
   );
 }
