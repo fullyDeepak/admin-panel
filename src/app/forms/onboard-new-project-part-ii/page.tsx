@@ -11,7 +11,6 @@ import { UnitCardDataToPost } from './types';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import axiosClient from '@/utils/AxiosClient';
-import ImageFormContainer from './steps/image/ImageFormContainer';
 import StatusContainer from './steps/status-pricing/StatusContainer';
 
 export default function Page() {
@@ -167,7 +166,6 @@ export default function Page() {
         />
         {formSteps === 'Project' && <ProjectContainer />}
         {formSteps === 'Tower' && <TowerContainer />}
-        {formSteps === 'Image' && <ImageFormContainer />}
         {formSteps === 'Status' && <StatusContainer />}
         {formSteps === 'Preview' && (
           <PreviewContainer UnitCardDataToPost={UnitCardDataToPost} />

@@ -34,22 +34,24 @@ export default function TowerDetails({
           {tower.reraId ? `${tower.reraId} : ${tower.reraTowerId}` : 'N/A'}
         </span>
         <span className='flex-[3]'>Tower Floor Plan:</span>
-        <input
-          type='file'
-          className='file-input file-input-bordered file-input-accent file-input-xs h-8'
-          multiple
-          accept='image/*'
-          onChange={(e) => {
-            if (e.target.files && e.target.files.length > 0) {
-              Array.from(e.target.files).forEach((file) => {
-                setTowerFloorPlanFile(tower.tower_id, {
-                  file: file,
-                  fileName: file.name,
+        <div className='flex items-center gap-2'>
+          <input
+            type='file'
+            className='file-input file-input-bordered file-input-accent file-input-xs h-8 w-52'
+            multiple
+            accept='image/*'
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                Array.from(e.target.files).forEach((file) => {
+                  setTowerFloorPlanFile(tower.tower_id, {
+                    file: file,
+                    fileName: file.name,
+                  });
                 });
-              });
-            }
-          }}
-        />
+              }
+            }}
+          />
+        </div>
         <span className='fl'>Tower Type:</span>
         <span className='flex h-6 items-center rounded-md border-0 px-2 text-gray-900 placeholder:text-gray-400'>
           {tower.towerType ? tower.towerType : 'N/A'}
