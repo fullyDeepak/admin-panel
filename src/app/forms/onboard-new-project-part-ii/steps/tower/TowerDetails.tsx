@@ -10,11 +10,11 @@ type Props = {
   setTowerFloorPlanFile: (
     _towerCardId: number,
     imageData: {
-      fileName: string;
+      name: string;
       file: File;
     }
   ) => void;
-  removeTowerFloorPlanFile: (_towerCardId: number, fileName: string) => void;
+  removeTowerFloorPlanFile: (_towerCardId: number, name: string) => void;
 };
 
 export default function TowerDetails({
@@ -45,7 +45,7 @@ export default function TowerDetails({
                 Array.from(e.target.files).forEach((file) => {
                   setTowerFloorPlanFile(tower.tower_id, {
                     file: file,
-                    fileName: file.name,
+                    name: file.name,
                   });
                 });
               }
@@ -151,10 +151,10 @@ export default function TowerDetails({
             <div className='ml-5 flex flex-[5] flex-col gap-2'>
               {tower.towerFloorPlanFile.map((file, idx) => (
                 <div className='flex items-center justify-between' key={idx}>
-                  <span className=''>{file.fileName}</span>
+                  <span className=''>{file.name}</span>
                   <button
                     onClick={() =>
-                      removeTowerFloorPlanFile(tower.tower_id, file.fileName)
+                      removeTowerFloorPlanFile(tower.tower_id, file.name)
                     }
                     className='flex size-5 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-500'
                   >

@@ -17,7 +17,7 @@ export type TowerUnitDetailType = {
   tower_id: number;
   reraId: string;
   reraTowerId: string;
-  towerFloorPlanFile: { fileName: string; file: File }[];
+  towerFloorPlanFile: { name: string; file: File }[];
   towerNameDisplay: string;
   towerNameETL: string;
   towerType: string;
@@ -151,7 +151,7 @@ type Store = {
   resetTowerUnitStore: () => void;
   setTowerFloorPlanFile: (
     _towerCardId: number,
-    imageData: { fileName: string; file: File }
+    imageData: { name: string; file: File }
   ) => void;
   removeTowerFloorPlanFile: (_towerCardId: number, fileName: string) => void;
   updateProjectStatus: (
@@ -306,7 +306,7 @@ export const useTowerUnitStore = create<Store>()(
         );
         prev.towerFormData[towerDataIdx].towerFloorPlanFile =
           prev.towerFormData[towerDataIdx].towerFloorPlanFile.filter(
-            (item) => item.fileName !== fileName
+            (item) => item.name !== fileName
           );
       });
     },

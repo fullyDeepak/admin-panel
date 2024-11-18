@@ -17,7 +17,7 @@ type Props = {
   applyFileName: string;
 };
 
-export default function PDFImageSelector({
+export default function ProjectPDFImageSelector({
   smallButton,
   applyKey,
   applyFileName,

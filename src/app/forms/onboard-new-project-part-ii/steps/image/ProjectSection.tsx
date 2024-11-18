@@ -1,15 +1,18 @@
 'use client';
 
 import { useProjectImageStore } from '../../useProjectImageStore';
-import PDFImageSelector from './PDFImageSelector';
+import ProjectPDFImageSelector from './ProjectPDFImageSelector';
 import FileList from './FileList';
 
 export default function ProjectSection() {
   const { imagesStore, setImageFile, removeImageFile } = useProjectImageStore();
   return (
     <div className='flex flex-col gap-y-6'>
+      <h3 className='mt-10 text-center text-2xl font-semibold'>
+        Section: Project Image Form
+      </h3>
       <section className='space-y-5 p-2'>
-        <h2 className='text-xl font-semibold'>Section: Project Brochure</h2>
+        <h4 className='text-xl font-semibold'>Section: Project Brochure</h4>
         <div className='relative flex flex-wrap items-center justify-between gap-5'>
           <span className='flex-[3] text-base md:text-xl'>Select File:</span>
           <input
@@ -33,12 +36,14 @@ export default function ProjectSection() {
         <FileList
           imagesList={imagesStore.brochureFile}
           imgKey='brochureFile'
-          removeImageFile={removeImageFile}
+          removeImageFile={(key, fileName) =>
+            removeImageFile(key as keyof typeof imagesStore, fileName)
+          }
         />
       </section>
       <hr className='border-[1.5px] border-violet-300' />
       <section className='space-y-5 px-2'>
-        <h2 className='text-xl font-semibold'>Section: Project Master Plan</h2>
+        <h4 className='text-xl font-semibold'>Section: Project Master Plan</h4>
         <div className='relative flex flex-wrap items-center justify-between gap-5'>
           <span className='flex-[3] text-base md:text-xl'>Select File:</span>
           <div className='flex flex-[5] items-center gap-2'>
@@ -59,7 +64,7 @@ export default function ProjectSection() {
                 }
               }}
             />
-            <PDFImageSelector
+            <ProjectPDFImageSelector
               applyKey='masterPlanFile'
               applyFileName='master_plan'
             />
@@ -68,12 +73,14 @@ export default function ProjectSection() {
         <FileList
           imagesList={imagesStore.masterPlanFile}
           imgKey='masterPlanFile'
-          removeImageFile={removeImageFile}
+          removeImageFile={(key, fileName) =>
+            removeImageFile(key as keyof typeof imagesStore, fileName)
+          }
         />
       </section>
       <hr className='border-[1.5px] border-violet-300' />
       <section className='space-y-5 px-2'>
-        <h2 className='text-xl font-semibold'>Section: Project Images</h2>
+        <h4 className='text-xl font-semibold'>Section: Project Images</h4>
         <div className='relative flex flex-wrap items-center justify-between gap-5'>
           <span className='flex-[3] text-base md:text-xl'>
             Select Primary Images:
@@ -96,7 +103,7 @@ export default function ProjectSection() {
                 }
               }}
             />
-            <PDFImageSelector
+            <ProjectPDFImageSelector
               applyKey='primaryImageFile'
               applyFileName='project-main-image'
             />
@@ -105,7 +112,9 @@ export default function ProjectSection() {
         <FileList
           imagesList={imagesStore.primaryImageFile}
           imgKey='primaryImageFile'
-          removeImageFile={removeImageFile}
+          removeImageFile={(key, fileName) =>
+            removeImageFile(key as keyof typeof imagesStore, fileName)
+          }
         />
         <div className='relative flex flex-wrap items-center justify-between gap-5'>
           <span className='flex-[3] text-base md:text-xl'>
@@ -129,7 +138,7 @@ export default function ProjectSection() {
                 }
               }}
             />
-            <PDFImageSelector
+            <ProjectPDFImageSelector
               applyKey='otherImageFile'
               applyFileName='project-image'
             />
@@ -138,12 +147,14 @@ export default function ProjectSection() {
         <FileList
           imagesList={imagesStore.otherImageFile}
           imgKey='otherImageFile'
-          removeImageFile={removeImageFile}
+          removeImageFile={(key, fileName) =>
+            removeImageFile(key as keyof typeof imagesStore, fileName)
+          }
         />
       </section>
       <hr className='border-[1.5px] border-violet-300' />
       <section className='space-y-5 px-2'>
-        <h2 className='text-xl font-semibold'>Section: Project Other Docs</h2>
+        <h4 className='text-xl font-semibold'>Section: Project Other Docs</h4>
         <div className='relative flex flex-wrap items-center justify-between gap-5'>
           <span className='flex-[3] text-base md:text-xl'>
             Select Any Other Documents:
@@ -166,7 +177,7 @@ export default function ProjectSection() {
                 }
               }}
             />
-            <PDFImageSelector
+            <ProjectPDFImageSelector
               applyKey='otherDocs'
               applyFileName='project-other-doc'
             />
@@ -175,7 +186,9 @@ export default function ProjectSection() {
         <FileList
           imagesList={imagesStore.otherDocs}
           imgKey='otherDocs'
-          removeImageFile={removeImageFile}
+          removeImageFile={(key, fileName) =>
+            removeImageFile(key as keyof typeof imagesStore, fileName)
+          }
         />
       </section>
     </div>

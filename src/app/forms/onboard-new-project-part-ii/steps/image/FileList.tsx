@@ -9,21 +9,27 @@ type Props = {
     file: File;
   }[];
   imgKey: keyof ImageStoreState;
-  removeImageFile: (_key: keyof ImageStoreState, _fileName: string) => void;
+  removeImageFile: (_key: string | number, _fileName: string) => void;
+  customModalSuffix?: string;
+  towerId?: number;
 };
 
 export default function FileList({
   imagesList,
   imgKey,
   removeImageFile,
+  customModalSuffix,
+  towerId,
 }: Props) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  // const [showModal, setShowModal] = useState(true);
   return (
     imagesList &&
     imagesList.length > 0 && (
       <div className='flex flex-col gap-y-2'>
-        <dialog id={`image-form-preview-modal-${imgKey}`} className='modal'>
+        <dialog
+          id={`image-form-preview-modal-${imgKey}${customModalSuffix}`}
+          className='modal'
+        >
           <div className='modal-box max-w-3xl'>
             <div className='flex flex-col gap-1'>
               <p className='text-center text-2xl font-semibold'>
@@ -75,7 +81,7 @@ export default function FileList({
                       setSelectedFile(file.file);
                       (
                         document.getElementById(
-                          `image-form-preview-modal-${imgKey}`
+                          `image-form-preview-modal-${imgKey}${customModalSuffix}`
                         ) as HTMLDialogElement
                       ).showModal();
                     }}
@@ -85,7 +91,13 @@ export default function FileList({
                     <Eye size={18} />
                   </button>
                   <button
-                    onClick={() => removeImageFile(imgKey, file.name)}
+                    onClick={() => {
+                      if (towerId) {
+                        removeImageFile(towerId, file.name);
+                      } else {
+                        removeImageFile(imgKey, file.name);
+                      }
+                    }}
                     className='flex size-8 items-center justify-center rounded-full bg-red-600 text-white hover:bg-red-600'
                   >
                     <Trash2 size={18} />
