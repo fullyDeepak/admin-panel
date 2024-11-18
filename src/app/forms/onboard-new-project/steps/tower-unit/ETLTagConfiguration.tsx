@@ -234,10 +234,6 @@ export default function ETLTagConfiguration({
               );
               console.log(configNames);
               if (configName && configMin && configMax) {
-                if (configNames.includes(configName.trim().toUpperCase())) {
-                  alert('Duplicate configuration.');
-                  return;
-                }
                 addEtlUnitConfig(
                   towerData.id,
                   configName.toUpperCase(),
