@@ -4,28 +4,21 @@ import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import * as PDFJS from 'pdfjs-dist/build/pdf';
 import * as PDFJSWorker from 'pdfjs-dist/build/pdf.worker';
-import { ChangeEvent, useMemo, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { Buffer } from 'buffer';
 import Preview from './Preview';
 import LoadingCircle from '@/components/ui/LoadingCircle';
-import dynamic from 'next/dynamic';
+import ImageCropper from '@/components/ui/ImageCropper';
 
 export default function Page() {
   PDFJS.GlobalWorkerOptions.workerSrc = PDFJSWorker;
   const [file, setFile] = useState<File | null>(null);
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [imageFile, setImageFile] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
-  const [pageNumber, setPageNumber] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
   const [dpi, setDpi] = useState(200);
-  const [showEditor, setShowEditor] = useState(false);
+  const [showEditor, setShowEditor] = useState(true);
 
-  const ImageEditor = useMemo(
-    () =>
-      dynamic(() => import('../../components/ui/ImageEditor'), {
-        ssr: false,
-      }),
-    []
-  );
   const onFileDrop = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const newFile = e.target.files[0];
@@ -35,7 +28,7 @@ export default function Page() {
   };
 
   const UrlUploader = (url: string) => {
-    setImageUrls([]);
+    setImageFile([]);
     fetch(url).then((response) => {
       response.blob().then((blob) => {
         const reader = new FileReader();
@@ -54,7 +47,7 @@ export default function Page() {
 
   const renderPage = async (data: string, pageNumber?: number) => {
     setLoading(true);
-    const imagesList: string[] = [];
+    const imagesList: File[] = [];
     const canvas = document.createElement('canvas');
     canvas.setAttribute('className', 'canv');
     const pdf = await PDFJS.getDocument({ data }).promise;
@@ -70,7 +63,12 @@ export default function Page() {
       };
       await page.render(render_context).promise;
       const img = canvas.toDataURL('image/png');
-      imagesList.push(img);
+      const response = await fetch(img);
+      const blob = await response.blob();
+      const imgFile = new File([blob], 'converted-image.png', {
+        type: 'image/png',
+      });
+      imagesList.push(imgFile);
     } else {
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
@@ -83,17 +81,50 @@ export default function Page() {
         };
         await page.render(render_context).promise;
         const img = canvas.toDataURL('image/png');
-        imagesList.push(img);
+        const response = await fetch(img);
+        const blob = await response.blob();
+        const imgFile = new File([blob], 'converted-image.png', {
+          type: 'image/png',
+        });
+        imagesList.push(imgFile);
       }
     }
-    setImageUrls((e: any) => [...e, ...imagesList]);
+    setImageFile((e: any) => [...e, ...imagesList]);
     setLoading(false);
-    setTimeout(() => {
-      document.getElementById('image-container')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }, 500);
+  };
+
+  const pdfToImage = async (file: File) => {
+    const canvas = document.createElement('canvas');
+    canvas.setAttribute('className', 'canv');
+    const pdf = await PDFJS.getDocument({ data: file }).promise;
+    if (!pdf.numPages) return;
+    if (pageNumber) {
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: dpi / 96 });
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      const render_context = {
+        canvasContext: canvas.getContext('2d'),
+        viewport: viewport,
+      };
+      await page.render(render_context).promise;
+      const img = canvas.toDataURL('image/png');
+      setImageFile((e: any) => [...e, img]);
+    } else {
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: dpi / 96 });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        const render_context = {
+          canvasContext: canvas.getContext('2d'),
+          viewport: viewport,
+        };
+        await page.render(render_context).promise;
+        const img = canvas.toDataURL('image/png');
+        setImageFile((e: any) => [...e, img]);
+      }
+    }
   };
 
   return (
@@ -104,16 +135,6 @@ export default function Page() {
           accept='.pdf'
           onChange={onFileDrop}
           className='file-input file-input-bordered file-input-accent file-input-sm h-10 w-96'
-        />
-        <input
-          type='number'
-          value={pageNumber || ''}
-          min={1}
-          onChange={(e) => setPageNumber(e.target.valueAsNumber)}
-          placeholder='Page Number'
-          className={
-            'w-32 rounded-md border-0 bg-transparent p-2 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
-          }
         />
         <input
           type='number'
@@ -134,12 +155,12 @@ export default function Page() {
         >
           Convert
         </button>
-        <button
+        {/* <button
           className='btn btn-neutral btn-sm h-10'
           onClick={() => setShowEditor(true)}
         >
           Open Image Editor
-        </button>
+        </button> */}
       </div>
 
       {loading && (
@@ -150,22 +171,26 @@ export default function Page() {
         />
       )}
 
-      {showEditor && imageUrls.length > 0 && (
+      {/* {showEditor && imageFile.length > 0 && (
         <ImageEditor
-          source={imageUrls[0]}
+          source={imageFile[0]}
           showEditor={showEditor}
           setShowEditor={setShowEditor}
         />
+      )} */}
+
+      {showEditor && imageFile.length > 0 && (
+        <ImageCropper src={imageFile[0]} />
       )}
 
       <div className='mt-10'>
-        {file && <Preview file={file} />}
+        {file && <Preview file={file} setPageNumber={setPageNumber} />}
         <div id='image-container'>
-          {imageUrls.map((url, index) => (
+          {imageFile.map((file, index) => (
             <div key={index}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={url}
+                src={URL.createObjectURL(file)}
                 alt={`Page ${index + 1}`}
                 style={{
                   width: '100%',
