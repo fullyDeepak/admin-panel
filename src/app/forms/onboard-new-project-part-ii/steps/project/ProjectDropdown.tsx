@@ -171,8 +171,8 @@ export default function ProjectDropdown() {
                   newData.facing = uniq(Object.values(etlData.facing)).join(
                     ', '
                   );
-                  newData.floorList = etlData.floor_list.join(', ');
-                  newData.unitList = etlData.unit_numbers.join(', ');
+                  newData.floorList = etlData.floor_list?.join(', ');
+                  newData.unitList = etlData.unit_numbers?.join(', ');
                   tmUnitRefKey[key] = newData;
                 }
               });
