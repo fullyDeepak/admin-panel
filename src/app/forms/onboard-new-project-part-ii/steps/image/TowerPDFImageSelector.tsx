@@ -3,16 +3,14 @@ import { useProjectImageStore } from '../../useProjectImageStore';
 import { useState } from 'react';
 import PDFViewer from '@/components/ui/PdfViewer';
 import ImageCropper from '@/components/ui/ImageCropper';
-import * as PDFJS from 'pdfjs-dist/build/pdf';
-import * as PDFJSWorker from 'pdfjs-dist/build/pdf.worker';
 import { useTowerUnitStore } from '../../useTowerUnitStore';
+import { pdfToImage } from '@/lib/image';
 
 type Props = {
   smallButton?: boolean;
 };
 
 export default function ProjectPDFImageSelector({ smallButton }: Props) {
-  PDFJS.GlobalWorkerOptions.workerSrc = PDFJSWorker;
   const { brochureFile } = useProjectImageStore((state) => ({
     brochureFile: state.imagesStore.brochureFile,
   }));
@@ -31,42 +29,6 @@ export default function ProjectPDFImageSelector({ smallButton }: Props) {
   const [convertedBlob, setConvertedBlob] = useState<Blob | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [showEditor, setShowEditor] = useState(false);
-
-  const pdfToImage = async (url: string) => {
-    fetch(url).then((response) => {
-      response.blob().then((blob) => {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          if (!e.target?.result) return;
-          const data = Buffer.from(
-            (e.target.result as string).replace(/.*base64,/, ''),
-            'base64'
-          ).toString('binary');
-          const canvas = document.createElement('canvas');
-          canvas.setAttribute('className', 'canv');
-          const pdf = await PDFJS.getDocument({ data: data }).promise;
-          const page = await pdf.getPage(pageNumber);
-          const viewport = page.getViewport({ scale: dpi / 96 });
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-          const render_context = {
-            canvasContext: canvas.getContext('2d'),
-            viewport: viewport,
-          };
-          await page.render(render_context).promise;
-          const imgDataUrl = canvas.toDataURL('image/png');
-          // Convert dataURL to a File object
-          const response = await fetch(imgDataUrl);
-          const blob = await response.blob();
-          const imgFile = new File([blob], 'converted-image.png', {
-            type: 'image/png',
-          });
-          setSelectedFile(imgFile);
-        };
-        reader.readAsDataURL(blob);
-      });
-    });
-  };
 
   function handleAssign() {
     if (!convertedBlob) return;
@@ -155,8 +117,13 @@ export default function ProjectPDFImageSelector({ smallButton }: Props) {
                 <div className='flex items-center gap-5 self-center'>
                   <button
                     className='btn btn-neutral btn-sm max-w-fit'
-                    onClick={() => {
-                      pdfToImage(URL.createObjectURL(selectedBrochureFile));
+                    onClick={async () => {
+                      const imgFile = await pdfToImage(
+                        URL.createObjectURL(selectedBrochureFile),
+                        pageNumber,
+                        dpi
+                      );
+                      setSelectedFile(imgFile);
                       setShowEditor(true);
                     }}
                   >

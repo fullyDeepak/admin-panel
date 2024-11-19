@@ -1,8 +1,8 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-import { resizeCanvasToSquare } from '@/lib/utils';
 import { RotateCw } from 'lucide-react';
+import { resizeCanvasToSquare } from '@/lib/image';
 
 type Props = {
   src: File;
