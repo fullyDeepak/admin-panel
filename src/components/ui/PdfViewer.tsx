@@ -11,8 +11,6 @@ import {
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
-import * as PDFJS from 'pdfjs-dist/build/pdf';
-import * as PDFJSWorker from 'pdfjs-dist/build/pdf.worker';
 import { useMemo, useState } from 'react';
 
 type PDFViewerProps =
@@ -61,7 +59,6 @@ export default function PDFViewer({
   setPageNumber,
 }: PDFViewerProps) {
   if (!content && !fileContent) return <></>;
-  PDFJS.GlobalWorkerOptions.workerSrc = PDFJSWorker;
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const customZoomPluginInstance = customZoomPlugin();
   const { zoomTo } = customZoomPluginInstance;
