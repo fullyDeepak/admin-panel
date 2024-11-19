@@ -66,7 +66,7 @@ export default function ProjectSection() {
             />
             <ProjectPDFImageSelector
               applyKey='masterPlanFile'
-              applyFileName='master_plan'
+              applyFileName='master-plan'
             />
           </div>
         </div>

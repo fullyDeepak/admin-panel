@@ -3,7 +3,6 @@ import { useProjectImageStore } from '../../useProjectImageStore';
 import { useState } from 'react';
 import PDFViewer from '@/components/ui/PdfViewer';
 import ImageCropper from '@/components/ui/ImageCropper';
-import { nanoid } from 'nanoid';
 import { pdfToImage } from '@/lib/image';
 
 type Props = {
@@ -21,38 +20,69 @@ export default function ProjectPDFImageSelector({
   applyKey,
   applyFileName,
 }: Props) {
-  const { brochureFile, setImageFile } = useProjectImageStore((state) => ({
-    brochureFile: state.imagesStore.brochureFile,
-    setImageFile: state.setImageFile,
-  }));
+  const { brochureFile, setImageFile, imagesStore } = useProjectImageStore(
+    (state) => ({
+      brochureFile: state.imagesStore.brochureFile,
+      setImageFile: state.setImageFile,
+      imagesStore: state.imagesStore,
+    })
+  );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [dpi, setDpi] = useState(300);
   const [convertedBlob, setConvertedBlob] = useState<Blob | null>(null);
   const [fileName, setFileName] = useState<string>(applyFileName);
-  const [targetImageForm, setTargetImageForm] = useState<string>('png');
 
   function handleAssign() {
     if (!convertedBlob) return;
-    const imgFile = new File([convertedBlob], `${fileName}-${nanoid(2)}.png`, {
-      type: 'image/png',
-    });
     if (applyKey === 'masterPlanFile') {
+      const length = imagesStore.masterPlanFile.length;
+      const imgFile = new File(
+        [convertedBlob],
+        `${fileName}-${length + 1}.png`,
+        {
+          type: 'image/png',
+        }
+      );
       setImageFile('masterPlanFile', {
         name: imgFile.name,
         file: imgFile,
       });
     } else if (applyKey === 'primaryImageFile') {
+      const length = imagesStore.primaryImageFile.length;
+      const imgFile = new File(
+        [convertedBlob],
+        `${fileName}-${length + 1}.png`,
+        {
+          type: 'image/png',
+        }
+      );
       setImageFile('primaryImageFile', {
         name: imgFile.name,
         file: imgFile,
       });
     } else if (applyKey === 'otherImageFile') {
+      const length = imagesStore.otherImageFile.length;
+      const imgFile = new File(
+        [convertedBlob],
+        `${fileName}-${length + 1}.png`,
+        {
+          type: 'image/png',
+        }
+      );
       setImageFile('otherImageFile', {
         name: imgFile.name,
         file: imgFile,
       });
     } else if (applyKey === 'otherDocs') {
+      const length = imagesStore.otherDocs.length;
+      const imgFile = new File(
+        [convertedBlob],
+        `${fileName}-${length + 1}.png`,
+        {
+          type: 'image/png',
+        }
+      );
       setImageFile('otherDocs', {
         name: imgFile.name,
         file: imgFile,
@@ -171,15 +201,6 @@ export default function ProjectPDFImageSelector({
                     'rounded-md border-0 bg-transparent p-2 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
                   }
                 />
-                <select
-                  className='h-9 min-h-9 w-full flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none !pe-1 !pl-1 !pr-5 ps-3 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
-                  value={targetImageForm}
-                  onChange={(e) => setTargetImageForm(e.target.value)}
-                >
-                  <option>Select</option>
-                  <option>Option 1</option>
-                  <option>Option 2</option>
-                </select>
                 <button
                   className='btn btn-neutral btn-sm'
                   onClick={handleAssign}
