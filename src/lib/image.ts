@@ -76,3 +76,8 @@ export const pdfToImage = async (
     reader.readAsDataURL(blob);
   });
 };
+
+export const blobToFile = (blob: Blob, fileName: string): File => {
+  const file = new File([blob], fileName, { type: blob.type });
+  return file;
+};

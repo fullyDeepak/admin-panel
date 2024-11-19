@@ -1,7 +1,8 @@
-import { Eye, Trash2 } from 'lucide-react';
+import { Edit2, Eye, Trash2 } from 'lucide-react';
 import { ImageStoreState } from '../../useProjectImageStore';
 import { useState } from 'react';
 import Image from 'next/image';
+import ReEditor from './ReEditor';
 
 type Props = {
   imagesList: {
@@ -22,6 +23,7 @@ export default function FileList({
   towerId,
 }: Props) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showEditor, setShowEditor] = useState(false);
   return (
     imagesList &&
     imagesList.length > 0 && (
@@ -30,26 +32,33 @@ export default function FileList({
           id={`image-form-preview-modal-${imgKey}${customModalSuffix}`}
           className='modal'
         >
-          <div className='modal-box max-w-3xl'>
+          <div className='modal-box relative max-w-3xl'>
             <div className='flex flex-col gap-1'>
               <p className='text-center text-2xl font-semibold'>
-                Preview of &quot;{selectedFile?.name}&quot;
+                {showEditor ? 'Editing' : 'Preview of'} &quot;
+                {selectedFile?.name}&quot;
               </p>
+              {!showEditor && (
               <span>
                 File Size:{' '}
                 {selectedFile?.size
                   ? `${(selectedFile.size / 1024).toFixed(2)} KB`
                   : '0KB'}
               </span>
+              )}
             </div>
-            {selectedFile && selectedFile.type === 'application/pdf' && (
+            {!showEditor &&
+              selectedFile &&
+              selectedFile.type === 'application/pdf' && (
               <iframe
                 src={URL.createObjectURL(selectedFile)}
                 style={{ width: '100%', height: '400px' }}
                 className='mx-auto rounded-2xl'
               ></iframe>
             )}
-            {selectedFile && selectedFile.type.includes('image') && (
+            {!showEditor &&
+              selectedFile &&
+              selectedFile.type.includes('image') && (
               <div className='flex items-center justify-center'>
                 <Image
                   alt='Preview'
@@ -59,10 +68,29 @@ export default function FileList({
                   className='border-4 border-violet-500'
                 />
               </div>
+              )}
+            {!showEditor &&
+              selectedFile &&
+              selectedFile.type.includes('image') && (
+                <button
+                  className='btn btn-circle btn-neutral absolute bottom-8 right-8'
+                  onClick={() => setShowEditor(true)}
+                >
+                  <Edit2 size={20} />
+                </button>
+              )}
+
+            {showEditor && selectedFile && (
+              <ReEditor
+                projectImageKey={imgKey}
+                selectedFile={selectedFile}
+                setShowEditor={setShowEditor}
+                modalId={`image-form-preview-modal-${imgKey}${customModalSuffix}`}
+              />
             )}
           </div>
           <form method='dialog' className='modal-backdrop'>
-            <button>close</button>
+            <button onClick={() => setShowEditor(false)}>close</button>
           </form>
         </dialog>
         <div className='flex'>
@@ -77,7 +105,6 @@ export default function FileList({
                 <div className='flex gap-2'>
                   <button
                     onClick={() => {
-                      console.log('Preview', file);
                       setSelectedFile(file.file);
                       (
                         document.getElementById(
