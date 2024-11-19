@@ -1,7 +1,6 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-import { RotateCw } from 'lucide-react';
 import { resizeCanvasToSquare } from '@/lib/image';
 
 type Props = {
@@ -53,7 +52,7 @@ function ImageCropper({ src, saveBlob }: Props) {
   }, [src]);
 
   return (
-    <div className='relative mt-5'>
+    <div className='relative'>
       <Cropper
         src={source}
         ref={cropperRef}
@@ -71,18 +70,17 @@ function ImageCropper({ src, saveBlob }: Props) {
           Download
         </button>
       )}
-      <button
-        className='tooltip absolute left-0 top-0 z-[9999999999] flex size-8 items-center justify-center rounded-full bg-neutral text-white'
-        onClick={() =>
-          setRotate((prev) => {
-            if (prev === 270) return 0;
-            return prev + 90;
-          })
-        }
-        data-tip='Rotate clockwise'
-      >
-        <RotateCw size={16} />
-      </button>
+      <div className='mt-2 flex max-w-md items-center gap-5 rounded-md border-2 p-2 shadow-c2'>
+        <span>Rotate</span>
+        <input
+          type='range'
+          className='range range-xs bg-violet-200 [--range-shdw:#7c3aed]'
+          min={0}
+          max={360}
+          value={rotate}
+          onChange={(e) => setRotate(e.target.valueAsNumber)}
+        />
+      </div>
     </div>
   );
 }
