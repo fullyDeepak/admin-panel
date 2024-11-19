@@ -292,6 +292,7 @@ export const useTowerUnitStore = create<Store>()(
         const towerDataIdx = prev.towerFormData.findIndex(
           (tower) => tower.tower_id === towerCardId
         );
+        if (towerDataIdx === -1) return;
         prev.towerFormData[towerDataIdx].towerFloorPlanFile = [
           ...prev.towerFormData[towerDataIdx].towerFloorPlanFile,
           imageData,
@@ -304,6 +305,7 @@ export const useTowerUnitStore = create<Store>()(
         const towerDataIdx = prev.towerFormData.findIndex(
           (tower) => tower.tower_id === towerCardId
         );
+        if (towerDataIdx === -1) return;
         prev.towerFormData[towerDataIdx].towerFloorPlanFile =
           prev.towerFormData[towerDataIdx].towerFloorPlanFile.filter(
             (item) => item.name !== fileName
