@@ -10,6 +10,13 @@ type Props = {
     file: File;
   }[];
   imgKey: keyof ImageStoreState;
+  setImageFile: (
+    _key: string | number,
+    _file: {
+      name: string;
+      file: File;
+    }
+  ) => void;
   removeImageFile: (_key: string | number, _fileName: string) => void;
   customModalSuffix?: string;
   towerId?: number;
@@ -21,6 +28,7 @@ export default function FileList({
   removeImageFile,
   customModalSuffix,
   towerId,
+  setImageFile,
 }: Props) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showEditor, setShowEditor] = useState(false);
@@ -39,35 +47,35 @@ export default function FileList({
                 {selectedFile?.name}&quot;
               </p>
               {!showEditor && (
-              <span>
-                File Size:{' '}
-                {selectedFile?.size
-                  ? `${(selectedFile.size / 1024).toFixed(2)} KB`
-                  : '0KB'}
-              </span>
+                <span>
+                  File Size:{' '}
+                  {selectedFile?.size
+                    ? `${(selectedFile.size / 1024).toFixed(2)} KB`
+                    : '0KB'}
+                </span>
               )}
             </div>
             {!showEditor &&
               selectedFile &&
               selectedFile.type === 'application/pdf' && (
-              <iframe
-                src={URL.createObjectURL(selectedFile)}
-                style={{ width: '100%', height: '400px' }}
-                className='mx-auto rounded-2xl'
-              ></iframe>
-            )}
+                <iframe
+                  src={URL.createObjectURL(selectedFile)}
+                  style={{ width: '100%', height: '400px' }}
+                  className='mx-auto rounded-2xl'
+                ></iframe>
+              )}
             {!showEditor &&
               selectedFile &&
               selectedFile.type.includes('image') && (
-              <div className='flex items-center justify-center'>
-                <Image
-                  alt='Preview'
-                  src={URL.createObjectURL(selectedFile)}
-                  width={400}
-                  height={400}
-                  className='border-4 border-violet-500'
-                />
-              </div>
+                <div className='flex items-center justify-center'>
+                  <Image
+                    alt='Preview'
+                    src={URL.createObjectURL(selectedFile)}
+                    width={400}
+                    height={400}
+                    className='border-4 border-violet-500'
+                  />
+                </div>
               )}
             {!showEditor &&
               selectedFile &&
@@ -86,6 +94,9 @@ export default function FileList({
                 selectedFile={selectedFile}
                 setShowEditor={setShowEditor}
                 modalId={`image-form-preview-modal-${imgKey}${customModalSuffix}`}
+                setImageFile={setImageFile}
+                removeImageFile={removeImageFile}
+                towerId={towerId}
               />
             )}
           </div>
@@ -138,3 +149,6 @@ export default function FileList({
     )
   );
 }
+
+// floor + unit nos + salable area
+// unit no + extent + salable area

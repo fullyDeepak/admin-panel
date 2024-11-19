@@ -1,16 +1,22 @@
 import ImageCropper from '@/components/ui/ImageCropper';
 import { useState } from 'react';
-import {
-  ImageStoreState,
-  useProjectImageStore,
-} from '../../useProjectImageStore';
+import { ImageStoreState } from '../../useProjectImageStore';
 import { blobToFile } from '@/lib/image';
 
 type Props = {
   selectedFile: File;
   projectImageKey: keyof ImageStoreState;
   setShowEditor: (value: boolean) => void;
+  setImageFile: (
+    _key: string | number,
+    _file: {
+      name: string;
+      file: File;
+    }
+  ) => void;
+  removeImageFile: (_key: string | number, _fileName: string) => void;
   modalId: string;
+  towerId?: number;
 };
 
 export default function ReEditor({
@@ -18,17 +24,28 @@ export default function ReEditor({
   projectImageKey,
   setShowEditor,
   modalId,
+  removeImageFile,
+  setImageFile,
+  towerId,
 }: Props) {
-  const { setImageFile, removeImageFile } = useProjectImageStore();
   const [blob, setBlob] = useState<Blob | null>(null);
 
   function saveEditedImage() {
+    console.log('towerId', towerId);
     if (!blob) return;
-    removeImageFile(projectImageKey, selectedFile.name);
-    setImageFile(projectImageKey, {
-      name: selectedFile.name,
-      file: blobToFile(blob, selectedFile.name),
-    });
+    if (towerId) {
+      removeImageFile(towerId, selectedFile.name);
+      setImageFile(towerId, {
+        name: selectedFile.name,
+        file: blobToFile(blob, selectedFile.name),
+      });
+    } else {
+      removeImageFile(projectImageKey as string, selectedFile.name);
+      setImageFile(projectImageKey as string, {
+        name: selectedFile.name,
+        file: blobToFile(blob, selectedFile.name),
+      });
+    }
   }
 
   return (

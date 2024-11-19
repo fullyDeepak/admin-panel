@@ -36,6 +36,9 @@ export default function ProjectSection() {
         <FileList
           imagesList={imagesStore.brochureFile}
           imgKey='brochureFile'
+          setImageFile={(key, file) =>
+            setImageFile(key as keyof typeof imagesStore, file)
+          }
           removeImageFile={(key, fileName) =>
             removeImageFile(key as keyof typeof imagesStore, fileName)
           }
@@ -73,6 +76,9 @@ export default function ProjectSection() {
         <FileList
           imagesList={imagesStore.masterPlanFile}
           imgKey='masterPlanFile'
+          setImageFile={(key, file) =>
+            setImageFile(key as keyof typeof imagesStore, file)
+          }
           removeImageFile={(key, fileName) =>
             removeImageFile(key as keyof typeof imagesStore, fileName)
           }
@@ -112,6 +118,9 @@ export default function ProjectSection() {
         <FileList
           imagesList={imagesStore.primaryImageFile}
           imgKey='primaryImageFile'
+          setImageFile={(key, file) =>
+            setImageFile(key as keyof typeof imagesStore, file)
+          }
           removeImageFile={(key, fileName) =>
             removeImageFile(key as keyof typeof imagesStore, fileName)
           }
@@ -147,6 +156,9 @@ export default function ProjectSection() {
         <FileList
           imagesList={imagesStore.otherImageFile}
           imgKey='otherImageFile'
+          setImageFile={(key, file) =>
+            setImageFile(key as keyof typeof imagesStore, file)
+          }
           removeImageFile={(key, fileName) =>
             removeImageFile(key as keyof typeof imagesStore, fileName)
           }
@@ -186,6 +198,9 @@ export default function ProjectSection() {
         <FileList
           imagesList={imagesStore.otherDocs}
           imgKey='otherDocs'
+          setImageFile={(key, file) =>
+            setImageFile(key as keyof typeof imagesStore, file)
+          }
           removeImageFile={(key, fileName) =>
             removeImageFile(key as keyof typeof imagesStore, fileName)
           }

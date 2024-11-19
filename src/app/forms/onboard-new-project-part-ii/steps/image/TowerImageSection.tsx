@@ -4,8 +4,9 @@ import FileList from './FileList';
 import TowerPDFImageSelector from './TowerPDFImageSelector';
 
 export default function TowerImageSection() {
-  const { imagesStore, setImageFile } = useProjectImageStore();
-  const { towerFormData, removeTowerFloorPlanFile } = useTowerUnitStore();
+  const { imagesStore } = useProjectImageStore();
+  const { towerFormData, removeTowerFloorPlanFile, setTowerFloorPlanFile } =
+    useTowerUnitStore();
 
   return (
     <div>
@@ -35,12 +36,12 @@ export default function TowerImageSection() {
                   type='file'
                   className='file-input file-input-bordered h-10 w-full'
                   multiple
-                  id='project-other-docs-file'
+                  id={`tower-plan-file-${tower.tower_id}`}
                   accept='image/*'
                   onChange={(e) => {
                     if (e.target.files && e.target.files.length > 0) {
                       Array.from(e.target.files).forEach((file) => {
-                        setImageFile('otherDocs', {
+                        setTowerFloorPlanFile(tower.tower_id, {
                           name: file.name,
                           file: file,
                         });
@@ -53,6 +54,9 @@ export default function TowerImageSection() {
             <FileList
               imagesList={tower.towerFloorPlanFile}
               imgKey='otherDocs'
+              setImageFile={(key, file) => {
+                setTowerFloorPlanFile(key as number, file);
+              }}
               removeImageFile={(key, fileName) =>
                 removeTowerFloorPlanFile(Number(key), fileName)
               }
