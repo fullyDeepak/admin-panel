@@ -2,6 +2,7 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import { resizeCanvasToSquare } from '@/lib/utils';
+import { RotateCw } from 'lucide-react';
 
 type Props = {
   src: File;
@@ -14,10 +15,7 @@ function ImageCropper({ src, saveBlob }: Props) {
   const [showOptions, setShowOptions] = React.useState(false);
   const cropperRef = useRef<ReactCropperElement>(null);
   const [blob, setBlob] = useState<Blob | null>(null);
-
-  // link.href = await resizeCanvasToSquare(
-  //   cropper?.getCroppedCanvas().toDataURL()
-  // );
+  const [rotate, setRotate] = useState(0);
 
   async function onCropEnd() {
     const cropper = cropperRef.current?.cropper;
@@ -42,6 +40,10 @@ function ImageCropper({ src, saveBlob }: Props) {
     link.click();
     document.body.removeChild(link);
   };
+
+  useEffect(() => {
+    cropperRef.current?.cropper.rotateTo(rotate);
+  }, [rotate]);
 
   useEffect(() => {
     if (sourceFile.size !== src.size) {
@@ -69,6 +71,18 @@ function ImageCropper({ src, saveBlob }: Props) {
           Download
         </button>
       )}
+      <button
+        className='tooltip absolute left-0 top-0 z-[9999999999] flex size-8 items-center justify-center rounded-full bg-neutral text-white'
+        onClick={() =>
+          setRotate((prev) => {
+            if (prev === 270) return 0;
+            return prev + 90;
+          })
+        }
+        data-tip='Rotate clockwise'
+      >
+        <RotateCw size={16} />
+      </button>
     </div>
   );
 }
