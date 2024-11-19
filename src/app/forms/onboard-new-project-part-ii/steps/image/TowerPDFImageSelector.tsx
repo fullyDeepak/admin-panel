@@ -71,9 +71,11 @@ export default function ProjectPDFImageSelector({ smallButton }: Props) {
   function handleAssign() {
     if (!convertedBlob) return;
     const [tower_id, towerName] = fileName.split(':');
+    const length = towerFormData.find((item) => item.tower_id === +tower_id)
+      ?.towerFloorPlanFile?.length;
     const imgFile = new File(
       [convertedBlob],
-      `${towerName.replaceAll(' ', '-')}-floor-plan.png`,
+      `${towerName.replaceAll(' ', '-')}-floor-plan-${(length || 0) + 1}.png`,
       {
         type: 'image/png',
       }
@@ -139,7 +141,10 @@ export default function ProjectPDFImageSelector({ smallButton }: Props) {
       <dialog id={`pdf-image-cropper-tower`} className='modal'>
         <div className='modal-box max-w-[85vw] overflow-hidden'>
           <form method='dialog'>
-            <button className='btn btn-circle btn-ghost btn-sm absolute right-2 top-2 !min-h-4 !min-w-4'>
+            <button
+              className='btn btn-circle btn-ghost btn-sm absolute right-2 top-2 !min-h-4 !min-w-4'
+              onClick={() => setShowEditor(false)}
+            >
               ✕
             </button>
           </form>
@@ -172,6 +177,7 @@ export default function ProjectPDFImageSelector({ smallButton }: Props) {
                   <PDFViewer
                     type='fileContent'
                     fileContent={selectedBrochureFile}
+                    pageNumber={pageNumber}
                     setPageNumber={setPageNumber}
                   />
                 </div>

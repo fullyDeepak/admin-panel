@@ -6,25 +6,28 @@ import {
   Plugin,
   createStore,
   PluginFunctions,
+  PageChangeEvent,
 } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import * as PDFJS from 'pdfjs-dist/build/pdf';
 import * as PDFJSWorker from 'pdfjs-dist/build/pdf.worker';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 type PDFViewerProps =
   | {
       type: 'stringContent';
       content: string | Uint8Array;
       fileContent?: never;
+      pageNumber?: number;
       setPageNumber?: (pageNumber: number) => void;
     }
   | {
       type: 'fileContent';
       content?: never;
       fileContent: File;
+      pageNumber?: number;
       setPageNumber?: (pageNumber: number) => void;
     };
 
@@ -54,6 +57,7 @@ const customZoomPlugin = (): CustomZoomPlugin => {
 export default function PDFViewer({
   content,
   fileContent,
+  pageNumber,
   setPageNumber,
 }: PDFViewerProps) {
   if (!content && !fileContent) return <></>;
@@ -62,7 +66,7 @@ export default function PDFViewer({
   const customZoomPluginInstance = customZoomPlugin();
   const { zoomTo } = customZoomPluginInstance;
   zoomTo(SpecialZoomLevel.PageWidth);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(pageNumber || 1);
 
   const pdfData = useMemo(() => {
     if (fileContent) {
@@ -72,22 +76,20 @@ export default function PDFViewer({
     return '';
   }, [fileContent]);
 
-  useEffect(() => {
-    if (setPageNumber) {
-      setPageNumber(page);
+  function onPageChange(e: PageChangeEvent) {
+    if (setPageNumber && e.currentPage !== 0) {
+      setPage(e.currentPage + 1);
+      setPageNumber(e.currentPage + 1);
     }
-  }, [page]);
+  }
 
   return (
     <Viewer
       fileUrl={content || pdfData}
       plugins={[defaultLayoutPluginInstance, customZoomPluginInstance]}
       theme={'dark'}
-      onPageChange={(e) => {
-        if (setPageNumber) {
-          setPage(e.currentPage + 1);
-        }
-      }}
+      initialPage={page - 1}
+      onPageChange={onPageChange}
     />
   );
 }
