@@ -97,51 +97,70 @@ export default function ProjectPDFImageSelector({
 
   return brochureFile?.length > 0 ? (
     <div>
-      <div className='dropdown'>
-        {smallButton ? (
-          <div
+      {brochureFile.length > 1 ? (
+        <div className='dropdown'>
+          {smallButton ? (
+            <div
+              tabIndex={0}
+              role='button'
+              className='btn btn-neutral btn-xs !min-h-8 !min-w-8'
+            >
+              <span className='tooltip' data-tip='Choose from brochure'>
+                <BookHeart size={20} />
+              </span>
+            </div>
+          ) : (
+            <div
+              tabIndex={0}
+              role='button'
+              className='btn btn-neutral btn-xs flex !min-h-10 !min-w-36 !flex-row items-center'
+            >
+              <BookHeart size={24} />
+              <span className='w-20'>Choose from brochure</span>
+            </div>
+          )}
+
+          <ul
             tabIndex={0}
-            role='button'
-            className='btn btn-neutral btn-xs !min-h-8 !min-w-8'
+            className='menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 text-xs shadow'
           >
-            <span className='tooltip' data-tip='Choose from brochure'>
-              <BookHeart size={20} />
-            </span>
-          </div>
-        ) : (
-          <div
-            tabIndex={0}
-            role='button'
+            {brochureFile.map((file, idx) => (
+              <li key={idx}>
+                <a
+                  onClick={() => {
+                    setSelectedFile(file.file);
+                    (
+                      document.getElementById(
+                        `pdf-image-cropper-${applyKey}`
+                      ) as HTMLDialogElement
+                    ).showModal();
+                  }}
+                  className='p-1.5'
+                >
+                  {file.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        brochureFile.length === 1 && (
+          <button
             className='btn btn-neutral btn-xs flex !min-h-10 !min-w-36 !flex-row items-center'
+            onClick={() => {
+              setSelectedFile(brochureFile[0].file);
+              (
+                document.getElementById(
+                  `pdf-image-cropper-${applyKey}`
+                ) as HTMLDialogElement
+              ).showModal();
+            }}
           >
             <BookHeart size={24} />
             <span className='w-20'>Choose from brochure</span>
-          </div>
-        )}
-
-        <ul
-          tabIndex={0}
-          className='menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 text-xs shadow'
-        >
-          {brochureFile.map((file, idx) => (
-            <li key={idx}>
-              <a
-                onClick={() => {
-                  setSelectedFile(file.file);
-                  (
-                    document.getElementById(
-                      `pdf-image-cropper-${applyKey}`
-                    ) as HTMLDialogElement
-                  ).showModal();
-                }}
-                className='p-1.5'
-              >
-                {file.name}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+          </button>
+        )
+      )}
       <dialog id={`pdf-image-cropper-${applyKey}`} className='modal'>
         <div className='modal-box max-w-[85vw] overflow-hidden'>
           <form method='dialog'>
