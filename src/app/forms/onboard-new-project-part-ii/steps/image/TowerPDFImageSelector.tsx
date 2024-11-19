@@ -37,7 +37,7 @@ export default function ProjectPDFImageSelector({ smallButton }: Props) {
       ?.towerFloorPlanFile?.length;
     const imgFile = new File(
       [convertedBlob],
-      `${towerName.replaceAll(' ', '-')}-floor-plan-${(length || 0) + 1}.png`,
+      `${towerName.toLowerCase().replaceAll(' ', '-')}-floor-plan-${(length || 0) + 1}.png`,
       {
         type: 'image/png',
       }
@@ -153,20 +153,31 @@ export default function ProjectPDFImageSelector({ smallButton }: Props) {
           {showEditor &&
             selectedFile &&
             selectedFile.type.includes('image') && (
-              <div className='flex items-center gap-5 p-5'>
+              <div className='flex items-center gap-2 p-5'>
                 <div className='flex-[3]'>
                   <ImageCropper
                     src={selectedFile}
                     saveBlob={setConvertedBlob}
                   />
                 </div>
-                <div className='flex flex-1 flex-col gap-5'>
+                <div className='flex flex-1 flex-col gap-2'>
+                  <input
+                    type='text'
+                    value={fileName || ''}
+                    onChange={(e) => setFileName(e.target.value)}
+                    placeholder='File Name'
+                    className={
+                      'rounded-md border-0 bg-transparent p-2 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
+                    }
+                  />
+                  <span className='-my-1 ml-2 text-xs text-amber-600'>
+                    Warning: Don&apos;t remove tower id from file name.
+                  </span>
                   <select
                     className='h-9 min-h-9 w-full flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none !pe-1 !pl-1 !pr-5 ps-3 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
-                    value={fileName}
                     onChange={(e) => setFileName(e.target.value)}
                   >
-                    <option value='' disabled>
+                    <option value='' selected disabled>
                       Select Tower
                     </option>
                     {towerFormData.map((tower, idx) => (

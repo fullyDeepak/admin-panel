@@ -4,8 +4,9 @@ import FileList from './FileList';
 import TowerPDFImageSelector from './TowerPDFImageSelector';
 
 export default function TowerImageSection() {
-  const { imagesStore, setImageFile, removeImageFile } = useProjectImageStore();
+  const { imagesStore, setImageFile } = useProjectImageStore();
   const { towerFormData, removeTowerFloorPlanFile } = useTowerUnitStore();
+
   return (
     <div>
       <h3 className='mb-5 mt-10 text-center text-2xl font-semibold'>
