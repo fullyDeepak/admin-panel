@@ -108,7 +108,10 @@ type Store = {
     _minArea: number,
     _maxArea: number
   ) => void;
-  deleteEtlUnitConfig: (_towerId: number, _configName: string) => void;
+  deleteEtlUnitConfig: (
+    _towerId: number,
+    _config: FormEtlUnitConfigType
+  ) => void;
 };
 
 export const useTowerUnitStore = create<Store>()(
@@ -268,14 +271,19 @@ export const useTowerUnitStore = create<Store>()(
       }));
     },
 
-    deleteEtlUnitConfig: (towerId, configName) => {
+    deleteEtlUnitConfig: (towerId, config) => {
       set((state) => ({
         towerFormData: state.towerFormData.map((data) =>
           data.id === towerId
             ? {
                 ...data,
                 etlUnitConfigs: data.etlUnitConfigs.filter(
-                  (unit) => unit.configName !== configName
+                  (unit) =>
+                    !(
+                      unit.configName === config.configName &&
+                      unit.maxArea === config.maxArea &&
+                      unit.minArea === config.minArea
+                    )
                 ),
               }
             : data

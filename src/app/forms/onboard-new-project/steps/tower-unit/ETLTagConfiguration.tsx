@@ -4,6 +4,7 @@ import { FiCheckCircle, FiEdit } from 'react-icons/fi';
 import { TiDeleteOutline } from 'react-icons/ti';
 import { TowerUnitDetailType } from '../../useTowerUnitStore';
 import { RefreshCcw } from 'lucide-react';
+import { FormEtlUnitConfigType } from '@/types/types';
 
 interface ETLTagConfigurationProps {
   towerData: TowerUnitDetailType;
@@ -13,7 +14,10 @@ interface ETLTagConfigurationProps {
     _minArea: number,
     _maxArea: number
   ) => void;
-  deleteEtlUnitConfig: (_towerId: number, _configName: string) => void;
+  deleteEtlUnitConfig: (
+    _towerId: number,
+    _config: FormEtlUnitConfigType
+  ) => void;
   addEtlUnitConfig: (
     _towerId: number,
     _configName: string,
@@ -134,9 +138,7 @@ export default function ETLTagConfiguration({
                 <button
                   className='w-36 cursor-pointer'
                   type='button'
-                  onClick={() =>
-                    deleteEtlUnitConfig(towerData.id, unit.configName)
-                  }
+                  onClick={() => deleteEtlUnitConfig(towerData.id, unit)}
                 >
                   <TiDeleteOutline size={25} className='text-red-500' />
                 </button>
