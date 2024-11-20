@@ -1,25 +1,22 @@
 import { Edit2, Eye, Trash2 } from 'lucide-react';
-import { ImageStoreState } from '../../useProjectImageStore';
+import { ImageItem, ImageStoreState } from '../../useProjectImageStore';
 import { useState } from 'react';
 import Image from 'next/image';
 import ReEditor from './ReEditor';
+import ImageLabelDropdown from './ImageLabelDropdown';
 
 type Props = {
-  imagesList: {
-    name: string;
-    file: File;
-  }[];
+  imagesList: ImageItem[];
   imgKey: keyof ImageStoreState;
-  setImageFile: (
-    _key: string | number,
-    _file: {
-      name: string;
-      file: File;
-    }
-  ) => void;
+  setImageFile: (_key: string | number, _file: ImageItem) => void;
   removeImageFile: (_key: string | number, _fileName: string) => void;
   customModalSuffix?: string;
   towerId?: number;
+  setProjectImageLabel?: (
+    _key: keyof ImageStoreState,
+    _fileName: string,
+    _label: ImageItem['label']
+  ) => void;
 };
 
 export default function FileList({
@@ -29,6 +26,7 @@ export default function FileList({
   customModalSuffix,
   towerId,
   setImageFile,
+  setProjectImageLabel,
 }: Props) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showEditor, setShowEditor] = useState(false);
@@ -112,8 +110,16 @@ export default function FileList({
                 className='flex items-center justify-between'
                 key={`${file.name}-${idx}`}
               >
-                <span className=''>{file.name}</span>
+                <span>{file.name}</span>
                 <div className='flex gap-2'>
+                  {imgKey.includes('Image') && setProjectImageLabel && (
+                    <ImageLabelDropdown
+                      imgKey={imgKey}
+                      fileName={file.name}
+                      label={file.label}
+                      setProjectImageLabel={setProjectImageLabel}
+                    />
+                  )}
                   <button
                     onClick={() => {
                       setSelectedFile(file.file);

@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import axiosClient from '@/utils/AxiosClient';
 import StatusContainer from './steps/status-pricing/StatusContainer';
+import { useProjectImageStore } from './useProjectImageStore';
 
 export default function Page() {
   const {
@@ -31,6 +32,8 @@ export default function Page() {
     UnitCardDataToPost[]
   >([]);
 
+  const { imagesStore } = useProjectImageStore();
+
   useEffect(() => {
     setUnitCardDataToPost([]);
   }, [projectData.selectedProject]);
@@ -45,15 +48,53 @@ export default function Page() {
       ground_floor_name: string;
     }[] = [];
     let uploadTowerFloorPlan = false;
-    const formData = new FormData();
-    formData.append(
+    const projectImgFormData = new FormData();
+    const towerImgFormData = new FormData();
+
+    imagesStore.brochureFile.map((file) => {
+      const key = { type: 'brochure' };
+      projectImgFormData.append(
+        encodeURIComponent(JSON.stringify(key)),
+        file.file
+      );
+    });
+    imagesStore.masterPlanFile.map((file) => {
+      const key = { type: 'project_master_plan', label: file.label };
+      projectImgFormData.append(
+        encodeURIComponent(JSON.stringify(key)),
+        file.file
+      );
+    });
+    imagesStore.primaryImageFile.map((file) => {
+      const key = { type: 'project_primary_image', label: file.label };
+      projectImgFormData.append(
+        encodeURIComponent(JSON.stringify(key)),
+        file.file
+      );
+    });
+    imagesStore.otherImageFile.map((file) => {
+      const key = { type: 'project_image', label: file.label };
+      projectImgFormData.append(
+        encodeURIComponent(JSON.stringify(key)),
+        file.file
+      );
+    });
+    imagesStore.otherDocs.map((file) => {
+      const key = { type: 'other_doc', label: file.label };
+      projectImgFormData.append(
+        encodeURIComponent(JSON.stringify(key)),
+        file.file
+      );
+    });
+
+    towerImgFormData.append(
       'project_id',
       projectData.selectedProject!.value.toString()
     );
     towerFormData.map((tower) => {
       tower.towerFloorPlanFile.map((file) => {
         uploadTowerFloorPlan = true;
-        formData.append(tower.tower_id.toString(), file.file);
+        towerImgFormData.append(tower.tower_id.toString(), file.file);
       });
       towerDataToPost.push({
         tower_id: tower.tower_id.toString(),
@@ -103,11 +144,31 @@ export default function Page() {
           console.log(err);
           return 'Error';
         },
-      }
+      },
+      { success: { duration: 5000 } }
     );
+
+    if ([...projectImgFormData.entries()].length > 0) {
+      toast.promise(
+        axiosClient.post('/forms/imgTag/projects', projectImgFormData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }),
+        {
+          loading: 'uploading project docs and images...',
+          success: () => {
+            return 'File uploaded';
+          },
+          error: (err) => {
+            console.log(err);
+            return 'Error';
+          },
+        },
+        { success: { duration: 5000 } }
+      );
+    }
     if (uploadTowerFloorPlan) {
       toast.promise(
-        axiosClient.post('/forms/imgTag/tower', formData, {
+        axiosClient.post('/forms/imgTag/tower', towerImgFormData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         }),
         {
@@ -119,7 +180,8 @@ export default function Page() {
             console.log(err);
             return 'Error';
           },
-        }
+        },
+        { success: { duration: 5000 } }
       );
     }
 

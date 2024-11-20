@@ -5,7 +5,8 @@ import ProjectPDFImageSelector from './ProjectPDFImageSelector';
 import FileList from './FileList';
 
 export default function ProjectSection() {
-  const { imagesStore, setImageFile, removeImageFile } = useProjectImageStore();
+  const { imagesStore, setImageFile, removeImageFile, setProjectImageLabel } =
+    useProjectImageStore();
   return (
     <div className='flex flex-col gap-y-6'>
       <h3 className='mt-10 text-center text-2xl font-semibold'>
@@ -124,6 +125,7 @@ export default function ProjectSection() {
           removeImageFile={(key, fileName) =>
             removeImageFile(key as keyof typeof imagesStore, fileName)
           }
+          setProjectImageLabel={setProjectImageLabel}
         />
         <div className='relative flex flex-wrap items-center justify-between gap-5'>
           <span className='flex-[3] text-base md:text-xl'>
@@ -162,6 +164,7 @@ export default function ProjectSection() {
           removeImageFile={(key, fileName) =>
             removeImageFile(key as keyof typeof imagesStore, fileName)
           }
+          setProjectImageLabel={setProjectImageLabel}
         />
       </section>
       <hr className='border-[1.5px] border-violet-300' />
