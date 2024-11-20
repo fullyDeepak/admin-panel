@@ -66,7 +66,7 @@ export default function TowerSection() {
       <label
         className={cn(
           'btn swap swap-rotate btn-sm my-5 self-center',
-          lockUnitType ? 'btn-success' : 'btn-error'
+          lockUnitType ? 'btn-error' : 'btn-success'
         )}
       >
         <input

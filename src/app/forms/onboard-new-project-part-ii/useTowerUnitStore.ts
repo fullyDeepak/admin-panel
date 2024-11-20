@@ -190,7 +190,7 @@ export const useTowerUnitStore = create<Store>()(
     projectPricingStatus: [] as Store['projectPricingStatus'],
     projectConstructionStatus: [] as Store['projectConstructionStatus'],
 
-    lockUnitType: true as boolean,
+    lockUnitType: false as boolean,
 
     updateTowerFormData: (id, newDetails) =>
       set((prev) => {
