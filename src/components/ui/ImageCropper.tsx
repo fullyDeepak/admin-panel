@@ -2,6 +2,7 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import { resizeCanvasToSquare } from '@/lib/image';
+import { RotateCcw, RotateCw } from 'lucide-react';
 
 type Props = {
   src: File;
@@ -70,8 +71,8 @@ function ImageCropper({ src, saveBlob }: Props) {
           Download
         </button>
       )}
-      <div className='mt-2 flex max-w-md items-center gap-5 rounded-md border-2 p-2 shadow-c2'>
-        <span>Rotate</span>
+      <div className='mt-2 flex max-w-lg items-center gap-5 rounded-md border-2 p-2 shadow-c2'>
+        <span className='min-w-28 tabular-nums'>Rotate: {rotate}°</span>
         <input
           type='range'
           className='range range-xs bg-violet-200 [--range-shdw:#7c3aed]'
@@ -80,6 +81,44 @@ function ImageCropper({ src, saveBlob }: Props) {
           value={rotate}
           onChange={(e) => setRotate(e.target.valueAsNumber)}
         />
+        <div className='flex gap-2'>
+          <button
+            className='flex size-8 items-center justify-center rounded-full bg-violet-600 text-white'
+            onClick={() => {
+              setRotate((prev) => {
+                if (prev === 0) {
+                  return 270;
+                }
+                const roundToNearest90 = (angle: number) =>
+                  Math.ceil(angle / 90) * 90;
+                if (prev > 0 && prev < 360) {
+                  return roundToNearest90(prev - 90 + 360) % 360;
+                }
+                return (prev - 90 + 360) % 360;
+              });
+            }}
+          >
+            <RotateCcw size={16} />
+          </button>
+          <button
+            className='flex size-8 items-center justify-center rounded-full bg-violet-600 text-white'
+            onClick={() => {
+              setRotate((prev) => {
+                if (prev === 0) {
+                  return 90;
+                }
+                const roundToNearest90 = (angle: number) =>
+                  Math.floor(angle / 90) * 90;
+                if (prev > 0 && prev < 360) {
+                  return roundToNearest90(prev + 90 + 360) % 360;
+                }
+                return (prev + 90 + 360) % 360;
+              });
+            }}
+          >
+            <RotateCw size={16} />
+          </button>
+        </div>
       </div>
     </div>
   );
