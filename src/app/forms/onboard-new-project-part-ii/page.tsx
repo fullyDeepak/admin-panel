@@ -32,7 +32,7 @@ export default function Page() {
     UnitCardDataToPost[]
   >([]);
 
-  const { imagesStore } = useProjectImageStore();
+  const { imagesStore, resetImageStore } = useProjectImageStore();
 
   useEffect(() => {
     setUnitCardDataToPost([]);
@@ -50,6 +50,11 @@ export default function Page() {
     let uploadTowerFloorPlan = false;
     const projectImgFormData = new FormData();
     const towerImgFormData = new FormData();
+
+    projectImgFormData.append(
+      'project_id',
+      projectData.selectedProject!.value.toString()
+    );
 
     imagesStore.brochureFile.map((file) => {
       const key = { type: 'brochure' };
@@ -156,7 +161,8 @@ export default function Page() {
         {
           loading: 'uploading project docs and images...',
           success: () => {
-            return 'File uploaded';
+            resetImageStore();
+            return 'Project docs and images uploaded';
           },
           error: (err) => {
             console.log(err);
@@ -174,7 +180,7 @@ export default function Page() {
         {
           loading: 'uploading tower floor plan...',
           success: () => {
-            return 'File uploaded';
+            return 'Tower floor plan uploaded';
           },
           error: (err) => {
             console.log(err);
