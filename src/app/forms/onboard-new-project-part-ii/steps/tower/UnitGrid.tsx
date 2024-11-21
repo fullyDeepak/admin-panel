@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { TowerUnitDetailType } from '../../useTowerUnitStore';
 import { subGridGenerator } from './grid-generator';
 import { produce } from 'immer';
-import { getRandomColor } from '@/lib/utils';
+import { cn, getRandomColor } from '@/lib/utils';
 
 export type UnitGridItem = {
   unitType?: string;
@@ -16,6 +16,7 @@ export type UnitGridItem = {
   unitLabel?: string;
   unitFloorCount?: number;
   color?: string;
+  isDuplicate?: boolean;
 };
 
 type Props = {
@@ -71,6 +72,14 @@ export default function UnitGrid({ towerData }: Props) {
               item.facing = value[0].facing;
               item.unitFloorCount = value[0].unitFloorCount;
               item.color = getRandomColor(card.id);
+              item.isDuplicate =
+                item.config ||
+                item.salableArea ||
+                item.facing ||
+                item.extent ||
+                item.color
+                  ? true
+                  : false;
             }
           });
         });
@@ -102,7 +111,10 @@ export default function UnitGrid({ towerData }: Props) {
                 units.map((unit, j) => (
                   <div
                     key={`${i}-${j}`}
-                    className='flex w-20 flex-col items-center justify-center rounded-md p-2'
+                    className={cn(
+                      'flex w-20 flex-col items-center justify-center rounded-md p-2',
+                      unit.isDuplicate && 'animate-bounce'
+                    )}
                     style={{
                       backgroundColor: unit.color || '#e4e4e4',
                     }}
