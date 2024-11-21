@@ -57,6 +57,7 @@ export type UnitCardType = {
   unitFloorCount: string | null;
   unitNos: string;
   doorNoOverride: string;
+  unitFloorPlanFile: { name: string; file: File } | null;
 };
 
 const INITIAL_STATE: TowerUnitDetailType[] = [
@@ -90,6 +91,7 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
         toiletConfig: null,
         tmUnitType: null,
         doorNoOverride: '',
+        unitFloorPlanFile: null,
       },
     ],
     reraRefTable: [],
@@ -262,6 +264,7 @@ export const useTowerUnitStore = create<Store>()(
             toiletConfig: null,
             tmUnitType: null,
             doorNoOverride: '',
+            unitFloorPlanFile: null,
           });
         }
       }),

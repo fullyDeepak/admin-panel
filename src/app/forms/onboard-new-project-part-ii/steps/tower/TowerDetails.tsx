@@ -34,10 +34,9 @@ export default function TowerDetails({
           {tower.reraId ? `${tower.reraId} : ${tower.reraTowerId}` : 'N/A'}
         </span>
         <span className='flex-[3]'>Tower Floor Plan:</span>
-        <div className='flex items-center gap-2'>
           <input
             type='file'
-            className='file-input file-input-bordered file-input-accent file-input-xs h-8 w-52'
+          className='w file-input file-input-bordered file-input-accent file-input-xs h-8'
             multiple
             accept='image/*'
             onChange={(e) => {
@@ -51,7 +50,6 @@ export default function TowerDetails({
               }
             }}
           />
-        </div>
         <span className='fl'>Tower Type:</span>
         <span className='flex h-6 items-center rounded-md border-0 px-2 text-gray-900 placeholder:text-gray-400'>
           {tower.towerType ? tower.towerType : 'N/A'}
@@ -64,7 +62,7 @@ export default function TowerDetails({
               defaultValue={tower.typicalMaxFloor ? tower.typicalMaxFloor : ''}
               onChange={(e) =>
                 updateTowerFormData(tower.tower_id, {
-                  typicalMaxFloor: +e.target.value,
+                  typicalMaxFloor: e.target.valueAsNumber,
                 })
               }
               id='max-floor'

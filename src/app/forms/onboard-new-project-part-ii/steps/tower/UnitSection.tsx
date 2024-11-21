@@ -11,6 +11,8 @@ import {
   useTowerUnitStore,
 } from '../../useTowerUnitStore';
 import { CornerIcon } from './CornerIcon';
+import UnitFileList from '../image/UnitFileList';
+import UnitImageSelector from '../image/UnitImageSelector';
 
 type Props = {
   towerData: TowerUnitDetailType;
@@ -56,6 +58,12 @@ export default function UnitSection({
         >
           Toggle TM Ref Table
         </button>
+        <UnitImageSelector
+          towerId={towerData.tower_id}
+          towerImage={towerData.towerFloorPlanFile}
+          unitCards={towerData.unitCards}
+          updateUnitCard={updateUnitCard}
+        />
       </div>
       {towerData.unitCards && towerData.unitCards.length > 0 ? (
         towerData.unitCards.map((unitData) => (
@@ -523,14 +531,31 @@ export default function UnitSection({
               <div className='-ml-1 flex-[14]'>
                 <input
                   type='file'
-                  className='file-input file-input-bordered ml-2 h-10'
-                  multiple
-                  disabled
+                  className='file-input file-input-bordered file-input-xs ml-2 h-8'
                   id='project-other-docs-file'
                   accept='image/*'
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      Array.from(e.target.files).forEach((file) => {
+                        updateUnitCard(towerData.tower_id, unitData.id, {
+                          unitFloorPlanFile: {
+                            name: file.name,
+                            file: file,
+                          },
+                        });
+                      });
+                    }
+                  }}
                 />
               </div>
             </div>
+            <UnitFileList
+              image={unitData.unitFloorPlanFile}
+              towerId={towerData.tower_id}
+              unitId={unitData.id}
+              updateUnitCard={updateUnitCard}
+              customModalSuffix={`${towerData.tower_id}-${unitData.id}-${unitData.salableArea}-${unitData.extent}`}
+            />
             <div className='absolute -bottom-4 -left-0 z-[0] flex w-full items-center'>
               <button
                 type='button'
