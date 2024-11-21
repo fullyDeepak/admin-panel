@@ -65,13 +65,6 @@ export default function UnitGrid({ towerData }: Props) {
         Object.entries(subGrid).map(([key, value]) => {
           draft[key]?.map((item) => {
             if (item.unitNumber === value[0].unitNumber) {
-              item.unitType = value[0].unitType;
-              item.config = value[0].config;
-              item.salableArea = value[0].salableArea;
-              item.extent = value[0].extent;
-              item.facing = value[0].facing;
-              item.unitFloorCount = value[0].unitFloorCount;
-              item.color = getRandomColor(card.id);
               item.isDuplicate =
                 item.config ||
                 item.salableArea ||
@@ -80,6 +73,13 @@ export default function UnitGrid({ towerData }: Props) {
                 item.color
                   ? true
                   : false;
+              item.unitType = value[0].unitType;
+              item.config = value[0].config;
+              item.salableArea = value[0].salableArea;
+              item.extent = value[0].extent;
+              item.facing = value[0].facing;
+              item.unitFloorCount = value[0].unitFloorCount;
+              item.color = getRandomColor(card.id);
             }
           });
         });
@@ -113,7 +113,9 @@ export default function UnitGrid({ towerData }: Props) {
                     key={`${i}-${j}`}
                     className={cn(
                       'flex w-20 flex-col items-center justify-center rounded-md p-2',
-                      unit.isDuplicate && 'animate-bounce'
+                      unit.isDuplicate
+                        ? 'animate-bounce duration-700'
+                        : 'animate-none'
                     )}
                     style={{
                       backgroundColor: unit.color || '#e4e4e4',
