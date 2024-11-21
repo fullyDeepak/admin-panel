@@ -217,6 +217,7 @@ export default function ProjectDropdown() {
                   otherConfig: null,
                   toiletConfig: null,
                   tmUnitType: null,
+                  unitFloorPlanFile: null,
                 });
               });
               towerData.push({
