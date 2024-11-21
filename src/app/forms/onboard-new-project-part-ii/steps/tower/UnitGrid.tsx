@@ -17,6 +17,7 @@ export type UnitGridItem = {
   unitFloorCount?: number;
   color?: string;
   isDuplicate?: boolean;
+  isUnitFPAvailable?: boolean;
 };
 
 type Props = {
@@ -79,7 +80,10 @@ export default function UnitGrid({ towerData }: Props) {
               item.extent = value[0].extent;
               item.facing = value[0].facing;
               item.unitFloorCount = value[0].unitFloorCount;
-              item.color = getRandomColor(card.id);
+              item.color = card.unitFloorPlanFile
+                ? getRandomColor(card.id, 35)
+                : getRandomColor(card.id, 60);
+              item.isUnitFPAvailable = card.unitFloorPlanFile ? true : false;
             }
           });
         });
@@ -115,10 +119,15 @@ export default function UnitGrid({ towerData }: Props) {
                       'flex w-20 flex-col items-center justify-center rounded-md p-2',
                       unit.isDuplicate
                         ? 'animate-bounce duration-700'
-                        : 'animate-none'
+                        : 'animate-none',
+                      unit.color && `text-white`
                     )}
                     style={{
-                      backgroundColor: unit.color || '#e4e4e4',
+                      background: unit.color
+                        ? unit.isUnitFPAvailable
+                          ? unit.color
+                          : `linear-gradient(35deg, ${unit.color} 80%, #52525b 20%)`
+                        : '#e4e4e7',
                     }}
                   >
                     <span>{`${unit.floorLabel}-${unit.unitNumber}`}</span>
