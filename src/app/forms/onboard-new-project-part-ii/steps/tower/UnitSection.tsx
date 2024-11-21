@@ -2,7 +2,7 @@ import Select from 'react-select';
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { ShieldCheck, ShieldQuestion } from 'lucide-react';
 import { nanoid } from 'nanoid';
-import { cn } from '@/lib/utils';
+import { cn, getRandomColor } from '@/lib/utils';
 import { TbMapEast, TbMapNorth, TbMapSouth, TbMapWest } from 'react-icons/tb';
 import { BiCopy, BiPlus } from 'react-icons/bi';
 import {
@@ -71,6 +71,10 @@ export default function UnitSection({
             className='relative my-10 space-y-1 rounded-lg bg-amber-50 p-5 pb-10 text-sm shadow-[0px_0px_3px_2px_#b7791f]'
             key={unitData.id}
           >
+            <span
+              className='absolute top-4 size-8 rounded-full bg-green-500'
+              style={{ backgroundColor: getRandomColor(unitData.id, 50) }}
+            ></span>
             <p className='text-center font-semibold'>
               Tower Card id: {towerData.tower_id} &nbsp; &nbsp; &nbsp; &nbsp;
               Unit Type Card id: {unitData.id}
