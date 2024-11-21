@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TowerUnitDetailType } from '../../useTowerUnitStore';
 import { subGridGenerator } from './grid-generator';
 import { produce } from 'immer';
@@ -27,6 +27,7 @@ type Props = {
 export default function UnitGrid({ towerData }: Props) {
   const [grid, setGrid] = useState<Record<string, UnitGridItem[]>>({});
   const [maxUnitCount, setMaxUnitCount] = useState<number>(0);
+  const [showGrid, setShowGrid] = useState<boolean>(false);
 
   function generateGrid() {
     const maxFloor = towerData.typicalMaxFloor;
@@ -80,9 +81,7 @@ export default function UnitGrid({ towerData }: Props) {
               item.extent = value[0].extent;
               item.facing = value[0].facing;
               item.unitFloorCount = value[0].unitFloorCount;
-              item.color = card.unitFloorPlanFile
-                ? getRandomColor(card.id, 35)
-                : getRandomColor(card.id, 60);
+              item.color = getRandomColor(card.id, 50);
               item.isUnitFPAvailable = card.unitFloorPlanFile ? true : false;
             }
           });
@@ -93,53 +92,64 @@ export default function UnitGrid({ towerData }: Props) {
     console.log(localGrid);
     setGrid(localGrid);
   }
+
+  useEffect(() => {
+    if (showGrid) {
+      generateGrid();
+    }
+  }, [showGrid]);
   return (
     <div className='flex flex-col'>
-      <button
-        className='btn btn-warning mt-2 max-w-fit self-center'
-        onClick={generateGrid}
-      >
-        Generate Grid
-      </button>
-      <div className='my-5 flex w-full max-w-[90vw] overflow-auto'>
-        {grid && Object.entries(grid).length > 0 && (
-          <div
-            className='mx-auto grid gap-2 p-2'
-            style={{
-              gridTemplateColumns: `repeat(${maxUnitCount}, minmax(80px, 1fr))`,
-            }}
-          >
-            {Object.entries(grid)
-              .sort((a, b) => +b[0] - +a[0])
-              .map(([_flr, units], i) =>
-                units.map((unit, j) => (
-                  <div
-                    key={`${i}-${j}`}
-                    className={cn(
-                      'flex w-20 flex-col items-center justify-center rounded-md p-2',
-                      unit.isDuplicate
-                        ? 'animate-bounce duration-700'
-                        : 'animate-none',
-                      unit.color && `text-white`
-                    )}
-                    style={{
-                      background: unit.color
-                        ? unit.isUnitFPAvailable
-                          ? unit.color
-                          : `linear-gradient(35deg, ${unit.color} 80%, #52525b 20%)`
-                        : '#e4e4e7',
-                    }}
-                  >
-                    <span>{`${unit.floorLabel}-${unit.unitNumber}`}</span>
-                    <span className='text-[8px] leading-none'>
-                      {`${unit.config || 'N/A'}-${unit.salableArea || 'N/A'}-${unit.facing || 'N/A'}`}
-                    </span>
-                  </div>
-                ))
-              )}
-          </div>
-        )}
-      </div>
+      <label className='btn btn-warning mt-2 max-w-fit self-center'>
+        {showGrid ? 'Hide' : 'Show'} Grid
+        <input
+          hidden
+          onChange={(e) => setShowGrid(e.target.checked)}
+          checked={showGrid}
+          type='checkbox'
+        />
+      </label>
+      {showGrid && (
+        <div className='my-5 flex w-full max-w-[90vw] overflow-auto'>
+          {grid && Object.entries(grid).length > 0 && (
+            <div
+              className='mx-auto grid gap-2 p-2'
+              style={{
+                gridTemplateColumns: `repeat(${maxUnitCount}, minmax(80px, 1fr))`,
+              }}
+            >
+              {Object.entries(grid)
+                .sort((a, b) => +b[0] - +a[0])
+                .map(([_flr, units], i) =>
+                  units.map((unit, j) => (
+                    <div
+                      key={`${i}-${j}`}
+                      className={cn(
+                        'flex w-20 flex-col items-center justify-center rounded-md p-2',
+                        unit.isDuplicate
+                          ? 'animate-bounce duration-700'
+                          : 'animate-none',
+                        unit.color && `text-white`
+                      )}
+                      style={{
+                        background: unit.color
+                          ? unit.isUnitFPAvailable
+                            ? unit.color
+                            : `linear-gradient(35deg, ${unit.color} 80%, #52525b 20%)`
+                          : '#e4e4e7',
+                      }}
+                    >
+                      <span>{`${unit.floorLabel}-${unit.unitNumber}`}</span>
+                      <span className='text-[8px] leading-none'>
+                        {`${unit.config || 'N/A'}-${unit.salableArea || 'N/A'}-${unit.facing || 'N/A'}`}
+                      </span>
+                    </div>
+                  ))
+                )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
