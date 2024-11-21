@@ -2,8 +2,8 @@ import { clsx, type ClassValue } from 'clsx';
 import { formatISO } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
-export const getRandomColor = (num: number) =>
-  `hsl(${num * 137.508}deg 80% 75%)`;
+export const getRandomColor = (num: number, lightness = 75) =>
+  `hsl(${num * 137.508}deg 80% ${lightness}%)`;
 
 export function cn(...args: ClassValue[]) {
   return twMerge(clsx(args));
