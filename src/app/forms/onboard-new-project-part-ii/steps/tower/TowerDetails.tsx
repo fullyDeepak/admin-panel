@@ -1,6 +1,6 @@
 import { Trash2 } from 'lucide-react';
 import { TowerUnitDetailType } from '../../useTowerUnitStore';
-import { useState } from 'react';
+import UnitGrid from './UnitGrid';
 
 type Props = {
   tower: TowerUnitDetailType;
@@ -18,57 +18,12 @@ type Props = {
   removeTowerFloorPlanFile: (_towerCardId: number, name: string) => void;
 };
 
-type UnitGridItem = {
-  unitType?: string;
-  salableArea?: number;
-  extent?: number;
-  facing?: string;
-  config?: string;
-  floor: number;
-  floorLabel?: string;
-  unitNumber: number;
-  unitLabel?: string;
-  unitFloorCount?: number;
-};
-
 export default function TowerDetails({
   tower,
   updateTowerFormData,
   removeTowerFloorPlanFile,
   setTowerFloorPlanFile,
 }: Props) {
-  const [grid, setGrid] = useState<UnitGridItem[][]>([]);
-
-  function generateGrid() {
-    const maxFloor = tower.typicalMaxFloor;
-    const typicalUnitCount = +tower.typicalUnitCount;
-    const gfUnitCount = tower.gfUnitCount ? tower.gfUnitCount : null;
-    let minFloor = 1;
-    if (tower.gfName && gfUnitCount) {
-      minFloor = 0;
-    }
-    const grid: UnitGridItem[][] = [];
-    for (let i = maxFloor; i >= minFloor; i--) {
-      const floorUnits: UnitGridItem[] = [];
-      if (i === 0 && gfUnitCount) {
-        for (let j = 1; j <= +gfUnitCount; j++) {
-          floorUnits.push({
-            floor: i,
-            floorLabel: tower.gfName,
-            unitNumber: j,
-          });
-        }
-        grid.push(floorUnits);
-        continue;
-      }
-      for (let j = 1; j <= typicalUnitCount; j++) {
-        floorUnits.push({ floor: i, floorLabel: i.toString(), unitNumber: j });
-      }
-      grid.push(floorUnits);
-    }
-    setGrid(grid);
-  }
-
   return (
     <div className='flex flex-col'>
       <h3 className='my-4 text-2xl font-semibold'>Section: Tower Details</h3>
@@ -210,34 +165,7 @@ export default function TowerDetails({
           </div>
         </div>
       )}
-
-      <button
-        className='btn btn-warning mt-2 max-w-fit self-center'
-        onClick={generateGrid}
-      >
-        Generate Grid
-      </button>
-      {grid && grid.length > 0 && (
-        <div className='my-5 flex items-center justify-center'>
-          <div
-            className='grid gap-2'
-            style={{
-              gridTemplateColumns: `repeat(${grid[0].length}, minmax(0, 1fr))`,
-            }}
-          >
-            {grid.map((row, i) =>
-              row.map((unit, j) => (
-                <div
-                  key={`${i}-${j}`}
-                  className='flex w-20 items-center justify-center gap-2 rounded-md bg-green-300 p-2'
-                >
-                  <span>{`${unit.floorLabel}-${unit.unitNumber}`}</span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
+      <UnitGrid towerData={tower} />
     </div>
   );
 }
