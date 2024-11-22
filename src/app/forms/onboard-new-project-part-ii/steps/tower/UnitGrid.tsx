@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { TowerUnitDetailType } from '../../useTowerUnitStore';
-import { subGridGenerator } from './grid-generator';
+import { subGridGenerator } from './utils';
 import { produce } from 'immer';
 import { cn, getRandomColor } from '@/lib/utils';
 
@@ -65,31 +65,33 @@ export default function UnitGrid({ towerData }: Props) {
       const subGrid = subGridGenerator(card);
       localGrid = produce(localGrid, (draft) => {
         Object.entries(subGrid).map(([key, value]) => {
-          draft[key]?.map((item) => {
-            if (item.unitNumber === value[0].unitNumber) {
-              item.isDuplicate =
-                item.config ||
-                item.salableArea ||
-                item.facing ||
-                item.extent ||
-                item.color
+          draft[key]?.map((localGridItem) => {
+            value.map((subGridItem) => {
+              if (localGridItem.unitNumber === subGridItem.unitNumber) {
+                localGridItem.isDuplicate =
+                  localGridItem.config ||
+                  localGridItem.salableArea ||
+                  localGridItem.facing ||
+                  localGridItem.extent ||
+                  localGridItem.color
+                    ? true
+                    : false;
+                localGridItem.unitType = subGridItem.unitType;
+                localGridItem.config = subGridItem.config;
+                localGridItem.salableArea = subGridItem.salableArea;
+                localGridItem.extent = subGridItem.extent;
+                localGridItem.facing = subGridItem.facing;
+                localGridItem.unitFloorCount = subGridItem.unitFloorCount;
+                localGridItem.color = getRandomColor(card.id, 40);
+                localGridItem.isUnitFPAvailable = card.unitFloorPlanFile
                   ? true
                   : false;
-              item.unitType = value[0].unitType;
-              item.config = value[0].config;
-              item.salableArea = value[0].salableArea;
-              item.extent = value[0].extent;
-              item.facing = value[0].facing;
-              item.unitFloorCount = value[0].unitFloorCount;
-              item.color = getRandomColor(card.id, 50);
-              item.isUnitFPAvailable = card.unitFloorPlanFile ? true : false;
-            }
+              }
+            });
           });
         });
       });
     });
-
-    console.log(localGrid);
     setGrid(localGrid);
   }
 

@@ -71,7 +71,7 @@ export default function UnitSection({
           >
             <span
               className='absolute top-4 size-8 rounded-full bg-green-500'
-              style={{ backgroundColor: getRandomColor(unitData.id, 50) }}
+              style={{ backgroundColor: getRandomColor(unitData.id, 40) }}
             ></span>
             <p className='text-center font-semibold'>
               Tower Card id: {towerData.tower_id} &nbsp; &nbsp; &nbsp; &nbsp;

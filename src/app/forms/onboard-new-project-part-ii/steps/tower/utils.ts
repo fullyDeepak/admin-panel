@@ -50,5 +50,6 @@ export function subGridGenerator(cardData: UnitCardType) {
       });
     });
   });
+  console.log(subGrid);
   return subGrid;
 }
