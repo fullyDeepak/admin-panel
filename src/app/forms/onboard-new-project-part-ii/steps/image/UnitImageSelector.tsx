@@ -1,25 +1,22 @@
 import { BookHeart } from 'lucide-react';
 import { useState } from 'react';
 import ImageCropper from '@/components/ui/ImageCropper';
-import { UnitCardType } from '../../useTowerUnitStore';
+import { TowerUnitDetailType, UnitCardType } from '../../useTowerUnitStore';
+import toast from 'react-hot-toast';
 
 type Props = {
+  towerData: TowerUnitDetailType;
   smallButton?: boolean;
-  towerImage: { name: string; file: File }[];
-  towerId: number;
   updateUnitCard: (
     _towerCardId: number,
     _unitCardId: number,
     _newDetails: Partial<UnitCardType>
   ) => void;
-  unitCards: UnitCardType[];
 };
 
 export default function UnitImageSelector({
+  towerData,
   smallButton,
-  towerImage,
-  towerId,
-  unitCards,
   updateUnitCard,
 }: Props) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -28,22 +25,29 @@ export default function UnitImageSelector({
 
   function handleAssign() {
     if (!convertedBlob) return;
-    const [unitId] = fileName.split(':');
-    const imgFile = new File([convertedBlob], 'unit-floor-plan.png', {
-      type: 'image/png',
-    });
-    updateUnitCard(towerId, +unitId, {
-      unitFloorPlanFile: {
-        name: imgFile.name,
-        file: imgFile,
-      },
-    });
-    setConvertedBlob(null);
+    try {
+      const [unitId] = fileName.split(':');
+      const imgFile = new File([convertedBlob], 'unit-floor-plan.png', {
+        type: 'image/png',
+      });
+      updateUnitCard(towerData.tower_id, +unitId, {
+        unitFloorPlanFile: {
+          name: imgFile.name,
+          file: imgFile,
+        },
+      });
+      toast.success(`Unit floor plan assign for unit id: ${unitId}`, {
+        duration: 5000,
+      });
+    } catch (error) {
+      console.log(error);
+      toast.success(`Something went wrong`, { duration: 5000 });
+    }
   }
 
-  return towerImage?.length > 0 ? (
+  return towerData.towerFloorPlanFile?.length > 0 ? (
     <div>
-      {towerImage.length > 1 ? (
+      {towerData.towerFloorPlanFile.length > 1 ? (
         <div className='dropdown'>
           {smallButton ? (
             <div
@@ -70,7 +74,7 @@ export default function UnitImageSelector({
             tabIndex={0}
             className='menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 text-xs shadow'
           >
-            {towerImage.map((file, idx) => (
+            {towerData.towerFloorPlanFile.map((file, idx) => (
               <li key={idx}>
                 <a
                   onClick={() => {
@@ -92,11 +96,11 @@ export default function UnitImageSelector({
           </ul>
         </div>
       ) : (
-        towerImage.length === 1 && (
+        towerData.towerFloorPlanFile.length === 1 && (
           <button
             className='btn btn-neutral btn-xs flex !min-h-10 !min-w-36 !flex-row items-center'
             onClick={() => {
-              setSelectedFile(towerImage[0].file);
+              setSelectedFile(towerData.towerFloorPlanFile[0].file);
               setConvertedBlob(null);
               setFileName('');
               (
@@ -124,18 +128,7 @@ export default function UnitImageSelector({
                 <ImageCropper src={selectedFile} saveBlob={setConvertedBlob} />
               </div>
               <div className='flex flex-1 flex-col gap-2'>
-                {/* <input
-                  type='text'
-                  value={fileName || ''}
-                  onChange={(e) => setFileName(e.target.value)}
-                  placeholder='File Name'
-                  className={
-                    'rounded-md border-0 bg-transparent p-2 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
-                  }
-                /> */}
-                {/* <span className='-my-1 ml-2 text-xs text-amber-600'>
-                  Warning: Don&apos;t remove unit id from file name.
-                </span> */}
+                <p className='text-xl font-semibold'>Choose Unit</p>
                 <select
                   className='h-9 min-h-9 w-full flex-1 appearance-auto rounded-md border-[1.6px] border-gray-300 bg-white !bg-none !pe-1 !pl-1 !pr-5 ps-3 text-xs focus:border-[1.6px] focus:border-violet-600 focus:outline-none'
                   onChange={(e) => setFileName(e.target.value)}
@@ -143,14 +136,24 @@ export default function UnitImageSelector({
                   <option value='' selected disabled>
                     Select Unit
                   </option>
-                  {unitCards.map((unit, idx) => (
-                    <option
-                      key={idx}
-                      value={`${unit.id}:${unit.floorNos}:${unit.unitNos}:${unit.extent}:${unit.salableArea}`}
-                    >
-                      {`${unit.id}:${unit.floorNos}:${unit.unitNos}:${unit.extent}:${unit.salableArea}`}
-                    </option>
-                  ))}
+                  {towerData.towerType === 'APARTMENT' &&
+                    towerData.unitCards.map((unit, idx) => (
+                      <option
+                        key={idx}
+                        value={`${unit.id}:FL${unit.floorNos}:U${unit.unitNos}||${unit.configName}:${unit.salableArea}:${unit.facing}`}
+                      >
+                        {`${unit.id}:FL${unit.floorNos}:U${unit.unitNos}||${unit.configName}:${unit.salableArea}:${unit.facing}`}
+                      </option>
+                    ))}
+                  {towerData.towerType === 'VILLA' &&
+                    towerData.unitCards.map((unit, idx) => (
+                      <option
+                        key={idx}
+                        value={`${unit.id}:U${unit.unitNos}||${unit.salableArea}:${unit.extent}:${unit.facing}`}
+                      >
+                        {`${unit.id}:U${unit.unitNos}||${unit.salableArea}:${unit.extent}:${unit.facing}`}
+                      </option>
+                    ))}
                 </select>
                 <button
                   className='btn btn-neutral btn-sm'

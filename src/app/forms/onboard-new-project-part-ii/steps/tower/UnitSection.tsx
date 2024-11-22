@@ -59,9 +59,7 @@ export default function UnitSection({
           Toggle TM Ref Table
         </button>
         <UnitImageSelector
-          towerId={towerData.tower_id}
-          towerImage={towerData.towerFloorPlanFile}
-          unitCards={towerData.unitCards}
+          towerData={towerData}
           updateUnitCard={updateUnitCard}
         />
       </div>

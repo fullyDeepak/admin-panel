@@ -5,6 +5,7 @@ import PDFViewer from '@/components/ui/PdfViewer';
 import ImageCropper from '@/components/ui/ImageCropper';
 import { useTowerUnitStore } from '../../useTowerUnitStore';
 import { pdfToImage } from '@/lib/image';
+import toast from 'react-hot-toast';
 
 type Props = {
   smallButton?: boolean;
@@ -32,22 +33,30 @@ export default function ProjectPDFImageSelector({ smallButton }: Props) {
 
   function handleAssign() {
     if (!convertedBlob) return;
-    const [tower_id, towerName] = fileName.split(':');
-    const length = towerFormData.find((item) => item.tower_id === +tower_id)
-      ?.towerFloorPlanFile?.length;
-    const imgFile = new File(
-      [convertedBlob],
-      `${towerName.toLowerCase().replaceAll(' ', '-')}-floor-plan-${(length || 0) + 1}.png`,
-      {
-        type: 'image/png',
-      }
-    );
-    setTowerFloorPlanFile(+tower_id, {
-      name: imgFile.name,
-      file: imgFile,
-    });
-    setShowEditor(false);
-    setConvertedBlob(null);
+    try {
+      const [tower_id, towerName] = fileName.split(':');
+      const length = towerFormData.find((item) => item.tower_id === +tower_id)
+        ?.towerFloorPlanFile?.length;
+      const imgFile = new File(
+        [convertedBlob],
+        `${towerName.toLowerCase().replaceAll(' ', '-')}-floor-plan-${(length || 0) + 1}.png`,
+        {
+          type: 'image/png',
+        }
+      );
+      setTowerFloorPlanFile(+tower_id, {
+        name: imgFile.name,
+        file: imgFile,
+      });
+      setShowEditor(false);
+      setConvertedBlob(null);
+      toast.success(`Floor plan assign for tower ${towerName}`, {
+        duration: 5000,
+      });
+    } catch (error) {
+      console.log(error);
+      toast.success(`Something went wrong`, { duration: 5000 });
+    }
   }
 
   return brochureFile?.length > 0 ? (
@@ -183,6 +192,7 @@ export default function ProjectPDFImageSelector({ smallButton }: Props) {
                   />
                 </div>
                 <div className='flex flex-1 flex-col gap-2'>
+                  <p className='text-xl font-semibold'>Choose Tower</p>
                   <input
                     type='text'
                     value={fileName || ''}
