@@ -1,4 +1,4 @@
-// @ts-nocheck
+//@ts-nocheck
 
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
@@ -59,7 +59,7 @@ export default function GeomanDrawer({
               ...geojson,
               properties: {
                 ...geojson.properties,
-                text: layer.options.text,
+                name: layer.options.text,
               },
             };
           }
@@ -89,7 +89,7 @@ export default function GeomanDrawer({
               ...geojson,
               properties: {
                 ...geojson.properties,
-                text: layer.options.text,
+                name: layer.options.text,
               },
             };
           }
@@ -126,7 +126,7 @@ export default function GeomanDrawer({
               ...geojson,
               properties: {
                 ...geojson.properties,
-                text: layer.options.text,
+                name: layer.options.text,
               },
             };
           }
@@ -156,7 +156,7 @@ export default function GeomanDrawer({
               ...geojson,
               properties: {
                 ...geojson.properties,
-                text: layer.options.text,
+                name: layer.options.text,
               },
             };
           }
