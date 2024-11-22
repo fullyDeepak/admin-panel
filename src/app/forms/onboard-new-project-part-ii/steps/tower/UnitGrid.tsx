@@ -18,6 +18,9 @@ export type UnitGridItem = {
   color?: string;
   isDuplicate?: boolean;
   isUnitFPAvailable?: boolean;
+  isHorizontallyMerged?: boolean;
+  isVerticallyMerged?: boolean;
+  isValid?: boolean;
 };
 
 type Props = {
@@ -50,13 +53,23 @@ export default function UnitGrid({ towerData }: Props) {
             floor: i,
             floorLabel: towerData.gfName,
             unitNumber: j,
+            isValid: true,
+            isHorizontallyMerged: false,
+            isVerticallyMerged: false,
           });
         }
         localGrid[i] = floorUnits;
         continue;
       }
       for (let j = 1; j <= typicalUnitCount; j++) {
-        floorUnits.push({ floor: i, floorLabel: i.toString(), unitNumber: j });
+        floorUnits.push({
+          floor: i,
+          floorLabel: i.toString(),
+          unitNumber: j,
+          isValid: true,
+          isHorizontallyMerged: false,
+          isVerticallyMerged: false,
+        });
       }
       localGrid[i] = floorUnits;
     }
@@ -65,9 +78,15 @@ export default function UnitGrid({ towerData }: Props) {
       const subGrid = subGridGenerator(card);
       localGrid = produce(localGrid, (draft) => {
         Object.entries(subGrid).map(([key, value]) => {
-          draft[key]?.map((localGridItem) => {
+          draft[key]?.map((localGridItem, i) => {
+            if (draft[key][i - 1]?.isHorizontallyMerged) {
+              draft[key][i].isValid = false;
+            }
             value.map((subGridItem) => {
               if (localGridItem.unitNumber === subGridItem.unitNumber) {
+                if (subGridItem?.isVerticallyMerged) {
+                  draft[`${+key - 1}`][i].isValid = false;
+                }
                 localGridItem.isDuplicate =
                   localGridItem.config ||
                   localGridItem.salableArea ||
@@ -77,6 +96,7 @@ export default function UnitGrid({ towerData }: Props) {
                     ? true
                     : false;
                 localGridItem.unitType = subGridItem.unitType;
+                localGridItem.unitLabel = subGridItem.unitLabel;
                 localGridItem.config = subGridItem.config;
                 localGridItem.salableArea = subGridItem.salableArea;
                 localGridItem.extent = subGridItem.extent;
@@ -86,12 +106,18 @@ export default function UnitGrid({ towerData }: Props) {
                 localGridItem.isUnitFPAvailable = card.unitFloorPlanFile
                   ? true
                   : false;
+                localGridItem.isHorizontallyMerged =
+                  subGridItem.isHorizontallyMerged;
+                localGridItem.isVerticallyMerged =
+                  subGridItem.isVerticallyMerged;
+                localGridItem.floorLabel = subGridItem.floorLabel;
               }
             });
           });
         });
       });
     });
+    console.log(localGrid);
     setGrid(localGrid);
   }
 
@@ -123,30 +149,35 @@ export default function UnitGrid({ towerData }: Props) {
               {Object.entries(grid)
                 .sort((a, b) => +b[0] - +a[0])
                 .map(([_flr, units], i) =>
-                  units.map((unit, j) => (
-                    <div
-                      key={`${i}-${j}`}
-                      className={cn(
-                        'flex w-20 flex-col items-center justify-center rounded-md p-2',
-                        unit.isDuplicate
-                          ? 'animate-bounce duration-700'
-                          : 'animate-none',
-                        unit.color && `text-white`
-                      )}
-                      style={{
-                        background: unit.color
-                          ? unit.isUnitFPAvailable
-                            ? unit.color
-                            : `linear-gradient(35deg, ${unit.color} 80%, #52525b 20%)`
-                          : '#e4e4e7',
-                      }}
-                    >
-                      <span>{`${unit.floorLabel}-${unit.unitNumber}`}</span>
-                      <span className='text-[8px] leading-none'>
-                        {`${unit.config || 'N/A'}-${unit.salableArea || 'N/A'}-${unit.facing || 'N/A'}`}
-                      </span>
-                    </div>
-                  ))
+                  units.map(
+                    (unit, j) =>
+                      unit.isValid && (
+                        <div
+                          key={`${i}-${j}`}
+                          className={cn(
+                            'flex flex-col items-center justify-center rounded-md p-2',
+                            unit.isDuplicate
+                              ? 'animate-bounce duration-700'
+                              : 'animate-none',
+                            unit.color && `text-white`,
+                            unit.isHorizontallyMerged && 'col-span-2',
+                            unit.isVerticallyMerged && 'row-span-2'
+                          )}
+                          style={{
+                            background: unit.color
+                              ? unit.isUnitFPAvailable
+                                ? unit.color
+                                : `linear-gradient(35deg, ${unit.color} 80%, #52525b 20%)`
+                              : '#e4e4e7',
+                          }}
+                        >
+                          <span>{`${unit.floorLabel}-${unit.unitLabel || unit.unitNumber}`}</span>
+                          <span className='text-[8px] leading-none'>
+                            {`${unit.config || 'N/A'}-${unit.salableArea || 'N/A'}-${unit.facing || 'N/A'}`}
+                          </span>
+                        </div>
+                      )
+                  )
                 )}
             </div>
           )}

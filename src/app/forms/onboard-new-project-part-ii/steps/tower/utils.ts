@@ -27,17 +27,23 @@ export function subGridGenerator(cardData: UnitCardType) {
   zip(towerFloorNosArr, unitNosArr).map(([towerFloorNos, unitNo]) => {
     if (!towerFloorNos || !unitNo) return;
     const towerFloors = rangeToArray(towerFloorNos);
-    const units = rangeToArray(unitNo);
+    // const units = rangeToArray(unitNo);
+
     towerFloors.map((towerFloor) => {
+      const isHorizontallyMerged = unitNo.includes('&');
+      const isVerticallyMerged = unitNo.includes('^');
       if (!subGrid[towerFloor]) {
         subGrid[towerFloor] = [];
       }
-      units.map((unit) => {
-        subGrid[towerFloor].push({
+      if (!subGrid[towerFloor + 1]) {
+        subGrid[towerFloor + 1] = [];
+      }
+      if (isVerticallyMerged) {
+        subGrid[towerFloor + 1].push({
           floor: towerFloor,
           floorLabel: towerFloor.toString(),
-          unitNumber: unit,
-          unitLabel: unit.toString(),
+          unitNumber: parseInt(unitNo),
+          unitLabel: unitNo,
           config: cardData.configName || 'N/A',
           salableArea: cardData.salableArea,
           extent: cardData.extent,
@@ -46,8 +52,27 @@ export function subGridGenerator(cardData: UnitCardType) {
             ? +cardData.unitFloorCount
             : 1,
           unitType: cardData.id.toString(),
+          isHorizontallyMerged,
+          isVerticallyMerged,
         });
-      });
+      } else {
+        subGrid[towerFloor].push({
+          floor: towerFloor,
+          floorLabel: towerFloor.toString(),
+          unitNumber: parseInt(unitNo),
+          unitLabel: unitNo,
+          config: cardData.configName || 'N/A',
+          salableArea: cardData.salableArea,
+          extent: cardData.extent,
+          facing: cardData.facing || 'N/A',
+          unitFloorCount: cardData.unitFloorCount
+            ? +cardData.unitFloorCount
+            : 1,
+          unitType: cardData.id.toString(),
+          isHorizontallyMerged,
+          isVerticallyMerged,
+        });
+      }
     });
   });
   console.log(subGrid);
