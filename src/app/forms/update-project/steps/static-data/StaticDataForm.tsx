@@ -130,6 +130,17 @@ export default function StaticDataForm() {
               const projectData = await axiosClient.get<NewProjectData>(
                 '/onboarding/projects/' + e.value
               );
+              const geoData = projectData.data.data?.geodata?.map((item) => ({
+                ...item.geometry,
+                properties: {
+                  name: item?.properties?.name
+                    ? item?.properties?.name
+                    : item?.properties?.text
+                      ? item?.properties?.text
+                      : '',
+                },
+                crs: undefined,
+              }));
               setSourceData({
                 projectData: {
                   amenities: projectData.data.data.amenities.map((ele) => ({
@@ -184,6 +195,10 @@ export default function StaticDataForm() {
                   rootDocArea: projectData.data.data.root_docs
                     ?.filter((ele) => ele.area_attached)
                     .reduce((acc, ele) => acc + +ele.extent, 0),
+                  mapInputValue: '',
+                  mapGeojsonData: null,
+                  geoData: geoData,
+                  mapData: null,
                 },
                 towerData: projectData.data.data.towers.map((ele, index) => ({
                   id: index + 1,
@@ -339,6 +354,10 @@ export default function StaticDataForm() {
                 rootDocArea: projectData.data.data.root_docs
                   ?.filter((ele) => ele.area_attached)
                   .reduce((acc, ele) => acc + +ele.extent, 0),
+                geoData: geoData,
+                mapData: null,
+                mapInputValue: '',
+                mapGeojsonData: null,
               });
               setEtlData(
                 projectData.data.data.ProjectETLTagDataType.map(

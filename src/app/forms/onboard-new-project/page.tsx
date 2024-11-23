@@ -22,6 +22,7 @@ export default function Page() {
     formStepsList,
     setFormSteps,
     onboardingData,
+    updateOnboardingData,
   } = useOnboardingDataStore();
   const { projectFormETLTagData } = useETLDataStore();
   const { towerFormData } = useTowerUnitStore();
@@ -48,7 +49,12 @@ export default function Page() {
             setFormSteps={setFormSteps}
           />
           {formSteps === 'Static Data' && <StaticDataForm />}
-          {formSteps === 'Geo-Data' && <GeoData />}
+          {formSteps === 'Geo-Data' && (
+            <GeoData
+              onboardingData={onboardingData}
+              updateOnboardingData={updateOnboardingData}
+            />
+          )}
           {formSteps === 'Keyword Tag' && <DeveloperTagging />}
           {formSteps === 'Root Doc' && <RootDocTagging />}
           {formSteps === 'Project ETL' && <ETLForProjectSection />}

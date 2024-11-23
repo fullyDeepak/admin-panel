@@ -1,6 +1,8 @@
 import { SingleValue } from 'react-select';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { ProjectCordWithinVillage } from '../village-project-cleaner/MapUI';
+import { FeatureCollection } from 'geojson';
 
 export interface OnboardingDataType {
   projectType: SingleValue<{
@@ -53,6 +55,10 @@ export interface OnboardingDataType {
   rootDocArea: number;
   reraIds: string[];
   project_id: number;
+  mapData: ProjectCordWithinVillage['data'] | null;
+  mapInputValue: string;
+  mapGeojsonData: FeatureCollection | null;
+  geoData: any[];
 }
 
 export interface TempProjectSourceData {
@@ -154,7 +160,7 @@ interface Store extends Actions {
   onboardingData: OnboardingDataType;
   formStepsList: [
     'Static Data',
-    // 'Geo-Data',
+    'Geo-Data',
     'Keyword Tag',
     'Root Doc',
     'Project ETL',
@@ -185,6 +191,10 @@ const INITIAL_STATE: OnboardingDataType = {
   developmentAgreements: [],
   reraIds: [],
   rootDocArea: 0,
+  mapData: null,
+  mapInputValue: '',
+  mapGeojsonData: null,
+  geoData: [],
 };
 
 export const useOnboardingDataStore = create<Store>()(
@@ -193,7 +203,7 @@ export const useOnboardingDataStore = create<Store>()(
     currentFormStep: 'Static Data' as Store['currentFormStep'],
     formStepsList: [
       'Static Data',
-      // 'Geo-Data',
+      'Geo-Data',
       'Keyword Tag',
       'Root Doc',
       'Project ETL',

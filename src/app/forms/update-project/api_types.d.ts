@@ -50,7 +50,24 @@ export interface Data {
   ];
   towers: Tower[];
   root_docs: RootDoc[];
-  ProjectETLTagDataType: ProjectEtltagDataType[];
+  ProjectETLTagDataType: ProjectEtlTagDataType[];
+  geodata: {
+    geometry: {
+      crs: {
+        type: string;
+        properties: {
+          name: string;
+        };
+      };
+      type: string;
+      coordinates: number[][];
+    };
+    geom_name: string;
+    properties: {
+      text: string;
+      name: string;
+    };
+  }[];
 }
 
 export interface Tower {
@@ -91,7 +108,7 @@ export interface RootDoc {
   area_attached: boolean;
 }
 
-export interface ProjectEtltagDataType {
+export interface ProjectEtlTagDataType {
   village: {
     id: number;
     name: string;

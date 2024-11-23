@@ -19,18 +19,23 @@ import {
 } from 'react-leaflet';
 import { ProjectCordWithinVillage } from '../../../village-project-cleaner/MapUI';
 import selectPin from '../../../village-project-cleaner/select-pin.png';
-import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import GeomanDrawer from './GeomanDrawer';
+import { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson';
 
-export default function MapInterface() {
+type Props<T> = {
+  onboardingData: T;
+  updateOnboardingData: (_newDetails: Partial<T>) => void;
+};
+
+export default function MapInterface<
+  T extends {
+    mapGeojsonData?: FeatureCollection<Geometry, GeoJsonProperties> | null;
+    geoData?: any[];
+    mapInputValue: string;
+    mapData: ProjectCordWithinVillage['data'] | null;
+  },
+>({ onboardingData, updateOnboardingData }: Props<T>) {
   const center: LatLngTuple = [17.418136769166217, 78.33019660095187];
-  const { mapData, mapGeojsonData, geoData, updateOnboardingData } =
-    useOnboardingDataStore((state) => ({
-      mapData: state.onboardingData.mapData,
-      mapGeojsonData: state.onboardingData.mapGeojsonData,
-      geoData: state.onboardingData.geoData,
-      updateOnboardingData: state.updateOnboardingData,
-    }));
 
   const mapLayer = [
     {
@@ -86,9 +91,11 @@ export default function MapInterface() {
     }, [mapData, map]);
 
     useEffect(() => {
-      if (!mapGeojsonData) return;
-      if (mapGeojsonData) {
-        const bbox = bboxCalculator(mapGeojsonData as AllGeoJSON);
+      if (!onboardingData.mapGeojsonData) return;
+      if (onboardingData.mapGeojsonData) {
+        const bbox = bboxCalculator(
+          onboardingData.mapGeojsonData as AllGeoJSON
+        );
         const boundArea: LatLngBoundsExpression = [
           [bbox[1], bbox[2]],
           [bbox[3], bbox[0]],
@@ -97,7 +104,7 @@ export default function MapInterface() {
           duration: 1.9,
         });
       }
-    }, [mapGeojsonData, map]);
+    }, [onboardingData.mapGeojsonData, map]);
     return null;
   };
 
@@ -111,21 +118,23 @@ export default function MapInterface() {
           scrollWheelZoom={true}
           className='h-full min-h-[100px] w-full min-w-[200px] flex-[4] rounded-2xl border-[3px] border-[#9CAA71] shadow-[0px_0px_6px_2px_#00000024]'
         >
-          <GeomanDrawer
-            geoJsonData={geoData}
-            setGeoJsonData={(d) =>
-              updateOnboardingData({
-                geoData: d,
-              })
-            }
-            setArea={(d) =>
-              updateOnboardingData({
-                polygonArea: d,
-              })
-            }
-          />
-          <FitBounds mapData={mapData} />
-          {mapData?.map((project) => (
+          {onboardingData.geoData && (
+            <GeomanDrawer
+              geoJsonData={onboardingData.geoData}
+              setGeoJsonData={(d) =>
+                updateOnboardingData({
+                  geoData: d as unknown,
+                } as Partial<T>)
+              }
+              setArea={(d) =>
+                updateOnboardingData({
+                  polygonArea: d as unknown,
+                } as unknown as Partial<T>)
+              }
+            />
+          )}
+          <FitBounds mapData={onboardingData.mapData} />
+          {onboardingData.mapData?.map((project) => (
             <>
               <Marker
                 position={[
@@ -134,10 +143,6 @@ export default function MapInterface() {
                 ]}
                 icon={selectIcon}
                 key={'marker' + project.place_id}
-                // eventHandlers={{
-                //   mouseover: (event) => event.target.openPopup(),
-                //   mouseout: (event) => event.target.closePopup(),
-                // }}
               >
                 <Popup>
                   <div className='flex flex-col gap-2'>
@@ -153,15 +158,6 @@ export default function MapInterface() {
               </Marker>
             </>
           ))}
-          {/* {mapGeojsonData &&
-            mapGeojsonData?.features?.map((feature, index) => (
-              <GeoJSON
-                data={feature}
-                key={index}
-                style={{ color: 'dodgerblue' }}
-                onEachFeature={renderLabel}
-              />
-            ))} */}
           <LayersControl>
             {mapLayer?.map((item, i) => (
               <LayersControl.BaseLayer
@@ -187,7 +183,7 @@ export default function MapInterface() {
         </MapContainer>
         <div className='mx-auto flex w-2/12 flex-1 flex-col justify-start gap-4'>
           <pre className='max-h-[500px] overflow-auto bg-gray-200 font-mono text-sm'>
-            {JSON.stringify(geoData, null, 2)}
+            {JSON.stringify(onboardingData.geoData, null, 2)}
           </pre>
         </div>
       </div>
