@@ -94,15 +94,13 @@ export default function ProjectDropdown() {
     queryKey: ['projects'],
     queryFn: async () => {
       const res = await axiosClient.get<{
-        data: { id: number; project_name: string }[];
-      }>('/projects');
+        data: { id: number; project_name: string; config_tagging: boolean }[];
+      }>('/onboarding/getProjectsForPart2');
       return res.data.data.map((ele) => ({
-        label: `${ele.id}:${ele.project_name}`,
+        label: `${ele.id}:${ele.project_name} ${ele.config_tagging ? '✅' : ''}`,
         value: ele.id,
       }));
     },
-    staleTime: Infinity,
-    refetchOnMount: false,
   });
   const { projectData, updateProjectData } = useProjectDataStore();
   const { setTowerFormData, resetStatusFormData } = useTowerUnitStore();
