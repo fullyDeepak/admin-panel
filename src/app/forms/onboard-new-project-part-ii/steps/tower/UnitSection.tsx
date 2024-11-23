@@ -13,6 +13,7 @@ import TowerFlNosUnitNos from '../unit/TowerFlNosUnitNos';
 import ConfigVerifyDoorOverride from '../unit/ConfigVerifyDoorOverride';
 import SalableParkingExtent from '../unit/SalableParkingExtent';
 import PreviewImage from '@/components/ui/PreviewImage';
+import { IMAGE_PATH_PREFIX } from '@/data/CONSTANTS';
 
 type Props = {
   towerData: TowerUnitDetailType;
@@ -96,12 +97,12 @@ export default function UnitSection({
                 updateUnitCard={updateUnitCard}
                 unitData={unitData}
                 towerFormData={towerFormData}
-                    />
+              />
               <SalableParkingExtent
                 updateUnitCard={updateUnitCard}
                 unitData={unitData}
                 towerId={towerData.tower_id}
-                      />
+              />
               <FacingCornerUnitFC
                 updateUnitCard={updateUnitCard}
                 unitData={unitData}
@@ -121,26 +122,37 @@ export default function UnitSection({
               <div className='flex flex-wrap items-center justify-between gap-5'>
                 <span className='flex-[3]'>Unit Floor Plan:</span>
                 <div className='-ml-2.5 flex flex-[8] items-center gap-2'>
-                <input
-                  type='file'
-                  className='file-input file-input-bordered file-input-xs ml-2 h-8'
-                  id='project-other-docs-file'
-                  accept='image/*'
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files.length > 0) {
-                      Array.from(e.target.files).forEach((file) => {
-                        updateUnitCard(towerData.tower_id, unitData.id, {
-                          unitFloorPlanFile: {
-                            name: file.name,
-                            file: file,
-                          },
+                  <input
+                    type='file'
+                    className='file-input file-input-bordered file-input-xs ml-2 h-8'
+                    id='project-other-docs-file'
+                    accept='image/*'
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        Array.from(e.target.files).forEach((file) => {
+                          updateUnitCard(towerData.tower_id, unitData.id, {
+                            unitFloorPlanFile: {
+                              name: file.name,
+                              file: file,
+                            },
+                          });
                         });
-                      });
-                    }
-                  }}
-                />
+                      }
+                    }}
+                  />
+                </div>
               </div>
-              </div>
+              {unitData.s3_path && unitData.s3_path.length > 5 && (
+                <div className='flex items-center gap-2'>
+                  <span className='font-bold text-fuchsia-600'>
+                    Available Unit Floor Plans:
+                  </span>
+                  <PreviewImage
+                    url={IMAGE_PATH_PREFIX + unitData.s3_path}
+                    customModalSuffix={`${towerData.tower_id}-${unitData.id}-${unitData.salableArea}-${unitData.extent}`}
+                  />
+                </div>
+              )}
             </div>
             <UnitFileList
               image={unitData.unitFloorPlanFile}
