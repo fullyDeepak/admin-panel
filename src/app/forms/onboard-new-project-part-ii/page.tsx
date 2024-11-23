@@ -50,6 +50,7 @@ export default function Page() {
     let uploadTowerFloorPlan = false;
     const projectImgFormData = new FormData();
     const towerImgFormData = new FormData();
+    const unitImgFormData = new FormData();
 
     projectImgFormData.append(
       'project_id',
@@ -109,8 +110,13 @@ export default function Page() {
         ground_floor_name: tower.gfName,
       });
       tower.unitCards.map((unitCard) => {
+        const unitTypeId = `${tower.tower_id}_${unitCard.configName}_${unitCard.salableArea}_${unitCard.extent}_${unitCard.facing || 'None'}`;
+        if (unitCard.unitFloorPlanFile) {
+          unitImgFormData.append(unitTypeId, unitCard.unitFloorPlanFile?.file);
+        }
         toPost.push({
-          unit_type_id: `${tower.tower_id}_${unitCard.configName}_${unitCard.salableArea}_${unitCard.extent}_${unitCard.facing || 'None'}`,
+          unit_type_id: unitTypeId,
+          project_id: projectData.selectedProject!.value,
           tower_id: tower.tower_id.toString(),
           rera_type: unitCard.reraUnitType?.value || null,
           tower_type: tower.towerType,
@@ -128,6 +134,7 @@ export default function Page() {
           type_units: unitCard.unitNos,
           facing: unitCard.facing || null,
           is_corner: unitCard.corner,
+          s3_path: unitCard.s3_path,
         });
       });
     });
@@ -181,6 +188,25 @@ export default function Page() {
           loading: 'uploading tower floor plan...',
           success: () => {
             return 'Tower floor plan uploaded';
+          },
+          error: (err) => {
+            console.log(err);
+            return 'Error';
+          },
+        },
+        { success: { duration: 5000 } }
+      );
+    }
+
+    if ([...unitImgFormData.entries()].length > 0) {
+      toast.promise(
+        axiosClient.post('/forms/imgTag/unit-part-2', unitImgFormData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }),
+        {
+          loading: 'uploading unit floor plan...',
+          success: () => {
+            return 'Unit floor plan uploaded';
           },
           error: (err) => {
             console.log(err);

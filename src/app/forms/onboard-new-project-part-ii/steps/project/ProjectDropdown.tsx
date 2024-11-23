@@ -72,6 +72,7 @@ export interface ProjectData {
         type_units: string;
         facing: string;
         is_corner: boolean;
+        s3_path: string;
       }[];
     }[];
     reraData: {
@@ -216,6 +217,7 @@ export default function ProjectDropdown() {
                   toiletConfig: null,
                   tmUnitType: null,
                   unitFloorPlanFile: null,
+                  s3_path: etlData.s3_path || '',
                 });
               });
               towerData.push({

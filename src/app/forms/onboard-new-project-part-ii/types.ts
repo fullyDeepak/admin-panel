@@ -1,5 +1,6 @@
 export interface UnitCardDataToPost {
   unit_type_id: string;
+  project_id: number;
   tower_id: string;
   rera_type: string | null;
   tower_type: string | null;
@@ -17,4 +18,5 @@ export interface UnitCardDataToPost {
   type_units: string;
   facing: string | null;
   is_corner: boolean;
+  s3_path: string;
 }
