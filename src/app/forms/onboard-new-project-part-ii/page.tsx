@@ -20,6 +20,7 @@ export default function Page() {
     setFormSteps,
     currentFormStep: formSteps,
     projectData,
+    updateProjectData,
   } = useProjectDataStore();
   const {
     towerFormData,
@@ -27,6 +28,8 @@ export default function Page() {
     projectPricingStatus,
     projectConstructionStatus,
     lockUnitType,
+    resetStatusFormData,
+    resetTowerUnitStore,
   } = useTowerUnitStore();
   const [UnitCardDataToPost, setUnitCardDataToPost] = useState<
     UnitCardDataToPost[]
@@ -247,6 +250,11 @@ export default function Page() {
         }
       );
     }
+    // after successful submit
+    updateProjectData({ selectedProject: null });
+    setFormSteps('Project');
+    resetStatusFormData();
+    resetTowerUnitStore();
   }
   return (
     <div className='mx-auto mt-10 flex w-full flex-col'>
