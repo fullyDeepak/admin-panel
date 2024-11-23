@@ -56,6 +56,14 @@ export default function Page() {
       'project_id',
       projectData.selectedProject!.value.toString()
     );
+    towerImgFormData.append(
+      'project_id',
+      projectData.selectedProject!.value.toString()
+    );
+    unitImgFormData.append(
+      'project_id',
+      projectData.selectedProject!.value.toString()
+    );
 
     imagesStore.brochureFile.map((file) => {
       const key = { type: 'brochure' };
@@ -93,10 +101,6 @@ export default function Page() {
       );
     });
 
-    towerImgFormData.append(
-      'project_id',
-      projectData.selectedProject!.value.toString()
-    );
     towerFormData.map((tower) => {
       tower.towerFloorPlanFile.map((file) => {
         uploadTowerFloorPlan = true;
@@ -112,7 +116,10 @@ export default function Page() {
       tower.unitCards.map((unitCard) => {
         const unitTypeId = `${tower.tower_id}_${unitCard.configName}_${unitCard.salableArea}_${unitCard.extent}_${unitCard.facing || 'None'}`;
         if (unitCard.unitFloorPlanFile) {
-          unitImgFormData.append(unitTypeId, unitCard.unitFloorPlanFile?.file);
+          unitImgFormData.append(
+            encodeURIComponent(unitTypeId),
+            unitCard.unitFloorPlanFile?.file
+          );
         }
         toPost.push({
           unit_type_id: unitTypeId,
@@ -121,9 +128,9 @@ export default function Page() {
           rera_type: unitCard.reraUnitType?.value || null,
           tower_type: tower.towerType,
           unit_type: tower.towerType,
-          saleable_area: unitCard.salableArea.toString() || null,
-          parking: unitCard.parking.toString() || null,
-          extent: unitCard.extent.toString() || null,
+          saleable_area: unitCard.salableArea?.toString() || null,
+          parking: unitCard.parking?.toString() || null,
+          extent: unitCard.extent?.toString() || null,
           config: unitCard.configName || null,
           confident: unitCard.configVerified,
           wc_count: unitCard.toiletConfig || null,
@@ -134,7 +141,7 @@ export default function Page() {
           type_units: unitCard.unitNos,
           facing: unitCard.facing || null,
           is_corner: unitCard.corner,
-          s3_path: unitCard.s3_path,
+          s3_path: unitCard.s3_path || null,
         });
       });
     });
@@ -160,7 +167,7 @@ export default function Page() {
       { success: { duration: 5000 } }
     );
 
-    if ([...projectImgFormData.entries()].length > 0) {
+    if ([...projectImgFormData.entries()].length > 1) {
       toast.promise(
         axiosClient.post('/forms/imgTag/projects', projectImgFormData, {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -198,7 +205,7 @@ export default function Page() {
       );
     }
 
-    if ([...unitImgFormData.entries()].length > 0) {
+    if ([...unitImgFormData.entries()].length > 1) {
       toast.promise(
         axiosClient.post('/forms/imgTag/unit-part-2', unitImgFormData, {
           headers: { 'Content-Type': 'multipart/form-data' },
