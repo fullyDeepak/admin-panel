@@ -104,7 +104,8 @@ export default function ProjectDropdown() {
     },
   });
   const { projectData, updateProjectData } = useProjectDataStore();
-  const { setTowerFormData, resetStatusFormData } = useTowerUnitStore();
+  const { setTowerFormData, resetStatusFormData, setLockUnitType } =
+    useTowerUnitStore();
   const { resetImageStore } = useProjectImageStore();
 
   async function handleProjectChange(
@@ -242,6 +243,7 @@ export default function ProjectDropdown() {
                   })) || [],
               });
             });
+            setLockUnitType(e.label.includes('✅'));
             setTowerFormData(towerData);
             resetImageStore();
             resetStatusFormData();

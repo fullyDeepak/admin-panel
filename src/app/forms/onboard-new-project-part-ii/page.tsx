@@ -141,7 +141,6 @@ export default function Page() {
           type_units: unitCard.unitNos,
           facing: unitCard.facing || null,
           is_corner: unitCard.corner,
-          s3_path: unitCard.s3_path || null,
         });
       });
     });

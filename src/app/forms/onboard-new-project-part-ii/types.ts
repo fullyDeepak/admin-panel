@@ -18,5 +18,4 @@ export interface UnitCardDataToPost {
   type_units: string;
   facing: string | null;
   is_corner: boolean;
-  s3_path: string | null;
 }
