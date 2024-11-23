@@ -39,7 +39,7 @@ export default function Page() {
     <>
       <div className='mx-auto mt-10 flex w-full flex-col'>
         <h1 className='self-center text-2xl md:text-3xl'>
-          Project Onboarder v3.0
+          Project Updater v3.0 - Part I
         </h1>
         <div
           className={cn(
