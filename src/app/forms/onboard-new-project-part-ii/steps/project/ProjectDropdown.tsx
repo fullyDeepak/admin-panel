@@ -13,6 +13,7 @@ import { uniq } from 'lodash';
 import { convertArrayToRangeString } from '../../utils';
 import { useProjectImageStore } from '../../useProjectImageStore';
 import { findLargest, findSmallest } from '../tower/utils';
+import { useEffect, useState } from 'react';
 
 export interface ProjectData {
   status: string;
@@ -96,16 +97,23 @@ export default function ProjectDropdown() {
       const res = await axiosClient.get<{
         data: { id: number; project_name: string; config_tagging: boolean }[];
       }>('/onboarding/getProjectsForPart2');
-      return res.data.data.map((ele) => ({
-        label: `${ele.id}:${ele.project_name} ${ele.config_tagging ? '✅' : ''}`,
-        value: ele.id,
-      }));
+      return res.data.data;
     },
   });
+
   const { projectData, updateProjectData } = useProjectDataStore();
   const { setTowerFormData, resetStatusFormData, setLockUnitType } =
     useTowerUnitStore();
   const { resetImageStore } = useProjectImageStore();
+  const [optionType, setOptionType] = useState<
+    'ALL' | 'COMPLETED' | 'IN_COMPLETED'
+  >('IN_COMPLETED');
+  const [options, setOptions] = useState<
+    {
+      label: string;
+      value: number;
+    }[]
+  >([]);
 
   async function handleProjectChange(
     e: SingleValue<{
@@ -251,17 +259,84 @@ export default function ProjectDropdown() {
     }
   }
 
+  useEffect(() => {
+    if (optionType === 'ALL') {
+      setOptions(
+        projectOptions?.map((ele) => ({
+          label: `${ele.id}:${ele.project_name}`,
+          value: ele.id,
+        })) || []
+      );
+    } else if (optionType === 'COMPLETED') {
+      setOptions(
+        projectOptions
+          ?.filter((ele) => ele.config_tagging)
+          .map((ele) => ({
+            label: `${ele.id}:${ele.project_name}`,
+            value: ele.id,
+          })) || []
+      );
+    } else if (optionType === 'IN_COMPLETED') {
+      setOptions(
+        projectOptions
+          ?.filter((ele) => !ele.config_tagging)
+          .map((ele) => ({
+            label: `${ele.id}:${ele.project_name}`,
+            value: ele.id,
+          })) || []
+      );
+    }
+  }, [optionType, projectOptions]);
+
   return (
-    <label className='flex items-center justify-between gap-5'>
-      <span className='flex-[2] text-base md:text-xl'>Select Project:</span>
-      <Select
-        className='w-full flex-[5]'
-        key={'onBoardedProjects'}
-        options={projectOptions || []}
-        isLoading={loadingProjects}
-        value={projectData.selectedProject}
-        onChange={handleProjectChange}
-      />
-    </label>
+    <div className='space-y-3'>
+      <div className='flex items-center justify-between gap-5'>
+        <span className='flex-[2] text-base md:text-xl'>Filter:</span>
+        <div className='flex flex-[5] items-center gap-5'>
+          <label className='flex items-center gap-2'>
+            <input
+              type='radio'
+              name='radio-1'
+              className='radio-success radio'
+              checked={optionType === 'ALL'}
+              onChange={() => setOptionType('ALL')}
+            />
+            <span>Show ALL</span>
+          </label>
+          <label className='flex items-center gap-2'>
+            <input
+              type='radio'
+              name='radio-1'
+              className='radio-success radio'
+              checked={optionType === 'IN_COMPLETED'}
+              onChange={() => setOptionType('IN_COMPLETED')}
+            />
+            <span>Show InCompleted</span>
+          </label>
+          <label className='flex items-center gap-2'>
+            <input
+              type='radio'
+              name='radio-1'
+              className='radio-success radio'
+              checked={optionType === 'COMPLETED'}
+              onChange={() => setOptionType('COMPLETED')}
+              defaultChecked
+            />
+            <span>Show Completed</span>
+          </label>
+        </div>
+      </div>
+      <label className='flex items-center justify-between gap-5'>
+        <span className='flex-[2] text-base md:text-xl'>Select Project:</span>
+        <Select
+          className='w-full flex-[5]'
+          key={'onBoardedProjects'}
+          options={options || []}
+          isLoading={loadingProjects}
+          value={projectData.selectedProject}
+          onChange={handleProjectChange}
+        />
+      </label>
+    </div>
   );
 }
