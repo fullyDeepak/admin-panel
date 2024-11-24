@@ -60,41 +60,61 @@ export default function TowerDetails({
           <div className='float-label-input-group relative'>
             <input
               type='number'
-              defaultValue={tower.typicalMaxFloor ? tower.typicalMaxFloor : ''}
+              defaultValue={tower.maxFloor ? tower.maxFloor : ''}
               onChange={(e) =>
                 updateTowerFormData(tower.tower_id, {
-                  typicalMaxFloor: e.target.valueAsNumber,
+                  maxFloor: e.target.valueAsNumber,
                 })
               }
               id='max-floor'
               placeholder=''
-              className='group peer w-full rounded-md border-0 bg-transparent px-2 pb-1 pt-3 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
+              className='group peer w-full rounded-md border-0 bg-transparent px-2 pb-1 pt-3 text-xs shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
             />
             <label
-              className='absolute left-5 top-2 cursor-text text-gray-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-1 peer-focus:px-1 peer-focus:text-[10px] peer-focus:text-violet-500 peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-1 peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:text-violet-500'
+              className='absolute left-2 top-2 cursor-text text-xs text-gray-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-1 peer-focus:px-1 peer-focus:text-[8px] peer-focus:text-violet-500 peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-1 peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-[8px] peer-[:not(:placeholder-shown)]:text-violet-500'
               htmlFor='max-floor'
             >
-              <span className='bg-white px-1'>Max Floor</span>
+              <span className='bg-white'>Max Floor</span>
             </label>
           </div>
           <div className='float-label-input-group relative'>
             <input
               type='text'
-              defaultValue={tower.typicalUnitCount}
-              id='unit-count'
+              defaultValue={tower.typicalMinUN}
+              id='un-min'
               onChange={(e) =>
                 updateTowerFormData(tower.tower_id, {
-                  typicalUnitCount: e.target.value,
+                  typicalMinUN: e.target.value,
                 })
               }
               placeholder=''
               className='group peer w-full rounded-md border-0 bg-transparent px-2 pb-1 pt-3 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
             />
             <label
-              className='absolute left-5 top-2 cursor-text py-0 text-gray-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-1 peer-focus:px-1 peer-focus:text-[10px] peer-focus:text-violet-500 peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-1 peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:text-violet-500'
-              htmlFor='unit-count'
+              className='absolute left-2 top-2.5 cursor-text py-0 text-xs text-gray-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-1 peer-focus:px-1 peer-focus:text-[8px] peer-focus:text-violet-500 peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-1 peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-[8px] peer-[:not(:placeholder-shown)]:text-violet-500'
+              htmlFor='un-min'
             >
-              <span className='bg-white px-1'> Unit Count</span>
+              <span className='bg-white px-1'> UN Min</span>
+            </label>
+          </div>
+          <div className='float-label-input-group relative'>
+            <input
+              type='text'
+              defaultValue={tower.typicalMaxUN}
+              id='un-max'
+              onChange={(e) =>
+                updateTowerFormData(tower.tower_id, {
+                  typicalMaxUN: e.target.value,
+                })
+              }
+              placeholder=''
+              className='group peer w-full rounded-md border-0 bg-transparent px-2 pb-1 pt-3 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
+            />
+            <label
+              className='absolute left-2 top-2.5 cursor-text py-0 text-xs text-gray-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-1 peer-focus:px-1 peer-focus:text-[8px] peer-focus:text-violet-500 peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-1 peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-[8px] peer-[:not(:placeholder-shown)]:text-violet-500'
+              htmlFor='un-max'
+            >
+              <span className='bg-white px-1'>UN Max</span>
             </label>
           </div>
         </div>
@@ -114,7 +134,7 @@ export default function TowerDetails({
               className='group peer w-full rounded-md border-0 bg-transparent px-2 pb-1 pt-3 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
             />
             <label
-              className='absolute left-6 top-2 cursor-text py-0 text-gray-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-1 peer-focus:px-1 peer-focus:text-[10px] peer-focus:text-violet-500 peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-1 peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:text-violet-500'
+              className='absolute left-2 top-2.5 cursor-text py-0 text-xs text-gray-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-1 peer-focus:px-1 peer-focus:text-[8px] peer-focus:text-violet-500 peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-1 peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-[8px] peer-[:not(:placeholder-shown)]:text-violet-500'
               htmlFor='ground-floor-name'
             >
               <span className='bg-white px-1'>GF Name</span>
@@ -123,21 +143,41 @@ export default function TowerDetails({
           <div className='float-label-input-group relative'>
             <input
               type='text'
-              defaultValue={tower.gfUnitCount}
-              id='gf-unit-count'
+              defaultValue={tower.gfUnitMinUN}
+              id='gf-un-min'
               onChange={(e) =>
                 updateTowerFormData(tower.tower_id, {
-                  gfUnitCount: e.target.value,
+                  gfUnitMinUN: e.target.value,
                 })
               }
               placeholder=''
               className='group peer w-full rounded-md border-0 bg-transparent px-2 pb-1 pt-3 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
             />
             <label
-              className='absolute left-5 top-2 cursor-text py-0 text-gray-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-1 peer-focus:px-1 peer-focus:text-[10px] peer-focus:text-violet-500 peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-1 peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:text-violet-500'
-              htmlFor='gf-unit-count'
+              className='absolute left-2 top-2.5 cursor-text py-0 text-xs text-gray-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-1 peer-focus:px-1 peer-focus:text-[8px] peer-focus:text-violet-500 peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-1 peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-[8px] peer-[:not(:placeholder-shown)]:text-violet-500'
+              htmlFor='gf-un-min'
             >
-              <span className='bg-white px-1'>Unit Count</span>
+              <span className='bg-white px-1'>UN Min</span>
+            </label>
+          </div>
+          <div className='float-label-input-group relative'>
+            <input
+              type='text'
+              defaultValue={tower.gfUnitMaxUN}
+              id='gf-un-max'
+              onChange={(e) =>
+                updateTowerFormData(tower.tower_id, {
+                  gfUnitMaxUN: e.target.value,
+                })
+              }
+              placeholder=''
+              className='group peer w-full rounded-md border-0 bg-transparent px-2 pb-1 pt-3 shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600'
+            />
+            <label
+              className='absolute left-2 top-2.5 cursor-text py-0 text-xs text-gray-500 transition-all duration-300 peer-focus:-top-2 peer-focus:left-1 peer-focus:px-1 peer-focus:text-[8px] peer-focus:text-violet-500 peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-1 peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-[8px] peer-[:not(:placeholder-shown)]:text-violet-500'
+              htmlFor='gf-un-max'
+            >
+              <span className='bg-white px-1'>UN Max</span>
             </label>
           </div>
         </div>

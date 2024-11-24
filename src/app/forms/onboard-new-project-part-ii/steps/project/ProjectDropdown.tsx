@@ -20,23 +20,20 @@ export interface ProjectData {
       tower_id: string;
       tower_name: string;
       rera_id: string | null;
-      ground_floor_name: string;
-      ground_floor_unit_no_max: string;
-      ground_floor_unit_no_min: string;
-      typical_floor_unit_no_min: string;
-      typical_floor_unit_no_max: string;
-      min_floor: string;
-      max_floor: string;
       rera_tower_id: any;
       etl_tower_name: string;
       display_tower_type: string;
+      typical_units: string[];
+      gf_units: string[];
       tm_unit_ref: {
-        extent: number;
+        extent: number[];
         facing: Record<string, string>;
         configName?: string;
         floor_list: string[];
         salable_area: number;
         unit_numbers: (string | undefined)[];
+        apt_unit_count: number;
+        villa_unit_count: number;
       }[];
     }[];
     unitData: {
@@ -130,51 +127,30 @@ export default function ProjectDropdown() {
             const towerData: TowerUnitDetailType[] = [];
             res.data.tmData.map((ele) => {
               const unitCards: UnitCardType[] = [];
-              const tmUnitRefKey: Record<
-                string,
-                RefTableType & { extent: string }
-              > = {};
+              const tmTableData: (RefTableType & {
+                extent: string;
+              })[] = [];
               ele.tm_unit_ref?.map((etlData) => {
                 const key = `${etlData.configName || 'NULL'}: ${etlData.salable_area}`;
-                if (key in tmUnitRefKey) {
-                  const existingData = tmUnitRefKey[key];
-                  existingData.type = key;
-                  existingData.config = uniq(
-                    `${existingData.config},${etlData.configName}`.split(',')
-                  ).join(', ');
-                  existingData.unitCount = (
-                    +existingData.unitCount + etlData.unit_numbers.length
-                  ).toString();
-                  existingData.salableArea = uniq(
-                    `${existingData.salableArea},${etlData.salable_area}`.split(
-                      ','
-                    )
-                  ).join(', ');
-                  existingData.extent = uniq(
-                    `${existingData.extent},${etlData.extent}`.split(',')
-                  ).join(', ');
-                  existingData.facing = uniq(
-                    `${existingData.facing}, ${Object.values(etlData.facing).join(', ')}`.split(
-                      ', '
-                    )
-                  ).join(', ');
-                  existingData.floorList = `${existingData.floorList}, ${etlData.floor_list.join(', ')}`;
-                  existingData.unitList = `${existingData.unitList}, ${etlData.unit_numbers.join(', ')}`;
-                  tmUnitRefKey[key] = existingData;
-                } else {
-                  const newData = {} as RefTableType & { extent: string };
-                  newData.type = key;
-                  newData.config = etlData.configName || 'NULL';
-                  newData.unitCount = etlData.unit_numbers.length.toString();
-                  newData.salableArea = etlData.salable_area.toString();
-                  newData.extent = etlData.extent.toString();
-                  newData.facing = uniq(Object.values(etlData.facing)).join(
-                    ', '
-                  );
-                  newData.floorList = etlData.floor_list?.join(', ');
-                  newData.unitList = etlData.unit_numbers?.join(', ');
-                  tmUnitRefKey[key] = newData;
-                }
+
+                tmTableData.push({
+                  ...etlData,
+                  extent: etlData.extent.join(', '),
+                  config: etlData.configName || 'NULL',
+                  type: key,
+                  unitCount:
+                    ele.display_tower_type === 'APARTMENT'
+                      ? etlData.apt_unit_count.toString()
+                      : etlData.villa_unit_count.toString(),
+                  salableArea: etlData.salable_area.toString(),
+                  facing:
+                    uniq(Object.values(etlData.facing || {})).join(', ') ||
+                    'N/A',
+                  floorList: convertArrayToRangeString(
+                    etlData.floor_list.map(String)
+                  ),
+                  unitList: etlData.unit_numbers.join(', '),
+                });
               });
 
               const unitData = res.data.unitData.find((temp) => {
@@ -229,13 +205,19 @@ export default function ProjectDropdown() {
                 reraTowerId: ele.rera_tower_id,
                 towerType: ele.display_tower_type,
                 reraId: ele.rera_id || '',
-                gfName: ele.ground_floor_name,
-                gfUnitCount: ele.ground_floor_unit_no_max,
+                maxFloor: 0,
+                gfName: '',
+                gfUnitMaxUN: Math.max(...ele.gf_units.map(Number)).toString(),
+                gfUnitMinUN: Math.min(...ele.gf_units.map(Number)).toString(),
+                typicalMaxUN: ele.typical_units
+                  ? Math.max(...ele.typical_units.map(Number)).toString()
+                  : '',
+                typicalMinUN: ele.typical_units
+                  ? Math.min(...ele.typical_units.map(Number)).toString()
+                  : '',
                 unitCards: unitCards,
-                tmRefTable: Object.values(tmUnitRefKey),
+                tmRefTable: tmTableData,
                 reraRefTable: reraRefTable || [],
-                typicalMaxFloor: +ele.max_floor,
-                typicalUnitCount: ele.typical_floor_unit_no_max,
                 reraUnitTypeOption:
                   reraData?.rera_unit_type_ids.map((ele) => ({
                     label: ele,

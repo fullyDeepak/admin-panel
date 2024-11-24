@@ -33,9 +33,12 @@ export default function UnitGrid({ towerData }: Props) {
   const [showGrid, setShowGrid] = useState<boolean>(false);
 
   function generateGrid() {
-    const maxFloor = towerData.typicalMaxFloor;
-    const typicalUnitCount = +towerData.typicalUnitCount;
-    const gfUnitCount = towerData.gfUnitCount ? towerData.gfUnitCount : null;
+    // const maxFloor = towerData.typicalMaxFloor;
+    // const typicalUnitCount = +towerData.typicalUnitCount;
+    // const gfUnitCount = towerData.gfUnitCount ? towerData.gfUnitCount : null;
+    const maxFloor = 0;
+    const typicalUnitCount = 0;
+    const gfUnitCount = 0;
     const maxUnitCount = Math.max(
       typicalUnitCount,
       gfUnitCount ? +gfUnitCount : 0

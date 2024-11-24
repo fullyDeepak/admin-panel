@@ -21,10 +21,12 @@ export type TowerUnitDetailType = {
   towerNameDisplay: string;
   towerNameETL: string;
   towerType: string;
-  typicalMaxFloor: number;
-  typicalUnitCount: string;
+  maxFloor: number;
+  typicalMaxUN: string;
+  typicalMinUN: string;
   gfName: string;
-  gfUnitCount: string;
+  gfUnitMaxUN: string;
+  gfUnitMinUN: string;
   unitCards: UnitCardType[];
   reraRefTable: RefTableType[];
   tmRefTable: (RefTableType & { extent: string })[];
@@ -70,10 +72,12 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
     towerNameETL: '',
     towerNameDisplay: '',
     towerType: '',
-    typicalMaxFloor: 0,
-    typicalUnitCount: '',
+    maxFloor: 0,
+    typicalMaxUN: '',
+    typicalMinUN: '',
     gfName: '',
-    gfUnitCount: '',
+    gfUnitMaxUN: '',
+    gfUnitMinUN: '',
     unitCards: [
       {
         id: 1,
