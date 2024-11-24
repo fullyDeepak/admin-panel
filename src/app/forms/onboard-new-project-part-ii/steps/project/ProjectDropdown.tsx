@@ -263,7 +263,9 @@ export default function ProjectDropdown() {
     if (optionType === 'ALL') {
       setOptions(
         projectOptions?.map((ele) => ({
-          label: `${ele.id}:${ele.project_name}`,
+          label: ele.config_tagging
+            ? `${ele.id}:${ele.project_name}✅`
+            : `${ele.id}:${ele.project_name}`,
           value: ele.id,
         })) || []
       );
@@ -272,7 +274,7 @@ export default function ProjectDropdown() {
         projectOptions
           ?.filter((ele) => ele.config_tagging)
           .map((ele) => ({
-            label: `${ele.id}:${ele.project_name}`,
+            label: `${ele.id}:${ele.project_name}✅`,
             value: ele.id,
           })) || []
       );
@@ -301,7 +303,7 @@ export default function ProjectDropdown() {
               checked={optionType === 'ALL'}
               onChange={() => setOptionType('ALL')}
             />
-            <span>Show ALL</span>
+            <span>Show All</span>
           </label>
           <label className='flex items-center gap-2'>
             <input
@@ -311,7 +313,7 @@ export default function ProjectDropdown() {
               checked={optionType === 'IN_COMPLETED'}
               onChange={() => setOptionType('IN_COMPLETED')}
             />
-            <span>Show InCompleted</span>
+            <span>Show Incomplete</span>
           </label>
           <label className='flex items-center gap-2'>
             <input
