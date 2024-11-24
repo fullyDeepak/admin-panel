@@ -137,7 +137,14 @@ export default function UnitFileList({
                 >
                   <Eye size={18} />
                 </button>
-                <button className='flex size-8 items-center justify-center rounded-full bg-red-600 text-white hover:bg-red-600'>
+                <button
+                  className='flex size-8 items-center justify-center rounded-full bg-red-600 text-white hover:bg-red-600'
+                  onClick={() =>
+                    updateUnitCard(towerId, unitId, {
+                      unitFloorPlanFile: null,
+                    })
+                  }
+                >
                   <Trash2 size={18} />
                 </button>
               </div>
