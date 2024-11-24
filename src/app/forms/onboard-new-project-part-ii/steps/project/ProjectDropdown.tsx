@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 import { uniq } from 'lodash';
 import { convertArrayToRangeString } from '../../utils';
 import { useProjectImageStore } from '../../useProjectImageStore';
+import { findLargest, findSmallest } from '../tower/utils';
 
 export interface ProjectData {
   status: string;
@@ -23,6 +24,7 @@ export interface ProjectData {
       rera_tower_id: any;
       etl_tower_name: string;
       display_tower_type: string;
+      floor_list: string[];
       typical_units: string[];
       gf_units: string[];
       tm_unit_ref: {
@@ -205,15 +207,22 @@ export default function ProjectDropdown() {
                 reraTowerId: ele.rera_tower_id,
                 towerType: ele.display_tower_type,
                 reraId: ele.rera_id || '',
-                maxFloor: 0,
+                maxFloor:
+                  ele.floor_list && ele.floor_list.length > 0
+                    ? Math.max(...ele.floor_list.map(Number))
+                    : 0,
                 gfName: '',
-                gfUnitMaxUN: Math.max(...ele.gf_units.map(Number)).toString(),
-                gfUnitMinUN: Math.min(...ele.gf_units.map(Number)).toString(),
+                gfUnitMaxUN: ele.gf_units
+                  ? findLargest(ele.gf_units).toString()
+                  : '',
+                gfUnitMinUN: ele.gf_units
+                  ? findSmallest(ele.gf_units).toString()
+                  : '',
                 typicalMaxUN: ele.typical_units
-                  ? Math.max(...ele.typical_units.map(Number)).toString()
+                  ? findLargest(ele.typical_units).toString()
                   : '',
                 typicalMinUN: ele.typical_units
-                  ? Math.min(...ele.typical_units.map(Number)).toString()
+                  ? findSmallest(ele.typical_units).toString()
                   : '',
                 unitCards: unitCards,
                 tmRefTable: tmTableData,

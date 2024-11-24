@@ -78,3 +78,42 @@ export function subGridGenerator(cardData: UnitCardType) {
   console.log(subGrid);
   return subGrid;
 }
+
+export function findLargest(arr: (string | number)[]): string | number {
+  if (arr.length === 0) {
+    throw new Error('Array cannot be empty');
+  }
+  if (Number(arr[0])) {
+    return Math.max(...arr.map(Number));
+  }
+  let largest = arr[0];
+  for (let i = 1; i < arr.length; i++) {
+    if (typeof arr[i] === 'string' && typeof largest === 'string') {
+      if ((arr[i] as string).localeCompare(largest) > 0) {
+        largest = arr[i];
+      }
+    }
+  }
+
+  return largest;
+}
+
+export function findSmallest(arr: (string | number)[]): string | number {
+  if (arr.length === 0) {
+    throw new Error('Array cannot be empty');
+  }
+  if (Number(arr[0])) {
+    return Math.min(...arr.map(Number));
+  }
+
+  let largest = arr[0];
+  for (let i = 1; i < arr.length; i++) {
+    if (typeof arr[i] === 'string' && typeof largest === 'string') {
+      if ((arr[i] as string).localeCompare(largest) < 0) {
+        largest = arr[i];
+      }
+    }
+  }
+
+  return largest;
+}
