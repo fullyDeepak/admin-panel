@@ -59,6 +59,7 @@ export interface OnboardingDataType {
   mapInputValue: string;
   mapGeojsonData: FeatureCollection | null;
   geoData: any[];
+  polygonArea: number;
 }
 
 export interface TempProjectSourceData {
@@ -195,6 +196,7 @@ const INITIAL_STATE: OnboardingDataType = {
   mapInputValue: '',
   mapGeojsonData: null,
   geoData: [],
+  polygonArea: 0,
 };
 
 export const useOnboardingDataStore = create<Store>()(
