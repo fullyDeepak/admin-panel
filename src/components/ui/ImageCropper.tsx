@@ -10,6 +10,7 @@ type Props = {
 };
 
 function ImageCropper({ src, saveBlob }: Props) {
+  if (!src) return <></>;
   const [sourceFile, setSourceFile] = useState<File>(src);
   const [source, setSource] = useState<string>(URL.createObjectURL(src));
   const [showOptions, setShowOptions] = React.useState(false);

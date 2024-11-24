@@ -11,7 +11,7 @@ import {
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type PDFViewerProps =
   | {
@@ -62,7 +62,7 @@ export default function PDFViewer({
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const customZoomPluginInstance = customZoomPlugin();
   const { zoomTo } = customZoomPluginInstance;
-  zoomTo(SpecialZoomLevel.PageWidth);
+  zoomTo(0.5);
   const [page, setPage] = useState(pageNumber || 1);
 
   const pdfData = useMemo(() => {
@@ -74,11 +74,16 @@ export default function PDFViewer({
   }, [fileContent]);
 
   function onPageChange(e: PageChangeEvent) {
-    if (setPageNumber && e.currentPage !== 0) {
+    if (e.currentPage !== 0) {
       setPage(e.currentPage + 1);
-      setPageNumber(e.currentPage + 1);
     }
   }
+
+  useEffect(() => {
+    if (page !== 0 && pageNumber !== page && setPageNumber) {
+      setPageNumber(page);
+    }
+  }, [page]);
 
   return (
     <Viewer
