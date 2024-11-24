@@ -234,6 +234,10 @@ export default function DeveloperTagging() {
               ROOT DOC AREA: {onboardingData.rootDocArea.toFixed(2)} SQ Yds
               (approx. {(onboardingData.rootDocArea / 4840).toFixed(2)} Acres)
             </p>
+            <span>
+              Map Calculated Land Area: {onboardingData.polygonArea} SQ Yds
+              (approx. {(onboardingData.polygonArea / 4840).toFixed(2)} Acres)
+            </span>
           </div>
           <div>
             <TanstackReactTable

@@ -12,6 +12,8 @@ import { useOnboardingDataStore } from '../../useOnboardingDataStore';
 import { useTowerUnitStore } from '../../useTowerUnitStore';
 import ProjectMatcherSection from './ProjectMatcherSection';
 import { useSourceDataStore } from '../../useSourceDataStore';
+import { sum } from 'lodash';
+import { computeArea, LatLngLike } from 'spherical-geometry-js';
 const inputBoxClass =
   'w-full flex-[5] ml-[6px] rounded-md border-0 p-2 bg-transparent shadow-sm outline-none ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-600 ';
 
@@ -141,6 +143,18 @@ export default function StaticDataForm() {
                 },
                 crs: undefined,
               }));
+
+              const totalArea = sum(
+                geoData.map((geo) => {
+                  if (geo.type !== 'Polygon') return null;
+                  const latLng = geo.coordinates[0];
+                  const computedArea = computeArea(
+                    latLng as unknown as LatLngLike[]
+                  );
+                  return parseFloat((computedArea * 1.196).toFixed(2));
+                })
+              );
+
               setSourceData({
                 projectData: {
                   amenities: projectData.data.data.amenities.map((ele) => ({
@@ -199,6 +213,7 @@ export default function StaticDataForm() {
                   mapGeojsonData: null,
                   geoData: geoData,
                   mapData: null,
+                  polygonArea: totalArea,
                 },
                 towerData: projectData.data.data.towers.map((ele, index) => ({
                   id: index + 1,
@@ -358,6 +373,7 @@ export default function StaticDataForm() {
                 mapData: null,
                 mapInputValue: '',
                 mapGeojsonData: null,
+                polygonArea: totalArea,
               });
               setEtlData(
                 projectData.data.data.ProjectETLTagDataType.map(
