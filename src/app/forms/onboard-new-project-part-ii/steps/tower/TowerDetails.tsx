@@ -123,11 +123,11 @@ export default function TowerDetails({
           <div className='float-label-input-group relative'>
             <input
               type='text'
-              defaultValue={tower.gfName.toUpperCase()}
+              defaultValue={tower.gfName?.toUpperCase()}
               id={'ground-floor-name' + tower.tower_id}
               onChange={(e) =>
                 updateTowerFormData(tower.tower_id, {
-                  gfName: e.target.value.toUpperCase(),
+                  gfName: e.target.value?.toUpperCase(),
                 })
               }
               placeholder=''

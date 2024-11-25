@@ -94,7 +94,7 @@ export function baseGridGenerator({
   let gfUnitMinUN = towerData.gfUnitMinUN;
   let gfUnitMaxUN = towerData.gfUnitMaxUN;
   let maxUnitCount = 0;
-  const gfName = towerData.gfName.toUpperCase();
+  const gfName = towerData.gfName?.toUpperCase();
   const localGrid: Record<string, UnitGridItem[]> = {};
 
   if (
@@ -162,8 +162,8 @@ export function baseGridGenerator({
       }
     }
   } else if (
-    (typicalMinUN.length === 1 && typicalMaxUN.length === 1) ||
-    (gfUnitMinUN.length === 1 && gfUnitMaxUN.length === 1)
+    (typicalMinUN?.length === 1 && typicalMaxUN?.length === 1) ||
+    (gfUnitMinUN?.length === 1 && gfUnitMaxUN?.length === 1)
   ) {
     // convert alphabet units to uppercase
     typicalMaxUN = typicalMaxUN.toUpperCase();

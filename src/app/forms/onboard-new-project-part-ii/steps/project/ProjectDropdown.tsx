@@ -28,6 +28,7 @@ export interface ProjectData {
       floor_list: string[];
       typical_units: string[];
       gf_units: string[];
+      gf_floors: string[];
       tm_unit_ref: {
         extent: number[];
         facing: Record<string, string>;
@@ -157,7 +158,7 @@ export default function ProjectDropdown() {
                     uniq(Object.values(etlData.facing || {})).join(', ') ||
                     'N/A',
                   floorList: convertArrayToRangeString(
-                    etlData.floor_list.map(String)
+                    etlData.floor_list?.map(String) || []
                   ),
                   unitList: etlData.unit_numbers.join(', '),
                 });
@@ -216,10 +217,10 @@ export default function ProjectDropdown() {
                 towerType: ele.display_tower_type,
                 reraId: ele.rera_id || '',
                 maxFloor:
-                  ele.floor_list && ele.floor_list.length > 0
+                  ele?.floor_list && ele.floor_list.length > 0
                     ? Math.max(...ele.floor_list.map(Number))
                     : 0,
-                gfName: '',
+                gfName: ele.gf_floors?.join(', '),
                 gfUnitMaxUN: ele.gf_units
                   ? findLargest(ele.gf_units).toString()
                   : '',
@@ -322,7 +323,6 @@ export default function ProjectDropdown() {
               className='radio-success radio'
               checked={optionType === 'COMPLETED'}
               onChange={() => setOptionType('COMPLETED')}
-              defaultChecked
             />
             <span>Show Completed</span>
           </label>
