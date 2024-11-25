@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { TowerUnitDetailType } from '../../useTowerUnitStore';
-import { subGridGenerator } from './utils';
 import { produce } from 'immer';
 import { cn, getRandomColor } from '@/lib/utils';
+import { baseGridGenerator, subGridGenerator } from './gridGenerator';
 
 export type UnitGridItem = {
   unitType?: string;
@@ -21,6 +21,7 @@ export type UnitGridItem = {
   isHorizontallyMerged?: boolean;
   isVerticallyMerged?: boolean;
   isValid?: boolean;
+  notAvailable?: boolean;
 };
 
 type Props = {
@@ -32,53 +33,15 @@ export default function UnitGrid({ towerData }: Props) {
   const [maxUnitCount, setMaxUnitCount] = useState<number>(0);
   const [showGrid, setShowGrid] = useState<boolean>(false);
 
-  function generateGrid() {
-    // const maxFloor = towerData.typicalMaxFloor;
-    // const typicalUnitCount = +towerData.typicalUnitCount;
-    // const gfUnitCount = towerData.gfUnitCount ? towerData.gfUnitCount : null;
-    const maxFloor = 0;
-    const typicalUnitCount = 0;
-    const gfUnitCount = 0;
-    const maxUnitCount = Math.max(
-      typicalUnitCount,
-      gfUnitCount ? +gfUnitCount : 0
-    );
-    let minFloor = 1;
-    if (towerData.gfName && gfUnitCount) {
-      minFloor = 0;
-    }
-    let localGrid: Record<string, UnitGridItem[]> = {};
-    for (let i = maxFloor; i >= minFloor; i--) {
-      const floorUnits: UnitGridItem[] = [];
-      if (i === 0 && gfUnitCount) {
-        for (let j = 1; j <= +gfUnitCount; j++) {
-          floorUnits.push({
-            floor: i,
-            floorLabel: towerData.gfName,
-            unitNumber: j,
-            isValid: true,
-            isHorizontallyMerged: false,
-            isVerticallyMerged: false,
-          });
-        }
-        localGrid[i] = floorUnits;
-        continue;
-      }
-      for (let j = 1; j <= typicalUnitCount; j++) {
-        floorUnits.push({
-          floor: i,
-          floorLabel: i.toString(),
-          unitNumber: j,
-          isValid: true,
-          isHorizontallyMerged: false,
-          isVerticallyMerged: false,
-        });
-      }
-      localGrid[i] = floorUnits;
-    }
-    setMaxUnitCount(maxUnitCount);
+  function generateGridNew() {
+    let localGrid = baseGridGenerator({ setGrid, setMaxUnitCount, towerData });
     towerData.unitCards.map((card) => {
-      const subGrid = subGridGenerator(card);
+      // const _isAlpha =
+      //   isCharacterALetter(towerData.gfUnitMinUN) &&
+      //   isCharacterALetter(towerData.gfUnitMaxUN) &&
+      //   isCharacterALetter(towerData.typicalMinUN) &&
+      //   isCharacterALetter(towerData.typicalMaxUN);
+      const subGrid = subGridGenerator(card, towerData.gfName);
       localGrid = produce(localGrid, (draft) => {
         Object.entries(subGrid).map(([key, value]) => {
           draft[key]?.map((localGridItem, i) => {
@@ -120,13 +83,12 @@ export default function UnitGrid({ towerData }: Props) {
         });
       });
     });
-    console.log(localGrid);
     setGrid(localGrid);
   }
 
   useEffect(() => {
     if (showGrid) {
-      generateGrid();
+      generateGridNew();
     }
   }, [showGrid]);
   return (
@@ -152,10 +114,19 @@ export default function UnitGrid({ towerData }: Props) {
               {Object.entries(grid)
                 .sort((a, b) => +b[0] - +a[0])
                 .map(([_flr, units], i) =>
-                  units.map(
-                    (unit, j) =>
+                  units.map((unit, j) =>
+                    unit.notAvailable ? (
+                      <div key={`${i}-${j}`}></div>
+                    ) : (
                       unit.isValid && (
-                        <div
+                        <button
+                          onClick={() =>
+                            document
+                              .getElementById(
+                                `unit-type-card-${towerData.tower_id}-${unit.unitType}`
+                              )
+                              ?.scrollIntoView({ behavior: 'smooth' })
+                          }
                           key={`${i}-${j}`}
                           className={cn(
                             'flex flex-col items-center justify-center rounded-md p-2',
@@ -178,8 +149,9 @@ export default function UnitGrid({ towerData }: Props) {
                           <span className='text-[8px] leading-none'>
                             {`${unit.config || 'N/A'}-${unit.salableArea || 'N/A'}-${unit.facing || 'N/A'}`}
                           </span>
-                        </div>
+                        </button>
                       )
+                    )
                   )
                 )}
             </div>

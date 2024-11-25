@@ -69,6 +69,7 @@ export default function UnitSection({
           <div
             className='relative my-10 space-y-1 rounded-lg bg-amber-50 p-5 pb-10 text-sm shadow-[0px_0px_3px_2px_#b7791f]'
             key={unitData.id}
+            id={`unit-type-card-${towerData.tower_id}-${unitData.id}`}
           >
             <span
               className='absolute top-4 size-8 rounded-full bg-green-500'

@@ -18,3 +18,10 @@ export function getCurrentDate() {
   );
   return asiaCurrentDate;
 }
+
+export const alphaToVal = (s: string) => s.toUpperCase().charCodeAt(0) - 64;
+export const valToAlpha = (n: number) => (n + 9).toString(36).toUpperCase();
+
+export function isCharacterALetter(char: string) {
+  return /[a-zA-Z]/.test(char);
+}
