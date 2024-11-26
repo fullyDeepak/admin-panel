@@ -1,8 +1,19 @@
 'use client';
 
 import useFetchData from '@/app/hooks/useFetchData';
+import { dropdownOptionStyle } from '@/styles/react-select';
 import { useId } from 'react';
 import Select, { SingleValue } from 'react-select';
+
+const errorOption: { value: string; label: string }[] = [
+  { label: 'All', value: 'all' },
+  { label: 'Clean', value: '1' },
+  { label: 'Error-1', value: 'err-1' },
+  { label: 'Error-2', value: 'err-2' },
+  { label: 'Error-3', value: 'err-3' },
+  { label: 'Error-4', value: 'err-4' },
+  { label: 'Missing', value: 'missing' },
+];
 
 export default function Section2Container() {
   const { data: projectOptions, isLoading } = useFetchData<
@@ -15,6 +26,9 @@ export default function Section2Container() {
         <label className='flex items-center justify-between gap-5'>
           <span className='flex-[2] text-xl'>Projects:</span>
           <Select
+            styles={{
+              option: dropdownOptionStyle,
+            }}
             className='w-full flex-[5]'
             instanceId={useId()}
             isLoading={isLoading}
@@ -39,14 +53,17 @@ export default function Section2Container() {
           <div className='flex flex-[5] items-center gap-5'>
             <Select
               className='w-full flex-[5]'
+              styles={{
+                option: dropdownOptionStyle,
+              }}
               instanceId={useId()}
               key={'error-code'}
-              options={[]}
+              options={errorOption}
               value={null}
               onChange={(
                 e: SingleValue<{
                   label: string;
-                  value: number;
+                  value: string;
                 }>
               ) => {
                 console.log(e);
