@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { TowerUnitDetailType } from '../../useTowerUnitStore';
 import { produce } from 'immer';
-import { cn, getRandomColor } from '@/lib/utils';
+import { cn, getRezyColors } from '@/lib/utils';
 import { baseGridGenerator, subGridGenerator } from './gridGenerator';
 import { useProjectDataStore } from '../../useProjectDataStore';
 
@@ -73,7 +73,7 @@ export default function UnitGrid({ towerData }: Props) {
                 localGridItem.extent = subGridItem.extent;
                 localGridItem.facing = subGridItem.facing;
                 localGridItem.unitFloorCount = subGridItem.unitFloorCount;
-                localGridItem.color = getRandomColor(card.id, 40);
+                localGridItem.color = getRezyColors(card.id);
                 localGridItem.isUnitFPAvailable = card.unitFloorPlanFile
                   ? true
                   : false;
@@ -122,9 +122,9 @@ export default function UnitGrid({ towerData }: Props) {
         <div className='my-5 flex w-full max-w-[90vw] overflow-auto'>
           {grid && Object.entries(grid).length > 0 && (
             <div
-              className='mx-auto grid gap-2 p-2'
+              className='mx-auto grid gap-2 p-2 duration-300 animate-in slide-in-from-top'
               style={{
-                gridTemplateColumns: `repeat(${maxUnitCount}, minmax(80px, 1fr))`,
+                gridTemplateColumns: `repeat(${maxUnitCount}, minmax(90px, 1fr))`,
               }}
             >
               {Object.entries(grid)
@@ -151,7 +151,10 @@ export default function UnitGrid({ towerData }: Props) {
                               : 'animate-none',
                             unit.color && `text-white`,
                             unit.isHorizontallyMerged && 'col-span-2',
-                            unit.isVerticallyMerged && 'row-span-2'
+                            unit.isVerticallyMerged && 'row-span-2',
+                            unit?.unitType && +unit?.unitType <= 8
+                              ? 'text-black'
+                              : null
                           )}
                           style={{
                             background: unit.color
@@ -161,7 +164,7 @@ export default function UnitGrid({ towerData }: Props) {
                               : '#e4e4e7',
                           }}
                         >
-                          <span>{`${unit.floorLabel}-${unit.unitLabel || unit.unitNumber}`}</span>
+                          <span className='text-base'>{`${unit.floorLabel}-${unit.unitLabel || unit.unitNumber}`}</span>
                           {towerData.towerType === 'APARTMENT' ? (
                             <span className='text-[10px] leading-none'>
                               {`${unit.config || 'N/A'}-${unit.salableArea || 'N/A'}-${unit.facing || 'N/A'}`}

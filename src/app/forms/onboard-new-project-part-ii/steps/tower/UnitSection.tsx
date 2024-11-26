@@ -1,4 +1,4 @@
-import { cn, getRandomColor } from '@/lib/utils';
+import { cn, getRezyColors } from '@/lib/utils';
 import { BiCopy, BiPlus } from 'react-icons/bi';
 import {
   TowerUnitDetailType,
@@ -78,8 +78,8 @@ export default function UnitSection({
             id={`unit-type-card-${towerData.tower_id}-${unitData.id}`}
           >
             <span
-              className='absolute top-4 size-8 rounded-full bg-green-500'
-              style={{ backgroundColor: getRandomColor(unitData.id, 40) }}
+              className='absolute top-4 size-8 rounded-full'
+              style={{ backgroundColor: getRezyColors(unitData.id) }}
             ></span>
             <p className='text-center font-semibold'>
               Tower Card id: {towerData.tower_id} &nbsp; &nbsp; &nbsp; &nbsp;
