@@ -3,6 +3,7 @@ import { TowerUnitDetailType } from '../../useTowerUnitStore';
 import { produce } from 'immer';
 import { cn, getRandomColor } from '@/lib/utils';
 import { baseGridGenerator, subGridGenerator } from './gridGenerator';
+import { useProjectDataStore } from '../../useProjectDataStore';
 
 export type UnitGridItem = {
   unitType?: string;
@@ -32,8 +33,12 @@ export default function UnitGrid({ towerData }: Props) {
   const [grid, setGrid] = useState<Record<string, UnitGridItem[]>>({});
   const [maxUnitCount, setMaxUnitCount] = useState<number>(0);
   const [showGrid, setShowGrid] = useState<boolean>(false);
+  const { gridValue, updateGridValue } = useProjectDataStore((state) => ({
+    gridValue: state.randomGridValue,
+    updateGridValue: state.updateRandomGridValue,
+  }));
 
-  function generateGridNew() {
+  function generateGrid() {
     let localGrid = baseGridGenerator({ setGrid, setMaxUnitCount, towerData });
     towerData.unitCards.map((card) => {
       // const _isAlpha =
@@ -88,11 +93,22 @@ export default function UnitGrid({ towerData }: Props) {
 
   useEffect(() => {
     if (showGrid) {
-      generateGridNew();
+      generateGrid();
     }
   }, [showGrid]);
+
+  useEffect(() => {
+    if (gridValue == towerData.tower_id) {
+      generateGrid();
+      setShowGrid(true);
+      document
+        .getElementById('unit-grid-' + towerData.tower_id)
+        ?.scrollIntoView({ behavior: 'smooth' });
+      updateGridValue(0);
+    }
+  }, [gridValue]);
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col' id={'unit-grid-' + towerData.tower_id}>
       <label className='btn btn-warning mt-2 max-w-fit self-center'>
         {showGrid ? 'Hide' : 'Show'} Grid
         <input
@@ -146,9 +162,15 @@ export default function UnitGrid({ towerData }: Props) {
                           }}
                         >
                           <span>{`${unit.floorLabel}-${unit.unitLabel || unit.unitNumber}`}</span>
-                          <span className='text-[8px] leading-none'>
-                            {`${unit.config || 'N/A'}-${unit.salableArea || 'N/A'}-${unit.facing || 'N/A'}`}
-                          </span>
+                          {towerData.towerType === 'APARTMENT' ? (
+                            <span className='text-[10px] leading-none'>
+                              {`${unit.config || 'N/A'}-${unit.salableArea || 'N/A'}-${unit.facing || 'N/A'}`}
+                            </span>
+                          ) : (
+                            <span className='text-[10px] leading-none'>
+                              {`${unit.salableArea || 'N/A'}-${unit.extent || 'N/A'}-${unit.facing || 'N/A'}`}
+                            </span>
+                          )}
                         </button>
                       )
                     )

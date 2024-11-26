@@ -14,6 +14,8 @@ import ConfigVerifyDoorOverride from '../unit/ConfigVerifyDoorOverride';
 import SalableParkingExtent from '../unit/SalableParkingExtent';
 import PreviewImage from '@/components/ui/PreviewImage';
 import { IMAGE_PATH_PREFIX } from '@/data/CONSTANTS';
+import { RefreshCcw } from 'lucide-react';
+import { useProjectDataStore } from '../../useProjectDataStore';
 
 type Props = {
   towerData: TowerUnitDetailType;
@@ -44,6 +46,10 @@ export default function UnitSection({
     setShowTMRefTable: state.setShowTMRefTable,
     showTMRefTable: state.showTMRefTable,
     towerFormData: state.towerFormData,
+  }));
+
+  const { updateRandomGridValue } = useProjectDataStore((state) => ({
+    updateRandomGridValue: state.updateRandomGridValue,
   }));
 
   return (
@@ -175,6 +181,14 @@ export default function UnitSection({
               >
                 <BiCopy size={24} />
                 <span>Copy</span>
+              </button>
+              <button
+                type='button'
+                className='btn btn-sm mx-auto flex items-center border-none bg-lime-500 hover:bg-lime-600'
+                onClick={() => updateRandomGridValue(towerData.tower_id)}
+              >
+                <RefreshCcw size={22} />
+                <span>Refresh Grid</span>
               </button>
               <button
                 type='button'

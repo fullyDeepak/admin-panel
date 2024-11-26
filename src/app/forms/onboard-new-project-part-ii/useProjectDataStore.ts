@@ -23,6 +23,7 @@ export interface ProjectDataType {
 
 interface State {
   projectData: ProjectDataType;
+  randomGridValue: number;
   formStepsList: ['Project', 'Tower', 'Status', 'Preview'];
   currentFormStep: State['formStepsList'][number];
 }
@@ -30,6 +31,7 @@ interface State {
 interface Actions {
   updateProjectData: (_newDetails: Partial<ProjectDataType>) => void;
   setFormSteps: (_step: State['currentFormStep']) => void;
+  updateRandomGridValue: (_value: number) => void;
 }
 
 const INITIAL_PROJECT_DATA_STATE: ProjectDataType = {
@@ -42,6 +44,7 @@ const INITIAL_PROJECT_DATA_STATE: ProjectDataType = {
 export const useProjectDataStore = create<State & Actions>()(
   immer((set) => ({
     projectData: INITIAL_PROJECT_DATA_STATE,
+    randomGridValue: 0,
     currentFormStep: 'Project' as State['currentFormStep'],
     formStepsList: [
       'Project',
@@ -55,5 +58,7 @@ export const useProjectDataStore = create<State & Actions>()(
       set((prev) => {
         prev.projectData = { ...prev.projectData, ...newDetails };
       }),
+
+    updateRandomGridValue: (value) => set({ randomGridValue: value }),
   }))
 );
