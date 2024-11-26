@@ -45,8 +45,10 @@ export default function Page() {
     const toPost: UnitCardDataToPost[] = [];
     const towerDataToPost: {
       tower_id: string;
+      typical_floor_unit_no_min: string;
       typical_floor_unit_no_max: string;
       max_floor: string;
+      ground_floor_unit_no_min: string;
       ground_floor_unit_no_max: string;
       ground_floor_name: string;
     }[] = [];
@@ -109,13 +111,15 @@ export default function Page() {
         uploadTowerFloorPlan = true;
         towerImgFormData.append(tower.tower_id.toString(), file.file);
       });
-      // towerDataToPost.push({
-      //   tower_id: tower.tower_id.toString(),
-      //   typical_floor_unit_no_max: tower.typicalUnitCount,
-      //   max_floor: tower.typicalMaxFloor.toString(),
-      //   ground_floor_unit_no_max: tower.gfUnitCount,
-      //   ground_floor_name: tower.gfName,
-      // });
+      towerDataToPost.push({
+        tower_id: tower.tower_id.toString(),
+        typical_floor_unit_no_min: tower.typicalMinUN,
+        typical_floor_unit_no_max: tower.typicalMaxUN,
+        max_floor: tower.maxFloor.toString(),
+        ground_floor_unit_no_min: tower.gfUnitMinUN,
+        ground_floor_unit_no_max: tower.gfUnitMaxUN,
+        ground_floor_name: tower.gfName,
+      });
       tower.unitCards.map((unitCard) => {
         const unitTypeId = `${tower.tower_id}_${unitCard.configName}_${unitCard.salableArea}_${unitCard.extent}_${unitCard.facing || 'None'}`;
         if (unitCard.unitFloorPlanFile) {
