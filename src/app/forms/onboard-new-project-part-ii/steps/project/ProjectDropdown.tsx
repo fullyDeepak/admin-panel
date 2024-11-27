@@ -208,7 +208,7 @@ export default function ProjectDropdown() {
                   facing: etlData.facing,
                   corner: etlData.is_corner,
                   configName: etlData.config || null,
-                  configVerified: true,
+                  configVerified: etlData.confident || null,
                   unitFloorCount: etlData.unit_floors.toString(),
                   unitNos: etlData.type_units,
                   doorNoOverride: etlData.door_no_override || '',
