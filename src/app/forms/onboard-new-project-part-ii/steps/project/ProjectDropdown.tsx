@@ -66,7 +66,7 @@ export interface ProjectData {
         config: string;
         confident: boolean;
         wc_count: string | null;
-        other_features: any[];
+        other_features: string;
         unit_floors: number;
         door_no_override: string | null;
         type_floors: string;
@@ -208,12 +208,12 @@ export default function ProjectDropdown() {
                   facing: etlData.facing,
                   corner: etlData.is_corner,
                   configName: etlData.config || '',
-                  configVerified: etlData.confident || false,
+                  configVerified: etlData.confident || true,
                   unitFloorCount: etlData.unit_floors.toString(),
                   unitNos: etlData.type_units,
                   doorNoOverride: etlData.door_no_override || '',
-                  otherConfig: null,
-                  toiletConfig: null,
+                  otherConfig: etlData.other_features,
+                  toiletConfig: etlData.wc_count,
                   tmUnitType: null,
                   unitFloorPlanFile: null,
                   s3_path: etlData.s3_path || '',
