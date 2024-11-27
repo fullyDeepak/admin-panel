@@ -121,7 +121,7 @@ export default function Page() {
         ground_floor_name: tower.gfName,
       });
       tower.unitCards.map((unitCard) => {
-        const unitTypeId = `${tower.tower_id}_${unitCard.configName}_${unitCard.salableArea}_${unitCard.extent}_${unitCard.facing || 'None'}`;
+        const unitTypeId = `${tower.tower_id}_${unitCard.configName || 'None'}_${unitCard.salableArea || 'None'}_${unitCard.extent || '0'}_${unitCard.facing || 'None'}`;
         if (unitCard.unitFloorPlanFile) {
           unitImgFormData.append(
             encodeURIComponent(unitTypeId),
@@ -167,10 +167,11 @@ export default function Page() {
         },
         error: (err) => {
           console.log(err);
-          return 'Error';
+
+          return 'Error while submitting tower-unit data';
         },
       },
-      { success: { duration: 5000 } }
+      { success: { duration: 5000 }, error: { duration: 10000 } }
     );
 
     if ([...projectImgFormData.entries()].length > 1) {
@@ -186,10 +187,10 @@ export default function Page() {
           },
           error: (err) => {
             console.log(err);
-            return 'Error';
+            return 'Error while submitting projects docs';
           },
         },
-        { success: { duration: 5000 } }
+        { success: { duration: 5000 }, error: { duration: 10000 } }
       );
     }
     if (uploadTowerFloorPlan) {
@@ -204,10 +205,10 @@ export default function Page() {
           },
           error: (err) => {
             console.log(err);
-            return 'Error';
+            return 'Error while submitting tower floor plan';
           },
         },
-        { success: { duration: 5000 } }
+        { success: { duration: 5000 }, error: { duration: 10000 } }
       );
     }
 
@@ -223,10 +224,10 @@ export default function Page() {
           },
           error: (err) => {
             console.log(err);
-            return 'Error';
+            return 'Error while submitting unit floor plan';
           },
         },
-        { success: { duration: 5000 } }
+        { success: { duration: 5000 }, error: { duration: 10000 } }
       );
     }
 
@@ -245,13 +246,9 @@ export default function Page() {
         {
           loading: 'Saving new Project Status...',
           success: 'New Status saved to database.',
-          error: 'Something went wrong',
+          error: 'Error while submitting project status.',
         },
-        {
-          success: {
-            duration: 10000,
-          },
-        }
+        { success: { duration: 5000 }, error: { duration: 8000 } }
       );
     }
     // after successful submit

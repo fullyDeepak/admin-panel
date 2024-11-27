@@ -151,6 +151,13 @@ type Store = {
     updated_value: string;
   }[];
   lockUnitType: boolean;
+  existingStatusData: {
+    project_id: string;
+    tower_id: string;
+    updated_at: string;
+    updated_field: string;
+    updated_value: string;
+  }[];
   setTowerFormData: (_data: TowerUnitDetailType[]) => void;
   deleteTowerCard: (_id: number) => void;
   copyUnitCard: (_towerCardId: number, _newDetails: UnitCardType) => void;
@@ -181,6 +188,7 @@ type Store = {
   ) => void;
   resetStatusFormData: () => void;
   setLockUnitType: (_data: boolean) => void;
+  setExistingStatusData: (_data: Store['existingStatusData']) => void;
 };
 
 export const useTowerUnitStore = create<Store>()(
@@ -197,6 +205,8 @@ export const useTowerUnitStore = create<Store>()(
     projectBookingStatus: [] as Store['projectBookingStatus'],
     projectPricingStatus: [] as Store['projectPricingStatus'],
     projectConstructionStatus: [] as Store['projectConstructionStatus'],
+
+    existingStatusData: [] as Store['existingStatusData'],
 
     lockUnitType: false as boolean,
 
@@ -387,5 +397,7 @@ export const useTowerUnitStore = create<Store>()(
       }),
 
     setLockUnitType: (_data) => set({ lockUnitType: _data }),
+
+    setExistingStatusData: (data) => set({ existingStatusData: data }),
   }))
 );

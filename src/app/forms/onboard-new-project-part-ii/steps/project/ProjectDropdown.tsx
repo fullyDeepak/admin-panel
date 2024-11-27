@@ -88,6 +88,13 @@ export interface ProjectData {
         facing: string | null;
       }[];
     }[];
+    statusData: {
+      project_id: string;
+      tower_id: string;
+      updated_at: string;
+      updated_field: string;
+      updated_value: string;
+    }[];
   };
 }
 
@@ -103,8 +110,12 @@ export default function ProjectDropdown() {
   });
 
   const { projectData, updateProjectData } = useProjectDataStore();
-  const { setTowerFormData, resetStatusFormData, setLockUnitType } =
-    useTowerUnitStore();
+  const {
+    setTowerFormData,
+    resetStatusFormData,
+    setLockUnitType,
+    setExistingStatusData,
+  } = useTowerUnitStore();
   const { resetImageStore } = useProjectImageStore();
   const [optionType, setOptionType] = useState<
     'ALL' | 'COMPLETED' | 'IN_COMPLETED'
@@ -243,6 +254,7 @@ export default function ProjectDropdown() {
                   })) || [],
               });
             });
+            setExistingStatusData(res.data.statusData);
             setLockUnitType(e.label.includes('✅'));
             setTowerFormData(towerData);
             resetImageStore();
