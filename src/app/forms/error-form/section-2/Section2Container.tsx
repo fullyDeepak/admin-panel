@@ -4,21 +4,46 @@ import useFetchData from '@/app/hooks/useFetchData';
 import { dropdownOptionStyle } from '@/styles/react-select';
 import { useId } from 'react';
 import Select, { SingleValue } from 'react-select';
-
-const errorOption: { value: string; label: string }[] = [
-  { label: 'All', value: 'all' },
-  { label: 'Clean', value: '1' },
-  { label: 'Error-1', value: 'err-1' },
-  { label: 'Error-2', value: 'err-2' },
-  { label: 'Error-3', value: 'err-3' },
-  { label: 'Error-4', value: 'err-4' },
-  { label: 'Missing', value: 'missing' },
-];
+import { ErrorTypeCountRes, ProjectOptionType } from '../types';
+import { useErrorFormStore } from '../useErrorFormStore';
 
 export default function Section2Container() {
-  const { data: projectOptions, isLoading } = useFetchData<
-    { id: number; project_name: string; config_tagging: boolean }[]
-  >('/onboarding/getProjectsForPart2');
+  const { errorFormData, updateErrorFormData } = useErrorFormStore();
+  const { data: projectOptions, isLoading } = useFetchData<ProjectOptionType[]>(
+    '/onboarding/getProjectsForPart2'
+  );
+
+  const { data: errorTypeCountRes, isLoading: isLoadingErrCount } =
+    useFetchData<ErrorTypeCountRes>(
+      errorFormData.selectedProject
+        ? `/error-correction/error-type-counts?project_id=${errorFormData.selectedProject?.value}`
+        : null
+    );
+
+  const errorCountOptions = [
+    {
+      label: `All:${+(errorTypeCountRes?.err_1 || 0) + +(errorTypeCountRes?.err_2 || 0) + +(errorTypeCountRes?.err_3 || 0) + +(errorTypeCountRes?.err_4 || 0)}`,
+      value: 'all',
+    },
+    { label: 'Clean', value: '1' },
+    {
+      label: `Error-1:${errorTypeCountRes?.err_1}`,
+      value: 'err-1',
+    },
+    {
+      label: `Error-2:${errorTypeCountRes?.err_2}`,
+      value: 'err-2',
+    },
+    {
+      label: `Error-3:${errorTypeCountRes?.err_3}`,
+      value: 'err-3',
+    },
+    {
+      label: `Error-4:${errorTypeCountRes?.err_4}`,
+      value: 'err-4',
+    },
+    { label: `Missing:${errorTypeCountRes?.no_match}`, value: 'missing' },
+  ];
   return (
     <div>
       <h3 className='my-4 text-2xl font-semibold'>Section: 2</h3>
@@ -37,15 +62,13 @@ export default function Section2Container() {
               label: `${item.id}:${item.project_name}`,
               value: item.id,
             }))}
-            value={null}
+            value={errorFormData.selectedProject}
             onChange={(
               e: SingleValue<{
                 label: string;
                 value: number;
               }>
-            ) => {
-              console.log(e);
-            }}
+            ) => updateErrorFormData({ selectedProject: e })}
           />
         </label>
         <div className='flex items-center justify-between gap-5'>
@@ -57,8 +80,10 @@ export default function Section2Container() {
                 option: dropdownOptionStyle,
               }}
               instanceId={useId()}
+              isDisabled={!errorFormData.selectedProject}
               key={'error-code'}
-              options={errorOption}
+              isLoading={isLoadingErrCount}
+              options={errorCountOptions}
               value={null}
               onChange={(
                 e: SingleValue<{

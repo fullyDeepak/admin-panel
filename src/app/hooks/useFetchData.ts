@@ -8,11 +8,12 @@ const fetchData = async <T>(url: string): Promise<T> => {
   return response.data.data;
 };
 
-const useFetchData = <T>(url: string) => {
+const useFetchData = <T>(url: string | null) => {
   return useQuery<T, Error>({
     queryKey: [url],
-    queryFn: () => fetchData<T>(url),
+    queryFn: () => fetchData<T>(url || ''),
     staleTime: 1000 * 60 * 5,
+    enabled: Boolean(url),
   });
 };
 
