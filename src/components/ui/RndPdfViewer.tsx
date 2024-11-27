@@ -33,7 +33,7 @@ export default function RndPdfViewer({ content, title }: RndPdfViewerProps) {
       </span>
       <span className='absolute top-2 mx-auto pl-4'>{title}</span>
       <div className='cancel h-full w-full'>
-        <PDFViewer content={content} type='stringContent' />
+        <PDFViewer content={content} type='stringContent' zoom={1} />
       </div>
     </Rnd>
   ) : (

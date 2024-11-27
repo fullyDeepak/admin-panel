@@ -7,11 +7,13 @@ import {
   createStore,
   PluginFunctions,
   PageChangeEvent,
+  Worker,
 } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import { useEffect, useMemo, useState } from 'react';
+import PDFJS from '@/config/pdfConfig';
 
 type PDFViewerProps =
   | {
@@ -20,6 +22,7 @@ type PDFViewerProps =
       fileContent?: never;
       pageNumber?: number;
       setPageNumber?: (pageNumber: number) => void;
+      zoom?: number;
     }
   | {
       type: 'fileContent';
@@ -27,6 +30,7 @@ type PDFViewerProps =
       fileContent: File;
       pageNumber?: number;
       setPageNumber?: (pageNumber: number) => void;
+      zoom?: number;
     };
 
 interface CustomZoomPlugin extends Plugin {
@@ -57,12 +61,13 @@ export default function PDFViewer({
   fileContent,
   pageNumber,
   setPageNumber,
+  zoom,
 }: PDFViewerProps) {
   if (!content && !fileContent) return <></>;
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const customZoomPluginInstance = customZoomPlugin();
   const { zoomTo } = customZoomPluginInstance;
-  zoomTo(0.5);
+  zoomTo(zoom || 0.5);
   const [page, setPage] = useState(pageNumber || 1);
 
   const pdfData = useMemo(() => {
@@ -86,12 +91,14 @@ export default function PDFViewer({
   }, [page]);
 
   return (
-    <Viewer
-      fileUrl={content || pdfData}
-      plugins={[defaultLayoutPluginInstance, customZoomPluginInstance]}
-      theme={'dark'}
-      initialPage={page - 1}
-      onPageChange={onPageChange}
-    />
+    <Worker workerUrl={PDFJS}>
+      <Viewer
+        fileUrl={content || pdfData}
+        plugins={[defaultLayoutPluginInstance, customZoomPluginInstance]}
+        theme={'dark'}
+        initialPage={page - 1}
+        onPageChange={onPageChange}
+      />
+    </Worker>
   );
 }
