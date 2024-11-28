@@ -8,7 +8,7 @@ const fetchData = async <T>(url: string): Promise<T> => {
   return response.data.data;
 };
 
-const useFetchData = <T>(url: string | null) => {
+const useFetchData = <T>(url: string | null, staleTime = 1000 * 60 * 5) => {
   return useQuery<T, Error>({
     queryKey: [url],
     queryFn: () => fetchData<T>(url || ''),

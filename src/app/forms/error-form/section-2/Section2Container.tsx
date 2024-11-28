@@ -1,154 +1,67 @@
 'use client';
 
 import useFetchData from '@/app/hooks/useFetchData';
-import { dropdownOptionStyle } from '@/styles/react-select';
-import { useId } from 'react';
-import Select, { SingleValue } from 'react-select';
-import { ErrorTypeCountRes, ProjectOptionType } from '../types';
+import { useEffect } from 'react';
+import { GET__RecordsByProjectIdRes } from '../types';
 import { useErrorFormStore } from '../useErrorFormStore';
+import FormControls from './FormControls';
+import { uniqBy } from 'lodash';
 
 export default function Section2Container() {
-  const { errorFormData, updateErrorFormData } = useErrorFormStore();
-  const { data: projectOptions, isLoading } = useFetchData<ProjectOptionType[]>(
-    '/onboarding/getProjectsForPart2'
+  const { errorFormData, updateRecordsByProjectId, updateErrorFormData } =
+    useErrorFormStore();
+
+  const { data: recordsByProjectId } = useFetchData<
+    GET__RecordsByProjectIdRes[]
+  >(
+    errorFormData.selectedMainProject?.value
+      ? `error-correction/get-records-by-project-id?project_id=${errorFormData.selectedMainProject?.value}`
+      : null
   );
 
-  const { data: errorTypeCountRes, isLoading: isLoadingErrCount } =
-    useFetchData<ErrorTypeCountRes>(
-      errorFormData.selectedProject
-        ? `/error-correction/error-type-counts?project_id=${errorFormData.selectedProject?.value}`
-        : null
-    );
+  useEffect(() => {
+    if (recordsByProjectId) {
+      updateRecordsByProjectId(recordsByProjectId);
+      const towerIdOptions = uniqBy(
+        recordsByProjectId.map((item) => ({
+          value: item.tower_id,
+          label: item.tower_id.toString(),
+        })),
+        'value'
+      );
+      const floorOptions = uniqBy(
+        recordsByProjectId.map((item) => ({
+          value: item.floor_number,
+          label: item.floor_number.toString(),
+        })),
+        'value'
+      );
+      const unitOptions = uniqBy(
+        recordsByProjectId.map((item) => ({
+          value: item.unit_number,
+          label: item.unit_number,
+        })),
+        'value'
+      );
+      const errorOptions = uniqBy(
+        recordsByProjectId.map((item) => ({
+          value: item.error_type_inferred,
+          label: item.error_type_inferred,
+        })),
+        'value'
+      ).sort((a, b) => a.label.localeCompare(b.label));
+      updateErrorFormData({
+        towerOptions: towerIdOptions,
+        floorOptions: floorOptions,
+        unitOptions: unitOptions,
+        errorOptions: errorOptions,
+      });
+    }
+  }, [recordsByProjectId]);
 
-  const errorCountOptions = [
-    {
-      label: `All:${+(errorTypeCountRes?.err_1 || 0) + +(errorTypeCountRes?.err_2 || 0) + +(errorTypeCountRes?.err_3 || 0) + +(errorTypeCountRes?.err_4 || 0)}`,
-      value: 'all',
-    },
-    { label: 'Clean', value: '1' },
-    {
-      label: `Error-1:${errorTypeCountRes?.err_1}`,
-      value: 'err-1',
-    },
-    {
-      label: `Error-2:${errorTypeCountRes?.err_2}`,
-      value: 'err-2',
-    },
-    {
-      label: `Error-3:${errorTypeCountRes?.err_3}`,
-      value: 'err-3',
-    },
-    {
-      label: `Error-4:${errorTypeCountRes?.err_4}`,
-      value: 'err-4',
-    },
-    { label: `Missing:${errorTypeCountRes?.no_match}`, value: 'missing' },
-  ];
   return (
-    <div>
-      <h3 className='my-4 text-2xl font-semibold'>Section: 2</h3>
-      <div className='flex flex-col gap-2'>
-        <label className='flex items-center justify-between gap-5'>
-          <span className='flex-[2] text-xl'>Projects:</span>
-          <Select
-            styles={{
-              option: dropdownOptionStyle,
-            }}
-            className='w-full flex-[5]'
-            instanceId={useId()}
-            isLoading={isLoading}
-            key={'projects'}
-            options={projectOptions?.map((item) => ({
-              label: `${item.id}:${item.project_name}`,
-              value: item.id,
-            }))}
-            value={errorFormData.selectedProject}
-            onChange={(
-              e: SingleValue<{
-                label: string;
-                value: number;
-              }>
-            ) => updateErrorFormData({ selectedProject: e })}
-          />
-        </label>
-        <div className='flex items-center justify-between gap-5'>
-          <span className='flex-[2] text-xl'>Error Code:</span>
-          <div className='flex flex-[5] items-center gap-5'>
-            <Select
-              className='w-full flex-[5]'
-              styles={{
-                option: dropdownOptionStyle,
-              }}
-              instanceId={useId()}
-              isDisabled={!errorFormData.selectedProject}
-              key={'error-code'}
-              isLoading={isLoadingErrCount}
-              options={errorCountOptions}
-              value={null}
-              onChange={(
-                e: SingleValue<{
-                  label: string;
-                  value: string;
-                }>
-              ) => {
-                console.log(e);
-              }}
-            />
-            <span className='flex-[2] text-xl'>Tower Name:</span>
-            <Select
-              className='w-full flex-[5]'
-              instanceId={useId()}
-              key={'tower-name'}
-              options={[]}
-              value={null}
-              onChange={(
-                e: SingleValue<{
-                  label: string;
-                  value: number;
-                }>
-              ) => {
-                console.log(e);
-              }}
-            />
-          </div>
-        </div>
-        <div className='flex items-center justify-between gap-5'>
-          <span className='flex-[2] text-xl'>Floor:</span>
-          <div className='flex flex-[5] items-center gap-5'>
-            <Select
-              className='w-full flex-[5]'
-              instanceId={useId()}
-              key={'floor'}
-              options={[]}
-              value={null}
-              onChange={(
-                e: SingleValue<{
-                  label: string;
-                  value: number;
-                }>
-              ) => {
-                console.log(e);
-              }}
-            />
-            <span className='flex-[2] text-xl'>Unit:</span>
-            <Select
-              className='w-full flex-[5]'
-              instanceId={useId()}
-              key={'unit'}
-              options={[]}
-              value={null}
-              onChange={(
-                e: SingleValue<{
-                  label: string;
-                  value: number;
-                }>
-              ) => {
-                console.log(e);
-              }}
-            />
-          </div>
-        </div>
-      </div>
+    <div className='w-full'>
+      <FormControls />
     </div>
   );
 }
