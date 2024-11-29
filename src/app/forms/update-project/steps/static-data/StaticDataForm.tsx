@@ -131,27 +131,30 @@ export default function StaticDataForm() {
                 '/onboarding/projects/' + e.value
               );
               const geoData = projectData.data.data?.geodata?.map((item) => ({
-                ...item.geometry,
+                type: item.type,
+                geometry: item.geometry,
                 properties: {
-                  name: item?.properties?.name
-                    ? item?.properties?.name
-                    : item?.properties?.text
-                      ? item?.properties?.text
+                  ...item.properties,
+                  name: item.properties?.name
+                    ? item.properties?.name
+                    : item.properties?.text
+                      ? item.properties?.text
                       : '',
                 },
-                crs: undefined,
               }));
 
               const totalArea = sum(
                 geoData.map((geo) => {
-                  if (geo.type !== 'Polygon') return null;
-                  const latLng = geo.coordinates[0];
+                  if (geo.geometry.type !== 'Polygon') return null;
+                  const latLng = geo.geometry.coordinates[0];
                   const computedArea = computeArea(
                     latLng as unknown as LatLngLike[]
                   );
                   return parseFloat((computedArea * 1.196).toFixed(2));
                 })
               );
+
+              console.log({ totalArea });
 
               setSourceData({
                 projectData: {
