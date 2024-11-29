@@ -9,14 +9,8 @@ import { useErrorFormStore } from '../useErrorFormStore';
 import { cn } from '@/lib/utils';
 import { CircleCheck } from 'lucide-react';
 import { uniqBy } from 'lodash';
-type Option = {
-  label: string;
-  value: string;
-};
-type OptionValNum = {
-  label: string;
-  value: number;
-};
+import { Option, OptionValNum } from '@/types/types';
+import { makeErrorTableData } from './utils';
 
 const errOptions = [
   {
@@ -44,7 +38,7 @@ export default function FormControls() {
     updateErrorFormData,
     setRecordsByProjectResp,
     recordsByProjectResp,
-    setFilteredRecordsByProjectResp,
+    setErrorTableData,
   } = useErrorFormStore();
   const { data: projectOptions, isLoading } = useFetchData<ProjectOptionType[]>(
     '/onboarding/getProjectsForPart2'
@@ -99,7 +93,7 @@ export default function FormControls() {
         label: item.unit_number,
       });
     });
-    setFilteredRecordsByProjectResp(filteredData);
+    setErrorTableData(makeErrorTableData(filteredData));
     updateErrorFormData({
       towerOptions: uniqBy(towerOptions, 'value'),
       floorOptions: uniqBy(floorOptions, 'value'),

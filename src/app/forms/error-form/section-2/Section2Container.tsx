@@ -6,13 +6,15 @@ import { GET__RecordsByProjectResp } from '../types';
 import { useErrorFormStore } from '../useErrorFormStore';
 import FormControls from './FormControls';
 import { uniqBy } from 'lodash';
+import { Option, OptionValNum } from '@/types/types';
+import { makeErrorTableData } from './utils';
 
 export default function Section2Container() {
   const {
     errorFormData,
     setRecordsByProjectResp,
     updateErrorFormData,
-    setFilteredRecordsByProjectResp,
+    setErrorTableData,
   } = useErrorFormStore();
 
   const { data: recordsByProjectId } = useFetchData<
@@ -26,41 +28,37 @@ export default function Section2Container() {
   useEffect(() => {
     if (recordsByProjectId) {
       setRecordsByProjectResp(recordsByProjectId);
-      setFilteredRecordsByProjectResp(recordsByProjectId);
-      const towerOptions = uniqBy(
-        recordsByProjectId.map((item) => ({
-          value: item.tower_id,
-          label: item.tower_id.toString(),
-        })),
-        'value'
-      );
-      const floorOptions = uniqBy(
-        recordsByProjectId.map((item) => ({
-          value: item.floor_number,
-          label: item.floor_number.toString(),
-        })),
-        'value'
-      );
-      const unitOptions = uniqBy(
-        recordsByProjectId.map((item) => ({
-          value: item.unit_number,
-          label: item.unit_number,
-        })),
-        'value'
-      );
-      const errorOptions = uniqBy(
-        recordsByProjectId.map((item) => ({
+      const errorOptions: Option[] = [];
+      const towerOptions: OptionValNum[] = [];
+      const floorOptions: OptionValNum[] = [];
+      const unitOptions: Option[] = [];
+      recordsByProjectId.map((item) => {
+        errorOptions.push({
           value: item.error_type_inferred,
           label: item.error_type_inferred,
-        })),
-        'value'
-      ).sort((a, b) => a.label.localeCompare(b.label));
-      updateErrorFormData({
-        towerOptions: towerOptions,
-        floorOptions: floorOptions,
-        unitOptions: unitOptions,
-        errorOptions: errorOptions,
+        });
+        towerOptions.push({
+          value: item.tower_id,
+          label: item.tower_id.toString(),
+        });
+        floorOptions.push({
+          value: item.floor_number,
+          label: item.floor_number.toString(),
+        });
+        unitOptions.push({
+          value: item.unit_number,
+          label: item.unit_number,
+        });
       });
+      updateErrorFormData({
+        towerOptions: uniqBy(towerOptions, 'value'),
+        floorOptions: uniqBy(floorOptions, 'value'),
+        unitOptions: uniqBy(unitOptions, 'value'),
+        errorOptions: uniqBy(errorOptions, 'value').sort((a, b) =>
+          a.label.localeCompare(b.label)
+        ),
+      });
+      setErrorTableData(makeErrorTableData(recordsByProjectId));
     }
   }, [recordsByProjectId]);
 

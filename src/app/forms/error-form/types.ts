@@ -24,25 +24,40 @@ export interface GET__RecordsByProjectResp {
   floor_number: number;
   unit_number: string;
   full_unit_name: string;
-  unit_type_id: string;
-  generated_door_no: string;
-  door_number_matched: boolean;
   ptin: string;
-  master_house_number: string;
-  door_number_type: string;
-  first_um_hm_match_date: string;
-  tm_matched: boolean;
-  doc_id_schedule_list: string;
-  last_ownership_change_doc: any;
+  locality: string;
+  house_no: string;
+  current_owner: string;
   latest_owner_tm: string;
-  name_matched: boolean;
-  tm_hm_match_type: string;
-  tm_hm_match_confidence: string;
+  generated_door_no: string;
+  tm_matched: boolean;
+  door_number_matched: boolean;
   name_in_hm: boolean;
-  error_type: string | null;
-  match_source: any;
-  verified: boolean;
-  id: string;
-  source: string;
+  tm_records: GET__TMRecords[];
   error_type_inferred: string;
 }
+
+export interface GET__TMRecords {
+  record_date: string;
+  doc_id_schedule: string;
+  deed_type: string;
+  cp1_names: string;
+  cp2_names: string;
+}
+
+export type ErrorTableDataType = {
+  project_tower: string;
+  full_unit_name: string;
+  error_type: string;
+  ptin: string;
+  locality: string;
+  door_no: string;
+  current_owner: string;
+  latest_tm_owner: string;
+  generated_door_no: string;
+  // dates: string;
+  // doc_ids: string;
+  // deed_type: string;
+  // cp1: string;
+  // cp2: string;
+};

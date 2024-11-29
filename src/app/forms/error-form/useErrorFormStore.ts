@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 import { immer } from 'zustand/middleware/immer';
-import { GET__RecordsByProjectResp } from './types';
+import { ErrorTableDataType, GET__RecordsByProjectResp } from './types';
 
 export interface ErrorFormDataType {
   selectedMainError: SingleValue<{
@@ -54,15 +54,13 @@ export interface ErrorFormDataType {
 interface State {
   errorFormData: ErrorFormDataType;
   recordsByProjectResp: GET__RecordsByProjectResp[];
-  filteredRecordsByProjectResp: GET__RecordsByProjectResp[];
+  errorTableData: ErrorTableDataType[];
 }
 
 interface Actions {
   updateErrorFormData: (_newDetails: Partial<ErrorFormDataType>) => void;
   setRecordsByProjectResp: (_newDetails: GET__RecordsByProjectResp[]) => void;
-  setFilteredRecordsByProjectResp: (
-    _newDetails: GET__RecordsByProjectResp[]
-  ) => void;
+  setErrorTableData: (_newDetails: ErrorTableDataType[]) => void;
 }
 
 const INITIAL_PROJECT_DATA_STATE: ErrorFormDataType = {
@@ -84,7 +82,7 @@ export const useErrorFormStore = create<State & Actions>()(
   immer((set) => ({
     errorFormData: INITIAL_PROJECT_DATA_STATE,
     recordsByProjectResp: [] as GET__RecordsByProjectResp[],
-    filteredRecordsByProjectResp: [] as GET__RecordsByProjectResp[],
+    errorTableData: [] as ErrorTableDataType[],
 
     updateErrorFormData: (newDetails) =>
       set((prev) => {
@@ -96,9 +94,9 @@ export const useErrorFormStore = create<State & Actions>()(
         prev.recordsByProjectResp = newDetails;
       }),
 
-    setFilteredRecordsByProjectResp: (newDetails) =>
+    setErrorTableData: (newDetails) =>
       set((prev) => {
-        prev.filteredRecordsByProjectResp = newDetails;
+        prev.errorTableData = newDetails;
       }),
   }))
 );

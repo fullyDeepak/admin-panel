@@ -1,5 +1,14 @@
 import { SingleValue } from 'react-select';
 
+export type Option = {
+  label: string;
+  value: string;
+};
+export type OptionValNum = {
+  label: string;
+  value: number;
+};
+
 export interface GetTowerUnitConfigDetails {
   id: number;
   config: string;
@@ -153,7 +162,7 @@ export interface FormTowerDetailType {
   projectPhase: number;
   reraId: string;
   etlTowerName: string;
-  towerNameAlias;
+  towerNameAlias: string;
   towerDoorNo: string;
   minFloor: number | string;
   maxFloor: number | string;
