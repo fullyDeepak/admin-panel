@@ -170,6 +170,7 @@ export default function ReraSection({
         deleteFullUnitNos: '',
         exceptionUnitNos: '',
         towerDoorNoString: '',
+        gfName: '',
       };
     });
     console.log({ reraTotalLandAreaObj, reraCalcNetLandAreaObj });
