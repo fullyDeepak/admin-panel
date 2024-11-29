@@ -18,7 +18,7 @@ export interface ErrorTypeCountRes {
   err_4: string;
 }
 
-export interface GET__RecordsByProjectIdRes {
+export interface GET__RecordsByProjectResp {
   project_id: number;
   tower_id: number;
   floor_number: number;

@@ -4,7 +4,7 @@ import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import { useErrorFormStore } from '../useErrorFormStore';
 
 export default function Section3Container() {
-  const { recordsByProjectId } = useErrorFormStore();
+  const { filteredRecordsByProjectResp } = useErrorFormStore();
   const columns = [
     {
       header: 'Project Id',
@@ -93,13 +93,13 @@ export default function Section3Container() {
   ];
   return (
     <div className='mx-auto my-10 max-w-[95%]'>
-      {recordsByProjectId?.length > 0 ? (
+      {filteredRecordsByProjectResp?.length > 0 ? (
         <>
           <h3 className='my-4 text-center text-3xl font-semibold'>
             Section: 3 (UM Data)
           </h3>
           <TanstackReactTable
-            data={recordsByProjectId}
+            data={filteredRecordsByProjectResp}
             columns={columns}
             showPagination={true}
             enableSearch={true}

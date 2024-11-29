@@ -2,12 +2,21 @@
 
 import useFetchData from '@/app/hooks/useFetchData';
 import { dropdownOptionStyle } from '@/styles/react-select';
-import { useId } from 'react';
+import { useEffect, useId } from 'react';
 import Select, { SingleValue } from 'react-select';
-import { ProjectOptionType } from '../types';
+import { GET__RecordsByProjectResp, ProjectOptionType } from '../types';
 import { useErrorFormStore } from '../useErrorFormStore';
 import { cn } from '@/lib/utils';
 import { CircleCheck } from 'lucide-react';
+import { uniqBy } from 'lodash';
+type Option = {
+  label: string;
+  value: string;
+};
+type OptionValNum = {
+  label: string;
+  value: number;
+};
 
 const errOptions = [
   {
@@ -30,11 +39,86 @@ const errOptions = [
 ];
 
 export default function FormControls() {
-  const { errorFormData, updateErrorFormData, updateRecordsByProjectId } =
-    useErrorFormStore();
+  const {
+    errorFormData,
+    updateErrorFormData,
+    setRecordsByProjectResp,
+    recordsByProjectResp,
+    setFilteredRecordsByProjectResp,
+  } = useErrorFormStore();
   const { data: projectOptions, isLoading } = useFetchData<ProjectOptionType[]>(
     '/onboarding/getProjectsForPart2'
   );
+  function handleFilter() {
+    let filteredData: GET__RecordsByProjectResp[] = recordsByProjectResp;
+    if (errorFormData.selectedError?.value) {
+      filteredData = recordsByProjectResp.filter(
+        (item) => item.error_type_inferred == errorFormData.selectedError?.value
+      );
+    }
+    if (errorFormData.selectedProject?.value) {
+      filteredData = filteredData.filter(
+        (item) => item.project_id == errorFormData.selectedProject?.value
+      );
+    }
+    if (errorFormData.selectedTower?.value) {
+      filteredData = filteredData.filter(
+        (item) => item.tower_id == errorFormData.selectedTower?.value
+      );
+    }
+    if (errorFormData.selectedFloor?.value) {
+      filteredData = filteredData.filter(
+        (item) => item.floor_number == errorFormData.selectedFloor?.value
+      );
+    }
+    if (errorFormData.selectedUnit?.value) {
+      filteredData = filteredData.filter(
+        (item) => item.unit_number == errorFormData.selectedUnit?.value
+      );
+    }
+    const errorOptions: Option[] = [];
+    const towerOptions: OptionValNum[] = [];
+    const floorOptions: OptionValNum[] = [];
+    const unitOptions: Option[] = [];
+
+    filteredData.map((item) => {
+      errorOptions.push({
+        value: item.error_type_inferred,
+        label: item.error_type_inferred,
+      });
+      towerOptions.push({
+        value: item.tower_id,
+        label: item.tower_id.toString(),
+      });
+      floorOptions.push({
+        value: item.floor_number,
+        label: item.floor_number.toString(),
+      });
+      unitOptions.push({
+        value: item.unit_number,
+        label: item.unit_number,
+      });
+    });
+    setFilteredRecordsByProjectResp(filteredData);
+    updateErrorFormData({
+      towerOptions: uniqBy(towerOptions, 'value'),
+      floorOptions: uniqBy(floorOptions, 'value'),
+      unitOptions: uniqBy(unitOptions, 'value'),
+      errorOptions: uniqBy(errorOptions, 'value').sort((a, b) =>
+        a.label.localeCompare(b.label)
+      ),
+    });
+  }
+
+  useEffect(() => {
+    handleFilter();
+  }, [
+    errorFormData.selectedError,
+    errorFormData.selectedProject,
+    errorFormData.selectedFloor,
+    errorFormData.selectedUnit,
+    errorFormData.selectedTower,
+  ]);
   return (
     <div
       className={cn(
@@ -71,7 +155,7 @@ export default function FormControls() {
                     selectedProject: null,
                   });
 
-                  updateRecordsByProjectId([]);
+                  setRecordsByProjectResp([]);
                 }}
               />
               <span>Error</span>
@@ -101,7 +185,7 @@ export default function FormControls() {
                     selectedMainProject: null,
                     selectedProject: null,
                   });
-                  updateRecordsByProjectId([]);
+                  setRecordsByProjectResp([]);
                 }}
               />
               <span>Project</span>
@@ -121,12 +205,7 @@ export default function FormControls() {
               options={errOptions}
               isDisabled={errorFormData.selectedMainFilter !== 'ERROR'}
               value={errorFormData.selectedMainError}
-              onChange={(
-                e: SingleValue<{
-                  label: string;
-                  value: string;
-                }>
-              ) =>
+              onChange={(e: SingleValue<Option>) =>
                 updateErrorFormData({
                   selectedMainError: e,
                   selectedMainProject: null,
@@ -150,12 +229,7 @@ export default function FormControls() {
                 value: item.id,
               }))}
               value={errorFormData.selectedMainProject}
-              onChange={(
-                e: SingleValue<{
-                  label: string;
-                  value: number;
-                }>
-              ) =>
+              onChange={(e: SingleValue<OptionValNum>) =>
                 updateErrorFormData({
                   selectedMainError: null,
                   selectedMainProject: e,
@@ -175,17 +249,11 @@ export default function FormControls() {
               className='w-full flex-[5]'
               isLoading={isLoading}
               key={'projects'}
-              options={projectOptions?.map((item) => ({
-                label: `${item.id}:${item.project_name}`,
-                value: item.id,
-              }))}
+              options={[]}
               value={errorFormData.selectedProject}
-              onChange={(
-                e: SingleValue<{
-                  label: string;
-                  value: number;
-                }>
-              ) => updateErrorFormData({ selectedProject: e })}
+              onChange={(e: SingleValue<OptionValNum>) =>
+                updateErrorFormData({ selectedProject: e })
+              }
             />
           </label>
         )}
@@ -199,15 +267,11 @@ export default function FormControls() {
               }}
               key={'error-code'}
               options={errorFormData.errorOptions || []}
-              value={null}
-              onChange={(
-                e: SingleValue<{
-                  label: string;
-                  value: string;
-                }>
-              ) => {
-                console.log(e);
-              }}
+              value={errorFormData.selectedError}
+              isClearable
+              onChange={(e: SingleValue<Option>) =>
+                updateErrorFormData({ selectedError: e })
+              }
             />
           </label>
         )}
@@ -219,48 +283,36 @@ export default function FormControls() {
               className='w-full flex-[5]'
               instanceId={useId()}
               key={'tower-name'}
+              isClearable
               options={errorFormData.towerOptions || []}
-              value={null}
-              onChange={(
-                e: SingleValue<{
-                  label: string;
-                  value: number;
-                }>
-              ) => {
-                console.log(e);
-              }}
+              value={errorFormData.selectedTower}
+              onChange={(e: SingleValue<OptionValNum>) =>
+                updateErrorFormData({ selectedTower: e })
+              }
             />
             <span className='flex-[2]'>Floor:</span>
             <Select
               className='w-full flex-[5]'
               instanceId={useId()}
+              isClearable
               key={'floor'}
-              options={[]}
-              value={null}
-              onChange={(
-                e: SingleValue<{
-                  label: string;
-                  value: number;
-                }>
-              ) => {
-                console.log(e);
-              }}
+              options={errorFormData.floorOptions || []}
+              value={errorFormData.selectedFloor}
+              onChange={(e: SingleValue<OptionValNum>) =>
+                updateErrorFormData({ selectedFloor: e })
+              }
             />
             <span className='flex-[2]'>Unit:</span>
             <Select
               className='w-full flex-[5]'
               instanceId={useId()}
+              isClearable
               key={'unit'}
-              options={[]}
-              value={null}
-              onChange={(
-                e: SingleValue<{
-                  label: string;
-                  value: number;
-                }>
-              ) => {
-                console.log(e);
-              }}
+              options={errorFormData.unitOptions || []}
+              value={errorFormData.selectedUnit}
+              onChange={(e: SingleValue<Option>) =>
+                updateErrorFormData({ selectedUnit: e })
+              }
             />
           </div>
         </div>

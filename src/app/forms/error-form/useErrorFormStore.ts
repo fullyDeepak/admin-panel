@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 import { immer } from 'zustand/middleware/immer';
-import { GET__RecordsByProjectIdRes } from './types';
+import { GET__RecordsByProjectResp } from './types';
 
 export interface ErrorFormDataType {
   selectedMainError: SingleValue<{
@@ -15,6 +15,22 @@ export interface ErrorFormDataType {
   selectedProject: SingleValue<{
     label: string;
     value: number;
+  }> | null;
+  selectedTower: SingleValue<{
+    label: string;
+    value: number;
+  }> | null;
+  selectedFloor: SingleValue<{
+    label: string;
+    value: number;
+  }> | null;
+  selectedUnit: SingleValue<{
+    label: string;
+    value: string;
+  }> | null;
+  selectedError: SingleValue<{
+    label: string;
+    value: string;
   }> | null;
   selectedMainFilter: 'PROJECT' | 'ERROR';
   towerOptions: {
@@ -37,18 +53,26 @@ export interface ErrorFormDataType {
 
 interface State {
   errorFormData: ErrorFormDataType;
-  recordsByProjectId: GET__RecordsByProjectIdRes[];
+  recordsByProjectResp: GET__RecordsByProjectResp[];
+  filteredRecordsByProjectResp: GET__RecordsByProjectResp[];
 }
 
 interface Actions {
   updateErrorFormData: (_newDetails: Partial<ErrorFormDataType>) => void;
-  updateRecordsByProjectId: (_newDetails: GET__RecordsByProjectIdRes[]) => void;
+  setRecordsByProjectResp: (_newDetails: GET__RecordsByProjectResp[]) => void;
+  setFilteredRecordsByProjectResp: (
+    _newDetails: GET__RecordsByProjectResp[]
+  ) => void;
 }
 
 const INITIAL_PROJECT_DATA_STATE: ErrorFormDataType = {
   selectedMainError: null,
   selectedMainProject: null,
   selectedProject: null,
+  selectedError: null,
+  selectedFloor: null,
+  selectedTower: null,
+  selectedUnit: null,
   selectedMainFilter: 'ERROR',
   towerOptions: [],
   floorOptions: [],
@@ -59,16 +83,22 @@ const INITIAL_PROJECT_DATA_STATE: ErrorFormDataType = {
 export const useErrorFormStore = create<State & Actions>()(
   immer((set) => ({
     errorFormData: INITIAL_PROJECT_DATA_STATE,
-    recordsByProjectId: [] as GET__RecordsByProjectIdRes[],
+    recordsByProjectResp: [] as GET__RecordsByProjectResp[],
+    filteredRecordsByProjectResp: [] as GET__RecordsByProjectResp[],
 
     updateErrorFormData: (newDetails) =>
       set((prev) => {
         prev.errorFormData = { ...prev.errorFormData, ...newDetails };
       }),
 
-    updateRecordsByProjectId: (newDetails) =>
+    setRecordsByProjectResp: (newDetails) =>
       set((prev) => {
-        prev.recordsByProjectId = newDetails;
+        prev.recordsByProjectResp = newDetails;
+      }),
+
+    setFilteredRecordsByProjectResp: (newDetails) =>
+      set((prev) => {
+        prev.filteredRecordsByProjectResp = newDetails;
       }),
   }))
 );

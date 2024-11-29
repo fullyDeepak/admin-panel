@@ -2,17 +2,21 @@
 
 import useFetchData from '@/app/hooks/useFetchData';
 import { useEffect } from 'react';
-import { GET__RecordsByProjectIdRes } from '../types';
+import { GET__RecordsByProjectResp } from '../types';
 import { useErrorFormStore } from '../useErrorFormStore';
 import FormControls from './FormControls';
 import { uniqBy } from 'lodash';
 
 export default function Section2Container() {
-  const { errorFormData, updateRecordsByProjectId, updateErrorFormData } =
-    useErrorFormStore();
+  const {
+    errorFormData,
+    setRecordsByProjectResp,
+    updateErrorFormData,
+    setFilteredRecordsByProjectResp,
+  } = useErrorFormStore();
 
   const { data: recordsByProjectId } = useFetchData<
-    GET__RecordsByProjectIdRes[]
+    GET__RecordsByProjectResp[]
   >(
     errorFormData.selectedMainProject?.value
       ? `error-correction/get-records-by-project-id?project_id=${errorFormData.selectedMainProject?.value}`
@@ -21,8 +25,9 @@ export default function Section2Container() {
 
   useEffect(() => {
     if (recordsByProjectId) {
-      updateRecordsByProjectId(recordsByProjectId);
-      const towerIdOptions = uniqBy(
+      setRecordsByProjectResp(recordsByProjectId);
+      setFilteredRecordsByProjectResp(recordsByProjectId);
+      const towerOptions = uniqBy(
         recordsByProjectId.map((item) => ({
           value: item.tower_id,
           label: item.tower_id.toString(),
@@ -51,7 +56,7 @@ export default function Section2Container() {
         'value'
       ).sort((a, b) => a.label.localeCompare(b.label));
       updateErrorFormData({
-        towerOptions: towerIdOptions,
+        towerOptions: towerOptions,
         floorOptions: floorOptions,
         unitOptions: unitOptions,
         errorOptions: errorOptions,
