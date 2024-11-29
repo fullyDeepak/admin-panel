@@ -52,20 +52,15 @@ export interface Data {
   root_docs: RootDoc[];
   ProjectETLTagDataType: ProjectEtlTagDataType[];
   geodata: {
+    type: string;
     geometry: {
-      crs: {
-        type: string;
-        properties: {
-          name: string;
-        };
-      };
       type: string;
       coordinates: number[][];
     };
-    geom_name: string;
+    geom_name: string | null;
     properties: {
-      text: string;
-      name: string;
+      text: string | null;
+      name: string | null;
     };
   }[];
 }
