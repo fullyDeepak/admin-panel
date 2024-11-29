@@ -189,7 +189,7 @@ export default function ProjectDropdown() {
                     type: `${item.config} : ${item.salable_area}`,
                     unitCount: item.units?.length.toString() || 'N/A',
                     config: item.config,
-                    salableArea: item.salable_area.toString(),
+                    salableArea: item.salable_area?.toString() || '',
                     facing: item.facing ? item.facing.substring(0, 1) : 'N/A',
                     floorList: convertArrayToRangeString(
                       item.floor_ids.map(String)
