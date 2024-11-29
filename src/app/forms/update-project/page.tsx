@@ -16,8 +16,9 @@ import {
 } from './useOnboardingDataStore';
 import { TowerDetailType, useTowerUnitStore } from './useTowerUnitStore';
 import { useSourceDataStore } from './useSourceDataStore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import GeoData from '../onboard-new-project/steps/geo-data/GeoData';
+import toast from 'react-hot-toast';
 
 export default function Page() {
   const {
@@ -26,15 +27,24 @@ export default function Page() {
     setFormSteps,
     onboardingData,
     updateOnboardingData,
+    resetData,
   } = useOnboardingDataStore();
-  const { projectFormETLTagData } = useETLDataStore();
-  const { towerFormData } = useTowerUnitStore();
+  const { projectFormETLTagData, resetAllProjectData } = useETLDataStore();
+  const { towerFormData, resetTowerUnitStore } = useTowerUnitStore();
   const {
     projectData: oldData,
     towerData: oldTowerData,
     etlData: oldEtlData,
   } = useSourceDataStore();
   const [final_data, setFinalData] = useState<string>('');
+  useEffect(() => {
+    return () => {
+      setFinalData('');
+      resetAllProjectData();
+      resetTowerUnitStore();
+      resetData();
+    };
+  }, []);
   return (
     <>
       <div className='mx-auto mt-10 flex w-full flex-col'>
@@ -130,8 +140,19 @@ export default function Page() {
                     },
                   };
                   setFinalData(JSON.stringify(toPost, null, 2));
-                  await axiosClient.put('/onboarding/update-project', toPost);
-                  alert('Updated');
+                  toast.promise(
+                    axiosClient.put('/onboarding/update-project', toPost),
+                    {
+                      loading: 'Updating...',
+                      success: () => {
+                        return 'Successfully updated!';
+                      },
+                      error: (err) => {
+                        console.log(err);
+                        return 'Error while updating project';
+                      },
+                    }
+                  );
                 }}
               >
                 Submit

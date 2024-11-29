@@ -91,6 +91,7 @@ export interface Tower {
   etl_tower_name: string;
   tower_name_alias: string;
   display_tower_type: string;
+  ground_floor_name: string;
 }
 
 export interface RootDoc {

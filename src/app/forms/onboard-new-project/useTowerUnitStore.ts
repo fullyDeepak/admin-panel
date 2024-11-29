@@ -22,6 +22,7 @@ export type TowerUnitDetailType = {
   towerNameETL: string;
   towerDoorNoString: string;
   etlUnitConfigs: FormEtlUnitConfigType[];
+  gfName: string;
 };
 
 const INITIAL_STATE: TowerUnitDetailType[] = [
@@ -53,6 +54,7 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
         maxArea: 2500,
       },
     ],
+    gfName: '',
   },
 ];
 export type HmRefTable = {
@@ -210,6 +212,7 @@ export const useTowerUnitStore = create<Store>()(
           towerNameETL: '',
           towerDoorNoString: '',
           etlUnitConfigs: [],
+          gfName: '',
         });
       }),
 

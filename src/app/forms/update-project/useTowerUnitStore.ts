@@ -23,6 +23,7 @@ export type TowerDetailType = {
   towerNameETL: string;
   towerDoorNoString: string;
   etlUnitConfigs: FormEtlUnitConfigType[];
+  gfName: string;
 };
 
 const INITIAL_STATE: TowerDetailType[] = [
@@ -38,6 +39,7 @@ const INITIAL_STATE: TowerDetailType[] = [
     towerNameDisplay: '',
     towerDoorNoString: '',
     etlUnitConfigs: [],
+    gfName: '',
   },
 ];
 
@@ -151,6 +153,7 @@ export const useTowerUnitStore = create<Store>()(
           towerNameETL: '',
           towerDoorNoString: '',
           etlUnitConfigs: [],
+          gfName: '',
         });
       }),
 

@@ -252,6 +252,7 @@ export default function TowerPage() {
               towerDoorNoString:
                 item.pattern.replace('%', '') + item.tower_name + '/{F}{UU}',
               etlUnitConfigs: [],
+              gfName: '',
             });
           });
 
@@ -526,6 +527,18 @@ export default function TowerPage() {
                     onChange={(e) =>
                       updateTowerFormData(tower.id, {
                         towerDoorNoString: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <label className='flex flex-wrap items-center justify-between gap-5'>
+                  <span className='flex-[2]'>GF Name:</span>
+                  <input
+                    className={inputBoxClass}
+                    defaultValue={tower.gfName}
+                    onChange={(e) =>
+                      updateTowerFormData(tower.id, {
+                        gfName: e.target.value,
                       })
                     }
                   />

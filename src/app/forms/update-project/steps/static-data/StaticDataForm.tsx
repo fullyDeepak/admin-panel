@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { MultiValue, SingleValue } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import { parseISO } from 'date-fns';
-// @ts-expect-error  third party
+// @ts-expect-error third party
 import Select from 'react-select-virtualized';
 import { NewProjectData } from '../../api_types';
 import useETLDataStore from '../../useETLDataStore';
@@ -99,7 +99,7 @@ export default function StaticDataForm() {
   });
 
   const { data: projectOptions, isLoading: loadingProjects } = useQuery({
-    queryKey: ['projects'],
+    queryKey: ['update-projects'],
     queryFn: async () => {
       const res = await axiosClient.get<{
         data: { id: number; project_name: string }[];
@@ -110,8 +110,6 @@ export default function StaticDataForm() {
         value: ele.id,
       }));
     },
-    staleTime: Infinity,
-    refetchOnMount: false,
   });
   return (
     <div className='z-10 mt-5 flex min-h-screen w-full max-w-full flex-col gap-3 self-center rounded p-0 shadow-none'>
@@ -244,6 +242,7 @@ export default function StaticDataForm() {
                     maxArea: ele.max_built,
                     minArea: ele.min_built,
                   })),
+                  gfName: ele?.ground_floor_name || '',
                 })),
                 etlData: projectData.data.data.ProjectETLTagDataType.map(
                   (ele, index) => ({
@@ -474,6 +473,7 @@ export default function StaticDataForm() {
                     maxArea: item.max_built,
                     minArea: item.min_built,
                   })),
+                  gfName: ele?.ground_floor_name || '',
                 }))
               );
             }

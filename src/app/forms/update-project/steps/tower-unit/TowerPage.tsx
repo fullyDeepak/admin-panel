@@ -239,6 +239,18 @@ export default function TowerPage() {
                     }
                   />
                 </label>
+                <label className='flex flex-wrap items-center justify-between gap-5'>
+                  <span className='flex-[2]'>GF Name:</span>
+                  <input
+                    className={inputBoxClass}
+                    defaultValue={tower.gfName}
+                    onChange={(e) =>
+                      updateTowerFormData(tower.id, {
+                        gfName: e.target.value,
+                      })
+                    }
+                  />
+                </label>
                 <ETLTagConfiguration
                   towerData={tower}
                   addEtlUnitConfig={addEtlUnitConfig}
