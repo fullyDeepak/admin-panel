@@ -4,8 +4,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ErrorTableDataType } from '../types';
 import { useErrorFormStore } from '../useErrorFormStore';
 import Table from './Table';
-import { ArrowDown, ArrowRight } from 'lucide-react';
 import { IndeterminateCheckbox } from '../../rera-correction/AdvTable';
+import { cn } from '@/lib/utils';
 
 export default function Section3Container() {
   const { errorTableData } = useErrorFormStore();
@@ -25,8 +25,11 @@ export default function Section3Container() {
     {
       id: 'select',
       header: 'Select Unit',
-      cell: ({ row }) => (
-        <>
+      cell: ({ row }) => {
+        if (row.original.project_tower.length === 0) {
+          return null;
+        }
+        return (
           <div className='px-1'>
             {
               <IndeterminateCheckbox
@@ -39,24 +42,31 @@ export default function Section3Container() {
               />
             }
           </div>
-        </>
-      ),
+        );
+      },
     },
     {
       header: 'Change HM',
-      cell: ({ row }) => (
-        <button
-          className='btn btn-neutral btn-xs'
-          type='button'
-          onClick={() => {
-            (
-              document.getElementById('error-form-dailog') as HTMLDialogElement
-            )?.showModal();
-          }}
-        >
-          Open Pop Up
-        </button>
-      ),
+      cell: ({ row }) => {
+        if (row.original.project_tower.length === 0) {
+          return null;
+        }
+        return (
+          <button
+            className='btn btn-neutral btn-xs'
+            type='button'
+            onClick={() => {
+              (
+                document.getElementById(
+                  'error-form-dailog'
+                ) as HTMLDialogElement
+              )?.showModal();
+            }}
+          >
+            Open Pop Up
+          </button>
+        );
+      },
     },
     {
       header: 'PTIN',
@@ -84,42 +94,36 @@ export default function Section3Container() {
     },
     {
       header: 'Edit TM Records',
-      cell: ({ row }) => (
-        <button
-          className='btn btn-neutral btn-xs'
-          type='button'
-          onClick={() => {
-            (
-              document.getElementById('error-form-dailog') as HTMLDialogElement
-            )?.showModal();
-          }}
-        >
-          Open Pop Up
-        </button>
-      ),
+      cell: ({ row }) => {
+        if (row.original.project_tower.length === 0) {
+          return null;
+        }
+        return (
+          <button
+            className='btn btn-neutral btn-xs'
+            type='button'
+            onClick={() => {
+              (
+                document.getElementById(
+                  'error-form-dailog'
+                ) as HTMLDialogElement
+              )?.showModal();
+            }}
+          >
+            Open Pop Up
+          </button>
+        );
+      },
     },
     {
-      header: 'Expand',
-      cell: ({ row, getValue }) => (
-        <div
-          style={{
-            paddingLeft: `${row.depth * 2}rem`,
-          }}
+      header: 'TM Count',
+      accessorKey: 'tm_count',
+      cell: ({ getValue }) => (
+        <span
+          className={cn('', getValue() && 'badge badge-accent !p-3 text-xl')}
         >
-          <div>
-            {row.getCanExpand() ? (
-              <button
-                {...{
-                  onClick: row.getToggleExpandedHandler(),
-                  style: { cursor: 'pointer' },
-                }}
-              >
-                {row.getIsExpanded() ? <ArrowDown /> : <ArrowRight />}
-              </button>
-            ) : null}
-            {getValue<boolean>()}
-          </div>
-        </div>
+          {getValue()}
+        </span>
       ),
     },
     {

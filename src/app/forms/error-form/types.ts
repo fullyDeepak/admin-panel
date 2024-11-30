@@ -55,6 +55,12 @@ export type ErrorTableDataType = {
   current_owner: string;
   latest_tm_owner: string;
   generated_door_no: string;
+  tm_count: string;
+  record_date: string;
+  doc_id_schedule: string;
+  deed_type: string;
+  cp1_names: string;
+  cp2_names: string;
   tm_records: {
     project_tower: string;
     full_unit_name: string;
@@ -65,6 +71,7 @@ export type ErrorTableDataType = {
     current_owner: string;
     latest_tm_owner: string;
     generated_door_no: string;
+    tm_count: string;
     record_date: string;
     doc_id_schedule: string;
     deed_type: string;
