@@ -35,7 +35,7 @@ interface TableProps<TData> {
   dateRangeFilterFn: FilterFn<any>;
 }
 
-function IndeterminateCheckbox({
+export function IndeterminateCheckbox({
   indeterminate,
   isRadio = false,
   ...rest

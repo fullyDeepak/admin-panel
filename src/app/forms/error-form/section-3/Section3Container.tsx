@@ -1,21 +1,15 @@
 'use client';
 
-import TanstackReactTable from '@/components/tables/TanstackReactTable';
+import { ColumnDef } from '@tanstack/react-table';
+import { ErrorTableDataType } from '../types';
 import { useErrorFormStore } from '../useErrorFormStore';
-
-// project_tower: string;
-// full_unit_name: string;
-// error_type: string;
-// ptin: string;
-// locality: string;
-// door_no: string;
-// current_owner: string;
-// latest_tm_owner: string;
-// generated_door_no: string;
+import Table from './Table';
+import { ArrowDown, ArrowRight } from 'lucide-react';
+import { IndeterminateCheckbox } from '../../rera-correction/AdvTable';
 
 export default function Section3Container() {
   const { errorTableData } = useErrorFormStore();
-  const columns = [
+  const columns: ColumnDef<ErrorTableDataType, any>[] = [
     {
       header: 'Project + Tower',
       accessorKey: 'project_tower',
@@ -27,6 +21,42 @@ export default function Section3Container() {
     {
       header: 'Error Type',
       accessorKey: 'error_type',
+    },
+    {
+      id: 'select',
+      header: 'Select Unit',
+      cell: ({ row }) => (
+        <>
+          <div className='px-1'>
+            {
+              <IndeterminateCheckbox
+                {...{
+                  checked: row.getIsSelected(),
+                  disabled: !row.getCanSelect(),
+                  indeterminate: row.getIsSomeSelected(),
+                  onChange: row.getToggleSelectedHandler(),
+                }}
+              />
+            }
+          </div>
+        </>
+      ),
+    },
+    {
+      header: 'Change HM',
+      cell: ({ row }) => (
+        <button
+          className='btn btn-neutral btn-xs'
+          type='button'
+          onClick={() => {
+            (
+              document.getElementById('error-form-dailog') as HTMLDialogElement
+            )?.showModal();
+          }}
+        >
+          Open Pop Up
+        </button>
+      ),
     },
     {
       header: 'PTIN',
@@ -52,15 +82,85 @@ export default function Section3Container() {
       header: 'Generated Door No',
       accessorKey: 'generated_door_no',
     },
+    {
+      header: 'Edit TM Records',
+      cell: ({ row }) => (
+        <button
+          className='btn btn-neutral btn-xs'
+          type='button'
+          onClick={() => {
+            (
+              document.getElementById('error-form-dailog') as HTMLDialogElement
+            )?.showModal();
+          }}
+        >
+          Open Pop Up
+        </button>
+      ),
+    },
+    {
+      header: 'Expand',
+      cell: ({ row, getValue }) => (
+        <div
+          style={{
+            paddingLeft: `${row.depth * 2}rem`,
+          }}
+        >
+          <div>
+            {row.getCanExpand() ? (
+              <button
+                {...{
+                  onClick: row.getToggleExpandedHandler(),
+                  style: { cursor: 'pointer' },
+                }}
+              >
+                {row.getIsExpanded() ? <ArrowDown /> : <ArrowRight />}
+              </button>
+            ) : null}
+            {getValue<boolean>()}
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: 'Record Date',
+      accessorKey: 'record_date',
+    },
+    {
+      header: 'Doc Id Sch',
+      accessorKey: 'doc_id_schedule',
+    },
+    {
+      header: 'Deed Type',
+      accessorKey: 'deed_type',
+    },
+    {
+      header: 'CP1',
+      accessorKey: 'cp1_names',
+    },
+    {
+      header: 'CP2',
+      accessorKey: 'cp2_names',
+    },
   ];
   return (
     <div className='mx-auto my-10 max-w-[95%]'>
+      <dialog id='error-form-dailog' className='modal'>
+        <div className='modal-box h-96'>
+          <form method='dialog'>
+            <button className='btn-circle btn-ghost btn-sm absolute right-2 top-2'>
+              ✕
+            </button>
+          </form>
+          <h3 className='text-lg font-bold'>NO data available</h3>
+        </div>
+      </dialog>
       {errorTableData?.length > 0 ? (
         <>
           <h3 className='my-4 text-center text-3xl font-semibold'>
             Section: 3 (UM Data)
           </h3>
-          <TanstackReactTable
+          <Table
             data={errorTableData}
             columns={columns}
             showPagination={true}
