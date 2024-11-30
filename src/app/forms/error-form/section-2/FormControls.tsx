@@ -253,13 +253,13 @@ export default function FormControls() {
         )}
         {errorFormData.selectedMainFilter === 'PROJECT' && (
           <label className='flex items-center justify-between gap-5'>
-            <span className='flex-[2]'>Error Code:</span>
+            <span className='flex-[2]'>Error Type:</span>
             <Select
               className='w-full flex-[5]'
               styles={{
                 option: dropdownOptionStyle,
               }}
-              key={'error-code'}
+              key={'error-type'}
               options={errorFormData.errorOptions || []}
               value={errorFormData.selectedError}
               isClearable
