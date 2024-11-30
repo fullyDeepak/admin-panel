@@ -215,7 +215,7 @@ export default function FormControls() {
               styles={{
                 option: dropdownOptionStyle,
               }}
-              className='w-full flex-[5]'
+              className='z-[12] w-full flex-[5]'
               isLoading={isLoading}
               key={'projects'}
               options={projectOptions?.map((item) => ({
@@ -240,7 +240,7 @@ export default function FormControls() {
               styles={{
                 option: dropdownOptionStyle,
               }}
-              className='w-full flex-[5]'
+              className='z-[11] w-full flex-[5]'
               isLoading={isLoading}
               key={'projects'}
               options={[]}
@@ -255,7 +255,7 @@ export default function FormControls() {
           <label className='flex items-center justify-between gap-5'>
             <span className='flex-[2]'>Error Type:</span>
             <Select
-              className='w-full flex-[5]'
+              className='z-[11] w-full flex-[5]'
               styles={{
                 option: dropdownOptionStyle,
               }}
@@ -274,8 +274,11 @@ export default function FormControls() {
           <div className='flex flex-[5] items-center gap-5'>
             <span className='flex-[2]'>Tower:</span>
             <Select
-              className='w-full flex-[5]'
+              className='z-10 w-full flex-[5]'
               instanceId={useId()}
+              styles={{
+                option: dropdownOptionStyle,
+              }}
               key={'tower-name'}
               isClearable
               options={errorFormData.towerOptions || []}
@@ -286,8 +289,11 @@ export default function FormControls() {
             />
             <span className='flex-[2]'>Floor:</span>
             <Select
-              className='w-full flex-[5]'
+              className='z-10 w-full flex-[5]'
               instanceId={useId()}
+              styles={{
+                option: dropdownOptionStyle,
+              }}
               isClearable
               key={'floor'}
               options={errorFormData.floorOptions || []}
@@ -298,8 +304,11 @@ export default function FormControls() {
             />
             <span className='flex-[2]'>Unit:</span>
             <Select
-              className='w-full flex-[5]'
+              className='z-10 w-full flex-[5]'
               instanceId={useId()}
+              styles={{
+                option: dropdownOptionStyle,
+              }}
               isClearable
               key={'unit'}
               options={errorFormData.unitOptions || []}
