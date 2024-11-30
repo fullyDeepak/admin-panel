@@ -552,38 +552,39 @@ export default function StaticDataForm() {
                 });
               } else if (e?.value.includes('VILLA')) {
                 towerIds.forEach((id) => {
-                updateTowerFormData(id, {
-                  towerType: {
-                    label: 'Villa',
-                    value: 'villa',
-                  },
-                  displayTowerType: {
-                    label: 'VILLA',
-                    value: 'VILLA',
-                  },
+                  updateTowerFormData(id, {
+                    towerType: {
+                      label: 'Villa',
+                      value: 'villa',
+                    },
+                    displayTowerType: {
+                      label: 'VILLA',
+                      value: 'VILLA',
+                    },
+                  });
                 });
-              })
               } else if (e?.value.includes('MIXED')) {
                 towerIds.forEach((id) => {
-                updateTowerFormData(id, {
-                  towerType: {
-                    label: 'Mixed',
-                    value: 'mixed',
-                  },
-                  displayTowerType: null,
-                });})
+                  updateTowerFormData(id, {
+                    towerType: {
+                      label: 'Mixed',
+                      value: 'mixed',
+                    },
+                    displayTowerType: null,
+                  });
+                });
               }
             }
           }}
           isDisabled={Boolean(!onboardingData.projectSourceType)}
         />
       </label>
-      <label className='flex items-center justify-between gap-5'>
+      <div className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>Luxury Project?:</span>
         No
         <input type='checkbox' className='toggle toggle-primary' />
         Yes
-      </label>
+      </div>
       <label className='flex items-center justify-between gap-5'>
         <span className='flex-[2] text-base md:text-xl'>Amenities Tags:</span>
         <CreatableSelect
