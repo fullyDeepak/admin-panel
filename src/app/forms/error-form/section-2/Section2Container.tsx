@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { GET__RecordsByProjectResp } from '../types';
 import { useErrorFormStore } from '../useErrorFormStore';
 import FormControls from './FormControls';
-import { uniqBy } from 'lodash';
+import { countBy, uniqBy } from 'lodash';
 import { Option, OptionValNum } from '@/types/types';
 import { makeErrorTableData } from './utils';
 
@@ -50,13 +50,17 @@ export default function Section2Container() {
           label: item.unit_number,
         });
       });
+      const errCount = countBy(errorOptions, 'value');
       updateErrorFormData({
         towerOptions: uniqBy(towerOptions, 'value'),
         floorOptions: uniqBy(floorOptions, 'value'),
         unitOptions: uniqBy(unitOptions, 'value'),
-        errorOptions: uniqBy(errorOptions, 'value').sort((a, b) =>
-          a.label.localeCompare(b.label)
-        ),
+        errorOptions: uniqBy(errorOptions, 'value')
+          .sort((a, b) => a.label.localeCompare(b.label))
+          .map((item) => ({
+            ...item,
+            label: `${item.label} (${errCount[item.value]})`,
+          })),
       });
       setErrorTableData(makeErrorTableData(recordsByProjectId));
     }

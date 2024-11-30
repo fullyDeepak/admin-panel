@@ -8,7 +8,7 @@ import { GET__RecordsByProjectResp, ProjectOptionType } from '../types';
 import { useErrorFormStore } from '../useErrorFormStore';
 import { cn } from '@/lib/utils';
 import { CircleCheck } from 'lucide-react';
-import { uniqBy } from 'lodash';
+import { countBy, uniqBy } from 'lodash';
 import { Option, OptionValNum } from '@/types/types';
 import { makeErrorTableData } from './utils';
 
@@ -94,13 +94,17 @@ export default function FormControls() {
       });
     });
     setErrorTableData(makeErrorTableData(filteredData));
+    const errCount = countBy(errorOptions, 'value');
     updateErrorFormData({
       towerOptions: uniqBy(towerOptions, 'value'),
       floorOptions: uniqBy(floorOptions, 'value'),
       unitOptions: uniqBy(unitOptions, 'value'),
-      errorOptions: uniqBy(errorOptions, 'value').sort((a, b) =>
-        a.label.localeCompare(b.label)
-      ),
+      errorOptions: uniqBy(errorOptions, 'value')
+        .sort((a, b) => a.label.localeCompare(b.label))
+        .map((item) => ({
+          ...item,
+          label: `${item.label} (${errCount[item.value]})`,
+        })),
     });
   }
 
