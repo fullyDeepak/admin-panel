@@ -15,6 +15,7 @@ import { useTowerUnitStore } from './useTowerUnitStore';
 import { useImageStore } from './useImageStore';
 import axiosClient from '@/utils/AxiosClient';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function Page() {
   const {
@@ -167,16 +168,31 @@ export default function Page() {
                 className='btn btn-error w-28 text-white'
                 onClick={async () => {
                   setDraftSaveState('SAVING');
-                  await axiosClient
-                    .post('/onboarding/onboard-project', {
+                  const promise = axiosClient.post(
+                    '/onboarding/onboard-project',
+                    {
                       staticData: onboardingData,
                       etlData: projectFormETLTagData,
                       towerData: towerFormData,
-                    })
-                    .then(() => {
-                      setDraftSaveState('SAVED');
-                      alert('Onboarded');
-                    });
+                    }
+                  );
+
+                  toast.promise(
+                    promise,
+                    {
+                      loading: 'Saving...',
+                      success: () => {
+                        setDraftSaveState('SAVED');
+                        return 'Successfully Onboarded';
+                      },
+                      error: (err) => {
+                        console.log(err);
+                        setDraftSaveState('SAVED');
+                        return 'Error while onboarding check console for details';
+                      },
+                    },
+                    { success: { duration: 5000 }, error: { duration: 10000 } }
+                  );
                 }}
               >
                 Submit
