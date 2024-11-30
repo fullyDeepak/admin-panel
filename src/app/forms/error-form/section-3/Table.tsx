@@ -9,7 +9,6 @@ import {
   getSortedRowModel,
   SortingState,
   getFilteredRowModel,
-  ExpandedState,
   getExpandedRowModel,
 } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
@@ -38,7 +37,6 @@ export default function Table({
 }: TableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filtering, setFiltering] = useState('');
-  const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const table = useReactTable({
     data,
@@ -50,11 +48,10 @@ export default function Table({
     state: {
       sorting: sorting,
       globalFilter: filtering,
-      expanded,
+      expanded: true,
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setFiltering,
-    onExpandedChange: setExpanded,
     getExpandedRowModel: getExpandedRowModel(),
     getSubRows: (row) => row.tm_records,
   });
@@ -64,6 +61,7 @@ export default function Table({
       table.setPageSize(Number(table.getRowCount()));
     }
   }, [showAllRows]);
+
   return (
     <div className='mx-auto flex flex-col'>
       <div className='my-5 max-h-screen overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
@@ -75,6 +73,7 @@ export default function Table({
                   <th
                     key={header.id}
                     className='px-3 py-4 font-semibold text-gray-900'
+                    onClick={header.column.getToggleSortingHandler()}
                   >
                     <span className='flex cursor-pointer select-none items-center gap-1 text-base text-black/70'>
                       {flexRender(
