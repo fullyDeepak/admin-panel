@@ -27,6 +27,12 @@ export type TowerUnitDetailType = {
   gfName: string;
   gfUnitMaxUN: string;
   gfUnitMinUN: string;
+  dbMaxFloor: string;
+  dbGfName: string;
+  dbGfMin: string;
+  dbGfMax: string;
+  dbTypicalMin: string;
+  dbTypicalMax: string;
   unitCards: UnitCardType[];
   reraRefTable: RefTableType[];
   tmRefTable: (RefTableType & { extent: string })[];
@@ -78,6 +84,12 @@ const INITIAL_STATE: TowerUnitDetailType[] = [
     gfName: '',
     gfUnitMaxUN: '',
     gfUnitMinUN: '',
+    dbMaxFloor: '',
+    dbGfName: '',
+    dbGfMin: '',
+    dbGfMax: '',
+    dbTypicalMin: '',
+    dbTypicalMax: '',
     unitCards: [
       {
         id: 1,

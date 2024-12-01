@@ -25,6 +25,12 @@ export interface ProjectData {
       rera_tower_id: any;
       etl_tower_name: string;
       display_tower_type: string;
+      ground_floor_name: string;
+      ground_floor_unit_no_min: string;
+      ground_floor_unit_no_max: string;
+      typical_floor_unit_no_min: string;
+      typical_floor_unit_no_max: string;
+      max_floor: string;
       floor_list: string[];
       typical_units: string[];
       gf_units: string[];
@@ -231,7 +237,7 @@ export default function ProjectDropdown() {
                   ele?.floor_list && ele.floor_list.length > 0
                     ? Math.max(...ele.floor_list.map(Number))
                     : 0,
-                gfName: ele.gf_floors?.join(', '),
+                gfName: ele.ground_floor_name || '',
                 gfUnitMaxUN: ele.gf_units
                   ? findLargest(ele.gf_units).toString()
                   : '',
@@ -244,6 +250,12 @@ export default function ProjectDropdown() {
                 typicalMinUN: ele.typical_units
                   ? findSmallest(ele.typical_units).toString()
                   : '',
+                dbMaxFloor: ele.max_floor || 'N/A',
+                dbGfName: ele.ground_floor_name || 'N/A',
+                dbGfMin: ele.ground_floor_unit_no_min || 'N/A',
+                dbGfMax: ele.ground_floor_unit_no_max || 'N/A',
+                dbTypicalMin: ele.typical_floor_unit_no_min || 'N/A',
+                dbTypicalMax: ele.typical_floor_unit_no_max || 'N/A',
                 unitCards: unitCards,
                 tmRefTable: tmTableData,
                 reraRefTable: reraRefTable || [],

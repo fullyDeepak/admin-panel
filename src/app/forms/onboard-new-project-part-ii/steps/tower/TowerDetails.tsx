@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react';
+import { Copy, Trash2 } from 'lucide-react';
 import { TowerUnitDetailType } from '../../useTowerUnitStore';
 import UnitGrid from './UnitGrid';
 
@@ -60,7 +60,7 @@ export default function TowerDetails({
           <div className='float-label-input-group relative'>
             <input
               type='number'
-              defaultValue={tower.maxFloor ? tower.maxFloor : ''}
+              value={tower.maxFloor ? tower.maxFloor : ''}
               onChange={(e) =>
                 updateTowerFormData(tower.tower_id, {
                   maxFloor: e.target.valueAsNumber,
@@ -80,7 +80,7 @@ export default function TowerDetails({
           <div className='float-label-input-group relative'>
             <input
               type='text'
-              defaultValue={tower.typicalMinUN}
+              value={tower.typicalMinUN}
               id={'un-min' + tower.tower_id}
               onChange={(e) =>
                 updateTowerFormData(tower.tower_id, {
@@ -100,7 +100,7 @@ export default function TowerDetails({
           <div className='float-label-input-group relative'>
             <input
               type='text'
-              defaultValue={tower.typicalMaxUN}
+              value={tower.typicalMaxUN}
               id={'un-max' + tower.tower_id}
               onChange={(e) =>
                 updateTowerFormData(tower.tower_id, {
@@ -123,7 +123,7 @@ export default function TowerDetails({
           <div className='float-label-input-group relative'>
             <input
               type='text'
-              defaultValue={tower.gfName?.toUpperCase()}
+              value={tower.gfName?.toUpperCase()}
               id={'ground-floor-name' + tower.tower_id}
               onChange={(e) =>
                 updateTowerFormData(tower.tower_id, {
@@ -143,7 +143,7 @@ export default function TowerDetails({
           <div className='float-label-input-group relative'>
             <input
               type='text'
-              defaultValue={tower.gfUnitMinUN}
+              value={tower.gfUnitMinUN}
               id={'gf-un-min' + tower.tower_id}
               onChange={(e) =>
                 updateTowerFormData(tower.tower_id, {
@@ -163,7 +163,7 @@ export default function TowerDetails({
           <div className='float-label-input-group relative'>
             <input
               type='text'
-              defaultValue={tower.gfUnitMaxUN}
+              value={tower.gfUnitMaxUN}
               id={'gf-un-max' + tower.tower_id}
               onChange={(e) =>
                 updateTowerFormData(tower.tower_id, {
@@ -180,6 +180,45 @@ export default function TowerDetails({
               <span className='bg-white px-1'>UN Max</span>
             </label>
           </div>
+        </div>
+
+        <div className='flex items-center gap-1'>
+          <span>Available:</span>
+          <button
+            onClick={() => {
+              updateTowerFormData(tower.tower_id, {
+                maxFloor: +tower.dbMaxFloor,
+                typicalMinUN: tower.dbTypicalMin,
+                typicalMaxUN: tower.dbTypicalMax,
+              });
+            }}
+          >
+            <Copy size={14} />
+          </button>
+        </div>
+        <div className='flex'>
+          <span className='ml-2 flex-1 text-start'>{tower.dbMaxFloor}</span>
+          <span className='ml-2 flex-1 text-start'>{tower.typicalMinUN}</span>
+          <span className='ml-2 flex-1 text-start'>{tower.typicalMaxUN}</span>
+        </div>
+        <div className='flex items-center gap-1'>
+          <span>Available:</span>
+          <button
+            onClick={() => {
+              updateTowerFormData(tower.tower_id, {
+                gfName: tower.dbGfName,
+                gfUnitMinUN: tower.dbGfMin,
+                gfUnitMaxUN: tower.dbGfMax,
+              });
+            }}
+          >
+            <Copy size={14} />
+          </button>
+        </div>
+        <div className='flex justify-around'>
+          <span className='ml-2 flex-1 text-start'>{tower.dbGfName}</span>
+          <span className='ml-2 flex-1 text-start'>{tower.dbGfMin}</span>
+          <span className='ml-2 flex-1 text-start'>{tower.dbGfMax}</span>
         </div>
       </div>
 
