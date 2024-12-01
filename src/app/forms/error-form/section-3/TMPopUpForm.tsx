@@ -5,7 +5,6 @@ import { useState } from 'react';
 export default function TMPopUpForm() {
   const [formState, setFormState] = useState({
     docId: '',
-    docIdFlag: true,
     villageFlag: true,
     projectIdFlag: true,
     linkedDocFlag: true,
@@ -25,7 +24,7 @@ export default function TMPopUpForm() {
         <div className='flex items-center gap-5'>
           <span className='flex-[2]'>Doc Id:</span>
           <input
-            className={inputBoxClass}
+            className={cn(inputBoxClass, 'ml-0 flex-[6]')}
             placeholder='Enter Doc Id'
             type='text'
             value={formState.docId}
@@ -36,20 +35,6 @@ export default function TMPopUpForm() {
               }))
             }
           />
-          <label className={cn('swap swap-flip rounded p-1 font-semibold')}>
-            <input
-              type='checkbox'
-              checked={formState.docIdFlag}
-              onChange={(e) => {
-                setFormState((prev) => ({
-                  ...prev,
-                  docIdFlag: e.target.checked,
-                }));
-              }}
-            />
-            <div className='swap-on'>AND</div>
-            <div className='swap-off'>&nbsp;OR</div>
-          </label>
         </div>
         <div className='flex items-center gap-5'>
           <span className='flex-[2]'>Village:</span>

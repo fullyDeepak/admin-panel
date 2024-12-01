@@ -9,7 +9,6 @@ export default function HMPopUpForm() {
     ownerName: '',
     ownerNameFlag: true,
     doorNoFlag: true,
-    localityFlag: true,
   });
   return (
     <div className='max-w-screen-2xl'>
@@ -20,7 +19,7 @@ export default function HMPopUpForm() {
         <div className='flex items-center gap-5'>
           <span className='flex-[2]'>Locality:</span>
           <input
-            className={inputBoxClass}
+            className={cn(inputBoxClass, 'ml-0 flex-[6]')}
             placeholder='Enter Locality'
             type='text'
             value={formState['locality']}
@@ -31,25 +30,6 @@ export default function HMPopUpForm() {
               }))
             }
           />
-          <label
-            className={cn(
-              'swap swap-flip rounded p-1 font-semibold'
-              // formState['localityFlag'] ? 'bg-green-200' : 'bg-red-200'
-            )}
-          >
-            <input
-              type='checkbox'
-              checked={formState['localityFlag']}
-              onChange={(e) => {
-                setFormState((prev) => ({
-                  ...prev,
-                  localityFlag: e.target.checked,
-                }));
-              }}
-            />
-            <div className='swap-on'>AND</div>
-            <div className='swap-off'>&nbsp;OR</div>
-          </label>
         </div>
         <div className='flex items-center gap-5'>
           <span className='flex-[2]'>Door No:</span>
