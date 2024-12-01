@@ -1,6 +1,10 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { HMSearchResponseType } from '../types';
+import TanstackReactTable from '@/components/tables/TanstackReactTable';
+import axiosClient from '@/utils/AxiosClient';
+import toast from 'react-hot-toast';
 
 export default function HMPopUpForm() {
   const [formState, setFormState] = useState({
@@ -10,12 +14,84 @@ export default function HMPopUpForm() {
     ownerNameFlag: true,
     doorNoFlag: true,
   });
+  const [results, setResults] = useState<HMSearchResponseType[]>([]);
+
+  async function handleSearch() {
+    setResults([]);
+    const promise = axiosClient.get<{ data: HMSearchResponseType[] }>(
+      '/error-correction/get-house-master-records',
+      {
+        params: {
+          locality: formState.locality,
+          owner_name: formState.ownerName,
+          door_no_flag: formState.doorNoFlag ? 'AND' : 'OR',
+          owner_name_flag: formState.ownerNameFlag ? 'AND' : 'OR',
+          door_no: formState.doorNo,
+        },
+      }
+    );
+    toast.promise(
+      promise,
+      {
+        loading: 'Searching HM...',
+        success: ({ data }) => {
+          setResults(data.data);
+          return `Found ${data.data.length} records.`;
+        },
+        error: (err) => {
+          console.log(err);
+          return 'Error while searching HM';
+        },
+      },
+      { duration: 5000 }
+    );
+  }
+
+  const columns = [
+    {
+      header: 'PTIN',
+      accessorKey: 'ptin',
+    },
+    {
+      header: 'Source',
+      accessorKey: 'source',
+    },
+    {
+      header: 'Locality',
+      accessorKey: 'locality',
+    },
+    {
+      header: 'House No-1',
+      accessorKey: 'house_no',
+    },
+    {
+      header: 'House No-2',
+      accessorKey: 'level_2_house_no',
+    },
+    {
+      header: 'Current Owner',
+      accessorKey: 'current_owner',
+    },
+    {
+      header: 'Phone',
+      accessorKey: 'phone_number',
+    },
+    {
+      header: 'Updated At',
+      accessorKey: 'updated_at',
+    },
+    {
+      header: 'Updated Fields',
+      accessorKey: 'updated_fields',
+    },
+  ];
+
   return (
-    <div className='max-w-screen-2xl'>
+    <div className='flex flex-col items-center'>
       <h3 className='pb-5 text-center text-xl font-semibold'>
         Popup Form: HM Search + Fill
       </h3>
-      <div className='flex flex-col gap-2'>
+      <div className='flex max-w-sm flex-col gap-2'>
         <div className='flex items-center gap-5'>
           <span className='flex-[2]'>Locality:</span>
           <input
@@ -89,9 +165,23 @@ export default function HMPopUpForm() {
             <div className='swap-off'>&nbsp;OR</div>
           </label>
         </div>
-        <button className='btn btn-neutral btn-sm max-w-fit self-center'>
+        <button
+          className='btn btn-neutral btn-sm max-w-fit self-center'
+          onClick={handleSearch}
+        >
           Search HM
         </button>
+      </div>
+      <div className='mt-5 max-w-full overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
+        {results && results.length > 0 && (
+          <TanstackReactTable
+            columns={columns}
+            data={results}
+            showAllRows
+            enableSearch={false}
+            showPagination={false}
+          />
+        )}
       </div>
     </div>
   );

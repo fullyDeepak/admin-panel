@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import HMPopUpForm from './HMPopUpForm';
 import TMPopUpForm from './TMPopUpForm';
+import DismissibleToast from '@/components/ui/DismissibleToast';
 
 export default function Section3Container() {
   const {
@@ -18,6 +19,7 @@ export default function Section3Container() {
     setSelectedTableRows,
   } = useErrorFormStore();
   const [selectedPopup, setSelectedPopup] = useState<'hm' | 'tm' | null>(null);
+  const [selectedDocId, setSelectedDocId] = useState('');
   const columns: ColumnDef<ErrorTableDataType, any>[] = [
     {
       header: 'Project + Tower',
@@ -114,6 +116,7 @@ export default function Section3Container() {
             type='button'
             onClick={() => {
               setSelectedPopup('tm');
+              setSelectedDocId(row.original.doc_id_schedule);
               (
                 document.getElementById(
                   'error-form-dialog'
@@ -163,14 +166,17 @@ export default function Section3Container() {
   return (
     <div className='mx-auto my-10 max-w-[95%]'>
       <dialog id='error-form-dialog' className='modal'>
-        <div className='modal-box max-h-screen'>
+        <div className='modal-box h-[98vh] max-w-screen-2xl'>
           <form method='dialog'>
             <button className='btn-circle btn-ghost btn-sm absolute right-2 top-2'>
               ✕
             </button>
           </form>
+          <DismissibleToast />
           {selectedPopup === 'hm' ? <HMPopUpForm /> : null}
-          {selectedPopup === 'tm' ? <TMPopUpForm /> : null}
+          {selectedPopup === 'tm' ? (
+            <TMPopUpForm docId={selectedDocId} />
+          ) : null}
         </div>
       </dialog>
       {errorTableData?.length > 0 ? (

@@ -1,10 +1,18 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import axiosClient from '@/utils/AxiosClient';
+import { useEffect, useState } from 'react';
+import { HMSearchResponseType } from '../types';
+import toast from 'react-hot-toast';
+import TanstackReactTable from '@/components/tables/TanstackReactTable';
 
-export default function TMPopUpForm() {
+type Props = {
+  docId: string;
+};
+
+export default function TMPopUpForm({ docId }: Props) {
   const [formState, setFormState] = useState({
-    docId: '',
+    docId: docId,
     villageFlag: true,
     projectIdFlag: true,
     linkedDocFlag: true,
@@ -14,13 +22,102 @@ export default function TMPopUpForm() {
     counterParty: '',
     linkedDoc: '',
   });
+  useEffect(() => {
+    setFormState((prev) => ({
+      ...prev,
+      docId: docId,
+    }));
+  }, [docId]);
+  const [results, setResults] = useState<HMSearchResponseType[]>([]);
+
+  async function handleSearch() {
+    setResults([]);
+    const promise = axiosClient.get<{ data: HMSearchResponseType[] }>(
+      '/error-correction/get-transactions/',
+      {
+        params: {
+          doc_id: formState.docId,
+          village: formState.village,
+          project_id: formState.projectId,
+          counter_party: formState.counterParty,
+          linked_doc: formState.linkedDoc,
+          village_flag: formState.villageFlag ? 'AND' : 'OR',
+          project_id_flag: formState.projectIdFlag ? 'AND' : 'OR',
+          counter_party_flag: formState.counterPartyFlag ? 'AND' : 'OR',
+          linked_doc_flag: formState.linkedDocFlag ? 'AND' : 'OR',
+        },
+      }
+    );
+    toast.promise(
+      promise,
+      {
+        loading: 'Searching HM...',
+        success: ({ data }) => {
+          setResults(data.data);
+          return `Found ${data.data.length} records.`;
+        },
+        error: (err) => {
+          console.log(err);
+          return 'Error while searching HM';
+        },
+      },
+      { duration: 5000 }
+    );
+  }
+
+  const columns = [
+    {
+      header: 'Doc Id Sch',
+      accessorKey: 'doc_id_schedule',
+    },
+    {
+      header: 'Village',
+      accessorKey: 'village',
+    },
+    {
+      header: 'Date',
+      accessorKey: 'execution_date',
+    },
+    {
+      header: 'Deed Type',
+      accessorKey: 'deed_type',
+    },
+    {
+      header: 'Project Id',
+      accessorKey: 'project_id',
+    },
+    {
+      header: 'Tower Id',
+      accessorKey: 'tower_id',
+    },
+    {
+      header: 'Floor',
+      accessorKey: 'floor',
+    },
+    {
+      header: 'Unit',
+      accessorKey: 'unit_number',
+    },
+    {
+      header: 'Full Unit',
+      accessorKey: 'flat',
+    },
+    {
+      header: 'Party Details',
+      accessorKey: 'party_details',
+    },
+    {
+      header: 'Description',
+      accessorKey: 'description',
+    },
+  ];
 
   return (
-    <div className='max-w-screen-2xl'>
+    <div className='flex flex-col items-center'>
       <h3 className='pb-5 text-center text-xl font-semibold'>
         Popup Form: TM Search + Fill
       </h3>
-      <div className='flex flex-col gap-2'>
+      <div className='flex max-w-md flex-col gap-2'>
         <div className='flex items-center gap-5'>
           <span className='flex-[2]'>Doc Id:</span>
           <input
@@ -152,9 +249,23 @@ export default function TMPopUpForm() {
             <div className='swap-off'>&nbsp;OR</div>
           </label>
         </div>
-        <button className='btn btn-neutral btn-sm max-w-fit self-center'>
-          Search HM
+        <button
+          className='btn btn-neutral btn-sm max-w-fit self-center'
+          onClick={handleSearch}
+        >
+          Search TM
         </button>
+      </div>
+      <div className='mt-5 max-w-full overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
+        {results && results.length > 0 && (
+          <TanstackReactTable
+            columns={columns}
+            data={results}
+            showAllRows
+            enableSearch={false}
+            showPagination={false}
+          />
+        )}
       </div>
     </div>
   );
