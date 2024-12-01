@@ -268,11 +268,11 @@ FROM
     transactions.records
 WHERE 
     doc_id IS NOT NULL
-    ${`AND doc_id = ${formState.docId}`}
-    ${formState.village ? (formState.villageFlag ? `AND village = ${formState.village}` : `OR village = ${formState.village}`) : ``}
-    ${formState.projectId ? (formState.projectIdFlag ? `AND project_id = ${formState.projectId}` : `OR project_id = ${formState.projectId}`) : ''}
-    ${formState.counterParty ? (formState.counterPartyFlag ? `AND party_details ILIKE ${'%' + formState.counterParty + '%'}` : `OR party_details ILIKE${'%' + formState.counterParty + '%'}`) : ``}
-    ${formState.linkedDoc ? (formState.linkedDocFlag ? `AND linked_docs ILIKE ${'%' + formState.linkedDoc + '%'}` : `OR linked_doc ILIKE ${'%' + formState.linkedDoc + '%'}`) : ``}
+    ${`AND doc_id = '${formState.docId}'`}
+    ${formState.village ? (formState.villageFlag ? `AND village = '${formState.village}'` : `OR village = ${formState.village}`) : ``}
+    ${formState.projectId ? (formState.projectIdFlag ? `AND project_id = '${formState.projectId}'` : `OR project_id = '${formState.projectId}'`) : ''}
+    ${formState.counterParty ? (formState.counterPartyFlag ? `AND party_details ILIKE '${'%' + formState.counterParty + '%'}'` : `OR party_details ILIKE '${'%' + formState.counterParty + '%'}'`) : ``}
+    ${formState.linkedDoc ? (formState.linkedDocFlag ? `AND linked_docs ILIKE '${'%' + formState.linkedDoc + '%'}'` : `OR linked_doc ILIKE '${'%' + formState.linkedDoc + '%'}'`) : ``}
     LIMIT 200;`}
           </pre>
         </div>
