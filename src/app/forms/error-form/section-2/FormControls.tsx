@@ -39,6 +39,8 @@ export default function FormControls() {
     setRecordsByProjectResp,
     recordsByProjectResp,
     setErrorTableData,
+    setSelectedTableRows,
+    setTableRowSelection,
   } = useErrorFormStore();
   const { data: projectOptions, isLoading } = useFetchData<ProjectOptionType[]>(
     '/onboarding/getProjectsForPart2'
@@ -106,6 +108,8 @@ export default function FormControls() {
           label: `${item.label} (${errCount[item.value]})`,
         })),
     });
+    setSelectedTableRows([]);
+    setTableRowSelection({});
   }
 
   useEffect(() => {

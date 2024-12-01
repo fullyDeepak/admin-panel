@@ -28,7 +28,7 @@ export function makeErrorTableData(data: GET__RecordsByProjectResp[]) {
         deed_type: item.deed_type!,
         cp1_names: item.cp1_names!,
         cp2_names: item.cp2_names!,
-        tm_records: [],
+        subRows: [],
       }));
 
     if (tmRecords.length === 0) {
@@ -48,7 +48,7 @@ export function makeErrorTableData(data: GET__RecordsByProjectResp[]) {
         deed_type: '',
         cp1_names: '',
         cp2_names: '',
-        tm_records: [],
+        subRows: [],
       });
     } else if (tmRecords.length > 0) {
       errorTableData.push({
@@ -67,7 +67,7 @@ export function makeErrorTableData(data: GET__RecordsByProjectResp[]) {
         deed_type: tmRecords[0].deed_type!,
         cp1_names: tmRecords[0].cp1_names!,
         cp2_names: tmRecords[0].cp2_names!,
-        tm_records: tmRecords.splice(1, tmRecords.length),
+        subRows: tmRecords.splice(1, tmRecords.length),
       });
     }
   });

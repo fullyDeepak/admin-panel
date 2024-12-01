@@ -61,7 +61,7 @@ export type ErrorTableDataType = {
   deed_type: string;
   cp1_names: string;
   cp2_names: string;
-  tm_records: {
+  subRows: {
     project_tower: string;
     full_unit_name: string;
     error_type: string;
@@ -77,6 +77,6 @@ export type ErrorTableDataType = {
     deed_type: string;
     cp1_names: string;
     cp2_names: string;
-    tm_records: ErrorTableDataType['tm_records'];
+    subRows: ErrorTableDataType['subRows'];
   }[];
 };

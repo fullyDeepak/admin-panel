@@ -55,12 +55,20 @@ interface State {
   errorFormData: ErrorFormDataType;
   recordsByProjectResp: GET__RecordsByProjectResp[];
   errorTableData: ErrorTableDataType[];
+  tableRowSelection: Record<string, boolean>;
+  selectedTableRows: ErrorTableDataType[];
 }
 
 interface Actions {
   updateErrorFormData: (_newDetails: Partial<ErrorFormDataType>) => void;
   setRecordsByProjectResp: (_newDetails: GET__RecordsByProjectResp[]) => void;
   setErrorTableData: (_newDetails: ErrorTableDataType[]) => void;
+  setTableRowSelection: (
+    _updater:
+      | Record<string, boolean>
+      | ((_prev: Record<string, boolean>) => Record<string, boolean>)
+  ) => void;
+  setSelectedTableRows: (_newDetails: ErrorTableDataType[]) => void;
 }
 
 const INITIAL_PROJECT_DATA_STATE: ErrorFormDataType = {
@@ -83,6 +91,8 @@ export const useErrorFormStore = create<State & Actions>()(
     errorFormData: INITIAL_PROJECT_DATA_STATE,
     recordsByProjectResp: [] as GET__RecordsByProjectResp[],
     errorTableData: [] as ErrorTableDataType[],
+    tableRowSelection: {},
+    selectedTableRows: [] as ErrorTableDataType[],
 
     updateErrorFormData: (newDetails) =>
       set((prev) => {
@@ -98,5 +108,18 @@ export const useErrorFormStore = create<State & Actions>()(
       set((prev) => {
         prev.errorTableData = newDetails;
       }),
+
+    setSelectedTableRows: (newDetails) =>
+      set((prev) => {
+        prev.selectedTableRows = newDetails;
+      }),
+
+    setTableRowSelection: (updater) =>
+      set((state) => ({
+        tableRowSelection:
+          typeof updater === 'function'
+            ? updater(state.tableRowSelection)
+            : updater,
+      })),
   }))
 );

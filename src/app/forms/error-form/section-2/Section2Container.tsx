@@ -15,6 +15,8 @@ export default function Section2Container() {
     setRecordsByProjectResp,
     updateErrorFormData,
     setErrorTableData,
+    setSelectedTableRows,
+    setTableRowSelection,
   } = useErrorFormStore();
 
   const { data: recordsByProjectId } = useFetchData<
@@ -63,6 +65,8 @@ export default function Section2Container() {
           })),
       });
       setErrorTableData(makeErrorTableData(recordsByProjectId));
+      setSelectedTableRows([]);
+      setTableRowSelection({});
     }
   }, [recordsByProjectId]);
 

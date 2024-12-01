@@ -27,6 +27,14 @@ interface TableProps {
   showPagination?: boolean;
   enableSearch?: boolean;
   showAllRows?: boolean;
+  rowSelection: Record<string, boolean>;
+  setRowSelection: (
+    _updater:
+      | Record<string, boolean>
+      | ((_prev: Record<string, boolean>) => Record<string, boolean>)
+  ) => void;
+  setSelectedRows: (_newDetails: ErrorTableDataType[]) => void;
+  isMultiSelection: boolean;
 }
 
 export default function Table({
@@ -34,6 +42,10 @@ export default function Table({
   columns,
   showPagination = true,
   showAllRows = false,
+  isMultiSelection,
+  rowSelection,
+  setRowSelection,
+  setSelectedRows,
 }: TableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filtering, setFiltering] = useState('');
@@ -49,11 +61,14 @@ export default function Table({
       sorting: sorting,
       globalFilter: filtering,
       expanded: true,
+      rowSelection: rowSelection,
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setFiltering,
     getExpandedRowModel: getExpandedRowModel(),
-    getSubRows: (row) => row.tm_records,
+    getSubRows: (row) => row.subRows,
+    onRowSelectionChange: setRowSelection,
+    enableMultiRowSelection: isMultiSelection,
   });
 
   useEffect(() => {
@@ -62,10 +77,17 @@ export default function Table({
     }
   }, [showAllRows]);
 
+  useEffect(() => {
+    const ogData = table
+      .getSelectedRowModel()
+      ?.rows?.map((item) => item.original);
+    setSelectedRows(ogData);
+  }, [rowSelection]);
+
   return (
     <div className='mx-auto flex flex-col'>
       <div className='my-5 max-h-screen overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
-        <table className='relative !block h-[70vh] w-full border-collapse overflow-y-scroll bg-white text-sm text-gray-700'>
+        <table className='relative !block h-[80vh] w-full border-collapse overflow-y-scroll bg-white text-sm text-gray-700'>
           <thead className='sticky top-0 z-[1] text-nowrap bg-gray-50'>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

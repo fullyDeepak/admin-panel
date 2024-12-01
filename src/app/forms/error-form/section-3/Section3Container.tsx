@@ -8,7 +8,12 @@ import { IndeterminateCheckbox } from '../../rera-correction/AdvTable';
 import { cn } from '@/lib/utils';
 
 export default function Section3Container() {
-  const { errorTableData } = useErrorFormStore();
+  const {
+    errorTableData,
+    tableRowSelection,
+    setTableRowSelection,
+    setSelectedTableRows,
+  } = useErrorFormStore();
   const columns: ColumnDef<ErrorTableDataType, any>[] = [
     {
       header: 'Project + Tower',
@@ -24,7 +29,7 @@ export default function Section3Container() {
     },
     {
       id: 'select',
-      header: 'Select Unit',
+      header: 'Select',
       cell: ({ row }) => {
         if (row.original.project_tower.length === 0) {
           return null;
@@ -120,7 +125,9 @@ export default function Section3Container() {
       accessorKey: 'tm_count',
       cell: ({ getValue }) => (
         <span
-          className={cn('', getValue() && 'badge badge-accent !p-3 text-xl')}
+          className={cn(
+            getValue() && 'badge badge-accent !p-3 text-xl tabular-nums'
+          )}
         >
           {getValue()}
         </span>
@@ -169,6 +176,10 @@ export default function Section3Container() {
             columns={columns}
             showPagination={true}
             enableSearch={true}
+            rowSelection={tableRowSelection}
+            setRowSelection={setTableRowSelection}
+            setSelectedRows={setSelectedTableRows}
+            isMultiSelection={true}
           />
         </>
       ) : null}
