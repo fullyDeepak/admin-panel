@@ -6,6 +6,9 @@ import { useErrorFormStore } from '../useErrorFormStore';
 import Table from './Table';
 import { IndeterminateCheckbox } from '../../rera-correction/AdvTable';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import HMPopUpForm from './HMPopUpForm';
+import TMPopUpForm from './TMPopUpForm';
 
 export default function Section3Container() {
   const {
@@ -14,6 +17,7 @@ export default function Section3Container() {
     setTableRowSelection,
     setSelectedTableRows,
   } = useErrorFormStore();
+  const [selectedPopup, setSelectedPopup] = useState<'hm' | 'tm' | null>(null);
   const columns: ColumnDef<ErrorTableDataType, any>[] = [
     {
       header: 'Project + Tower',
@@ -61,9 +65,10 @@ export default function Section3Container() {
             className='btn btn-neutral btn-xs'
             type='button'
             onClick={() => {
+              setSelectedPopup('hm');
               (
                 document.getElementById(
-                  'error-form-dailog'
+                  'error-form-dialog'
                 ) as HTMLDialogElement
               )?.showModal();
             }}
@@ -108,9 +113,10 @@ export default function Section3Container() {
             className='btn btn-neutral btn-xs'
             type='button'
             onClick={() => {
+              setSelectedPopup('tm');
               (
                 document.getElementById(
-                  'error-form-dailog'
+                  'error-form-dialog'
                 ) as HTMLDialogElement
               )?.showModal();
             }}
@@ -156,14 +162,15 @@ export default function Section3Container() {
   ];
   return (
     <div className='mx-auto my-10 max-w-[95%]'>
-      <dialog id='error-form-dailog' className='modal'>
-        <div className='modal-box h-96'>
+      <dialog id='error-form-dialog' className='modal'>
+        <div className='modal-box max-h-screen'>
           <form method='dialog'>
             <button className='btn-circle btn-ghost btn-sm absolute right-2 top-2'>
               ✕
             </button>
           </form>
-          <h3 className='text-lg font-bold'>NO data available</h3>
+          {selectedPopup === 'hm' ? <HMPopUpForm /> : null}
+          {selectedPopup === 'tm' ? <TMPopUpForm /> : null}
         </div>
       </dialog>
       {errorTableData?.length > 0 ? (
