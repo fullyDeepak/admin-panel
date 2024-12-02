@@ -129,10 +129,10 @@ export default function FormControls() {
           />
         </label>
         <h3 className='my-4 text-2xl font-semibold'>Filters:</h3>
-        <label className='flex items-center justify-between gap-5'>
+        <div className='flex w-3/4 items-center justify-evenly gap-2 self-center'>
           <span className='flex-[2]'>Error Type:</span>
           <Select
-            className='z-[11] w-full flex-[5]'
+            className='z-[11] w-full flex-[4]'
             styles={{
               option: dropdownOptionStyle,
             }}
@@ -144,56 +144,53 @@ export default function FormControls() {
               updateErrorFormData({ selectedError: e })
             }
           />
-        </label>
-        <div className='flex items-center justify-between gap-5'>
-          <span className='flex-[2]'>Filters Selected Project:</span>
-          <div className='flex flex-[5] items-center gap-5'>
-            <span className='flex-[2]'>Tower:</span>
-            <Select
-              className='z-10 w-full flex-[5]'
-              instanceId={useId()}
-              styles={{
-                option: dropdownOptionStyle,
-              }}
-              key={'tower-name'}
-              isClearable
-              options={errorFormData.towerOptions || []}
-              value={errorFormData.selectedTower}
-              onChange={(e: SingleValue<OptionValNum>) =>
-                updateErrorFormData({ selectedTower: e })
-              }
-            />
-            <span className='flex-[2]'>Floor:</span>
-            <Select
-              className='z-10 w-full flex-[5]'
-              instanceId={useId()}
-              styles={{
-                option: dropdownOptionStyle,
-              }}
-              isClearable
-              key={'floor'}
-              options={errorFormData.floorOptions || []}
-              value={errorFormData.selectedFloor}
-              onChange={(e: SingleValue<OptionValNum>) =>
-                updateErrorFormData({ selectedFloor: e })
-              }
-            />
-            <span className='flex-[2]'>Unit:</span>
-            <Select
-              className='z-10 w-full flex-[5]'
-              instanceId={useId()}
-              styles={{
-                option: dropdownOptionStyle,
-              }}
-              isClearable
-              key={'unit'}
-              options={errorFormData.unitOptions || []}
-              value={errorFormData.selectedUnit}
-              onChange={(e: SingleValue<Option>) =>
-                updateErrorFormData({ selectedUnit: e })
-              }
-            />
-          </div>
+          <span className='w-20 text-center'>Tower:</span>
+          <Select
+            className='z-[11] w-full flex-[4]'
+            instanceId={useId()}
+            styles={{
+              option: dropdownOptionStyle,
+            }}
+            key={'tower-name'}
+            isClearable
+            options={errorFormData.towerOptions || []}
+            value={errorFormData.selectedTower}
+            onChange={(e: SingleValue<OptionValNum>) =>
+              updateErrorFormData({ selectedTower: e })
+            }
+          />
+        </div>
+        <div className='flex w-3/4 items-center justify-evenly gap-2 self-center'>
+          <span className='flex-[2]'>Floor:</span>
+          <Select
+            className='z-10 w-full flex-[4]'
+            instanceId={useId()}
+            styles={{
+              option: dropdownOptionStyle,
+            }}
+            isClearable
+            key={'floor'}
+            options={errorFormData.floorOptions || []}
+            value={errorFormData.selectedFloor}
+            onChange={(e: SingleValue<OptionValNum>) =>
+              updateErrorFormData({ selectedFloor: e })
+            }
+          />
+          <span className='w-20 text-center'>Unit:</span>
+          <Select
+            className='z-10 w-full flex-[4]'
+            instanceId={useId()}
+            styles={{
+              option: dropdownOptionStyle,
+            }}
+            isClearable
+            key={'unit'}
+            options={errorFormData.unitOptions || []}
+            value={errorFormData.selectedUnit}
+            onChange={(e: SingleValue<Option>) =>
+              updateErrorFormData({ selectedUnit: e })
+            }
+          />
         </div>
       </div>
     </div>
