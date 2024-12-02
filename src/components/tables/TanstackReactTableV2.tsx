@@ -27,11 +27,23 @@ interface TableProps<T> {
   showAllRows?: boolean;
   tableHeightVH?: number;
   tableWidthVW?: number;
+  setSelectedRows?: (data: T[]) => void;
+  rowSelection?: Record<string, boolean>;
+  isMultiSelection?: boolean;
+  setRowSelection?: (
+    _updater:
+      | Record<string, boolean>
+      | ((_prev: Record<string, boolean>) => Record<string, boolean>)
+  ) => void;
 }
 
 export default function TanstackReactTableV2<T>({
   data,
   columns,
+  setSelectedRows,
+  rowSelection = {},
+  setRowSelection,
+  isMultiSelection,
   showPagination = true,
   enableSearch = true,
   showAllRows = false,
@@ -51,9 +63,12 @@ export default function TanstackReactTableV2<T>({
     state: {
       sorting: sorting,
       globalFilter: filtering,
+      rowSelection: rowSelection,
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setFiltering,
+    onRowSelectionChange: setRowSelection,
+    enableMultiRowSelection: isMultiSelection,
   });
 
   useEffect(() => {
@@ -61,6 +76,14 @@ export default function TanstackReactTableV2<T>({
       table.setPageSize(Number(table.getRowCount()));
     }
   }, [showAllRows]);
+
+  useEffect(() => {
+    if (!rowSelection || !setSelectedRows) return;
+    const ogData = table
+      .getSelectedRowModel()
+      ?.rows?.map((item) => item.original);
+    setSelectedRows(ogData);
+  }, [rowSelection]);
   return (
     <div className='mx-auto flex flex-col'>
       {enableSearch && (
@@ -131,7 +154,7 @@ export default function TanstackReactTableV2<T>({
               {table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className={`cursor-pointer border-b ${row.getIsSelected() ? 'bg-sky-100 hover:bg-opacity-50' : 'bg-none hover:bg-gray-100'}`}
+                  className={`cursor-pointer border-b ${row?.getIsSelected() ? 'bg-sky-100 hover:bg-opacity-50' : 'bg-none hover:bg-gray-100'}`}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className='px-4 py-3'>

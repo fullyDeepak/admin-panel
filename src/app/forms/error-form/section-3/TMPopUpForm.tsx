@@ -2,17 +2,30 @@ import { inputBoxClass } from '@/app/constants/tw-class';
 import { cn } from '@/lib/utils';
 import axiosClient from '@/utils/AxiosClient';
 import { useEffect, useState } from 'react';
-import { HMSearchResponseType } from '../types';
+import { ErrorTableDataType, TMSearchResponseType } from '../types';
 import toast from 'react-hot-toast';
-import TanstackReactTable from '@/components/tables/TanstackReactTable';
+import TanstackReactTableV2 from '@/components/tables/TanstackReactTableV2';
+import { ColumnDef } from '@tanstack/react-table';
+import { IndeterminateCheckbox } from '../../rera-correction/AdvTable';
+import { useErrorFormStore } from '../useErrorFormStore';
 
 type Props = {
   docId: string;
+  projectTower: string;
+  fullUnitName: string;
+  setOpenedRowData: (data: any) => void;
+  setSelectedPopup: (data: any) => void;
 };
 
-export default function TMPopUpForm({ docId }: Props) {
+export default function TMPopUpForm({
+  fullUnitName,
+  projectTower,
+  setOpenedRowData,
+  setSelectedPopup,
+  docId,
+}: Props) {
   const [formState, setFormState] = useState({
-    docId: docId,
+    docId: '',
     villageFlag: true,
     projectIdFlag: true,
     linkedDocFlag: true,
@@ -22,23 +35,33 @@ export default function TMPopUpForm({ docId }: Props) {
     counterParty: '',
     linkedDoc: '',
   });
+  const [results, setResults] = useState<TMSearchResponseType[]>([]);
+  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+  const [selectedRows, setSelectedRows] = useState<TMSearchResponseType[]>([]);
+  const { updateCurrentTableData } = useErrorFormStore();
   useEffect(() => {
-    setFormState((prev) => ({
-      ...prev,
+    setFormState({
+      villageFlag: true,
+      projectIdFlag: true,
+      linkedDocFlag: true,
+      counterPartyFlag: true,
+      village: '',
+      projectId: 0,
+      counterParty: '',
+      linkedDoc: '',
       docId: docId,
-    }));
+    });
   }, [docId]);
-  const [results, setResults] = useState<HMSearchResponseType[]>([]);
 
   async function handleSearch() {
     setResults([]);
-    const promise = axiosClient.get<{ data: HMSearchResponseType[] }>(
+    const promise = axiosClient.get<{ data: TMSearchResponseType[] }>(
       '/error-correction/get-transactions/',
       {
         params: {
           doc_id: formState.docId,
           village: formState.village,
-          project_id: formState.projectId,
+          project_id: +formState.projectId ? +formState.projectId : '',
           counter_party: formState.counterParty,
           linked_doc: formState.linkedDoc,
           village_flag: formState.villageFlag ? 'AND' : 'OR',
@@ -53,7 +76,12 @@ export default function TMPopUpForm({ docId }: Props) {
       {
         loading: 'Searching HM...',
         success: ({ data }) => {
-          setResults(data.data);
+          setResults(
+            data.data.map((item) => ({
+              ...item,
+              execution_date: item.execution_date?.substring(0, 10),
+            }))
+          );
           return `Found ${data.data.length} records.`;
         },
         error: (err) => {
@@ -65,7 +93,27 @@ export default function TMPopUpForm({ docId }: Props) {
     );
   }
 
-  const columns = [
+  const columns: ColumnDef<TMSearchResponseType, any>[] = [
+    {
+      id: 'select',
+      header: 'Select',
+      cell: ({ row }) => {
+        return (
+          <div className='px-1'>
+            {
+              <IndeterminateCheckbox
+                {...{
+                  checked: row.getIsSelected(),
+                  disabled: !row.getCanSelect(),
+                  indeterminate: row.getIsSomeSelected(),
+                  onChange: row.getToggleSelectedHandler(),
+                }}
+              />
+            }
+          </div>
+        );
+      },
+    },
     {
       header: 'Doc Id Sch',
       accessorKey: 'doc_id_schedule',
@@ -77,17 +125,20 @@ export default function TMPopUpForm({ docId }: Props) {
     {
       header: 'Date',
       accessorKey: 'execution_date',
+      cell: ({ getValue }) => (
+        <span className='whitespace-nowrap'>{getValue()}</span>
+      ),
     },
     {
       header: 'Deed Type',
       accessorKey: 'deed_type',
     },
     {
-      header: 'Project Id',
+      header: 'P Id',
       accessorKey: 'project_id',
     },
     {
-      header: 'Tower Id',
+      header: 'T Id',
       accessorKey: 'tower_id',
     },
     {
@@ -108,7 +159,7 @@ export default function TMPopUpForm({ docId }: Props) {
     },
     {
       header: 'Description',
-      accessorKey: 'description',
+      accessorKey: 'transaction_description',
     },
   ];
 
@@ -277,14 +328,58 @@ WHERE
           </pre>
         </div>
       </div>
-      <div className='mt-5 max-w-full overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
+      <div className='mt-5 flex flex-col'>
+        <button
+          className='btn btn-accent btn-sm max-w-fit self-end'
+          disabled={selectedRows.length === 0}
+          onClick={() => {
+            const newTMData: Partial<ErrorTableDataType> = {
+              record_date: selectedRows[0].execution_date,
+              doc_id_schedule: selectedRows[0].doc_id_schedule,
+              deed_type: selectedRows[0].deed_type,
+              tm_count: selectedRows.length.toString(),
+              subRows: selectedRows.splice(1).map((item) => ({
+                project_tower: '',
+                full_unit_name: '',
+                error_type: '',
+                ptin: '',
+                locality: '',
+                door_no: '',
+                current_owner: '',
+                latest_tm_owner: '',
+                generated_door_no: '',
+                tm_count: '',
+                cp1_names: '',
+                cp2_names: '',
+                record_date: item.execution_date,
+                doc_id_schedule: item.doc_id_schedule,
+                deed_type: item.deed_type,
+                subRows: [],
+              })),
+            };
+            updateCurrentTableData(projectTower, fullUnitName, newTMData);
+            setOpenedRowData(null);
+            setSelectedPopup(null);
+            (
+              document.getElementById('error-form-dialog') as HTMLDialogElement
+            )?.close();
+          }}
+        >
+          Replace TM Data
+        </button>
         {results && results.length > 0 && (
-          <TanstackReactTable
+          <TanstackReactTableV2
             columns={columns}
             data={results}
             showAllRows
             enableSearch={false}
             showPagination={false}
+            tableHeightVH={50}
+            tableWidthVW={85}
+            isMultiSelection
+            rowSelection={rowSelection}
+            setRowSelection={setRowSelection}
+            setSelectedRows={setSelectedRows}
           />
         )}
       </div>
