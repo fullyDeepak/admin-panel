@@ -1,12 +1,27 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { HMSearchResponseType } from '../types';
-import TanstackReactTable from '@/components/tables/TanstackReactTable';
 import axiosClient from '@/utils/AxiosClient';
 import toast from 'react-hot-toast';
+import { CalendarClock, Check, CalendarSync } from 'lucide-react';
+import { ColumnDef } from '@tanstack/react-table';
+import TanstackReactTableV2 from '@/components/tables/TanstackReactTableV2';
+import { useErrorFormStore } from '../useErrorFormStore';
 
-export default function HMPopUpForm() {
+type Props = {
+  projectTower: string;
+  fullUnitName: string;
+  setOpenedRowData: (data: any) => void;
+  setSelectedPopup: (data: any) => void;
+};
+
+export default function HMPopUpForm({
+  fullUnitName,
+  projectTower,
+  setOpenedRowData,
+  setSelectedPopup,
+}: Props) {
   const [formState, setFormState] = useState({
     locality: '',
     doorNo: '',
@@ -15,6 +30,7 @@ export default function HMPopUpForm() {
     doorNoFlag: true,
   });
   const [results, setResults] = useState<HMSearchResponseType[]>([]);
+  const { updateCurrentTableData } = useErrorFormStore();
 
   async function handleSearch() {
     setResults([]);
@@ -35,7 +51,13 @@ export default function HMPopUpForm() {
       {
         loading: 'Searching HM...',
         success: ({ data }) => {
-          setResults(data.data);
+          setResults(
+            data.data.map((item) => ({
+              ...item,
+              updated_at: item.updated_at?.substring(0, 10),
+              updated_fields: item.updated_fields.split('|').join(', '),
+            }))
+          );
           return `Found ${data.data.length} records.`;
         },
         error: (err) => {
@@ -47,44 +69,76 @@ export default function HMPopUpForm() {
     );
   }
 
-  const columns = [
-    {
-      header: 'PTIN',
-      accessorKey: 'ptin',
-    },
-    {
-      header: 'Source',
-      accessorKey: 'source',
-    },
-    {
-      header: 'Locality',
-      accessorKey: 'locality',
-    },
-    {
-      header: 'House No-1',
-      accessorKey: 'house_no',
-    },
-    {
-      header: 'House No-2',
-      accessorKey: 'level_2_house_no',
-    },
-    {
-      header: 'Current Owner',
-      accessorKey: 'current_owner',
-    },
-    {
-      header: 'Phone',
-      accessorKey: 'phone_number',
-    },
-    {
-      header: 'Updated At',
-      accessorKey: 'updated_at',
-    },
-    {
-      header: 'Updated Fields',
-      accessorKey: 'updated_fields',
-    },
-  ];
+  const columns: ColumnDef<HMSearchResponseType, any>[] = useMemo(
+    () => [
+      {
+        header: 'Select',
+        cell: ({ row }) => (
+          <button
+            className='btn btn-neutral btn-xs'
+            onClick={() => {
+              updateCurrentTableData(projectTower, fullUnitName, {
+                ptin: row.original.ptin,
+                locality: row.original.locality,
+                door_no: row.original.house_no,
+                current_owner: row.original.current_owner,
+              });
+              setSelectedPopup(null);
+              setOpenedRowData(null);
+              (
+                document.getElementById(
+                  'error-form-dialog'
+                ) as HTMLDialogElement
+              )?.close();
+            }}
+          >
+            <Check />
+          </button>
+        ),
+      },
+      {
+        header: 'PTIN',
+        accessorKey: 'ptin',
+      },
+      {
+        header: 'Source',
+        accessorKey: 'source',
+      },
+      {
+        header: 'Locality',
+        accessorKey: 'locality',
+      },
+      {
+        header: 'House No-1',
+        accessorKey: 'house_no',
+      },
+      {
+        header: 'House No-2',
+        accessorKey: 'level_2_house_no',
+      },
+      {
+        header: 'Current Owner',
+        accessorKey: 'current_owner',
+        cell: ({ getValue }) => <span className='text-xs'>{getValue()}</span>,
+      },
+      {
+        header: 'Phone',
+        accessorKey: 'phone_number',
+      },
+      {
+        header: () => <CalendarClock />,
+        accessorKey: 'updated_at',
+        cell: ({ getValue }) => (
+          <span className='whitespace-nowrap'>{getValue()}</span>
+        ),
+      },
+      {
+        header: () => <CalendarSync />,
+        accessorKey: 'updated_fields',
+      },
+    ],
+    []
+  );
 
   return (
     <div className='flex flex-col items-center'>
@@ -190,14 +244,16 @@ WHERE
           </pre>
         </div>
       </div>
-      <div className='mt-5 max-w-full overflow-x-auto rounded-lg border border-gray-200 shadow-md'>
+      <div className='mt-5'>
         {results && results.length > 0 && (
-          <TanstackReactTable
+          <TanstackReactTableV2
             columns={columns}
             data={results}
             showAllRows
             enableSearch={false}
             showPagination={false}
+            tableHeightVH={50}
+            tableWidthVW={85}
           />
         )}
       </div>

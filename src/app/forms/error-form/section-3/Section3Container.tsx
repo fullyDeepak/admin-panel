@@ -19,7 +19,9 @@ export default function Section3Container() {
     setSelectedTableRows,
   } = useErrorFormStore();
   const [selectedPopup, setSelectedPopup] = useState<'hm' | 'tm' | null>(null);
-  const [selectedDocId, setSelectedDocId] = useState('');
+  const [openedRowData, setOpenedRowData] = useState<ErrorTableDataType | null>(
+    null
+  );
   const columns: ColumnDef<ErrorTableDataType, any>[] = [
     {
       header: 'Project + Tower',
@@ -68,6 +70,7 @@ export default function Section3Container() {
             type='button'
             onClick={() => {
               setSelectedPopup('hm');
+              setOpenedRowData(row.original);
               (
                 document.getElementById(
                   'error-form-dialog'
@@ -116,7 +119,7 @@ export default function Section3Container() {
             type='button'
             onClick={() => {
               setSelectedPopup('tm');
-              setSelectedDocId(row.original.doc_id_schedule);
+              setOpenedRowData(row.original);
               (
                 document.getElementById(
                   'error-form-dialog'
@@ -164,18 +167,31 @@ export default function Section3Container() {
     },
   ];
   return (
-    <div className='mx-auto my-10 max-w-[95%]'>
+    <div className='mx-auto my-5 max-w-[95%]'>
       <dialog id='error-form-dialog' className='modal'>
-        <div className='modal-box h-[98vh] max-w-screen-2xl'>
+        <div className='modal-box h-[95vh] max-h-full max-w-screen-2xl'>
           <form method='dialog'>
-            <button className='btn-circle btn-ghost btn-sm absolute right-2 top-2'>
+            <button
+              className='btn-circle btn-ghost btn-sm absolute right-2 top-2'
+              onClick={() => {
+                setOpenedRowData(null);
+                setSelectedPopup(null);
+              }}
+            >
               ✕
             </button>
           </form>
           <DismissibleToast />
-          {selectedPopup === 'hm' ? <HMPopUpForm /> : null}
-          {selectedPopup === 'tm' ? (
-            <TMPopUpForm docId={selectedDocId} />
+          {selectedPopup === 'hm' && openedRowData ? (
+            <HMPopUpForm
+              fullUnitName={openedRowData.full_unit_name}
+              projectTower={openedRowData.project_tower}
+              setOpenedRowData={setOpenedRowData}
+              setSelectedPopup={setSelectedPopup}
+            />
+          ) : null}
+          {selectedPopup === 'tm' && openedRowData ? (
+            <TMPopUpForm docId={openedRowData.doc_id_schedule} />
           ) : null}
         </div>
       </dialog>

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 import { immer } from 'zustand/middleware/immer';
 import { ErrorTableDataType, GET__RecordsByProjectResp } from './types';
+import toast from 'react-hot-toast';
 
 export interface ErrorFormDataType {
   selectedMainError: SingleValue<{
@@ -69,6 +70,11 @@ interface Actions {
       | ((_prev: Record<string, boolean>) => Record<string, boolean>)
   ) => void;
   setSelectedTableRows: (_newDetails: ErrorTableDataType[]) => void;
+  updateCurrentTableData: (
+    project_tower: string,
+    full_unit_name: string,
+    newData: Partial<ErrorTableDataType>
+  ) => void;
 }
 
 const INITIAL_PROJECT_DATA_STATE: ErrorFormDataType = {
@@ -79,7 +85,7 @@ const INITIAL_PROJECT_DATA_STATE: ErrorFormDataType = {
   selectedFloor: null,
   selectedTower: null,
   selectedUnit: null,
-  selectedMainFilter: 'ERROR',
+  selectedMainFilter: 'PROJECT',
   towerOptions: [],
   floorOptions: [],
   unitOptions: [],
@@ -121,5 +127,26 @@ export const useErrorFormStore = create<State & Actions>()(
             ? updater(state.tableRowSelection)
             : updater,
       })),
+
+    updateCurrentTableData: (project_tower, full_unit_name, data) => {
+      set((prev) => {
+        if (prev.errorTableData) {
+          const idx = prev.errorTableData?.findIndex(
+            (ele) =>
+              ele.project_tower === project_tower &&
+              ele.full_unit_name === full_unit_name
+          );
+          if (idx >= -1) {
+            prev.errorTableData[idx] = {
+              ...prev.errorTableData[idx],
+              ...data,
+            };
+            toast.success('Record updated successfully');
+          } else {
+            toast.error('Could not update the record');
+          }
+        }
+      });
+    },
   }))
 );
