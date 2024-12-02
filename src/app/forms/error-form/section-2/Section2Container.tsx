@@ -22,8 +22,8 @@ export default function Section2Container() {
   const { data: recordsByProjectId } = useFetchData<
     GET__RecordsByProjectResp[]
   >(
-    errorFormData.selectedMainProject?.value
-      ? `error-correction/get-records-by-project-id?project_id=${errorFormData.selectedMainProject?.value}`
+    errorFormData.selectedProject?.value
+      ? `error-correction/get-records-by-project-id?project_id=${errorFormData.selectedProject?.value}`
       : null
   );
 

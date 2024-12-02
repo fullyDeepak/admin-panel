@@ -5,14 +5,6 @@ import { ErrorTableDataType, GET__RecordsByProjectResp } from './types';
 import toast from 'react-hot-toast';
 
 export interface ErrorFormDataType {
-  selectedMainError: SingleValue<{
-    label: string;
-    value: string;
-  }> | null;
-  selectedMainProject: SingleValue<{
-    label: string;
-    value: number;
-  }> | null;
   selectedProject: SingleValue<{
     label: string;
     value: number;
@@ -33,7 +25,6 @@ export interface ErrorFormDataType {
     label: string;
     value: string;
   }> | null;
-  selectedMainFilter: 'PROJECT' | 'ERROR';
   towerOptions: {
     label: string;
     value: number;
@@ -78,14 +69,11 @@ interface Actions {
 }
 
 const INITIAL_PROJECT_DATA_STATE: ErrorFormDataType = {
-  selectedMainError: null,
-  selectedMainProject: null,
   selectedProject: null,
   selectedError: null,
   selectedFloor: null,
   selectedTower: null,
   selectedUnit: null,
-  selectedMainFilter: 'PROJECT',
   towerOptions: [],
   floorOptions: [],
   unitOptions: [],

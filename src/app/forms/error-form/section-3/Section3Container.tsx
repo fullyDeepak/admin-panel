@@ -10,7 +10,6 @@ import { useState } from 'react';
 import HMPopUpForm from './HMPopUpForm';
 import TMPopUpForm from './TMPopUpForm';
 import DismissibleToast from '@/components/ui/DismissibleToast';
-import { MoveDiagonal2 } from 'lucide-react';
 
 export default function Section3Container() {
   const {
@@ -170,9 +169,6 @@ export default function Section3Container() {
   return (
     <div className='mx-auto my-5 max-w-[95%]'>
       <dialog id='error-form-dialog' className='modal'>
-        <span className='absolute bottom-0 right-0 rounded-br-2xl bg-gray-200 p-1'>
-          <MoveDiagonal2 size={14} />
-        </span>
         <div className='modal-box relative h-[95vh] max-h-full max-w-screen-2xl resize'>
           <form method='dialog'>
             <button

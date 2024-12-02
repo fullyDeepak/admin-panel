@@ -7,36 +7,14 @@ import Select, { SingleValue } from 'react-select';
 import { GET__RecordsByProjectResp, ProjectOptionType } from '../types';
 import { useErrorFormStore } from '../useErrorFormStore';
 import { cn } from '@/lib/utils';
-import { CircleCheck } from 'lucide-react';
 import { countBy, uniqBy } from 'lodash';
 import { Option, OptionValNum } from '@/types/types';
 import { makeErrorTableData } from './utils';
-
-const errOptions = [
-  {
-    label: `Error-1`,
-    value: 'err-1',
-  },
-  {
-    label: `Error-2`,
-    value: 'err-2',
-  },
-  {
-    label: `Error-3`,
-    value: 'err-3',
-  },
-  {
-    label: `Error-4`,
-    value: 'err-4',
-  },
-  { label: 'Missing', value: 'missing' },
-];
 
 export default function FormControls() {
   const {
     errorFormData,
     updateErrorFormData,
-    setRecordsByProjectResp,
     recordsByProjectResp,
     setErrorTableData,
     setSelectedTableRows,
@@ -129,154 +107,44 @@ export default function FormControls() {
     >
       <h3 className='my-4 text-3xl font-semibold'>Section: 2</h3>
       <div className='flex flex-col gap-2'>
-        <div className='flex items-center justify-between gap-5'>
-          <span className='flex-[2]'>Search by:</span>
-          <div className='flex w-full flex-[5] gap-10'>
-            <label
-              className={cn(
-                'flex min-w-32 cursor-pointer select-none items-center justify-evenly gap-2 rounded border-2 px-3 py-2',
-                errorFormData.selectedMainFilter === 'ERROR' &&
-                  'border-violet-600 bg-violet-600/10 text-violet-600'
-              )}
-            >
-              <input
-                type='radio'
-                name='error-form-main-filter'
-                className='peer'
-                checked={errorFormData.selectedMainFilter === 'ERROR'}
-                hidden
-                onChange={() => {
-                  updateErrorFormData({
-                    selectedMainFilter: 'ERROR',
-                    errorOptions: [],
-                    towerOptions: [],
-                    floorOptions: [],
-                    unitOptions: [],
-                    selectedMainError: null,
-                    selectedMainProject: null,
-                    selectedProject: null,
-                  });
-
-                  setRecordsByProjectResp([]);
-                }}
-              />
-              <span>Error</span>
-              <CircleCheck className='hidden peer-checked:inline-block' />
-            </label>
-            <label
-              className={cn(
-                'flex min-w-32 cursor-pointer select-none items-center justify-evenly gap-2 rounded border-2 px-3 py-2',
-                errorFormData.selectedMainFilter === 'PROJECT' &&
-                  'border-violet-600 bg-violet-600/10 text-violet-600'
-              )}
-            >
-              <input
-                type='radio'
-                name='error-form-main-filter'
-                className='peer'
-                hidden
-                checked={errorFormData.selectedMainFilter === 'PROJECT'}
-                onChange={() => {
-                  updateErrorFormData({
-                    selectedMainFilter: 'PROJECT',
-                    errorOptions: [],
-                    towerOptions: [],
-                    floorOptions: [],
-                    unitOptions: [],
-                    selectedMainError: null,
-                    selectedMainProject: null,
-                    selectedProject: null,
-                  });
-                  setRecordsByProjectResp([]);
-                }}
-              />
-              <span>Project</span>
-              <CircleCheck className='hidden peer-checked:inline-block' />
-            </label>
-          </div>
-        </div>
-        {errorFormData.selectedMainFilter === 'ERROR' && (
-          <label className='flex items-center justify-between gap-5'>
-            <span className='flex-[2]'>Error Type:</span>
-            <Select
-              styles={{
-                option: dropdownOptionStyle,
-              }}
-              className='w-full flex-[5]'
-              key='error-type-main-filter'
-              options={errOptions}
-              isDisabled={errorFormData.selectedMainFilter !== 'ERROR'}
-              value={errorFormData.selectedMainError}
-              onChange={(e: SingleValue<Option>) =>
-                updateErrorFormData({
-                  selectedMainError: e,
-                  selectedMainProject: null,
-                })
-              }
-            />
-          </label>
-        )}
-        {errorFormData.selectedMainFilter === 'PROJECT' && (
-          <label className='flex items-center justify-between gap-5'>
-            <span className='flex-[2]'>Projects:</span>
-            <Select
-              styles={{
-                option: dropdownOptionStyle,
-              }}
-              className='z-[12] w-full flex-[5]'
-              isLoading={isLoading}
-              key={'projects'}
-              options={projectOptions?.map((item) => ({
-                label: `${item.id}:${item.project_name}`,
-                value: item.id,
-              }))}
-              value={errorFormData.selectedMainProject}
-              onChange={(e: SingleValue<OptionValNum>) =>
-                updateErrorFormData({
-                  selectedMainError: null,
-                  selectedMainProject: e,
-                })
-              }
-            />
-          </label>
-        )}
+        <label className='flex items-center justify-between gap-5'>
+          <span className='flex-[2]'>Projects:</span>
+          <Select
+            styles={{
+              option: dropdownOptionStyle,
+            }}
+            className='z-[12] w-full flex-[5]'
+            isLoading={isLoading}
+            key={'projects'}
+            options={projectOptions?.map((item) => ({
+              label: `${item.id}:${item.project_name}`,
+              value: item.id,
+            }))}
+            value={errorFormData.selectedProject}
+            onChange={(e: SingleValue<OptionValNum>) =>
+              updateErrorFormData({
+                selectedProject: e,
+              })
+            }
+          />
+        </label>
         <h3 className='my-4 text-2xl font-semibold'>Filters:</h3>
-        {errorFormData.selectedMainFilter === 'ERROR' && (
-          <label className='flex items-center justify-between gap-5'>
-            <span className='flex-[2]'>Projects:</span>
-            <Select
-              styles={{
-                option: dropdownOptionStyle,
-              }}
-              className='z-[11] w-full flex-[5]'
-              isLoading={isLoading}
-              key={'projects'}
-              options={[]}
-              value={errorFormData.selectedProject}
-              onChange={(e: SingleValue<OptionValNum>) =>
-                updateErrorFormData({ selectedProject: e })
-              }
-            />
-          </label>
-        )}
-        {errorFormData.selectedMainFilter === 'PROJECT' && (
-          <label className='flex items-center justify-between gap-5'>
-            <span className='flex-[2]'>Error Type:</span>
-            <Select
-              className='z-[11] w-full flex-[5]'
-              styles={{
-                option: dropdownOptionStyle,
-              }}
-              key={'error-type'}
-              options={errorFormData.errorOptions || []}
-              value={errorFormData.selectedError}
-              isClearable
-              onChange={(e: SingleValue<Option>) =>
-                updateErrorFormData({ selectedError: e })
-              }
-            />
-          </label>
-        )}
+        <label className='flex items-center justify-between gap-5'>
+          <span className='flex-[2]'>Error Type:</span>
+          <Select
+            className='z-[11] w-full flex-[5]'
+            styles={{
+              option: dropdownOptionStyle,
+            }}
+            key={'error-type'}
+            options={errorFormData.errorOptions || []}
+            value={errorFormData.selectedError}
+            isClearable
+            onChange={(e: SingleValue<Option>) =>
+              updateErrorFormData({ selectedError: e })
+            }
+          />
+        </label>
         <div className='flex items-center justify-between gap-5'>
           <span className='flex-[2]'>Filters Selected Project:</span>
           <div className='flex flex-[5] items-center gap-5'>
