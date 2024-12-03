@@ -4,12 +4,15 @@ import { Dispatch, SetStateAction } from 'react';
 import toast from 'react-hot-toast';
 import { TMSearchResponseType } from '../types';
 import axiosClient from '@/utils/AxiosClient';
+import ChipInputV2 from '@/components/ui/ChipV2';
 
 type Props = {
   formState: {
-    docId: string;
+    docIds: string[];
     villageFlag: boolean;
     projectIdFlag: boolean;
+    towerIdFlag: boolean;
+    fullUnitNameFlag: boolean;
     linkedDocFlag: boolean;
     counterPartyFlag: boolean;
     village: string;
@@ -34,13 +37,17 @@ export default function TMPopFormControls({
       '/error-correction/get-transactions/',
       {
         params: {
-          doc_id: formState.docId,
+          doc_ids: formState.docIds,
           village: formState.village,
           project_id: +formState.projectId ? +formState.projectId : '',
+          tower_id: +formState.towerId ? +formState.towerId : '',
+          full_unit_name: formState.fullUnitName,
           counter_party: formState.counterParty,
           linked_doc: formState.linkedDoc,
           village_flag: formState.villageFlag ? 'AND' : 'OR',
           project_id_flag: formState.projectIdFlag ? 'AND' : 'OR',
+          tower_id_flag: formState.towerIdFlag ? 'AND' : 'OR',
+          full_unit_name_flag: formState.fullUnitNameFlag ? 'AND' : 'OR',
           counter_party_flag: formState.counterPartyFlag ? 'AND' : 'OR',
           linked_doc_flag: formState.linkedDocFlag ? 'AND' : 'OR',
         },
@@ -67,22 +74,16 @@ export default function TMPopFormControls({
       { duration: 5000 }
     );
   }
+  console.log({ formState });
   return (
     <div className='col-span-2 flex w-full justify-evenly'>
       <div className='flex max-w-md flex-col gap-2'>
         <div className='flex items-center gap-5'>
-          <span className='flex-[2]'>Doc Id:</span>
-          <input
-            className={cn(inputBoxClass)}
-            placeholder='Enter Doc Id'
-            type='text'
-            value={formState.docId}
-            onChange={(e) =>
-              setFormState((prev) => ({
-                ...prev,
-                docId: e.target.value,
-              }))
-            }
+          <span className='mr-2 flex-[2]'>Doc Ids:</span>
+          <ChipInputV2
+            chips={formState.docIds}
+            onChange={(e) => setFormState({ ...formState, docIds: e })}
+            placeholder='Enter Doc Ids'
           />
           <label className={cn('swap swap-flip rounded p-1 font-semibold')}>
             <input
@@ -145,11 +146,11 @@ export default function TMPopFormControls({
           <label className={cn('swap swap-flip rounded p-1 font-semibold')}>
             <input
               type='checkbox'
-              checked={formState.counterPartyFlag}
+              checked={formState.towerIdFlag}
               onChange={(e) => {
                 setFormState((prev) => ({
                   ...prev,
-                  counterPartyFlag: e.target.checked,
+                  towerIdFlag: e.target.checked,
                 }));
               }}
             />
@@ -174,11 +175,11 @@ export default function TMPopFormControls({
           <label className={cn('swap swap-flip rounded p-1 font-semibold')}>
             <input
               type='checkbox'
-              checked={formState.counterPartyFlag}
+              checked={formState.fullUnitNameFlag}
               onChange={(e) => {
                 setFormState((prev) => ({
                   ...prev,
-                  counterPartyFlag: e.target.checked,
+                  fullUnitNameFlag: e.target.checked,
                 }));
               }}
             />

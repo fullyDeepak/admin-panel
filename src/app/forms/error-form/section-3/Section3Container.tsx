@@ -194,12 +194,9 @@ export default function Section3Container() {
           ) : null}
           {selectedPopup === 'tm' && openedRowData ? (
             <TMPopUpFormContainer
-              docId={openedRowData.doc_id_schedule}
-              fullUnitName={openedRowData.full_unit_name}
-              projectTower={openedRowData.project_tower}
+              openedRowData={openedRowData}
               setOpenedRowData={setOpenedRowData}
               setSelectedPopup={setSelectedPopup}
-              currentOwner={openedRowData.current_owner}
             />
           ) : null}
         </div>

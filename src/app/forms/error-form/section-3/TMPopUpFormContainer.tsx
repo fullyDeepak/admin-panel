@@ -5,28 +5,25 @@ import { ColumnDef } from '@tanstack/react-table';
 import { IndeterminateCheckbox } from '../../rera-correction/AdvTable';
 import { useErrorFormStore } from '../useErrorFormStore';
 import TMPopFormControls from './TMPopFormControls';
+import { uniq } from 'lodash';
 
 type Props = {
-  docId: string;
-  projectTower: string;
-  fullUnitName: string;
+  openedRowData: ErrorTableDataType;
   setOpenedRowData: (data: any) => void;
   setSelectedPopup: (data: any) => void;
-  currentOwner: string;
 };
 
 export default function TMPopUpFormContainer({
-  fullUnitName,
-  projectTower,
+  openedRowData,
   setOpenedRowData,
   setSelectedPopup,
-  docId,
-  currentOwner,
 }: Props) {
   const [formState, setFormState] = useState({
-    docId: '',
+    docIds: [] as string[],
     villageFlag: false,
     projectIdFlag: false,
+    towerIdFlag: false,
+    fullUnitNameFlag: false,
     linkedDocFlag: false,
     counterPartyFlag: false,
     village: '',
@@ -49,11 +46,18 @@ export default function TMPopUpFormContainer({
     setFormState((prev) => ({
       ...prev,
       village: projectETLVillage,
-      docId: docId.split('-').splice(0, 3).join('-'),
+      docIds: uniq([
+        openedRowData.doc_id_schedule.split('-').splice(0, 3).join('-'),
+        ...openedRowData.subRows.map((item) =>
+          item.doc_id_schedule.split('-').splice(0, 3).join('-')
+        ),
+      ]),
       projectId: projectId || 0,
-      counterParty: currentOwner,
+      towerId: +openedRowData.project_tower.split('-')[1],
+      fullUnitName: openedRowData.full_unit_name,
+      counterParty: openedRowData.current_owner,
     }));
-  }, [docId, projectETLVillage, projectId, currentOwner]);
+  }, [projectETLVillage, projectId, openedRowData]);
 
   const columns: ColumnDef<TMSearchResponseType, any>[] = [
     {
@@ -145,9 +149,11 @@ FROM
     transactions.records
 WHERE 
     doc_id IS NOT NULL
-    ${`AND doc_id = '${formState.docId}'`}
+    ${`AND doc_id in ('${formState.docIds.join("','")}')`}
     ${formState.village ? (formState.villageFlag ? `AND village = '${formState.village}'` : `OR village = ${formState.village}`) : ``}
     ${formState.projectId ? (formState.projectIdFlag ? `AND project_id = '${formState.projectId}'` : `OR project_id = '${formState.projectId}'`) : ''}
+    ${formState.towerId ? (formState.towerIdFlag ? `AND tower_id = '${formState.towerId}'` : `OR tower_id = '${formState.towerId}'`) : ''}
+    ${formState.fullUnitName ? (formState.fullUnitNameFlag ? `AND flat = '${formState.fullUnitName}'` : `OR flat = '${formState.fullUnitName}'`) : ''}
     ${formState.counterParty ? (formState.counterPartyFlag ? `AND party_details ILIKE '${'%' + formState.counterParty + '%'}'` : `OR party_details ILIKE '${'%' + formState.counterParty + '%'}'`) : ``}
     ${formState.linkedDoc ? (formState.linkedDocFlag ? `AND linked_docs ILIKE '${'%' + formState.linkedDoc + '%'}'` : `OR linked_doc ILIKE '${'%' + formState.linkedDoc + '%'}'`) : ``}
     LIMIT 200;`}
@@ -183,7 +189,11 @@ WHERE
                 subRows: [],
               })),
             };
-            updateCurrentTableData(projectTower, fullUnitName, newTMData);
+            updateCurrentTableData(
+              openedRowData.project_tower,
+              openedRowData.full_unit_name,
+              newTMData
+            );
             setOpenedRowData(null);
             setSelectedPopup(null);
             (
