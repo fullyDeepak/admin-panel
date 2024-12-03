@@ -188,6 +188,8 @@ export default function Section3Container() {
               projectTower={openedRowData.project_tower}
               setOpenedRowData={setOpenedRowData}
               setSelectedPopup={setSelectedPopup}
+              doorNo={openedRowData.door_no}
+              currentOwner={openedRowData.current_owner}
             />
           ) : null}
           {selectedPopup === 'tm' && openedRowData ? (

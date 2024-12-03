@@ -1,10 +1,10 @@
 import { inputBoxClass } from '@/app/constants/tw-class';
 import { cn } from '@/lib/utils';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { HMSearchResponseType } from '../types';
 import axiosClient from '@/utils/AxiosClient';
 import toast from 'react-hot-toast';
-import { CalendarClock, Check, CalendarSync } from 'lucide-react';
+import { CalendarClock, CalendarSync } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import TanstackReactTableV2 from '@/components/tables/TanstackReactTableV2';
 import { useErrorFormStore } from '../useErrorFormStore';
@@ -14,6 +14,8 @@ type Props = {
   fullUnitName: string;
   setOpenedRowData: (data: any) => void;
   setSelectedPopup: (data: any) => void;
+  doorNo: string;
+  currentOwner: string;
 };
 
 export default function HMPopUpForm({
@@ -21,17 +23,32 @@ export default function HMPopUpForm({
   projectTower,
   setOpenedRowData,
   setSelectedPopup,
+  doorNo,
+  currentOwner,
 }: Props) {
   const [formState, setFormState] = useState({
     locality: '',
     doorNo: '',
     ownerName: '',
-    ownerNameFlag: true,
-    doorNoFlag: true,
+    ownerNameFlag: false,
+    doorNoFlag: false,
   });
   const [results, setResults] = useState<HMSearchResponseType[]>([]);
-  const { updateCurrentTableData } = useErrorFormStore();
+  const { updateCurrentTableData, projectLocality } = useErrorFormStore(
+    (state) => ({
+      updateCurrentTableData: state.updateCurrentTableData,
+      projectLocality: state.errorFormData.projectLocality,
+    })
+  );
 
+  useEffect(() => {
+    setFormState((prev) => ({
+      ...prev,
+      locality: projectLocality,
+      doorNo: doorNo,
+      ownerName: currentOwner,
+    }));
+  }, [projectLocality, doorNo, currentOwner]);
   async function handleSearch() {
     setResults([]);
     const promise = axiosClient.get<{ data: HMSearchResponseType[] }>(
@@ -92,7 +109,7 @@ export default function HMPopUpForm({
               )?.close();
             }}
           >
-            <Check />
+            Select
           </button>
         ),
       },
@@ -151,7 +168,7 @@ export default function HMPopUpForm({
             <div className='flex items-center gap-5'>
               <span className='flex-[2]'>Locality:</span>
               <input
-                className={cn(inputBoxClass, 'ml-0 flex-[6]')}
+                className={cn(inputBoxClass, 'flex-[6]')}
                 placeholder='Enter Locality'
                 type='text'
                 value={formState['locality']}
@@ -159,21 +176,6 @@ export default function HMPopUpForm({
                   setFormState((prev) => ({
                     ...prev,
                     locality: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className='flex items-center gap-5'>
-              <span className='flex-[2]'>Door No:</span>
-              <input
-                className={inputBoxClass}
-                placeholder='Enter Door No'
-                type='text'
-                value={formState['doorNo']}
-                onChange={(e) =>
-                  setFormState((prev) => ({
-                    ...prev,
-                    doorNo: e.target.value,
                   }))
                 }
               />
@@ -193,16 +195,16 @@ export default function HMPopUpForm({
               </label>
             </div>
             <div className='flex items-center gap-5'>
-              <span className='flex-[2]'>Owner Name:</span>
+              <span className='flex-[2]'>Door No:</span>
               <input
-                className={inputBoxClass}
-                placeholder='Enter Owner Name'
+                className={cn(inputBoxClass, 'flex-[6]')}
+                placeholder='Enter Door No'
                 type='text'
-                value={formState['ownerName']}
+                value={formState['doorNo']}
                 onChange={(e) =>
                   setFormState((prev) => ({
                     ...prev,
-                    ownerName: e.target.value,
+                    doorNo: e.target.value,
                   }))
                 }
               />
@@ -220,6 +222,21 @@ export default function HMPopUpForm({
                 <div className='swap-on'>AND</div>
                 <div className='swap-off'>&nbsp;OR</div>
               </label>
+            </div>
+            <div className='flex items-center gap-5'>
+              <span className='flex-[2]'>Owner Name:</span>
+              <input
+                className={cn(inputBoxClass, '-ml-3.5 flex-[6]')}
+                placeholder='Enter Owner Name'
+                type='text'
+                value={formState['ownerName']}
+                onChange={(e) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    ownerName: e.target.value,
+                  }))
+                }
+              />
             </div>
             <button
               className='btn btn-neutral btn-sm max-w-fit self-center'
