@@ -248,7 +248,7 @@ export default function HMPopUpForm({
         </div>
         <div>
           <span>SQL Query:</span>
-          <pre className='max-h-[500px] overflow-y-auto bg-gray-100 p-3 font-mono text-sm outline outline-1 outline-gray-300'>
+          <pre className='max-h-[500px] w-[350px] overflow-y-auto bg-gray-100 p-3 font-mono text-sm outline outline-1 outline-gray-300'>
             {`SELECT * 
 FROM 
     public.house_master

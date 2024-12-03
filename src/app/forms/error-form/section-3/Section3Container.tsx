@@ -8,8 +8,8 @@ import { IndeterminateCheckbox } from '../../rera-correction/AdvTable';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import HMPopUpForm from './HMPopUpForm';
-import TMPopUpForm from './TMPopUpForm';
 import DismissibleToast from '@/components/ui/DismissibleToast';
+import TMPopUpFormContainer from './TMPopUpFormContainer';
 
 export default function Section3Container() {
   const {
@@ -193,12 +193,13 @@ export default function Section3Container() {
             />
           ) : null}
           {selectedPopup === 'tm' && openedRowData ? (
-            <TMPopUpForm
+            <TMPopUpFormContainer
               docId={openedRowData.doc_id_schedule}
               fullUnitName={openedRowData.full_unit_name}
               projectTower={openedRowData.project_tower}
               setOpenedRowData={setOpenedRowData}
               setSelectedPopup={setSelectedPopup}
+              currentOwner={openedRowData.current_owner}
             />
           ) : null}
         </div>
