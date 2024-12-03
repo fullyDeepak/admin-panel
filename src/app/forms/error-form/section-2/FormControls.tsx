@@ -4,7 +4,7 @@ import useFetchData from '@/app/hooks/useFetchData';
 import { dropdownOptionStyle } from '@/styles/react-select';
 import { useEffect, useId } from 'react';
 import Select, { SingleValue } from 'react-select';
-import { GET__RecordsByProjectResp, ProjectOptionType } from '../types';
+import { GET__RecordsByProjectUnit, ProjectOptionType } from '../types';
 import { useErrorFormStore } from '../useErrorFormStore';
 import { cn } from '@/lib/utils';
 import { countBy, uniqBy } from 'lodash';
@@ -24,7 +24,7 @@ export default function FormControls() {
     '/onboarding/getProjectsForPart2'
   );
   function handleFilter() {
-    let filteredData: GET__RecordsByProjectResp[] = recordsByProjectResp;
+    let filteredData: GET__RecordsByProjectUnit[] = recordsByProjectResp;
     if (errorFormData.selectedError?.value) {
       filteredData = recordsByProjectResp.filter(
         (item) => item.error_type_inferred == errorFormData.selectedError?.value

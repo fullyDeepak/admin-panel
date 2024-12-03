@@ -19,6 +19,15 @@ export interface ErrorTypeCountRes {
 }
 
 export interface GET__RecordsByProjectResp {
+  unitData: GET__RecordsByProjectUnit[];
+  projectData: {
+    locality_array: string[];
+    etl_village_id: number;
+    etl_village_name: string;
+  };
+}
+
+export interface GET__RecordsByProjectUnit {
   project_id: number;
   tower_id: number;
   floor_number: number;

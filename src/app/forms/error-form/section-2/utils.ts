@@ -1,6 +1,6 @@
-import { ErrorTableDataType, GET__RecordsByProjectResp } from '../types';
+import { ErrorTableDataType, GET__RecordsByProjectUnit } from '../types';
 
-export function makeErrorTableData(data: GET__RecordsByProjectResp[]) {
+export function makeErrorTableData(data: GET__RecordsByProjectUnit[]) {
   const errorTableData: ErrorTableDataType[] = [];
   data.forEach((record) => {
     const tmRecords = record.tm_records

@@ -19,9 +19,7 @@ export default function Section2Container() {
     setTableRowSelection,
   } = useErrorFormStore();
 
-  const { data: recordsByProjectId } = useFetchData<
-    GET__RecordsByProjectResp[]
-  >(
+  const { data: recordsByProjectId } = useFetchData<GET__RecordsByProjectResp>(
     errorFormData.selectedProject?.value
       ? `error-correction/get-records-by-project-id?project_id=${errorFormData.selectedProject?.value}`
       : null
@@ -29,12 +27,12 @@ export default function Section2Container() {
 
   useEffect(() => {
     if (recordsByProjectId) {
-      setRecordsByProjectResp(recordsByProjectId);
+      setRecordsByProjectResp(recordsByProjectId.unitData);
       const errorOptions: Option[] = [];
       const towerOptions: OptionValNum[] = [];
       const floorOptions: OptionValNum[] = [];
       const unitOptions: Option[] = [];
-      recordsByProjectId.map((item) => {
+      recordsByProjectId.unitData.map((item) => {
         errorOptions.push({
           value: item.error_type_inferred,
           label: item.error_type_inferred,
@@ -63,8 +61,13 @@ export default function Section2Container() {
             ...item,
             label: `${item.label} (${errCount[item.value]})`,
           })),
+        projectETLVillage: recordsByProjectId.projectData.etl_village_name,
+        projectLocality:
+          recordsByProjectId.projectData.locality_array.length > 0
+            ? recordsByProjectId.projectData.locality_array[0]
+            : '',
       });
-      setErrorTableData(makeErrorTableData(recordsByProjectId));
+      setErrorTableData(makeErrorTableData(recordsByProjectId.unitData));
       setSelectedTableRows([]);
       setTableRowSelection({});
     }

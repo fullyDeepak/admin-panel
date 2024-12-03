@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { SingleValue } from 'react-select';
 import { immer } from 'zustand/middleware/immer';
-import { ErrorTableDataType, GET__RecordsByProjectResp } from './types';
+import { ErrorTableDataType, GET__RecordsByProjectUnit } from './types';
 import toast from 'react-hot-toast';
 
 export interface ErrorFormDataType {
@@ -41,11 +41,13 @@ export interface ErrorFormDataType {
     label: string;
     value: string;
   }[];
+  projectETLVillage: string;
+  projectLocality: string;
 }
 
 interface State {
   errorFormData: ErrorFormDataType;
-  recordsByProjectResp: GET__RecordsByProjectResp[];
+  recordsByProjectResp: GET__RecordsByProjectUnit[];
   errorTableData: ErrorTableDataType[];
   tableRowSelection: Record<string, boolean>;
   selectedTableRows: ErrorTableDataType[];
@@ -53,7 +55,7 @@ interface State {
 
 interface Actions {
   updateErrorFormData: (_newDetails: Partial<ErrorFormDataType>) => void;
-  setRecordsByProjectResp: (_newDetails: GET__RecordsByProjectResp[]) => void;
+  setRecordsByProjectResp: (_newDetails: GET__RecordsByProjectUnit[]) => void;
   setErrorTableData: (_newDetails: ErrorTableDataType[]) => void;
   setTableRowSelection: (
     _updater:
@@ -78,12 +80,14 @@ const INITIAL_PROJECT_DATA_STATE: ErrorFormDataType = {
   floorOptions: [],
   unitOptions: [],
   errorOptions: [],
+  projectETLVillage: '',
+  projectLocality: '',
 };
 
 export const useErrorFormStore = create<State & Actions>()(
   immer((set) => ({
     errorFormData: INITIAL_PROJECT_DATA_STATE,
-    recordsByProjectResp: [] as GET__RecordsByProjectResp[],
+    recordsByProjectResp: [] as GET__RecordsByProjectUnit[],
     errorTableData: [] as ErrorTableDataType[],
     tableRowSelection: {},
     selectedTableRows: [] as ErrorTableDataType[],
