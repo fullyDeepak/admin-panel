@@ -114,14 +114,6 @@ export default function HMPopUpForm({
         ),
       },
       {
-        header: 'PTIN',
-        accessorKey: 'ptin',
-      },
-      {
-        header: 'Source',
-        accessorKey: 'source',
-      },
-      {
         header: 'Locality',
         accessorKey: 'locality',
       },

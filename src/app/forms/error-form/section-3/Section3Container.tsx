@@ -10,6 +10,7 @@ import { useState } from 'react';
 import HMPopUpForm from './HMPopUpForm';
 import DismissibleToast from '@/components/ui/DismissibleToast';
 import TMPopUpFormContainer from './TMPopUpFormContainer';
+import { SquareArrowOutUpRight } from 'lucide-react';
 
 export default function Section3Container() {
   const {
@@ -24,15 +25,15 @@ export default function Section3Container() {
   );
   const columns: ColumnDef<ErrorTableDataType, any>[] = [
     {
-      header: 'Project + Tower',
+      header: 'P + T',
       accessorKey: 'project_tower',
     },
     {
-      header: 'Full Unit Name',
+      header: 'Unit',
       accessorKey: 'full_unit_name',
     },
     {
-      header: 'Error Type',
+      header: 'Error',
       accessorKey: 'error_type',
     },
     {
@@ -59,14 +60,14 @@ export default function Section3Container() {
       },
     },
     {
-      header: 'Change HM',
+      header: 'HM',
       cell: ({ row }) => {
         if (row.original.project_tower.length === 0) {
           return null;
         }
         return (
           <button
-            className='btn btn-neutral btn-xs'
+            className='flex size-10 items-center justify-center rounded-md bg-neutral text-white'
             type='button'
             onClick={() => {
               setSelectedPopup('hm');
@@ -78,14 +79,10 @@ export default function Section3Container() {
               )?.showModal();
             }}
           >
-            Open Pop Up
+            <SquareArrowOutUpRight size={20} />
           </button>
         );
       },
-    },
-    {
-      header: 'PTIN',
-      accessorKey: 'ptin',
     },
     {
       header: 'Locality',
@@ -100,22 +97,31 @@ export default function Section3Container() {
       accessorKey: 'current_owner',
     },
     {
-      header: 'Latest TM Owner',
-      accessorKey: 'latest_tm_owner',
+      header: 'CP2',
+      accessorKey: 'cp2_names',
     },
     {
-      header: 'Generated Door No',
+      header: 'Latest TM Owner',
+      accessorKey: 'latest_tm_owner',
+      cell: ({ getValue }) => (
+        <p className='w-full'>
+          {(getValue() as string).split('|').toReversed().join(' ⇒ ')}
+        </p>
+      ),
+    },
+    {
+      header: 'Gen. Door No',
       accessorKey: 'generated_door_no',
     },
     {
-      header: 'Edit TM Records',
+      header: 'TM',
       cell: ({ row }) => {
         if (row.original.project_tower.length === 0) {
           return null;
         }
         return (
           <button
-            className='btn btn-neutral btn-xs'
+            className='flex size-10 items-center justify-center rounded-md bg-neutral text-white'
             type='button'
             onClick={() => {
               setSelectedPopup('tm');
@@ -127,13 +133,13 @@ export default function Section3Container() {
               )?.showModal();
             }}
           >
-            Open Pop Up
+            <SquareArrowOutUpRight size={20} />
           </button>
         );
       },
     },
     {
-      header: 'TM Count',
+      header: 'TM #',
       accessorKey: 'tm_count',
       cell: ({ getValue }) => (
         <span
