@@ -6,6 +6,8 @@ import { IndeterminateCheckbox } from '../../rera-correction/AdvTable';
 import { useErrorFormStore } from '../useErrorFormStore';
 import TMPopFormControls from './TMPopFormControls';
 import { uniq } from 'lodash';
+import { Trash2 } from 'lucide-react';
+import { appendTMRecord, deleteTMRecord } from '../section-2/utils';
 
 type Props = {
   openedRowData: ErrorTableDataType;
@@ -16,7 +18,6 @@ type Props = {
 export default function TMPopUpFormContainer({
   openedRowData,
   setOpenedRowData,
-  setSelectedPopup,
 }: Props) {
   const [formState, setFormState] = useState({
     docIds: [] as string[],
@@ -36,28 +37,39 @@ export default function TMPopUpFormContainer({
   const [results, setResults] = useState<TMSearchResponseType[]>([]);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [selectedRows, setSelectedRows] = useState<TMSearchResponseType[]>([]);
-  const { updateCurrentTableData, projectETLVillage, projectId } =
+  const [attachedDocIdSch, setAttachedDocIdSch] = useState<string[]>([]);
+  const { updateCurrentTableData, projectETLVillage, project } =
     useErrorFormStore((state) => ({
       updateCurrentTableData: state.updateCurrentTableData,
       projectETLVillage: state.errorFormData.projectETLVillage,
-      projectId: state.errorFormData.selectedProject?.value,
+      project: state.errorFormData.selectedProject,
     }));
   useEffect(() => {
     setFormState((prev) => ({
       ...prev,
       village: projectETLVillage,
-      docIds: uniq([
-        openedRowData.doc_id_schedule.split('-').splice(0, 3).join('-'),
-        ...openedRowData.subRows.map((item) =>
-          item.doc_id_schedule.split('-').splice(0, 3).join('-')
-        ),
-      ]),
-      projectId: projectId || 0,
+      docIds: openedRowData.doc_id_schedule
+        ? uniq([
+            openedRowData.doc_id_schedule.split('-').splice(0, 3).join('-'),
+            ...openedRowData.subRows.map((item) =>
+              item.doc_id_schedule.split('-').splice(0, 3).join('-')
+            ),
+          ])
+        : [],
+      projectId: project?.value || 0,
       towerId: +openedRowData.project_tower.split('-')[1],
       fullUnitName: openedRowData.full_unit_name,
       counterParty: openedRowData.current_owner,
     }));
-  }, [projectETLVillage, projectId, openedRowData]);
+    setAttachedDocIdSch(
+      openedRowData.doc_id_schedule
+        ? [
+            openedRowData.doc_id_schedule,
+            ...openedRowData.subRows.map((item) => item.doc_id_schedule),
+          ]
+        : []
+    );
+  }, [projectETLVillage, project?.value, openedRowData]);
 
   const columns: ColumnDef<TMSearchResponseType, any>[] = [
     {
@@ -134,15 +146,84 @@ export default function TMPopUpFormContainer({
       <h3 className='pb-5 text-center text-xl font-semibold'>
         Popup Form: TM Search + Fill
       </h3>
-      <div className='grid grid-cols-3 gap-5'>
+      <div className='grid grid-cols-[0.5fr,10px,1fr,10px,300px] gap-10'>
+        <div className='flex flex-col gap-2'>
+          <div className='flex flex-col gap-2'>
+            <span className='divider'>Attached Doc ID Sch.:</span>
+            {attachedDocIdSch.length > 0 ? (
+              <div className='flex flex-col gap-3 rounded-md border border-gray-300 p-2'>
+                {attachedDocIdSch.map((doc, i) => (
+                  <span key={doc + i} className='flex justify-between'>
+                    {doc}
+                    <Trash2
+                      className='cursor-pointer text-red-500'
+                      onClick={() => {
+                        const newData = deleteTMRecord(openedRowData, doc);
+                        updateCurrentTableData(
+                          openedRowData.project_tower,
+                          openedRowData.full_unit_name,
+                          newData
+                        );
+                        setAttachedDocIdSch((prev) =>
+                          prev.filter((item) => item !== doc)
+                        );
+                        setOpenedRowData(newData);
+                      }}
+                    />
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span className='text-center font-semibold text-error'>N/A</span>
+            )}
+          </div>
+          <div className='flex flex-col gap-2'>
+            <div className='divider'>Selected Row Data</div>
+            <div>
+              Project:{' '}
+              <span className='font-semibold text-violet-700'>
+                {project?.value + ': ' + project?.label}
+              </span>
+            </div>
+            <div>
+              Tower:{' '}
+              <span className='font-semibold text-violet-700'>
+                {openedRowData.project_tower.split('-')[1] +
+                  ': ' +
+                  openedRowData.tower_name}
+              </span>
+            </div>
+            <div>
+              Full Unit Name:{' '}
+              <span className='font-semibold text-violet-700'>
+                {openedRowData.full_unit_name}
+              </span>
+            </div>
+            <div>
+              ETL Village:{' '}
+              <span className='font-semibold text-violet-700'>
+                {projectETLVillage}
+              </span>
+            </div>
+            <div>
+              HM Current Owner:{' '}
+              <span className='font-semibold text-violet-700'>
+                {openedRowData.current_owner}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className='divider divider-start divider-horizontal'></div>
         <TMPopFormControls
           formState={formState}
           setFormState={setFormState}
           setResults={setResults}
+          rowData={openedRowData}
         />
+        <div className='divider divider-start divider-horizontal'></div>
         <div>
           <span>SQL Query:</span>
-          <pre className='max-h-[500px] w-[300px] overflow-y-auto bg-gray-100 p-3 font-mono text-sm outline outline-1 outline-gray-300'>
+          <pre className='max-h-[500px] overflow-y-auto bg-gray-100 p-3 font-mono text-sm outline outline-1 outline-gray-300'>
             {`SELECT 
     * 
 FROM 
@@ -165,44 +246,30 @@ WHERE
           className='btn btn-accent btn-sm max-w-fit self-end'
           disabled={selectedRows.length === 0}
           onClick={() => {
-            const newTMData: Partial<ErrorTableDataType> = {
-              record_date: selectedRows[0].execution_date,
-              doc_id_schedule: selectedRows[0].doc_id_schedule,
-              deed_type: selectedRows[0].deed_type,
-              tm_count: selectedRows.length.toString(),
-              subRows: selectedRows.splice(1).map((item) => ({
-                project_tower: '',
-                full_unit_name: '',
-                error_type: '',
-                ptin: '',
-                locality: '',
-                door_no: '',
-                current_owner: '',
-                latest_tm_owner: '',
-                generated_door_no: '',
-                tm_count: '',
-                cp1_names: '',
-                cp2_names: '',
-                record_date: item.execution_date,
-                doc_id_schedule: item.doc_id_schedule,
-                deed_type: item.deed_type,
-                subRows: [],
-              })),
-            };
-            updateCurrentTableData(
-              openedRowData.project_tower,
-              openedRowData.full_unit_name,
-              newTMData
-            );
-            setOpenedRowData(null);
-            setSelectedPopup(null);
-            (
-              document.getElementById('error-form-dialog') as HTMLDialogElement
-            )?.close();
+            let rowData: ErrorTableDataType;
+            selectedRows.forEach((item) => {
+              rowData = appendTMRecord(
+                rowData || openedRowData,
+                item.doc_id_schedule
+              );
+              rowData = {
+                ...rowData,
+                tm_count: (rowData.subRows.length + 1).toString(),
+              };
+              updateCurrentTableData(
+                openedRowData.project_tower,
+                openedRowData.full_unit_name,
+                rowData
+              );
+              setOpenedRowData(rowData);
+            });
           }}
         >
-          Replace TM Data
+          Append Doc Id Sch.
         </button>
+        <span className='text-center text-xl font-semibold'>
+          Results Count: {results.length}
+        </span>
         {results && results.length > 0 && (
           <TanstackReactTableV2
             columns={columns}

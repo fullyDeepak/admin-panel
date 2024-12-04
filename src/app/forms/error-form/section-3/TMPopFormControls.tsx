@@ -2,7 +2,7 @@ import { inputBoxClass } from '@/app/constants/tw-class';
 import { cn } from '@/lib/utils';
 import { Dispatch, SetStateAction } from 'react';
 import toast from 'react-hot-toast';
-import { TMSearchResponseType } from '../types';
+import { ErrorTableDataType, TMSearchResponseType } from '../types';
 import axiosClient from '@/utils/AxiosClient';
 import ChipInputV2 from '@/components/ui/ChipV2';
 
@@ -24,6 +24,7 @@ type Props = {
   };
   setFormState: Dispatch<SetStateAction<Props['formState']>>;
   setResults: Dispatch<SetStateAction<TMSearchResponseType[]>>;
+  rowData: ErrorTableDataType;
 };
 
 export default function TMPopFormControls({
@@ -76,10 +77,10 @@ export default function TMPopFormControls({
   }
   console.log({ formState });
   return (
-    <div className='col-span-2 flex w-full justify-evenly'>
-      <div className='flex max-w-md flex-col gap-2'>
-        <div className='flex items-center gap-5'>
-          <span className='mr-2 flex-[2]'>Doc Ids:</span>
+    <div className='flex w-full justify-evenly'>
+      <div className='flex flex-col gap-2'>
+        <div className='flex items-center gap-5 text-sm'>
+          <span className='mr-2 flex-[2] text-base'>Doc Ids:</span>
           <ChipInputV2
             chips={formState.docIds}
             onChange={(e) => setFormState({ ...formState, docIds: e })}

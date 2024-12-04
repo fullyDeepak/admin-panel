@@ -30,6 +30,7 @@ export interface GET__RecordsByProjectResp {
 export interface GET__RecordsByProjectUnit {
   project_id: number;
   tower_id: number;
+  tower_name: string;
   floor_number: number;
   unit_number: string;
   full_unit_name: string;
@@ -56,6 +57,7 @@ export interface GET__TMRecords {
 
 export type ErrorTableDataType = {
   project_tower: string;
+  tower_name: string;
   full_unit_name: string;
   error_type: string;
   ptin: string;
@@ -72,6 +74,7 @@ export type ErrorTableDataType = {
   cp2_names: string;
   subRows: {
     project_tower: string;
+    tower_name: string;
     full_unit_name: string;
     error_type: string;
     ptin: string;

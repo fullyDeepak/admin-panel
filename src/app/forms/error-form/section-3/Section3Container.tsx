@@ -8,9 +8,10 @@ import { IndeterminateCheckbox } from '../../rera-correction/AdvTable';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import HMPopUpForm from './HMPopUpForm';
-import DismissibleToast from '@/components/ui/DismissibleToast';
 import TMPopUpFormContainer from './TMPopUpFormContainer';
-import { SquareArrowOutUpRight } from 'lucide-react';
+import { SquareArrowOutUpRight, Trash2, X } from 'lucide-react';
+import { deleteTMRecord } from '../section-2/utils';
+import { Rnd } from 'react-rnd';
 
 export default function Section3Container() {
   const {
@@ -18,6 +19,7 @@ export default function Section3Container() {
     tableRowSelection,
     setTableRowSelection,
     setSelectedTableRows,
+    updateCurrentTableData,
   } = useErrorFormStore();
   const [selectedPopup, setSelectedPopup] = useState<'hm' | 'tm' | null>(null);
   const [openedRowData, setOpenedRowData] = useState<ErrorTableDataType | null>(
@@ -72,11 +74,11 @@ export default function Section3Container() {
             onClick={() => {
               setSelectedPopup('hm');
               setOpenedRowData(row.original);
-              (
-                document.getElementById(
-                  'error-form-dialog'
-                ) as HTMLDialogElement
-              )?.showModal();
+              // (
+              //   document.getElementById(
+              //     'error-form-dialog'
+              //   ) as HTMLDialogElement
+              // )?.showModal();
             }}
           >
             <SquareArrowOutUpRight size={20} />
@@ -99,6 +101,7 @@ export default function Section3Container() {
     {
       header: 'CP2',
       accessorKey: 'cp2_names',
+      id: 'cp2_dups',
     },
     {
       header: 'Latest TM Owner',
@@ -117,24 +120,63 @@ export default function Section3Container() {
       header: 'TM',
       cell: ({ row }) => {
         if (row.original.project_tower.length === 0) {
-          return null;
+          return (
+            <button
+              className='flex size-10 items-center justify-center rounded-md bg-error text-white'
+              type='button'
+              onClick={() => {
+                const parentRow = row.getParentRow()?.original;
+                if (!parentRow) return null;
+                const data = deleteTMRecord(
+                  row.getParentRow()!.original,
+                  row.original.doc_id_schedule
+                );
+                updateCurrentTableData(
+                  parentRow.project_tower,
+                  parentRow.full_unit_name,
+                  data
+                );
+              }}
+            >
+              <Trash2 size={20} />
+            </button>
+          );
         }
         return (
-          <button
-            className='flex size-10 items-center justify-center rounded-md bg-neutral text-white'
-            type='button'
-            onClick={() => {
-              setSelectedPopup('tm');
-              setOpenedRowData(row.original);
-              (
-                document.getElementById(
-                  'error-form-dialog'
-                ) as HTMLDialogElement
-              )?.showModal();
-            }}
-          >
-            <SquareArrowOutUpRight size={20} />
-          </button>
+          <div className='flex flex-col gap-2'>
+            <button
+              className='flex size-10 items-center justify-center rounded-md bg-neutral text-white'
+              type='button'
+              onClick={() => {
+                setSelectedPopup('tm');
+                setOpenedRowData(row.original);
+                (
+                  document.getElementById(
+                    'error-form-dialog'
+                  ) as HTMLDialogElement
+                )?.showModal();
+              }}
+            >
+              <SquareArrowOutUpRight size={20} />
+            </button>
+            <button
+              className='flex size-10 items-center justify-center rounded-md bg-error text-white'
+              type='button'
+              onClick={() => {
+                const data = deleteTMRecord(
+                  row.original,
+                  row.original.doc_id_schedule
+                );
+                updateCurrentTableData(
+                  row.original.project_tower,
+                  row.original.full_unit_name,
+                  data
+                );
+              }}
+            >
+              <Trash2 size={20} />
+            </button>
+          </div>
         );
       },
     },
@@ -170,43 +212,56 @@ export default function Section3Container() {
     {
       header: 'CP2',
       accessorKey: 'cp2_names',
+      id: 'cp2_og',
     },
   ];
   return (
     <div className='mx-auto my-5 max-w-[95%]'>
-      <dialog id='error-form-dialog' className='modal'>
-        <div className='modal-box relative h-[95vh] max-h-full max-w-screen-2xl resize'>
-          <form method='dialog'>
-            <button
-              className='btn-circle btn-ghost btn-sm absolute right-2 top-2'
-              onClick={() => {
-                setOpenedRowData(null);
-                setSelectedPopup(null);
-              }}
-            >
-              ✕
-            </button>
-          </form>
-          <DismissibleToast />
-          {selectedPopup === 'hm' && openedRowData ? (
-            <HMPopUpForm
-              fullUnitName={openedRowData.full_unit_name}
-              projectTower={openedRowData.project_tower}
-              setOpenedRowData={setOpenedRowData}
-              setSelectedPopup={setSelectedPopup}
-              doorNo={openedRowData.door_no}
-              currentOwner={openedRowData.current_owner}
-            />
-          ) : null}
-          {selectedPopup === 'tm' && openedRowData ? (
-            <TMPopUpFormContainer
-              openedRowData={openedRowData}
-              setOpenedRowData={setOpenedRowData}
-              setSelectedPopup={setSelectedPopup}
-            />
-          ) : null}
-        </div>
-      </dialog>
+      {selectedPopup && openedRowData ? (
+        <Rnd
+          default={{
+            x: 0,
+            y: 0,
+            width: 1200,
+            height: 600,
+          }}
+          className='relative z-30 !cursor-default rounded-xl bg-base-300 pt-10 shadow-c'
+          cancel='.cancel'
+        >
+          <span
+            className='cancel absolute right-0 top-0 flex h-10 w-10 cursor-default items-center justify-between rounded-tr-xl text-center hover:bg-red-500 hover:text-white'
+            title='Close'
+            onClick={() => {
+              setOpenedRowData(null);
+              setSelectedPopup(null);
+            }}
+          >
+            <X size={30} className='pl-2' />
+          </span>
+          <span className='absolute top-2 mx-auto pl-4 font-semibold'>
+            {selectedPopup.toUpperCase()} Pop Up Window
+          </span>
+          <div className='cancel h-full w-full bg-base-100 pt-2'>
+            {selectedPopup === 'hm' && openedRowData ? (
+              <HMPopUpForm
+                fullUnitName={openedRowData.full_unit_name}
+                projectTower={openedRowData.project_tower}
+                setOpenedRowData={setOpenedRowData}
+                setSelectedPopup={setSelectedPopup}
+                doorNo={openedRowData.door_no}
+                currentOwner={openedRowData.current_owner}
+              />
+            ) : null}
+            {selectedPopup === 'tm' && openedRowData ? (
+              <TMPopUpFormContainer
+                openedRowData={openedRowData}
+                setOpenedRowData={setOpenedRowData}
+                setSelectedPopup={setSelectedPopup}
+              />
+            ) : null}
+          </div>
+        </Rnd>
+      ) : null}
       {errorTableData?.length > 0 ? (
         <>
           <h3 className='my-4 text-center text-3xl font-semibold'>

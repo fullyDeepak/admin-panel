@@ -62,7 +62,7 @@ export default function FormControls() {
       });
       towerOptions.push({
         value: item.tower_id,
-        label: item.tower_id.toString(),
+        label: `${item.tower_id}:${item.tower_name}`,
       });
       floorOptions.push({
         value: item.floor_number,

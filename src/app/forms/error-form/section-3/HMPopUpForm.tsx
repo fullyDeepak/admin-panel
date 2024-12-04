@@ -253,6 +253,9 @@ WHERE
           </pre>
         </div>
       </div>
+      <span className='text-center text-xl font-semibold'>
+        Results Count: {results.length}
+      </span>
       <div className='mt-5'>
         {results && results.length > 0 && (
           <TanstackReactTableV2
