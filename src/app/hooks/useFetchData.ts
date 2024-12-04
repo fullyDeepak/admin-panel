@@ -12,7 +12,7 @@ const useFetchData = <T>(url: string | null, staleTime = 1000 * 60 * 5) => {
   return useQuery<T, Error>({
     queryKey: [url],
     queryFn: () => fetchData<T>(url || ''),
-    staleTime: 1000 * 60 * 5,
+    staleTime,
     enabled: Boolean(url),
   });
 };
