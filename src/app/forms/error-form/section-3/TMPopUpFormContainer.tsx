@@ -5,7 +5,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import { IndeterminateCheckbox } from '../../rera-correction/AdvTable';
 import { useErrorFormStore } from '../useErrorFormStore';
 import TMPopFormControls from './TMPopFormControls';
-import { uniq } from 'lodash';
 import { Trash2 } from 'lucide-react';
 import { appendTMRecord, deleteTMRecord } from '../section-2/utils';
 
@@ -21,7 +20,7 @@ export default function TMPopUpFormContainer({
 }: Props) {
   const [formState, setFormState] = useState({
     docIds: [] as string[],
-    villageFlag: false,
+    villageFlag: true,
     projectIdFlag: false,
     towerIdFlag: false,
     fullUnitNameFlag: false,
@@ -48,17 +47,10 @@ export default function TMPopUpFormContainer({
     setFormState((prev) => ({
       ...prev,
       village: projectETLVillage,
-      docIds: openedRowData.doc_id_schedule
-        ? uniq([
-            openedRowData.doc_id_schedule.split('-').splice(0, 3).join('-'),
-            ...openedRowData.subRows.map((item) =>
-              item.doc_id_schedule.split('-').splice(0, 3).join('-')
-            ),
-          ])
-        : [],
-      projectId: project?.value || 0,
-      towerId: +openedRowData.project_tower.split('-')[1],
-      fullUnitName: openedRowData.full_unit_name,
+      docIds: [],
+      projectId: 0,
+      towerId: 0,
+      fullUnitName: '',
       counterParty: openedRowData.current_owner,
     }));
     setAttachedDocIdSch(
@@ -95,6 +87,10 @@ export default function TMPopUpFormContainer({
     {
       header: 'Doc Id Sch',
       accessorKey: 'doc_id_schedule',
+    },
+    {
+      header: 'Linked Docs',
+      accessorKey: 'linked_docs',
     },
     {
       header: 'Village',

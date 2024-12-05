@@ -31,7 +31,7 @@ export default function HMPopUpForm({
     doorNo: '',
     ownerName: '',
     ownerNameFlag: false,
-    doorNoFlag: false,
+    doorNoFlag: true,
   });
   const [results, setResults] = useState<HMSearchResponseType[]>([]);
   const { updateCurrentTableData, projectLocality } = useErrorFormStore(

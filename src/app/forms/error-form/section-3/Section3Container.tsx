@@ -241,7 +241,7 @@ export default function Section3Container() {
           <span className='absolute top-2 mx-auto pl-4 font-semibold'>
             {selectedPopup.toUpperCase()} Pop Up Window
           </span>
-          <div className='cancel h-full w-full overflow-auto bg-base-100 pt-2'>
+          <div className='cancel h-full w-full bg-base-100 pt-2'>
             {selectedPopup === 'hm' && openedRowData ? (
               <HMPopUpForm
                 fullUnitName={openedRowData.full_unit_name}
