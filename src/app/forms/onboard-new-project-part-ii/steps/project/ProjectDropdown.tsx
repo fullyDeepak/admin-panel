@@ -26,7 +26,7 @@ export interface ProjectData {
       rera_tower_id: any;
       etl_tower_name: string;
       display_tower_type: string;
-      tower_door_no: string;
+      tower_door_no: string | null;
       ground_floor_name: string;
       ground_floor_unit_no_min: string;
       ground_floor_unit_no_max: string;
@@ -158,7 +158,9 @@ export default function ProjectDropdown() {
             const towerData: TowerUnitDetailType[] = [];
             const doorNoStrings: string[] = [];
             res.data.tmData.map((ele) => {
-              doorNoStrings.push(ele.tower_door_no);
+              if (ele.tower_door_no) {
+                doorNoStrings.push(ele.tower_door_no);
+              }
               const unitCards: UnitCardType[] = [];
               const tmTableData: (RefTableType & {
                 extent: string;
