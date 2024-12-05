@@ -103,11 +103,6 @@ export default function HMPopUpForm({
               });
               setSelectedPopup(null);
               setOpenedRowData(null);
-              (
-                document.getElementById(
-                  'error-form-dialog'
-                ) as HTMLDialogElement
-              )?.close();
             }}
           >
             Select

@@ -74,11 +74,6 @@ export default function Section3Container() {
             onClick={() => {
               setSelectedPopup('hm');
               setOpenedRowData(row.original);
-              // (
-              //   document.getElementById(
-              //     'error-form-dialog'
-              //   ) as HTMLDialogElement
-              // )?.showModal();
             }}
           >
             <SquareArrowOutUpRight size={20} />
@@ -150,11 +145,6 @@ export default function Section3Container() {
               onClick={() => {
                 setSelectedPopup('tm');
                 setOpenedRowData(row.original);
-                (
-                  document.getElementById(
-                    'error-form-dialog'
-                  ) as HTMLDialogElement
-                )?.showModal();
               }}
             >
               <SquareArrowOutUpRight size={20} />

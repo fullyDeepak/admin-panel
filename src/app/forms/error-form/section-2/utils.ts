@@ -186,7 +186,3 @@ export function appendTMRecord(
     };
   }
 }
-// delete sub row
-// delete main row and shift array
-// add new sub-row
-// add sub-row if main row is empty

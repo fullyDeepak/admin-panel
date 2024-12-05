@@ -140,7 +140,6 @@ export default function Table({
           <p className=''>{`Total ${
             table.getFilteredRowModel().rows.length
           } Entries`}</p>
-          {/* <div>{table.getRowModel().rows.length} Rows</div> */}
           <select
             value={table.getState().pagination.pageSize}
             className='select select-sm hidden border-2 border-violet-400 outline-none focus:border-violet-400 focus:outline-none md:inline-block'
