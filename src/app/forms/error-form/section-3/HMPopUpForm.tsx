@@ -8,6 +8,7 @@ import { CalendarClock, CalendarSync } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import TanstackReactTableV2 from '@/components/tables/TanstackReactTableV2';
 import { useErrorFormStore } from '../useErrorFormStore';
+import ChipInputV2 from '@/components/ui/ChipV2';
 
 type Props = {
   projectTower: string;
@@ -29,7 +30,7 @@ export default function HMPopUpForm({
   const [formState, setFormState] = useState({
     locality: '',
     doorNo: '',
-    ownerName: '',
+    ownerName: [] as string[],
     ownerNameFlag: false,
     doorNoFlag: true,
   });
@@ -46,7 +47,7 @@ export default function HMPopUpForm({
       ...prev,
       locality: projectLocality,
       doorNo: doorNo,
-      ownerName: currentOwner,
+      ownerName: [currentOwner],
     }));
   }, [projectLocality, doorNo, currentOwner]);
   async function handleSearch() {
@@ -56,7 +57,7 @@ export default function HMPopUpForm({
       {
         params: {
           locality: formState.locality,
-          owner_name: formState.ownerName,
+          owner_name: encodeURIComponent(JSON.stringify(formState.ownerName)),
           door_no_flag: formState.doorNoFlag ? 'AND' : 'OR',
           owner_name_flag: formState.ownerNameFlag ? 'AND' : 'OR',
           door_no: formState.doorNo,
@@ -216,18 +217,11 @@ export default function HMPopUpForm({
               </label>
             </div>
             <div className='flex items-center gap-5'>
-              <span className='flex-[2]'>Owner Name:</span>
-              <input
-                className={cn(inputBoxClass, '-ml-3.5 flex-[6]')}
-                placeholder='Enter Owner Name'
-                type='text'
-                value={formState['ownerName']}
-                onChange={(e) =>
-                  setFormState((prev) => ({
-                    ...prev,
-                    ownerName: e.target.value,
-                  }))
-                }
+              <span className='flex-[2]'>Owner Names:</span>
+              <ChipInputV2
+                chips={formState.ownerName}
+                onChange={(e) => setFormState({ ...formState, ownerName: e })}
+                placeholder='Enter Owner Names'
               />
             </div>
             <button
@@ -248,7 +242,17 @@ WHERE
     "source" IS NOT NULL
     ${formState.locality ? `AND locality ILIKE '${'%' + formState.locality + '%'}'` : ``}
     ${formState.doorNo ? (formState.doorNoFlag ? `AND house_no ILIKE '${'%' + formState.doorNo + '%'}'` : `OR house_no ILIKE '${'%' + formState.doorNo + '%'}'`) : ``}
-    ${formState.ownerName ? (formState.ownerNameFlag ? `AND current_owner ILIKE '${'%' + formState.ownerName + '%'}'` : `OR current_owner ILIKE '${'%' + formState.ownerName + '%'}'`) : ``}
+    ${
+      formState.ownerName.length > 0
+        ? formState.ownerNameFlag
+          ? formState.ownerName.map(
+              (item) => `AND current_owner ILIKE ${'%' + item + '%'}`
+            )
+          : formState.ownerName.map(
+              (item) => `OR current_owner ILIKE ${'%' + item + '%'}`
+            )
+        : ``
+    }
     LIMIT 200;`}
           </pre>
         </div>
@@ -265,7 +269,7 @@ WHERE
             enableSearch={false}
             showPagination={false}
             tableHeightVH={50}
-            tableWidthVW={85}
+            tableWidthVW={70}
           />
         )}
       </div>

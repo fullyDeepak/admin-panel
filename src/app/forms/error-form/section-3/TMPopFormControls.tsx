@@ -19,7 +19,7 @@ type Props = {
     projectId: number;
     towerId: number;
     fullUnitName: string;
-    counterParty: string;
+    counterParty: string[];
     linkedDoc: string;
   };
   setFormState: Dispatch<SetStateAction<Props['formState']>>;
@@ -43,7 +43,9 @@ export default function TMPopFormControls({
           project_id: +formState.projectId ? +formState.projectId : '',
           tower_id: +formState.towerId ? +formState.towerId : '',
           full_unit_name: formState.fullUnitName,
-          counter_party: formState.counterParty,
+          counter_party: encodeURIComponent(
+            JSON.stringify(formState.counterParty)
+          ),
           linked_doc: formState.linkedDoc,
           village_flag: formState.villageFlag ? 'AND' : 'OR',
           project_id_flag: formState.projectIdFlag ? 'AND' : 'OR',
@@ -218,18 +220,11 @@ export default function TMPopFormControls({
           </label>
         </div>
         <div className='flex items-center gap-5'>
-          <span className='flex-[2]'>Counter Party:</span>
-          <input
-            className={inputBoxClass}
-            placeholder='Enter Counter Party'
-            type='text'
-            value={formState.counterParty}
-            onChange={(e) =>
-              setFormState((prev) => ({
-                ...prev,
-                counterParty: e.target.value,
-              }))
-            }
+          <span className='flex-[2]'>Counter Parties:</span>
+          <ChipInputV2
+            chips={formState.counterParty}
+            onChange={(e) => setFormState({ ...formState, counterParty: e })}
+            placeholder='Enter Counter parties'
           />
           <label className={cn('swap swap-flip rounded p-1 font-semibold')}>
             <input

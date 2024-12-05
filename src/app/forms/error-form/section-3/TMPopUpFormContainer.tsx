@@ -30,7 +30,7 @@ export default function TMPopUpFormContainer({
     projectId: 0,
     towerId: 0,
     fullUnitName: '',
-    counterParty: '',
+    counterParty: [] as string[],
     linkedDoc: '',
   });
   const [results, setResults] = useState<TMSearchResponseType[]>([]);
@@ -51,7 +51,7 @@ export default function TMPopUpFormContainer({
       projectId: 0,
       towerId: 0,
       fullUnitName: '',
-      counterParty: openedRowData.current_owner,
+      counterParty: [openedRowData.current_owner],
     }));
     setAttachedDocIdSch(
       openedRowData.doc_id_schedule
@@ -231,7 +231,17 @@ WHERE
     ${formState.projectId ? (formState.projectIdFlag ? `AND project_id = '${formState.projectId}'` : `OR project_id = '${formState.projectId}'`) : ''}
     ${formState.towerId ? (formState.towerIdFlag ? `AND tower_id = '${formState.towerId}'` : `OR tower_id = '${formState.towerId}'`) : ''}
     ${formState.fullUnitName ? (formState.fullUnitNameFlag ? `AND flat = '${formState.fullUnitName}'` : `OR flat = '${formState.fullUnitName}'`) : ''}
-    ${formState.counterParty ? (formState.counterPartyFlag ? `AND party_details ILIKE '${'%' + formState.counterParty + '%'}'` : `OR party_details ILIKE '${'%' + formState.counterParty + '%'}'`) : ``}
+    ${
+      formState.counterParty.length > 0
+        ? formState.counterPartyFlag
+          ? formState.counterParty.map(
+              (item) => `AND party_details ILIKE ${'%' + item + '%'}`
+            )
+          : formState.counterParty.map(
+              (item) => `OR party_details ILIKE ${'%' + item + '%'}`
+            )
+        : ``
+    }
     ${formState.linkedDoc ? (formState.linkedDocFlag ? `AND linked_docs ILIKE '${'%' + formState.linkedDoc + '%'}'` : `OR linked_doc ILIKE '${'%' + formState.linkedDoc + '%'}'`) : ``}
     LIMIT 200;`}
           </pre>
