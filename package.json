@@ -63,6 +63,7 @@
     "spherical-geometry-js": "^3.0.2",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",
+    "xior": "^0.6.1",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
