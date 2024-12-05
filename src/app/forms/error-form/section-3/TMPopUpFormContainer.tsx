@@ -37,12 +37,19 @@ export default function TMPopUpFormContainer({
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [selectedRows, setSelectedRows] = useState<TMSearchResponseType[]>([]);
   const [attachedDocIdSch, setAttachedDocIdSch] = useState<string[]>([]);
-  const { updateCurrentTableData, projectETLVillage, project } =
-    useErrorFormStore((state) => ({
-      updateCurrentTableData: state.updateCurrentTableData,
-      projectETLVillage: state.errorFormData.projectETLVillage,
-      project: state.errorFormData.selectedProject,
-    }));
+  const {
+    updateCurrentTableData,
+    projectETLVillage,
+    project,
+    selectedTableRows,
+    setSelectedTableRows,
+  } = useErrorFormStore((state) => ({
+    updateCurrentTableData: state.updateCurrentTableData,
+    projectETLVillage: state.errorFormData.projectETLVillage,
+    project: state.errorFormData.selectedProject,
+    selectedTableRows: state.selectedTableRows,
+    setSelectedTableRows: state.setSelectedTableRows,
+  }));
   useEffect(() => {
     setFormState((prev) => ({
       ...prev,
@@ -268,6 +275,21 @@ WHERE
                 rowData
               );
               setOpenedRowData(rowData);
+              setSelectedTableRows(
+                selectedTableRows.map((item) => {
+                  if (
+                    item.project_tower === openedRowData.project_tower &&
+                    item.full_unit_name === openedRowData.full_unit_name
+                  ) {
+                    return {
+                      ...item,
+                      ...rowData,
+                    };
+                  } else {
+                    return item;
+                  }
+                })
+              );
             });
           }}
         >

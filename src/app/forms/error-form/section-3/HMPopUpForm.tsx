@@ -35,12 +35,17 @@ export default function HMPopUpForm({
     doorNoFlag: true,
   });
   const [results, setResults] = useState<HMSearchResponseType[]>([]);
-  const { updateCurrentTableData, projectLocality } = useErrorFormStore(
-    (state) => ({
-      updateCurrentTableData: state.updateCurrentTableData,
-      projectLocality: state.errorFormData.projectLocality,
-    })
-  );
+  const {
+    updateCurrentTableData,
+    projectLocality,
+    selectedTableRows,
+    setSelectedTableRows,
+  } = useErrorFormStore((state) => ({
+    updateCurrentTableData: state.updateCurrentTableData,
+    projectLocality: state.errorFormData.projectLocality,
+    selectedTableRows: state.selectedTableRows,
+    setSelectedTableRows: state.setSelectedTableRows,
+  }));
 
   useEffect(() => {
     setFormState((prev) => ({
@@ -101,6 +106,24 @@ export default function HMPopUpForm({
                 door_no: row.original.house_no,
                 current_owner: row.original.current_owner,
               });
+              setSelectedTableRows(
+                selectedTableRows.map((item) => {
+                  if (
+                    item.project_tower === projectTower &&
+                    item.full_unit_name === fullUnitName
+                  ) {
+                    return {
+                      ...item,
+                      ptin: row.original.ptin,
+                      locality: row.original.locality,
+                      door_no: row.original.house_no,
+                      current_owner: row.original.current_owner,
+                    };
+                  } else {
+                    return item;
+                  }
+                })
+              );
               setSelectedPopup(null);
               setOpenedRowData(null);
             }}

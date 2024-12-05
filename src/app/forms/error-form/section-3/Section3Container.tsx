@@ -20,6 +20,7 @@ export default function Section3Container() {
     setTableRowSelection,
     setSelectedTableRows,
     updateCurrentTableData,
+    selectedTableRows,
   } = useErrorFormStore();
   const [selectedPopup, setSelectedPopup] = useState<'hm' | 'tm' | null>(null);
   const [openedRowData, setOpenedRowData] = useState<ErrorTableDataType | null>(
@@ -69,12 +70,13 @@ export default function Section3Container() {
         }
         return (
           <button
-            className='flex size-10 items-center justify-center rounded-md bg-neutral text-white'
+            className='flex size-10 items-center justify-center rounded-md bg-neutral text-white disabled:opacity-50'
             type='button'
             onClick={() => {
               setSelectedPopup('hm');
               setOpenedRowData(row.original);
             }}
+            disabled={!row.getIsSelected()}
           >
             <SquareArrowOutUpRight size={20} />
           </button>
@@ -117,7 +119,7 @@ export default function Section3Container() {
         if (row.original.project_tower.length === 0) {
           return (
             <button
-              className='flex size-10 items-center justify-center rounded-md bg-error text-white'
+              className='flex size-10 items-center justify-center rounded-md bg-error text-white disabled:opacity-50'
               type='button'
               onClick={() => {
                 const parentRow = row.getParentRow()?.original;
@@ -132,6 +134,7 @@ export default function Section3Container() {
                   data
                 );
               }}
+              disabled={!row.getIsSelected()}
             >
               <Trash2 size={20} />
             </button>
@@ -140,17 +143,18 @@ export default function Section3Container() {
         return (
           <div className='flex flex-col gap-2'>
             <button
-              className='flex size-10 items-center justify-center rounded-md bg-neutral text-white'
+              className='flex size-10 items-center justify-center rounded-md bg-neutral text-white disabled:opacity-50'
               type='button'
               onClick={() => {
                 setSelectedPopup('tm');
                 setOpenedRowData(row.original);
               }}
+              disabled={!row.getIsSelected()}
             >
               <SquareArrowOutUpRight size={20} />
             </button>
             <button
-              className='flex size-10 items-center justify-center rounded-md bg-error text-white'
+              className='flex size-10 items-center justify-center rounded-md bg-error text-white disabled:opacity-50'
               type='button'
               onClick={() => {
                 const data = deleteTMRecord(
@@ -163,6 +167,7 @@ export default function Section3Container() {
                   data
                 );
               }}
+              disabled={!row.getIsSelected()}
             >
               <Trash2 size={20} />
             </button>
@@ -269,6 +274,15 @@ export default function Section3Container() {
           />
         </>
       ) : null}
+      <div className='collapse max-w-sm bg-warning/20'>
+        <input type='checkbox' />
+        <div className='collapse-title font-medium'>Debug</div>
+        <div className='collapse-content'>
+          <pre className='max-h-[300px] max-w-sm overflow-auto font-[monospace] text-xs'>
+            {JSON.stringify(selectedTableRows, null, 2)}
+          </pre>
+        </div>
+      </div>
     </div>
   );
 }
