@@ -22,7 +22,7 @@ import {
 } from 'react-icons/pi';
 import ETLTagConfiguration from './ETLTagConfiguration';
 
-const hmRefTableColumns: ColumnDef<object, any>[] = [
+export const hmRefTableColumns: ColumnDef<object, any>[] = [
   {
     accessorKey: 'tower_name',
     header: 'Tower Name',

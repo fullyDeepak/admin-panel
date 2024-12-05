@@ -14,6 +14,7 @@ import { convertArrayToRangeString } from '../../utils';
 import { useProjectImageStore } from '../../useProjectImageStore';
 import { findLargest, findSmallest } from '../tower/utils';
 import { useEffect, useState } from 'react';
+import { longestCommonPrefix } from '@/lib/utils';
 
 export interface ProjectData {
   status: string;
@@ -25,6 +26,7 @@ export interface ProjectData {
       rera_tower_id: any;
       etl_tower_name: string;
       display_tower_type: string;
+      tower_door_no: string;
       ground_floor_name: string;
       ground_floor_unit_no_min: string;
       ground_floor_unit_no_max: string;
@@ -121,6 +123,7 @@ export default function ProjectDropdown() {
     resetStatusFormData,
     setLockUnitType,
     setExistingStatusData,
+    setCoreDoorNumberString,
   } = useTowerUnitStore();
   const { resetImageStore } = useProjectImageStore();
   const [optionType, setOptionType] = useState<
@@ -153,7 +156,9 @@ export default function ProjectDropdown() {
           loading: "Fetching Project's Towers...",
           success: ({ data: res }) => {
             const towerData: TowerUnitDetailType[] = [];
+            const doorNoStrings: string[] = [];
             res.data.tmData.map((ele) => {
+              doorNoStrings.push(ele.tower_door_no);
               const unitCards: UnitCardType[] = [];
               const tmTableData: (RefTableType & {
                 extent: string;
@@ -271,6 +276,11 @@ export default function ProjectDropdown() {
             setTowerFormData(towerData);
             resetImageStore();
             resetStatusFormData();
+            let commonPrefix = longestCommonPrefix(doorNoStrings);
+            commonPrefix = commonPrefix.split('{')[0];
+            setCoreDoorNumberString(
+              commonPrefix.endsWith('/') ? commonPrefix : commonPrefix + '/'
+            );
             return 'Fetched Towers';
           },
           error: (err) => {

@@ -264,7 +264,8 @@ export default function Page() {
       </h1>
       <div
         className={cn(
-          'mb-40 mt-5 flex w-full max-w-full flex-col gap-4 self-center rounded p-10 text-sm shadow-none md:max-w-[80%] md:text-lg md:shadow-[0_3px_10px_rgb(0,0,0,0.2)]'
+          'mb-40 mt-5 flex w-[80%] flex-col gap-4 self-center rounded p-10 text-sm shadow-[0_3px_10px_rgb(0,0,0,0.2)]',
+          formSteps === 'Tower' && 'w-full'
         )}
         id='projectTowerForm'
       >

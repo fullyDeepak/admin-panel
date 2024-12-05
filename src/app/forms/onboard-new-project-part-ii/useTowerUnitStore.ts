@@ -170,6 +170,7 @@ type Store = {
     updated_field: string;
     updated_value: string;
   }[];
+  coreDoorNumberString: string;
   setTowerFormData: (_data: TowerUnitDetailType[]) => void;
   deleteTowerCard: (_id: number) => void;
   copyUnitCard: (_towerCardId: number, _newDetails: UnitCardType) => void;
@@ -201,6 +202,7 @@ type Store = {
   resetStatusFormData: () => void;
   setLockUnitType: (_data: boolean) => void;
   setExistingStatusData: (_data: Store['existingStatusData']) => void;
+  setCoreDoorNumberString: (_data: string) => void;
 };
 
 export const useTowerUnitStore = create<Store>()(
@@ -221,6 +223,8 @@ export const useTowerUnitStore = create<Store>()(
     existingStatusData: [] as Store['existingStatusData'],
 
     lockUnitType: false as boolean,
+
+    coreDoorNumberString: '',
 
     updateTowerFormData: (id, newDetails) =>
       set((prev) => {
@@ -411,5 +415,7 @@ export const useTowerUnitStore = create<Store>()(
     setLockUnitType: (_data) => set({ lockUnitType: _data }),
 
     setExistingStatusData: (data) => set({ existingStatusData: data }),
+
+    setCoreDoorNumberString: (data) => set({ coreDoorNumberString: data }),
   }))
 );
