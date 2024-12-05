@@ -2,14 +2,20 @@ import Link from 'next/link';
 import React from 'react';
 
 export default function FormHomePage() {
-  const links = [
+  const errorLinks = [
     {
-      label: 'Error Stat Table',
+      label: 'Error Stat',
       href: '/dashboards/error-stats-table',
     },
     {
-      label: 'Tower Unit Error Dashboard',
+      label: 'Tower Unit',
       href: '/dashboards/unit-error-dashboard',
+    },
+  ];
+  const otherLinks = [
+    {
+      label: 'Village',
+      href: '/dashboards/village',
     },
   ];
   return (
@@ -22,7 +28,21 @@ export default function FormHomePage() {
           <h2 className='text-center text-xl font-semibold'>
             Error Dashboards
           </h2>
-          {links.map((link) => (
+          {errorLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+        <div className='flex w-fit flex-col gap-4 text-gray-500'>
+          <h2 className='text-center text-xl font-semibold'>
+            Other Dashboards
+          </h2>
+          {otherLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}

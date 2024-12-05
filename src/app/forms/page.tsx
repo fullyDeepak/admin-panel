@@ -9,6 +9,33 @@ export default function FormHomePage() {
       </h1>
       <div className='mt-5 flex flex-wrap justify-evenly gap-10'>
         <div className='flex w-fit flex-col gap-4 text-gray-500'>
+          <h2 className='text-center text-xl font-semibold'>Legacy Forms</h2>
+          <Link
+            href={'/forms/project-tower-rera'}
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+          >
+            Onboard Project
+          </Link>
+          <Link
+            href={'/forms/project-tower-edit'}
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+          >
+            Update Project
+          </Link>
+          <Link
+            href={'/forms/image-tagging'}
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+          >
+            Image Tagging
+          </Link>
+          <Link
+            href={'/forms/unit-master-correction'}
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+          >
+            UM Manual
+          </Link>
+        </div>
+        <div className='flex w-fit flex-col gap-4 text-gray-500'>
           <h2 className='text-center text-xl font-semibold'>
             Village & SRO Forms
           </h2>
@@ -31,6 +58,43 @@ export default function FormHomePage() {
             SRO Scraper
           </Link>
         </div>
+
+        <div className='flex w-fit flex-col gap-4 text-gray-500'>
+          <h2 className='text-center text-xl font-semibold'>Tagging Forms</h2>
+          <Link
+            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+            href={'/forms/village-project-cleaner'}
+          >
+            Temp Onboarding Form
+          </Link>
+          <Link
+            href={'/forms/onboard-new-project'}
+            className='btn relative flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+          >
+            <span className='absolute -right-2 -top-1 rotate-45 rounded-full bg-violet-600 px-1 text-[8px] text-white'>
+              NEW
+            </span>
+            Onboard Project Part - I
+          </Link>
+          <Link
+            href={'/forms/update-project'}
+            className='btn relative flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+          >
+            <span className='absolute -right-2 -top-1 rotate-45 rounded-full bg-violet-600 px-1 text-[8px] text-white'>
+              NEW
+            </span>
+            Update Project Part - I
+          </Link>
+          <Link
+            href={'/forms/onboard-new-project-part-ii'}
+            className='btn relative flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
+          >
+            <span className='absolute -right-2 -top-1 rotate-45 rounded-full bg-violet-600 px-1 text-[8px] text-white'>
+              NEW
+            </span>
+            Onboard Project Part - II
+          </Link>
+        </div>
         <div className='flex w-fit flex-col gap-4 text-gray-500'>
           <h2 className='text-center text-xl font-semibold'>
             Correction Forms
@@ -51,18 +115,6 @@ export default function FormHomePage() {
             RERA DMV
           </Link>
           <Link
-            href={'/forms/unit-master-correction'}
-            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
-          >
-            UM Manual
-          </Link>
-          <Link
-            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
-            href={'/forms/village-project-cleaner'}
-          >
-            Village Project Cleaner
-          </Link>
-          <Link
             className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
             href={'/forms/dev-tagger'}
           >
@@ -73,56 +125,6 @@ export default function FormHomePage() {
             href={'/forms/root-doc-verification'}
           >
             Root Doc Verification
-          </Link>
-        </div>
-        <div className='flex w-fit flex-col gap-4 text-gray-500'>
-          <h2 className='text-center text-xl font-semibold'>
-            Project Tower Forms
-          </h2>
-          <Link
-            href={'/forms/onboard-new-project'}
-            className='btn relative flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
-          >
-            <span className='absolute -right-2 -top-1 rotate-45 rounded-full bg-violet-600 px-1 text-[8px] text-white'>
-              NEW
-            </span>
-            Onboard Project Part - I
-          </Link>
-          <Link
-            href={'/forms/onboard-new-project-part-ii'}
-            className='btn relative flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
-          >
-            <span className='absolute -right-2 -top-1 rotate-45 rounded-full bg-violet-600 px-1 text-[8px] text-white'>
-              NEW
-            </span>
-            Onboard Project Part - II
-          </Link>
-          <Link
-            href={'/forms/update-project'}
-            className='btn relative flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
-          >
-            <span className='absolute -right-2 -top-1 rotate-45 rounded-full bg-violet-600 px-1 text-[8px] text-white'>
-              NEW
-            </span>
-            Update Project Part - I
-          </Link>
-          <Link
-            href={'/forms/project-tower-rera'}
-            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
-          >
-            Onboard Project
-          </Link>
-          <Link
-            href={'/forms/project-tower-edit'}
-            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
-          >
-            Update Project
-          </Link>
-          <Link
-            href={'/forms/image-tagging'}
-            className='btn flex items-center hover:text-black active:border-none active:bg-violet-600 active:text-white'
-          >
-            Image Tagging
           </Link>
         </div>
       </div>
